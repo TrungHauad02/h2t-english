@@ -1,4 +1,4 @@
-import { SiteInfo } from "../types";
+import { Quote, SiteInfo } from "../types";
 
 export default function useListLessonPage() {
   const sites: SiteInfo[] = [
@@ -40,11 +40,17 @@ export default function useListLessonPage() {
     },
   ];
 
+  const quote: Quote = {
+    speech: "This is speech",
+    author: "Author",
+  };
+
   const getSiteInfo = (type: string) => {
     return sites.filter((item) => item.type === type)[0];
   };
 
   return {
     getSiteInfo,
+    quote,
   };
 }
