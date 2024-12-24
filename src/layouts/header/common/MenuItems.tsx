@@ -6,7 +6,7 @@ import {
   ListItemButton,
   ListItemText,
 } from "@mui/material";
-import ListComponent from "components/listComponent/ListComponent";
+import { ListComponent } from "components/list";
 import { useDarkMode } from "hooks/useDarkMode";
 import { useState, useRef, forwardRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -92,7 +92,7 @@ export default function MenuItems({ items }: MenuItemsProps) {
         >
           <Button
             color="inherit"
-            onClick={() => navigate(item.path)}
+            onClick={() => item.children ?? navigate(item.path)}
             sx={{
               ...linkStyles(),
             }}
@@ -117,10 +117,10 @@ export default function MenuItems({ items }: MenuItemsProps) {
                   tag={Box}
                   sx={{ padding: 0 }}
                   renderItem={(child) => (
-                    <ListItem disablePadding key={child.path}>
+                    <ListItem disablePadding key={item.path + child.path}>
                       <ListItemButton
                         onClick={() => {
-                          navigate(child.path);
+                          navigate(item.path + child.path);
                           handleMouseLeave();
                         }}
                         sx={{

@@ -14,16 +14,44 @@ import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { useState } from "react";
+import { ListItemWithToggle } from "components/list";
+
+interface DrawerMenuProps {
+  drawerOpen: boolean;
+  handleDrawerToggle: () => void;
+  MENU_ITEMS: {
+    path: string;
+    label: string;
+    children?: {
+      path: string;
+      label: string;
+    }[];
+  }[];
+}
 
 export default function DrawerMenu({
   drawerOpen,
   handleDrawerToggle,
   MENU_ITEMS,
-}: any) {
+}: DrawerMenuProps) {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
+
+  const handleToggle = (label: string) => {
+    setOpenItems((prev) => ({
+      ...prev,
+      [label]: !prev[label],
+    }));
+  };
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    handleDrawerToggle();
+  };
 
   return (
     <Drawer
@@ -38,23 +66,22 @@ export default function DrawerMenu({
     >
       <Box sx={{ width: 250 }} role="presentation">
         <List>
-          {MENU_ITEMS.map((item: any) => (
-            <ListItemButton
+          {MENU_ITEMS.map((item) => (
+            <ListItemWithToggle
               key={item.path}
-              onClick={() => navigate(item.path)}
-              sx={{
-                color: isDarkMode ? color.white : color.black,
-                "&:hover": {
-                  bgcolor: isDarkMode ? color.gray700 : color.gray200,
-                },
-              }}
-            >
-              <ListItemText primary={item.label} />
-            </ListItemButton>
+              path={item.path}
+              label={item.label}
+              children={item.children}
+              open={openItems[item.label] || false}
+              onToggle={() => handleToggle(item.label)}
+              onNavigate={handleNavigate}
+              isDarkMode={isDarkMode}
+              color={color}
+            />
           ))}
           <Divider />
           <ListItemButton
-            onClick={() => navigate("/login")}
+            onClick={() => handleNavigate("/login")}
             sx={{
               color: isDarkMode ? color.white : color.black,
               "&:hover": {
@@ -65,7 +92,7 @@ export default function DrawerMenu({
             <ListItemText primary="Login" />
           </ListItemButton>
           <ListItemButton
-            onClick={() => navigate("/register")}
+            onClick={() => handleNavigate("/register")}
             sx={{
               color: isDarkMode ? color.white : color.black,
               "&:hover": {
