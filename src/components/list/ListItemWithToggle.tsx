@@ -2,6 +2,8 @@ import React from "react";
 import { ListItemButton, ListItemText, Collapse, Box } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { ListComponent } from "components/list";
+import { useDarkMode } from "hooks/useDarkMode";
+import useColor from "theme/useColor";
 
 interface ListItemWithToggleProps {
   label: string;
@@ -10,8 +12,6 @@ interface ListItemWithToggleProps {
   open: boolean;
   onToggle: () => void;
   onNavigate: (path: string) => void;
-  isDarkMode: boolean;
-  color: any;
 }
 
 export default function ListItemWithToggle({
@@ -21,9 +21,9 @@ export default function ListItemWithToggle({
   open,
   onToggle,
   onNavigate,
-  isDarkMode,
-  color,
 }: ListItemWithToggleProps) {
+  const { isDarkMode } = useDarkMode();
+  const color = useColor();
   return (
     <Box>
       <ListItemButton

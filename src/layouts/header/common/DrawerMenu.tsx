@@ -75,8 +75,6 @@ export default function DrawerMenu({
               open={openItems[item.label] || false}
               onToggle={() => handleToggle(item.label)}
               onNavigate={handleNavigate}
-              isDarkMode={isDarkMode}
-              color={color}
             />
           ))}
           <Divider />
