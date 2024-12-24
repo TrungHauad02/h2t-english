@@ -117,10 +117,10 @@ export default function MenuItems({ items }: MenuItemsProps) {
                   tag={Box}
                   sx={{ padding: 0 }}
                   renderItem={(child) => (
-                    <ListItem disablePadding key={child.path}>
+                    <ListItem disablePadding key={item.path + child.path}>
                       <ListItemButton
                         onClick={() => {
-                          navigate(child.path);
+                          navigate(item.path + child.path);
                           handleMouseLeave();
                         }}
                         sx={{

@@ -7,3 +7,9 @@ export { default as ErrorPage } from "pages/ErrorPage";
 
 // Home Page
 export { default as HomePage } from "features/home/pages/HomePage";
+
+// Lesson Pages
+export { default as ListLessonPage } from "features/listLesson/pages/ListLessonPage";
+
+// Test Pages
+export { default as ListTestPage } from "features/listTest/pages/ListTestPage";

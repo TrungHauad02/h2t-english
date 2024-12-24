@@ -18,6 +18,7 @@ export default function StudentLayout() {
         justifyContent: "center",
         px: { xs: 2, sm: 4 },
         bgcolor: isDarkMode ? color.gray900 : color.gray100,
+        color: isDarkMode ? color.white : color.black,
       }}
     >
       <StudentHeader />
