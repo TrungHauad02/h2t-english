@@ -22,8 +22,29 @@ const StyledAppBar = styled(AppBar)<AppBarProps>(({ theme }) => ({
 
 const MENU_ITEMS = [
   { path: "/", label: "Home" },
-  { path: "/lesson", label: "Lesson" },
-  { path: "/test", label: "Test" },
+  {
+    path: "/lesson",
+    label: "Lesson",
+    children: [
+      { path: "/topics", label: "Vocabulary" },
+      { path: "/grammars", label: "Grammar" },
+      { path: "/readings", label: "Reading" },
+      { path: "/speakings", label: "Speaking" },
+      { path: "/listenings", label: "Listening" },
+      { path: "/writings", label: "Writing" },
+    ],
+  },
+  {
+    path: "/test",
+    label: "Test",
+    children: [
+      { path: "/test?type=mixing", label: "Mixing" },
+      { path: "/test?type=readings", label: "Reading" },
+      { path: "/test?type=speakings", label: "Speaking" },
+      { path: "/test?type=listenings", label: "Listening" },
+      { path: "/test?type=writings", label: "Writing" },
+    ],
+  },
 ];
 
 export default function StudentHeader() {
