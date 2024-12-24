@@ -1,12 +1,12 @@
 import { CardMedia, Stack, Typography } from "@mui/material";
 import useColor from "theme/useColor";
-import { SiteInfo } from "../types";
+import { SiteInfo } from "./types";
 
-interface MainPictureProps {
+interface MainPictureSectionProps {
   siteInfo: SiteInfo;
 }
 
-function MainPicture({ siteInfo }: MainPictureProps) {
+function MainPictureSection({ siteInfo }: MainPictureSectionProps) {
   const color = useColor();
   return (
     <Stack
@@ -48,4 +48,4 @@ function MainPicture({ siteInfo }: MainPictureProps) {
   );
 }
 
-export default MainPicture;
+export default MainPictureSection;
