@@ -1,4 +1,5 @@
-import { Quote, SiteInfo } from "../types";
+import { SiteInfo } from "components/sections/types";
+import { Quote } from "../types";
 
 export default function useListLessonPage() {
   const sites: SiteInfo[] = [
