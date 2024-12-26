@@ -4,3 +4,5 @@ export { default as ReadingLesson } from "./reading/ReadingLesson";
 export { default as SpeakingLesson } from "./speaking/SpeakingLesson";
 export { default as TopicLesson } from "./topic/TopicLesson";
 export { default as WritingLesson } from "./writing/WritingLesson";
+
+export { default as Introduction } from "./Introduction";

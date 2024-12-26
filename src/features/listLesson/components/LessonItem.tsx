@@ -18,6 +18,7 @@ import {
 import { useState } from "react";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
+import { useNavigate } from "react-router-dom";
 
 interface LessonItemProps {
   lesson: Topic | Grammar | Reading | Speaking | Listening | Writing;
@@ -26,6 +27,7 @@ interface LessonItemProps {
 export default function LessonItem({ lesson }: LessonItemProps) {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
+  const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -50,6 +52,7 @@ export default function LessonItem({ lesson }: LessonItemProps) {
         }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
+        onClick={() => navigate(`${lesson.id}`)}
       >
         <CardMedia
           component="img"
