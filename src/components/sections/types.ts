@@ -1,5 +1,5 @@
 export interface SiteInfo {
-  type: string;
+  type?: string;
   title: string;
   bgUrl: string;
 }
