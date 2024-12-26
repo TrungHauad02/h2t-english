@@ -71,7 +71,7 @@ export default function LessonItem({ lesson }: LessonItemProps) {
                 ? color.gray700
                 : color.gray800
               : hovered
-              ? color.teal100
+              ? color.teal100 + "40"
               : color.gray100,
             transition: "background-color 0.3s ease-in-out",
           }}
