@@ -47,7 +47,13 @@ export default function useListLessonPage() {
   };
 
   const getSiteInfo = (type: string) => {
-    return sites.filter((item) => item.type === type)[0];
+    return (
+      sites.find((item) => item.type === type) || {
+        type: "",
+        title: "",
+        bgUrl: "",
+      }
+    );
   };
 
   return {
