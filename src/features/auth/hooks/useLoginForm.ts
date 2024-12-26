@@ -9,7 +9,7 @@ export const useLoginForm = () => {
     const user = users.find(
       (u) => u.email === email && u.password === password
     );
-    
+
     if (!email || !password) {
         toast.error("Please fill in both email and password.");
         return;
@@ -20,11 +20,11 @@ export const useLoginForm = () => {
     } else {
       toast.success(`Welcome, ${user.name}!`);
 
-      if (user.role_enum === "Student") {
+      if (user.roleEnum === "Student") {
         navigate("/");
-      } else if (user.role_enum === "Admin") {
+      } else if (user.roleEnum === "Admin") {
         navigate("/admin");
-    } else if (user.role_enum === "Teacher") {
+    } else if (user.roleEnum === "Teacher") {
         navigate("/teacher");
       } else {
         toast.error("Unauthorized role. Please contact support.");
