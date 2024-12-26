@@ -19,10 +19,10 @@ interface ListLessonProps {
 
 export default function ListLesson({ type }: ListLessonProps) {
   const [page, setPage] = useState(1);
-  const [lessonsPerPage, setLessonsPerPage] = useState(5);
+  const [lessonsPerPage, setLessonsPerPage] = useState(8);
   const itemPerPageOptions = [
-    { label: "5", value: 5 },
-    { label: "10", value: 10 },
+    { label: "8", value: 8 },
+    { label: "16", value: 16 },
     { label: "20", value: 20 },
   ];
   const listLesson: (

@@ -10,6 +10,7 @@ export { default as HomePage } from "features/home/pages/HomePage";
 
 // Lesson Pages
 export { default as ListLessonPage } from "features/listLesson/pages/ListLessonPage";
+export { default as LessonPage } from "features/lesson/pages/LessonPage";
 
 // Test Pages
 export { default as ListTestPage } from "features/listTest/pages/ListTestPage";
