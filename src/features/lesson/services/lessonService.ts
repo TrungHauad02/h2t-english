@@ -31,6 +31,11 @@ const getLessonById = (
   }
 };
 
+const getVocabularyByTopicId = (topicId: string) => {
+  return mockData.listVocabulary.filter((item) => item.topicId === topicId);
+};
+
 export const lessonService = {
   getLessonById,
+  getVocabularyByTopicId,
 };

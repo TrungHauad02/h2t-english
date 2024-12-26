@@ -27,7 +27,7 @@ export default function Introduction() {
         component="h5"
         sx={{
           fontSize: { xs: "2rem", sm: "2.25rem", md: "2.5rem" },
-          color: color.emerald800,
+          color: color.emerald900,
           fontWeight: "bold",
           marginBottom: "0.5rem",
         }}
@@ -39,7 +39,7 @@ export default function Introduction() {
         component="p"
         sx={{
           display: { xs: "none", sm: "block" },
-          color: color.emerald700,
+          color: color.emerald800,
           marginBottom: "1rem",
         }}
       >
@@ -50,7 +50,7 @@ export default function Introduction() {
         component="p"
         sx={{
           display: { xs: "none", sm: "none", md: "block" },
-          color: color.emerald600,
+          color: color.emerald700,
         }}
       >
         {introInfo.bodyText}
