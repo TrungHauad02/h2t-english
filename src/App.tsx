@@ -1,6 +1,6 @@
-import React from "react";
 import { BrowserRouter } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import AppRoutes from "routes/AppRoutes";
 import { useDarkMode } from "hooks/useDarkMode";
 import { ThemeProvider } from "@emotion/react";

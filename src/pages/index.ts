@@ -14,3 +14,6 @@ export { default as LessonPage } from "features/lesson/pages/LessonPage";
 
 // Test Pages
 export { default as ListTestPage } from "features/listTest/pages/ListTestPage";
+
+// Admin Pages
+export { default as ManageUserPage } from "features/admin/pages/ManageUserPage";
