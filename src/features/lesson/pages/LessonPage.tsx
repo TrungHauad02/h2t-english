@@ -18,6 +18,7 @@ import {
   SpeakingLesson,
   ListeningLesson,
   WritingLesson,
+  Introduction,
 } from "../components";
 
 export default function LessonPage() {
@@ -33,7 +34,7 @@ export default function LessonPage() {
   const siteInfo: SiteInfo = {
     bgUrl:
       "https://firebasestorage.googleapis.com/v0/b/englishweb-5a6ce.appspot.com/o/static%2Fbg_vocabulary.png?alt=media",
-    title: "Topic",
+    title: lesson?.title || "",
   };
   const renderLesson = () => {
     if (!lesson) return null;
@@ -58,6 +59,7 @@ export default function LessonPage() {
   return (
     <Box sx={{ mt: 8 }}>
       <MainPictureSection siteInfo={siteInfo} />
+      <Introduction />
       {renderLesson()}
     </Box>
   );
