@@ -12,6 +12,7 @@
     "cra-template-typescript": "1.2.0",
     "lucide-react": "^0.468.0",
     "react": "^19.0.0",
+    "react-card-flip": "^1.2.3",
     "react-dom": "^19.0.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.0.2",
