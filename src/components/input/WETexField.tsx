@@ -5,10 +5,12 @@ import {
   IconButton,
   Stack,
   Typography,
+  SxProps,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
+import { Theme } from "@mui/material/styles"; 
 
 interface WSTextFieldProps {
   label?: string;
@@ -18,8 +20,9 @@ interface WSTextFieldProps {
   showPassword?: boolean;
   setShowPassword?: (show: boolean) => void;
   name?: string;
-  sx?: any;
+  sx?: SxProps<Theme>;
   required?: boolean;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const WETextField = ({
@@ -32,6 +35,7 @@ const WETextField = ({
   name,
   sx,
   required,
+  onKeyDown,
 }: WSTextFieldProps) => {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -40,21 +44,21 @@ const WETextField = ({
     "& .MuiOutlinedInput-root": {
       borderRadius: { xs: "0.75rem", sm: "1rem" },
       width: "100%",
-      paddingLeft: { xs: "0.5rem", sm: "1rem" },
+      paddingLeft: { xs: "0.2rem", sm: ".2rem" },
       "& .MuiOutlinedInput-notchedOutline": {
-        border: `1px solid ${color.gray300}`,
+        border: `1px solid ${color.gray400}`,
       },
       "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
         border: `2px solid ${isDarkMode ? color.emerald400 : color.emerald500}`,
       },
       fontSize: "1rem",
+      marginBottom: "1rem",
     },
-    m: 0,
     width: "100%",
     maxWidth: "600px",
     ...sx,
   };
-
+  
   return (
     <Stack direction={"column"} spacing={1}>
       <Typography
@@ -66,7 +70,6 @@ const WETextField = ({
         {label} {required && <span style={{ color: "red" }}>*</span>}
       </Typography>
       <TextField
-        margin="normal"
         required={required}
         fullWidth
         type={type}
@@ -74,6 +77,7 @@ const WETextField = ({
         onChange={onChange}
         name={name}
         sx={complexSx}
+        onKeyDown={onKeyDown}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">

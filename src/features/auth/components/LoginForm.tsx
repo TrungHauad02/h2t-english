@@ -22,13 +22,14 @@ const Login: React.FC = () => {
   return (
     <Box
       sx={{
-        padding: 4,
+        padding: 3,
         border: "1px solid #e0e0e0",
         borderRadius: "10px",
         boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.1)",
         bgcolor: isDarkMode ? color.gray900 : color.gray100,
         color: isDarkMode ? color.white : color.black,
-        width: "40%"
+        width: "70%",
+        margin: "0 auto",
       }}
     >
       <Typography variant="h4" align="center" mb={2}>
@@ -41,7 +42,11 @@ const Login: React.FC = () => {
         onChange={(e) => setEmail(e.target.value)}
         required={true}
         name="email"
-        sx={{ marginBottom: "1rem !important" }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            handleLogin(email, password); 
+          }
+        }}
       />
       <WETextField
         label="Password"
@@ -52,6 +57,11 @@ const Login: React.FC = () => {
         setShowPassword={setShowPassword}
         required={true}
         name="password"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            handleLogin(email, password);
+          }
+        }}
       />
       <Button
         fullWidth
@@ -59,13 +69,13 @@ const Login: React.FC = () => {
         sx={{
           bgcolor: color.emerald500,
           color: isDarkMode ? color.black : color.white,
-          mt: 3,
+          mt: 1,
         }}
         onClick={() => handleLogin(email, password)}
       >
         Log in
       </Button>
-      <Box mt={2} display="flex" justifyContent="space-between">
+      <Box mt={1} display="flex" justifyContent="space-between">
         <Link href="#" variant="body2" sx={{ color: color.red, mt: 2 }}>
           Forgot password?
         </Link>
