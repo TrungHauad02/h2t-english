@@ -57,6 +57,7 @@ export default function LoginPage() {
             maxWidth: { xs: "100%", md: "600px" },
             minWidth: { xs: "360px", md: "auto" },
             width: "100%",
+            mb: 4
           }}
         >
           <LoginForm />
