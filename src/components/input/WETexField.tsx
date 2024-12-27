@@ -10,7 +10,7 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import { Theme } from "@mui/material/styles"; 
+import { Theme } from "@mui/material"; 
 
 interface WSTextFieldProps {
   label?: string;
@@ -44,7 +44,7 @@ const WETextField = ({
     "& .MuiOutlinedInput-root": {
       borderRadius: { xs: "0.75rem", sm: "1rem" },
       width: "100%",
-      paddingLeft: { xs: "0.2rem", sm: ".2rem" },
+      paddingLeft: "0,2rem",
       "& .MuiOutlinedInput-notchedOutline": {
         border: `1px solid ${color.gray400}`,
       },

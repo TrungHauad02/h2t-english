@@ -28,8 +28,7 @@ const Login: React.FC = () => {
         boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.1)",
         bgcolor: isDarkMode ? color.gray900 : color.gray100,
         color: isDarkMode ? color.white : color.black,
-        width: "70%",
-        margin: "0 auto",
+        width: "80%",
       }}
     >
       <Typography variant="h4" align="center" mb={2}>
@@ -76,7 +75,7 @@ const Login: React.FC = () => {
         Log in
       </Button>
       <Box mt={1} display="flex" justifyContent="space-between">
-        <Link href="#" variant="body2" sx={{ color: color.red, mt: 2 }}>
+        <Link href="#" variant="body2" sx={{ color: isDarkMode ? color.gray100 : color.gray800, mt: 2, fontStyle: "italic", }}>
           Forgot password?
         </Link>
       </Box>
