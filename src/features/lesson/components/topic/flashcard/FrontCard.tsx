@@ -14,16 +14,18 @@ export default function FrontCard({ vocab }: { vocab: Vocabulary }) {
       <Box
         sx={{
           position: "absolute",
-          bottom: "-10%",
+          bottom: "-12%",
           left: 0,
           py: 2,
           pt: 4,
           width: "250px",
           textAlign: "center",
-          bgcolor: color.gray100 + "40",
-          transition: "ease-in-out 1s",
+          bgcolor: color.gray100 + "60",
+          color: color.black,
+          transition: "ease-in-out 0.5s",
           ":hover": {
             bottom: 0,
+            pt: 2,
           },
         }}
       >
