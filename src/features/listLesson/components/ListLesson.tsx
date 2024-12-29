@@ -9,9 +9,8 @@ import {
 import { listLessonService } from "../services/listLessonService";
 import { Box, Grid } from "@mui/material";
 import LessonItem from "./LessonItem";
-import { WEPagination } from "components/pagination";
+import { WEPaginationSelect } from "components/pagination";
 import { useState } from "react";
-import { WESelect } from "components/input";
 
 interface ListLessonProps {
   type: string;
@@ -20,11 +19,7 @@ interface ListLessonProps {
 export default function ListLesson({ type }: ListLessonProps) {
   const [page, setPage] = useState(1);
   const [lessonsPerPage, setLessonsPerPage] = useState(8);
-  const itemPerPageOptions = [
-    { label: "8", value: 8 },
-    { label: "16", value: 16 },
-    { label: "20", value: 20 },
-  ];
+
   const listLesson: (
     | Topic
     | Grammar
@@ -58,32 +53,13 @@ export default function ListLesson({ type }: ListLessonProps) {
           <LessonItem lesson={lesson} key={lesson.id} />
         ))}
       </Grid>
-      <Box
-        sx={{
-          mt: 4,
-          mb: 2,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 2,
-        }}
-      >
-        <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
-          <WEPagination
-            page={page}
-            totalPage={Math.ceil(listLesson.length / lessonsPerPage)}
-            onChange={handleChangePage}
-          />
-        </Box>
-        <Box sx={{ display: { xs: "none", sm: "flex" } }}>
-          <WESelect
-            label="Item per page"
-            value={lessonsPerPage}
-            options={itemPerPageOptions}
-            onChange={handleLessonsPerPageChange}
-          />
-        </Box>
-      </Box>
+      <WEPaginationSelect
+        page={page}
+        totalPage={Math.ceil(listLesson.length / lessonsPerPage)}
+        itemsPerPage={lessonsPerPage}
+        onPageChange={handleChangePage}
+        onItemsPerPageChange={handleLessonsPerPageChange}
+      />
     </Box>
   );
 }
