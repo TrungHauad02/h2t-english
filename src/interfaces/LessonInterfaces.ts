@@ -78,3 +78,21 @@ export interface Vocabulary {
   wordType: WordType;
   topicId: string;
 }
+
+export interface Question {
+  id: string;
+  content: string;
+  serial: number;
+  explanation: string;
+  status: boolean;
+  lessonId: string;
+  answers: Answer[];
+}
+
+export interface Answer {
+  id: string;
+  content: string;
+  correct: boolean;
+  status: boolean;
+  questionId: string;
+}
