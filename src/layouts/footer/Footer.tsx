@@ -6,6 +6,7 @@ import About from "./About";
 export default function Footer() {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
+
   return (
     <Box
       component="footer"
@@ -19,12 +20,11 @@ export default function Footer() {
         p: 2,
       }}
     >
-      <Stack direction={"row"} justifyContent={"space-between"}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Typography
           variant="h6"
           sx={{
             fontWeight: "bold",
-            paddingLeft: "1.5rem",
           }}
         >
           H2T English
