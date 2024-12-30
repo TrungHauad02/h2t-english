@@ -1,14 +1,16 @@
 import { Outlet } from "react-router-dom";
 import AdminHeader from "./header/AdminHeader";
-import Footer from "./footer/Footer";
 import { Box } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import SidebarAdmin from "./header/common/SidebarAdmin";
+import SidebarAdmin, { drawerWidth } from "./header/common/SidebarAdmin";
+import { useTheme, useMediaQuery } from "@mui/material";
 
 export default function AdminLayout() {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <Box
@@ -20,28 +22,27 @@ export default function AdminLayout() {
       }}
     >
       <SidebarAdmin />
-
       <Box
+        component="main"
         sx={{
           flexGrow: 1,
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          ml: { sm: `${drawerWidth}px` },
           display: "flex",
           flexDirection: "column",
-          minHeight: "100vh",
         }}
       >
         <AdminHeader />
         <Box
-          component="main"
           sx={{
             flexGrow: 1,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "flex-start",
+            p: 0,
+            mt: { xs: "48px", sm: "64px" },
+            ml: isMobile ? 0 : 2,
           }}
         >
           <Outlet />
         </Box>
-        <Footer />
       </Box>
     </Box>
   );
