@@ -1,24 +1,7 @@
-import {
-  AppBar,
-  Toolbar,
-  useScrollTrigger,
-  Container,
-  Stack,
-  AppBarProps,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { Toolbar, useScrollTrigger, Container, Stack } from "@mui/material";
 import { useState } from "react";
 import { Actions, DrawerMenu, Logo, MenuItems } from "./common";
-
-const StyledAppBar = styled(AppBar)<AppBarProps>(({ theme }) => ({
-  transition: "all 0.3s",
-  backgroundColor: theme.palette.mode === "dark" ? "#03071295" : "#ffffff95",
-  backdropFilter: "blur(8px)",
-  boxShadow:
-    theme.palette.mode === "dark"
-      ? "0px 2px 1px #ffffff10"
-      : "0px 2px 1px #00000020",
-}));
+import { StyledAppBar } from "./common";
 
 const MENU_ITEMS = [
   { path: "/", label: "Home" },

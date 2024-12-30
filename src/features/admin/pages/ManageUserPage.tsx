@@ -1,3 +1,9 @@
+import { Stack } from "@mui/material";
+
 export default function ManageUserPage() {
-    return <div>ManageUserPage</div>;
-  }
+  return (
+    <Stack justifyContent={"center"} sx={{ mt: 8 }}>
+      ManageUserPage
+    </Stack>
+  );
+}
