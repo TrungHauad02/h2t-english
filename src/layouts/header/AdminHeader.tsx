@@ -7,13 +7,13 @@ import {
   Button,
 } from "@mui/material";
 import { StyledAppBar } from "./common";
-import { drawerWidth } from "./common/SidebarAdmin";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { Moon, Sun } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { toggleTheme } from "../../redux/slices/themeSlice";
 import { useTheme, useMediaQuery } from "@mui/material";
+import { drawerWidth } from "./common/sidebar/SidebarDrawer";
 
 export default function AdminHeader() {
   const { isDarkMode } = useDarkMode();

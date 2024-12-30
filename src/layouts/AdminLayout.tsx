@@ -3,8 +3,9 @@ import AdminHeader from "./header/AdminHeader";
 import { Box } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import SidebarAdmin, { drawerWidth } from "./header/common/SidebarAdmin";
+import SidebarAdmin from "./header/common/SidebarAdmin";
 import { useTheme, useMediaQuery } from "@mui/material";
+import { drawerWidth } from "./header/common/sidebar/SidebarDrawer";
 
 export default function AdminLayout() {
   const { isDarkMode } = useDarkMode();
