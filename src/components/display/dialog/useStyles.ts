@@ -28,7 +28,7 @@ export const useStyles = (isDarkMode: boolean, colors: any) => {
       fontWeight: "600",
       fontFamily: "Arial, sans-serif",
       textAlign: "center",
-      borderBottom: `1px solid ${isDarkMode ? colors.gray700 : colors.gray300}`,
+      borderBottom: `1px solid ${isDarkMode ? colors.gray200 : colors.gray500}`,
       paddingBottom: "10px",
       marginBottom: "20px",
     },

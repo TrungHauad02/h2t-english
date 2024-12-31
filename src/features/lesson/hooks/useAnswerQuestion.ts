@@ -19,6 +19,7 @@ export default function useAnswerQuestion() {
   const [score, setScore] = useState<string | null>(null);
   const [isShowExplain, setIsShowExplain] = useState(false);
   const [isShowConfirm, setIsShowConfirm] = useState(false);
+  const [isShowScoreDialog, setIsShowScoreDialog] = useState(false);
 
   const calculateScore = () => {
     let score = 0;
@@ -35,9 +36,10 @@ export default function useAnswerQuestion() {
   };
 
   const onSubmit = () => {
-    setScore(calculateScore() + "/" + listAQ.length);
-    alert("Your score is: " + calculateScore() + "/" + listAQ.length);
+    const finalScore = calculateScore() + "/" + listAQ.length;
+    setScore(finalScore);
     setIsShowConfirm(false);
+    setIsShowScoreDialog(true);
   };
 
   const onReset = () => {
@@ -54,14 +56,20 @@ export default function useAnswerQuestion() {
     setIsShowConfirm(!isShowConfirm);
   };
 
+  const onCloseScoreDialog = () => {
+    setIsShowScoreDialog(false);
+  };
+
   return {
     listAQ,
     score,
     isShowExplain,
     isShowConfirm,
+    isShowScoreDialog,
     onSubmit,
     onReset,
     onShowExplain,
     onShowConfirm,
+    onCloseScoreDialog,
   };
 }
