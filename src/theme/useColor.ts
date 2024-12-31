@@ -64,6 +64,9 @@ export default function useColor() {
     save: "#64FF64",
     edit: "#FFD014",
     delete: "#FF6655",
-    submit: "#64FF64",
+    btnSubmitBg: "#10b981",
+    btnSubmitHoverBg: "#059669",
+    btnShowExplainBg: "#14b8a6",
+    btnShowExplainHoverBg: "#0d9488",
   };
 }
