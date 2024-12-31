@@ -1,4 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
+import { WEExplain } from "components/display";
 import { WERadioGroup } from "components/input";
 import { useDarkMode } from "hooks/useDarkMode";
 import { Question } from "interfaces";
@@ -6,9 +7,13 @@ import useColor from "theme/useColor";
 
 interface WEQuestionProps {
   question: Question;
+  isShowExplain?: boolean;
 }
 
-export default function WEQuestion({ question }: WEQuestionProps) {
+export default function WEQuestion({
+  question,
+  isShowExplain = false,
+}: WEQuestionProps) {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
 
@@ -50,20 +55,7 @@ export default function WEQuestion({ question }: WEQuestionProps) {
         <Stack sx={{ ml: { xs: 4, sm: 6 }, my: 1, width: "100%" }}>
           <WERadioGroup name={question.id} options={options} />
         </Stack>
-        <Stack
-          sx={{
-            m: 2,
-            p: 2,
-            borderRadius: 4,
-            width: { xs: "80%", sm: "100%" },
-            bgcolor: isDarkMode ? color.teal800 : color.emerald200,
-          }}
-        >
-          <Typography variant="subtitle1">
-            <span style={{ fontWeight: "bold" }}>Explain:</span>{" "}
-            {question.explanation}
-          </Typography>
-        </Stack>
+        {isShowExplain && <WEExplain text={question.explanation} />}
       </Stack>
     </Stack>
   );
