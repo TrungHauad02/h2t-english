@@ -4,7 +4,7 @@ const generateId = (prefix: string, index: number) => `${prefix}${index}`;
 
 const generateAnswers = (questionId: string): Answer[] => {
   return Array.from({ length: 4 }, (_, index) => ({
-    id: generateId("as", index + 1),
+    id: generateId("as_" + questionId + "_", index + 1),
     content: `This is answer ${index + 1}${index === 2 ? " (true)" : ""}`,
     correct: index === 2,
     status: true,
