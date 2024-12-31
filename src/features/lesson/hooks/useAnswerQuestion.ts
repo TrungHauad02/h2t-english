@@ -7,9 +7,11 @@ export default function useAnswerQuestion() {
   const listAQ = aqService.getQuestionByLessonId(id ?? "", type ?? "");
   const [score, setScore] = useState<number | null>(null);
   const [isShowExplain, setIsShowExplain] = useState(false);
+  const [isShowConfirm, setIsShowConfirm] = useState(false);
 
   const onSubmit = () => {
     setScore(10);
+    setIsShowConfirm(false);
   };
 
   const onReset = () => {
@@ -21,12 +23,18 @@ export default function useAnswerQuestion() {
     setIsShowExplain(!isShowExplain);
   };
 
+  const onShowConfirm = () => {
+    setIsShowConfirm(!isShowConfirm);
+  };
+
   return {
     listAQ,
     score,
     isShowExplain,
+    isShowConfirm,
     onSubmit,
     onReset,
     onShowExplain,
+    onShowConfirm,
   };
 }

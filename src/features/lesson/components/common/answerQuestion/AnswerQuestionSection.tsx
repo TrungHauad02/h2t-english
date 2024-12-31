@@ -5,6 +5,7 @@ import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import ActionButtons from "./ActionButtons";
 import useAnswerQuestion from "features/lesson/hooks/useAnswerQuestion";
+import { WEDialog } from "components/display";
 
 export default function AnswerQuestion() {
   const { isDarkMode } = useDarkMode();
@@ -36,11 +37,21 @@ export default function AnswerQuestion() {
       >
         <ActionButtons
           isSubmit={!!hooks.score}
-          onSubmit={hooks.onSubmit}
+          onSubmit={hooks.onShowConfirm}
           onReset={hooks.onReset}
           onShowExplain={hooks.onShowExplain}
         />
       </Stack>
+      {hooks.isShowConfirm && (
+        <WEDialog
+          title="Confirm"
+          open={hooks.isShowConfirm}
+          onCancel={hooks.onShowConfirm}
+          onOk={hooks.onSubmit}
+        >
+          <Typography>Are you sure??</Typography>
+        </WEDialog>
+      )}
     </Stack>
   );
 }
