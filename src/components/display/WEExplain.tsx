@@ -2,12 +2,12 @@ import { Stack, SxProps, Theme, Typography } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 
-interface ExplainProps {
+interface WEExplainProps {
   text: string;
   sx?: SxProps<Theme>;
 }
 
-export default function Explain({ text, sx }: ExplainProps) {
+export default function WEExplain({ text, sx }: WEExplainProps) {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
 

@@ -1,19 +1,16 @@
 import { Stack, Typography } from "@mui/material";
 import { ListComponent } from "components/list";
-import { aqService } from "features/lesson/services/aqService";
-import { useParams } from "react-router-dom";
 import WEQuestion from "./WEQuestion";
-import { useState } from "react";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import ActionButtons from "./ActionButtons";
+import useAnswerQuestion from "features/lesson/hooks/useAnswerQuestion";
+import { WEDialog } from "components/display";
 
 export default function AnswerQuestion() {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
-  const { id, type } = useParams();
-  const listAQ = aqService.getQuestionByLessonId(id ?? "", type ?? "");
-  const [score, setScore] = useState<number | null>(null);
+  const hooks = useAnswerQuestion();
 
   return (
     <Stack
@@ -28,8 +25,10 @@ export default function AnswerQuestion() {
         Answer Question
       </Typography>
       <ListComponent
-        data={listAQ}
-        renderItem={(item) => <WEQuestion question={item} />}
+        data={hooks.listAQ}
+        renderItem={(item) => (
+          <WEQuestion question={item} isShowExplain={hooks.isShowExplain} />
+        )}
       />
       <Stack
         direction={"row"}
@@ -37,14 +36,22 @@ export default function AnswerQuestion() {
         sx={{ pr: 2, pb: 1, mt: 2 }}
       >
         <ActionButtons
-          isSubmit={!!score}
-          onSubmit={() => setScore(10)}
-          onReset={() => setScore(null)}
-          onShowExplain={() => {
-            alert("Show explain");
-          }}
+          isSubmit={!!hooks.score}
+          onSubmit={hooks.onShowConfirm}
+          onReset={hooks.onReset}
+          onShowExplain={hooks.onShowExplain}
         />
       </Stack>
+      {hooks.isShowConfirm && (
+        <WEDialog
+          title="Confirm"
+          open={hooks.isShowConfirm}
+          onCancel={hooks.onShowConfirm}
+          onOk={hooks.onSubmit}
+        >
+          <Typography>Are you sure??</Typography>
+        </WEDialog>
+      )}
     </Stack>
   );
 }
