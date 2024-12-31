@@ -1,2 +1,2 @@
 export { default as WEExplain } from "./WEExplain";
-export { default as WEDialog } from "./WEDialog";
+export { default as WEDialog } from "./dialog/WEDialog";
