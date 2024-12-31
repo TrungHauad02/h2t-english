@@ -21,6 +21,10 @@ export default function useAnswerQuestion() {
   const [isShowConfirm, setIsShowConfirm] = useState(false);
   const [isShowScoreDialog, setIsShowScoreDialog] = useState(false);
 
+  const getNumberAnswered = () => {
+    return selectedAnswers.length;
+  };
+
   const calculateScore = () => {
     let score = 0;
     listAQ.forEach((item) => {
@@ -71,5 +75,6 @@ export default function useAnswerQuestion() {
     onShowExplain,
     onShowConfirm,
     onCloseScoreDialog,
+    getNumberAnswered,
   };
 }

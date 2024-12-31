@@ -68,5 +68,16 @@ export default function useColor() {
     btnSubmitHoverBg: "#059669",
     btnShowExplainBg: "#14b8a6",
     btnShowExplainHoverBg: "#0d9488",
+
+    // Other color palette
+    warning: "#fbbf24",
+    info: "#2563eb",
+    error: "#dc2626",
+    success: "#16a34a",
+
+    warningDarkMode: "#f59e0b",
+    infoDarkMode: "#1e3a8a",
+    errorDarkMode: "#991b1b",
+    successDarkMode: "#14532d",
   };
 }
