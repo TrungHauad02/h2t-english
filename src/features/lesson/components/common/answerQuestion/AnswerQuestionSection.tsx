@@ -6,6 +6,7 @@ import useColor from "theme/useColor";
 import ActionButtons from "./ActionButtons";
 import useAnswerQuestion from "features/lesson/hooks/useAnswerQuestion";
 import { WEDialog } from "components/display";
+import ScoreDialog from "./ScoreDialog";
 
 export default function AnswerQuestion() {
   const { isDarkMode } = useDarkMode();
@@ -51,6 +52,14 @@ export default function AnswerQuestion() {
         >
           <Typography>Are you sure??</Typography>
         </WEDialog>
+      )}
+      {hooks.isShowScoreDialog && (
+        <ScoreDialog
+          score={hooks.score}
+          isShowScoreDialog={hooks.isShowScoreDialog}
+          onCloseScoreDialog={hooks.onCloseScoreDialog}
+          numberOfQuestions={hooks.listAQ.length}
+        />
       )}
     </Stack>
   );
