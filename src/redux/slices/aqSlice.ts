@@ -17,7 +17,10 @@ export const aqSlice = createSlice({
   reducers: {
     selectAnswer: (
       state,
-      action: PayloadAction<{ questionId: string; answerId: string }>
+      action: PayloadAction<{
+        questionId: string;
+        answerId: string;
+      }>
     ) => {
       const { questionId, answerId } = action.payload;
       const existingSelection = state.selectedAnswers.find(
