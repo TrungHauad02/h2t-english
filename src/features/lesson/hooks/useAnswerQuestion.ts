@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { aqService } from "../services/aqService";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,6 +20,10 @@ export default function useAnswerQuestion() {
   const [isShowExplain, setIsShowExplain] = useState(false);
   const [isShowConfirm, setIsShowConfirm] = useState(false);
   const [isShowScoreDialog, setIsShowScoreDialog] = useState(false);
+
+  useEffect(() => {
+    dispatch(clearAnswers());
+  }, [dispatch, id, type]);
 
   const getNumberAnswered = () => {
     return selectedAnswers.length;

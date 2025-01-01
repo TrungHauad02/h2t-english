@@ -13,7 +13,6 @@ import { RootState } from "../../redux/type";
 interface WERadioGroupProps {
   label?: string;
   name: string;
-  defaultValue?: string | number;
   options: {
     value: string | number;
     label: string;
@@ -25,7 +24,6 @@ interface WERadioGroupProps {
 export default function WERadioGroup({
   label,
   name,
-  defaultValue,
   options,
   size,
   onChange,
@@ -43,7 +41,12 @@ export default function WERadioGroup({
     if (onChange) {
       onChange(event.target.value);
     }
-    dispatch(selectAnswer({ questionId: name, answerId: event.target.value }));
+    dispatch(
+      selectAnswer({
+        questionId: name,
+        answerId: event.target.value,
+      })
+    );
   };
 
   return (
