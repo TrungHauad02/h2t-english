@@ -1,5 +1,5 @@
 import { Topic } from "interfaces";
-import MatchImageWordSection from "./MatchImageWordSection";
+import MatchImageWordSection from "./imageWord/MatchImageWordSection";
 import FlashcardSection from "./flashcard/FlashcardSection";
 import { CollapsibleSection } from "components/sections";
 import { Stack } from "@mui/material";

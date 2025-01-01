@@ -3,3 +3,4 @@ declare namespace JSX {
     children: unknown;
   }
 }
+declare module "react-flying-item";
