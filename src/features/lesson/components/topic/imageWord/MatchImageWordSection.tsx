@@ -1,40 +1,12 @@
 import { Box, Stack, Grid, Typography } from "@mui/material";
-import { lessonService } from "features/lesson/services/lessonService";
 import { useDarkMode } from "hooks/useDarkMode";
-import { useState } from "react";
-import { useParams } from "react-router-dom";
 import useColor from "theme/useColor";
+import useMatchImageWord from "./useMatchImageWord";
 
 export default function MatchImageWordSection() {
-  const { id } = useParams();
   const { isDarkMode } = useDarkMode();
   const color = useColor();
-  const listVocab = lessonService.getVocabularyByTopicId(id ?? "");
-  const [displayWord, setDisplayWord] = useState(
-    listVocab.map((item) => item.word)
-  );
-  const [imgWordState, setImgWordState] = useState([{ img: "", word: "" }]);
-  const [selectedWord, setSelectedWord] = useState<string>("");
-
-  const onSelectWord = (word: string) => {
-    setSelectedWord(word);
-  };
-
-  const onSelectImage = (img: string) => {
-    const exits = imgWordState.find((item) => item.img === img);
-    if (exits) {
-      setImgWordState((prev) => prev.filter((item) => item.img !== img));
-      setDisplayWord((prev) => [...prev, exits.word]);
-    }
-    if (selectedWord === "") return;
-    setImgWordState((prev) => [...prev, { img, word: selectedWord }]);
-    setDisplayWord((prev) => prev.filter((item) => item !== selectedWord));
-    setSelectedWord("");
-  };
-
-  const getWordWithImage = (word: string) => {
-    return imgWordState.find((item) => item.img === word);
-  };
+  const hooks = useMatchImageWord();
 
   return (
     <Stack
@@ -49,7 +21,7 @@ export default function MatchImageWordSection() {
           height: "100%",
         }}
       >
-        {displayWord.map((vocab) => (
+        {hooks.displayWord.map((vocab) => (
           <Grid
             sm={12}
             md={6}
@@ -62,7 +34,7 @@ export default function MatchImageWordSection() {
               p: 2,
               borderRadius: 2,
               bgcolor:
-                selectedWord === vocab
+                hooks.selectedWord === vocab
                   ? isDarkMode
                     ? color.teal800
                     : color.teal400
@@ -73,14 +45,14 @@ export default function MatchImageWordSection() {
                 cursor: "pointer",
               },
             }}
-            onClick={() => onSelectWord(vocab)}
+            onClick={() => hooks.onSelectWord(vocab)}
           >
             {vocab}
           </Grid>
         ))}
       </Grid>
       <Grid container sx={{ width: { xs: "100%", sm: "70%" } }}>
-        {listVocab.map((vocab) => (
+        {hooks.listVocab.map((vocab) => (
           <Grid xs={12} sm={6} md={4} lg={3} sx={{ p: 2 }}>
             <img
               src={vocab.image}
@@ -107,11 +79,11 @@ export default function MatchImageWordSection() {
                   bgcolor: isDarkMode ? color.teal800 : color.teal500,
                 },
               }}
-              onClick={() => onSelectImage(vocab.word)}
+              onClick={() => hooks.onSelectImage(vocab.word)}
             >
-              {getWordWithImage(vocab.word) && (
+              {hooks.getWordWithImage(vocab.word) && (
                 <Typography textAlign={"center"}>
-                  {getWordWithImage(vocab.word)?.word}
+                  {hooks.getWordWithImage(vocab.word)?.word}
                 </Typography>
               )}
             </Box>
