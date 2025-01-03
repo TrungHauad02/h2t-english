@@ -5,19 +5,19 @@ import { WEDialog } from "components/display";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 
-interface ScoreDialogProps {
+interface WEScoreDialogProps {
   score: string | null;
   numberOfQuestions: number;
   isShowScoreDialog: boolean;
   onCloseScoreDialog: () => void;
 }
 
-export default function ScoreDialog({
+export default function WEScoreDialog({
   score,
   numberOfQuestions,
   isShowScoreDialog,
   onCloseScoreDialog,
-}: ScoreDialogProps) {
+}: WEScoreDialogProps) {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
 

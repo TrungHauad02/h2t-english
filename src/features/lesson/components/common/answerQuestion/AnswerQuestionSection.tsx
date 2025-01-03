@@ -4,8 +4,7 @@ import WEQuestion from "./WEQuestion";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import useAnswerQuestion from "features/lesson/hooks/useAnswerQuestion";
-import ScoreDialog from "./ScoreDialog";
-import ConfirmDialog from "./ConfirmDialog";
+import { WEConfirmDialog, WEScoreDialog } from "components/display";
 import WEActionButtons from "components/input/WEActionButtons";
 
 export default function AnswerQuestion() {
@@ -44,7 +43,7 @@ export default function AnswerQuestion() {
         />
       </Stack>
       {hooks.isShowConfirm && (
-        <ConfirmDialog
+        <WEConfirmDialog
           isShowConfirm={hooks.isShowConfirm}
           onShowConfirm={hooks.onShowConfirm}
           onSubmit={hooks.onSubmit}
@@ -53,7 +52,7 @@ export default function AnswerQuestion() {
         />
       )}
       {hooks.isShowScoreDialog && (
-        <ScoreDialog
+        <WEScoreDialog
           score={hooks.score}
           isShowScoreDialog={hooks.isShowScoreDialog}
           onCloseScoreDialog={hooks.onCloseScoreDialog}

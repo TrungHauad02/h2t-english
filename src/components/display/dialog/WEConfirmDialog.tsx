@@ -4,7 +4,7 @@ import { WEDialog } from "components/display";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 
-interface ConfirmDialogProps {
+interface WEConfirmDialogProps {
   isShowConfirm: boolean;
   onShowConfirm: () => void;
   onSubmit: () => void;
@@ -12,13 +12,13 @@ interface ConfirmDialogProps {
   numberOfQuestions: number;
 }
 
-export default function ConfirmDialog({
+export default function WEConfirmDialog({
   numberAnswered,
   numberOfQuestions,
   isShowConfirm,
   onShowConfirm,
   onSubmit,
-}: ConfirmDialogProps) {
+}: WEConfirmDialogProps) {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
   const text = {
