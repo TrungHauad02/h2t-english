@@ -8,6 +8,7 @@ interface WEButtonProps {
   hoverBgcolor?: string;
   color?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  size?: "small" | "medium" | "large";
 }
 
 export default function WEButton({
@@ -18,6 +19,7 @@ export default function WEButton({
   hoverBgcolor,
   color,
   onClick,
+  size = "medium",
 }: WEButtonProps) {
   const complexSx = {
     bgcolor: `${bgcolor}`,
@@ -28,7 +30,13 @@ export default function WEButton({
     ...sx,
   };
   return (
-    <Button fullWidth variant={variant} sx={complexSx} onClick={onClick}>
+    <Button
+      fullWidth
+      variant={variant}
+      sx={complexSx}
+      onClick={onClick}
+      size={size}
+    >
       {children}
     </Button>
   );
