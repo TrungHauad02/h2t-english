@@ -2,39 +2,45 @@ import { Box, Stack } from "@mui/material";
 import { WEButton } from "components/input";
 import useColor from "theme/useColor";
 
-interface ActionButtonsProps {
+interface WEActionButtonsProps {
   isSubmit: boolean;
   onSubmit: () => void;
   onReset: () => void;
-  onShowExplain: () => void;
+  onShowExplain?: () => void;
+  size?: "small" | "medium" | "large";
 }
 
-export default function ActionButtons({
+export default function WEActionButtons({
   isSubmit,
   onSubmit,
   onReset,
   onShowExplain,
-}: ActionButtonsProps) {
+  size,
+}: WEActionButtonsProps) {
   const color = useColor();
 
   if (isSubmit) {
     return (
       <Stack direction={"row"} spacing={2}>
-        <WEButton
-          bgcolor={color.btnShowExplainBg}
-          hoverBgcolor={color.btnShowExplainHoverBg}
-          color={color.white}
-          onClick={onShowExplain}
-          sx={{ width: "150px" }}
-        >
-          Show explain
-        </WEButton>
+        {onShowExplain && (
+          <WEButton
+            bgcolor={color.btnShowExplainBg}
+            hoverBgcolor={color.btnShowExplainHoverBg}
+            color={color.white}
+            onClick={onShowExplain}
+            sx={{ width: "150px" }}
+            size={size}
+          >
+            Show explain
+          </WEButton>
+        )}
         <WEButton
           bgcolor={color.gray500}
           hoverBgcolor={color.gray600}
           color={color.white}
           onClick={onReset}
           sx={{ width: "100px" }}
+          size={size}
         >
           Reset
         </WEButton>
@@ -49,6 +55,7 @@ export default function ActionButtons({
         hoverBgcolor={color.btnSubmitHoverBg}
         color={color.white}
         onClick={onSubmit}
+        size={size}
       >
         Submit
       </WEButton>
