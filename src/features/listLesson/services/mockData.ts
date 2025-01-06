@@ -113,7 +113,7 @@ const grammars: Grammar[] = [
     status: true,
     content: "Subject + Verb(s/es)",
     example: "She works every day.",
-    file: "present_simple.pdf",
+    file: "./document.docx",
   },
   {
     id: "2",
@@ -125,7 +125,7 @@ const grammars: Grammar[] = [
     status: true,
     content: "Subject + Verb-ed",
     example: "He played yesterday.",
-    file: "past_simple.pdf",
+    file: "./document.docx",
   },
   {
     id: "3",
@@ -136,7 +136,7 @@ const grammars: Grammar[] = [
     status: true,
     content: "Subject + will + Verb",
     example: "They will travel tomorrow.",
-    file: "future_simple.pdf",
+    file: "./document.docx",
   },
   {
     id: "4",
@@ -147,7 +147,7 @@ const grammars: Grammar[] = [
     status: true,
     content: "Subject + is/are/am + Verb-ing",
     example: "I am studying now.",
-    file: "present_continuous.pdf",
+    file: "./document.docx",
   },
   {
     id: "5",
@@ -158,7 +158,7 @@ const grammars: Grammar[] = [
     status: true,
     content: "Subject + was/were + Verb-ing",
     example: "She was reading.",
-    file: "past_continuous.pdf",
+    file: "./document.docx",
   },
   {
     id: "6",
@@ -169,7 +169,7 @@ const grammars: Grammar[] = [
     status: true,
     content: "Subject + will be + Verb-ing",
     example: "They will be working.",
-    file: "future_continuous.pdf",
+    file: "./document.docx",
   },
   {
     id: "7",
@@ -180,7 +180,7 @@ const grammars: Grammar[] = [
     status: true,
     content: "Subject + has/have + Verb-ed",
     example: "I have finished.",
-    file: "present_perfect.pdf",
+    file: "./document.docx",
   },
   {
     id: "8",
@@ -191,7 +191,7 @@ const grammars: Grammar[] = [
     status: true,
     content: "Subject + had + Verb-ed",
     example: "He had left.",
-    file: "past_perfect.pdf",
+    file: "./document.docx",
   },
   {
     id: "9",
@@ -202,7 +202,7 @@ const grammars: Grammar[] = [
     status: true,
     content: "Subject + will have + Verb-ed",
     example: "They will have arrived.",
-    file: "future_perfect.pdf",
+    file: "./document.docx",
   },
   {
     id: "10",
@@ -213,7 +213,7 @@ const grammars: Grammar[] = [
     status: true,
     content: "If + Subject + Verb, Subject + Verb",
     example: "If it rains, I will stay.",
-    file: "conditionals.pdf",
+    file: "./document.docx",
   },
 ];
 
