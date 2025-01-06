@@ -41,7 +41,7 @@ export default function LessonPage() {
 
     switch (type) {
       case "topics":
-        return <TopicLesson lesson={lesson as Topic} />;
+        return <TopicLesson />;
       case "grammars":
         return <GrammarLesson lesson={lesson as Grammar} />;
       case "readings":
