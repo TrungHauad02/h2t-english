@@ -1,9 +1,13 @@
-import { Test } from "interfaces";
+import { TestWriting } from "interfaces";
 
 interface Props {
-  test: Test;
+  testWritings: TestWriting[];
 }
 
-export default function WritingTest({ test }: Props) {
-  return <div>Writing Test</div>;
+export default function WritingTest({ testWritings }: Props) {
+  return (
+    <div>
+      <h1>Writing Test</h1>
+    </div>
+  );
 }
