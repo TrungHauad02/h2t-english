@@ -1,3 +1,8 @@
+interface Owner {
+  id: string;
+  name: string;
+}
+
 export interface Topic {
   id: string;
   title: string;
@@ -5,6 +10,7 @@ export interface Topic {
   image: string;
   description: string;
   status: boolean;
+  owner: Owner;
 }
 
 export interface Grammar {
@@ -14,6 +20,7 @@ export interface Grammar {
   image: string;
   description: string;
   status: boolean;
+  owner: Owner;
   content: string;
   example: string;
   file: string;
@@ -26,6 +33,7 @@ export interface Reading {
   image: string;
   description: string;
   status: boolean;
+  owner: Owner;
   file: string;
 }
 
@@ -36,6 +44,7 @@ export interface Speaking {
   image: string;
   description: string;
   status: boolean;
+  owner: Owner;
   topic: string;
   duration: number;
 }
@@ -47,6 +56,7 @@ export interface Listening {
   image: string;
   description: string;
   status: boolean;
+  owner: Owner;
   audioUrl: string;
 }
 
@@ -57,6 +67,7 @@ export interface Writing {
   image: string;
   description: string;
   status: boolean;
+  owner: Owner;
   topic: string;
 }
 

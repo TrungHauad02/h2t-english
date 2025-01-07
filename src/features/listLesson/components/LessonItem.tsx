@@ -11,14 +11,15 @@ import {
   CardMedia,
   CardContent,
   Typography,
-  Chip,
-  Box,
   Grid,
+  Stack,
 } from "@mui/material";
 import { useState } from "react";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { useNavigate } from "react-router-dom";
+import SerialInfo from "./SerialInfo";
+import OwnerInfo from "./OwnerInfo";
 
 interface LessonItemProps {
   lesson: Topic | Grammar | Reading | Speaking | Listening | Writing;
@@ -102,34 +103,16 @@ export default function LessonItem({ lesson }: LessonItemProps) {
           >
             {lesson.description}
           </Typography>
-          <Box
-            display="flex"
+          <Stack
+            direction="row"
             justifyContent="space-between"
             alignItems="center"
+            spacing={2}
+            mt={2}
           >
-            <Chip
-              label={`Serial: ${lesson.serial}`}
-              size="small"
-              sx={{
-                backgroundColor: isDarkMode
-                  ? hovered
-                    ? color.teal600
-                    : color.teal800
-                  : hovered
-                  ? color.teal400
-                  : color.teal200,
-                color: isDarkMode
-                  ? hovered
-                    ? color.white
-                    : color.teal300
-                  : hovered
-                  ? color.white
-                  : color.teal700,
-                transition:
-                  "background-color 0.3s ease-in-out, color 0.3s ease-in-out",
-              }}
-            />
-          </Box>
+            <SerialInfo serial={lesson.serial.toString()} hovered={hovered} />
+            <OwnerInfo ownerName={lesson.owner.name} hovered={hovered} />
+          </Stack>
         </CardContent>
       </Card>
     </Grid>
