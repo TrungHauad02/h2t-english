@@ -8,37 +8,37 @@ import {
   Button,
 } from "@mui/material";
 import { useState } from "react";
-import { useTestItemStyles } from "./TestItemStyles";
+import { useTestItemStyles } from "../hooks/useTestItemStyles";
 import { useNavigate } from "react-router-dom";
+
 export default function TestItem({ test }: { test: Test }) {
   const [hovered, setHovered] = useState(false);
   const navigate = useNavigate();
-  const { cardStyles, cardContentStyles, typographyStyles, buttonStyles } =
-    useTestItemStyles(hovered);
+  const styles = useTestItemStyles(hovered);
 
   return (
     <Grid item xs={12} sm={6} md={4} lg={3}>
       <Card
-        sx={cardStyles}
+        sx={styles.cardStyles}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        <CardContent sx={cardContentStyles}>
+        <CardContent sx={styles.cardContentStyles}>
           <Typography
             variant="h6"
             component="div"
             gutterBottom
-            sx={typographyStyles.title}
+            sx={styles.typographyStyles.title}
           >
             {test?.title}
           </Typography>
-          <Typography variant="body2" sx={typographyStyles.body} paragraph>
+          <Typography variant="body2" sx={styles.typographyStyles.body} paragraph>
             Duration: {test?.duration} minutes
           </Typography>
-          <Typography variant="body2" sx={typographyStyles.body} paragraph>
+          <Typography variant="body2" sx={styles.typographyStyles.body} paragraph>
             Total question: {test?.totalQuestions}
           </Typography>
-          <Typography variant="body2" sx={typographyStyles.body} paragraph>
+          <Typography variant="body2" sx={styles.typographyStyles.body} paragraph>
             Score: {test?.scoreLastOfTest || 0}
           </Typography>
           <Box
@@ -48,9 +48,12 @@ export default function TestItem({ test }: { test: Test }) {
               alignItems: "center",
             }}
           >
-            <Button sx={buttonStyles.seeHistory}>See History</Button>
-            <Button variant="contained" sx={buttonStyles.doTest}
-            onClick={() => navigate(`${test.id}`)}>
+            <Button sx={styles.buttonStyles.seeHistory}>See History</Button>
+            <Button
+              variant="contained"
+              sx={styles.buttonStyles.doTest}
+              onClick={() => navigate(`${test.id}`)}
+            >
               Do Test
             </Button>
           </Box>

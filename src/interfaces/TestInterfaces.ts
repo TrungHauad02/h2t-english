@@ -1,4 +1,11 @@
-type TestTypeEnum = "MIXING" | "LISTENING" | "READING"| "SPEAKING"| "WRITING";
+export const enum TestTypeEnum {
+  MIXING = "MIXING",
+  READING = "READING",
+  LISTENING = "LISTENING",
+  SPEAKING = "SPEAKING",
+  WRITING = "WRITING",
+}
+
 export const enum StatusEnum {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE"
@@ -10,11 +17,6 @@ export interface Test {
   duration: number;
   totalQuestions: number;
   scoreLastOfTest: number | null;
-  testMixingQuestions: TestMixingQuestion[];
-  testReadings: TestReading[];
-  testListening: TestListening[];
-  testSpeaking: TestSpeaking[];
-  testWriting: TestWriting[];
   type: TestTypeEnum;
   status: StatusEnum;
 }
@@ -24,7 +26,6 @@ export interface TestMixingQuestion {
   serial: number;
   status: StatusEnum;
   explanation: string;
-  answers: TestMixingAnswer[];
   testId: string;
 }
 
@@ -41,7 +42,6 @@ export interface TestReading {
   content: string;
   image: string | null;
   status: StatusEnum;
-  questions: TestReadingQuestion[];
   testId: string;
 }
 
@@ -51,7 +51,6 @@ export interface TestReadingQuestion {
   serial: number;
   explanation: string;
   status: StatusEnum;
-  answers: TestReadingAnswer[];
   testReadingId: string;
 }
 
@@ -68,7 +67,6 @@ export interface TestListening {
   content: string;
   transcript: string ;
   status: StatusEnum;
-  questions: TestListeningQuestion[];
   testId: string;
 }
 
@@ -77,7 +75,6 @@ export interface TestListeningQuestion {
   content: string;
   serial: number;
   status: StatusEnum;
-  answers: TestListeningAnswer[];
   testListeningId: string;
 }
 
@@ -93,7 +90,6 @@ export interface TestSpeaking {
   serial: number;
   title: string;
   status: StatusEnum;
-  questions: TestSpeakingQuestion[];
   testId: string;
 }
 
@@ -111,14 +107,4 @@ export interface TestWriting {
   status: StatusEnum;
   testId: string;
 }
-
-export interface TestMixing {
-  id: string;
-  serial: number;
-  status: StatusEnum;
-  questions: TestMixingQuestion[];
-  testId: string;
-}
-
-
 

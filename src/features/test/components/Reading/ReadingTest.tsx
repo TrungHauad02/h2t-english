@@ -1,9 +1,9 @@
-import { Test } from "interfaces";
+import { TestReading } from "interfaces";
 
 interface Props {
-  test: Test;
+  testReadings: TestReading[];
 }
 
-export default function ReadingTest({ test }: Props) {
+export default function ReadingTest({ testReadings }: Props) {
   return <div>Reading Test</div>;
 }

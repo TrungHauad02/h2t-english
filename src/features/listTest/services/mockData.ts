@@ -1,22 +1,16 @@
-import { Test, StatusEnum } from "interfaces";
-type TestTypeEnum = "MIXING" | "LISTENING" | "READING" | "SPEAKING" | "WRITING";
+import { Test, StatusEnum,TestTypeEnum } from "interfaces";
 
 const tests: Test[] = [
   // MIXING
   ...Array.from({ length: 10 }, (_, i) => ({
-    id: `${i + 1}`,
+    id: `mixing-${i + 1}`,
     title: `Mixed Skills Test ${i + 1}`,
     serial: i + 1,
     duration: 30 + i * 5,
     totalQuestions: 20 + i,
     scoreLastOfTest: 80 - i * 2,
-    type: "MIXING" as TestTypeEnum,
+    type: TestTypeEnum.MIXING,
     status: StatusEnum.ACTIVE,
-    testMixingQuestions: [],
-    testReadings: [],
-    testListening: [],
-    testSpeaking: [],
-    testWriting: []
   })),
   // LISTENING
   ...Array.from({ length: 10 }, (_, i) => ({
@@ -26,13 +20,8 @@ const tests: Test[] = [
     duration: 15 + i * 5,
     totalQuestions: 15 + i,
     scoreLastOfTest: 75 - i,
-    type: "LISTENING" as TestTypeEnum,
+    type: TestTypeEnum.LISTENING,
     status: StatusEnum.ACTIVE,
-    testMixingQuestions: [],
-    testReadings: [],
-    testListening: [],
-    testSpeaking: [],
-    testWriting: []
   })),
   // READING
   ...Array.from({ length: 10 }, (_, i) => ({
@@ -42,13 +31,8 @@ const tests: Test[] = [
     duration: 20 + i * 5,
     totalQuestions: 25 + i,
     scoreLastOfTest: 85 - i * 3,
-    type: "READING" as TestTypeEnum, 
+    type: TestTypeEnum.READING, 
     status: StatusEnum.ACTIVE,
-    testMixingQuestions: [],
-    testReadings: [],
-    testListening: [],
-    testSpeaking: [],
-    testWriting: []
   })),
   // SPEAKING
   ...Array.from({ length: 10 }, (_, i) => ({
@@ -58,13 +42,8 @@ const tests: Test[] = [
     duration: 10 + i * 5,
     totalQuestions: 10 + i,
     scoreLastOfTest: 70 - i * 2,
-    type: "SPEAKING" as TestTypeEnum, 
+    type: TestTypeEnum.SPEAKING, 
     status: StatusEnum.ACTIVE,
-    testMixingQuestions: [],
-    testReadings: [],
-    testListening: [],
-    testSpeaking: [],
-    testWriting: []
   })),
   // WRITING
   ...Array.from({ length: 10 }, (_, i) => ({
@@ -74,13 +53,8 @@ const tests: Test[] = [
     duration: 25 + i * 5,
     totalQuestions: 30 + i,
     scoreLastOfTest: 90 - i * 4,
-    type: "WRITING" as TestTypeEnum, 
+    type: TestTypeEnum.WRITING, 
     status: StatusEnum.ACTIVE,
-    testMixingQuestions: [],
-    testReadings: [],
-    testListening: [],
-    testSpeaking: [],
-    testWriting: []
   })),
 ];
 
