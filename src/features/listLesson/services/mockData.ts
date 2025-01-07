@@ -18,6 +18,10 @@ const topics: Topic[] = [
       "https://images.unsplash.com/photo-1700773428278-13f13630d18d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlc3NvbnxlbnwwfHwwfHx8MA%3D%3D",
     description: "Basics of grammar",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
   },
   {
     id: "2",
@@ -27,6 +31,10 @@ const topics: Topic[] = [
       "https://plus.unsplash.com/premium_photo-1683887033937-edf8d23dd67f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDh8fHxlbnwwfHwwfHx8MA%3D%3D",
     description: "Learn about tenses",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
   },
   {
     id: "3",
@@ -36,6 +44,10 @@ const topics: Topic[] = [
       "https://images.unsplash.com/photo-1700773428278-13f13630d18d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlc3NvbnxlbnwwfHwwfHx8MA%3D%3D",
     description: "Detailed explanation of parts of speech",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
   },
   {
     id: "4",
@@ -45,6 +57,10 @@ const topics: Topic[] = [
       "https://images.unsplash.com/photo-1700773428278-13f13630d18d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlc3NvbnxlbnwwfHwwfHx8MA%3D%3D",
     description: "Forming sentences correctly",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
   },
   {
     id: "5",
@@ -54,6 +70,10 @@ const topics: Topic[] = [
       "https://images.unsplash.com/photo-1700773428278-13f13630d18d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlc3NvbnxlbnwwfHwwfHx8MA%3D%3D",
     description: "How to use verbs",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
   },
   {
     id: "6",
@@ -63,6 +83,10 @@ const topics: Topic[] = [
       "https://images.unsplash.com/photo-1700773428278-13f13630d18d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlc3NvbnxlbnwwfHwwfHx8MA%3D%3D",
     description: "Types of nouns",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
   },
   {
     id: "7",
@@ -72,6 +96,10 @@ const topics: Topic[] = [
       "https://images.unsplash.com/photo-1700773428278-13f13630d18d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlc3NvbnxlbnwwfHwwfHx8MA%3D%3D",
     description: "Modifiers in sentences",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
   },
   {
     id: "8",
@@ -81,6 +109,10 @@ const topics: Topic[] = [
       "https://images.unsplash.com/photo-1700773428278-13f13630d18d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlc3NvbnxlbnwwfHwwfHx8MA%3D%3D",
     description: "How to punctuate correctly",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
   },
   {
     id: "9",
@@ -90,6 +122,10 @@ const topics: Topic[] = [
       "https://images.unsplash.com/photo-1700773428278-13f13630d18d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlc3NvbnxlbnwwfHwwfHx8MA%3D%3D",
     description: "Avoid common grammar errors",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
   },
   {
     id: "10",
@@ -99,6 +135,10 @@ const topics: Topic[] = [
       "https://images.unsplash.com/photo-1700773428278-13f13630d18d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlc3NvbnxlbnwwfHwwfHx8MA%3D%3D",
     description: "For advanced learners",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
   },
 ];
 
@@ -111,9 +151,13 @@ const grammars: Grammar[] = [
       "https://images.unsplash.com/photo-1700773428278-13f13630d18d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlc3NvbnxlbnwwfHwwfHx8MA%3D%3D",
     description: "Explanation of present simple",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     content: "Subject + Verb(s/es)",
     example: "She works every day.",
-    file: "present_simple.pdf",
+    file: "./document.docx",
   },
   {
     id: "2",
@@ -123,9 +167,13 @@ const grammars: Grammar[] = [
       "https://plus.unsplash.com/premium_photo-1683887033858-be37b32f17a9?q=80&w=1769&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     description: "Explanation of past simple",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     content: "Subject + Verb-ed",
     example: "He played yesterday.",
-    file: "past_simple.pdf",
+    file: "./document.docx",
   },
   {
     id: "3",
@@ -134,9 +182,13 @@ const grammars: Grammar[] = [
     image: "future_simple.jpg",
     description: "Explanation of future simple",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     content: "Subject + will + Verb",
     example: "They will travel tomorrow.",
-    file: "future_simple.pdf",
+    file: "./document.docx",
   },
   {
     id: "4",
@@ -145,9 +197,13 @@ const grammars: Grammar[] = [
     image: "present_continuous.jpg",
     description: "Explanation of present continuous",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     content: "Subject + is/are/am + Verb-ing",
     example: "I am studying now.",
-    file: "present_continuous.pdf",
+    file: "./document.docx",
   },
   {
     id: "5",
@@ -156,9 +212,13 @@ const grammars: Grammar[] = [
     image: "past_continuous.jpg",
     description: "Explanation of past continuous",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     content: "Subject + was/were + Verb-ing",
     example: "She was reading.",
-    file: "past_continuous.pdf",
+    file: "./document.docx",
   },
   {
     id: "6",
@@ -167,9 +227,13 @@ const grammars: Grammar[] = [
     image: "future_continuous.jpg",
     description: "Explanation of future continuous",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     content: "Subject + will be + Verb-ing",
     example: "They will be working.",
-    file: "future_continuous.pdf",
+    file: "./document.docx",
   },
   {
     id: "7",
@@ -178,9 +242,13 @@ const grammars: Grammar[] = [
     image: "present_perfect.jpg",
     description: "Explanation of present perfect",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     content: "Subject + has/have + Verb-ed",
     example: "I have finished.",
-    file: "present_perfect.pdf",
+    file: "./document.docx",
   },
   {
     id: "8",
@@ -189,9 +257,13 @@ const grammars: Grammar[] = [
     image: "past_perfect.jpg",
     description: "Explanation of past perfect",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     content: "Subject + had + Verb-ed",
     example: "He had left.",
-    file: "past_perfect.pdf",
+    file: "./document.docx",
   },
   {
     id: "9",
@@ -200,9 +272,13 @@ const grammars: Grammar[] = [
     image: "future_perfect.jpg",
     description: "Explanation of future perfect",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     content: "Subject + will have + Verb-ed",
     example: "They will have arrived.",
-    file: "future_perfect.pdf",
+    file: "./document.docx",
   },
   {
     id: "10",
@@ -211,9 +287,13 @@ const grammars: Grammar[] = [
     image: "conditionals.jpg",
     description: "Explanation of conditionals",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     content: "If + Subject + Verb, Subject + Verb",
     example: "If it rains, I will stay.",
-    file: "conditionals.pdf",
+    file: "./document.docx",
   },
 ];
 
@@ -226,6 +306,10 @@ const readings: Reading[] = [
       "https://images.unsplash.com/photo-1700773428278-13f13630d18d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlc3NvbnxlbnwwfHwwfHx8MA%3D%3D",
     description: "Introduction to reading skills",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     file: "reading_basics.pdf",
   },
   {
@@ -235,6 +319,10 @@ const readings: Reading[] = [
     image: "comprehension.jpg",
     description: "Improve comprehension skills",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     file: "comprehension.pdf",
   },
   {
@@ -244,6 +332,10 @@ const readings: Reading[] = [
     image: "analyzing_texts.jpg",
     description: "Learn to analyze texts",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     file: "analyzing_texts.pdf",
   },
   {
@@ -253,6 +345,10 @@ const readings: Reading[] = [
     image: "fiction.jpg",
     description: "Understanding fiction",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     file: "fiction.pdf",
   },
   {
@@ -262,6 +358,10 @@ const readings: Reading[] = [
     image: "non_fiction.jpg",
     description: "Understanding non-fiction",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     file: "non_fiction.pdf",
   },
   {
@@ -271,6 +371,10 @@ const readings: Reading[] = [
     image: "poetry.jpg",
     description: "Learn about poetry",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     file: "poetry.pdf",
   },
   {
@@ -280,6 +384,10 @@ const readings: Reading[] = [
     image: "critical_reading.jpg",
     description: "Improve critical reading",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     file: "critical_reading.pdf",
   },
   {
@@ -289,6 +397,10 @@ const readings: Reading[] = [
     image: "summarizing.jpg",
     description: "Learn summarizing skills",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     file: "summarizing.pdf",
   },
   {
@@ -298,6 +410,10 @@ const readings: Reading[] = [
     image: "skimming.jpg",
     description: "Skimming techniques",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     file: "skimming.pdf",
   },
   {
@@ -307,6 +423,10 @@ const readings: Reading[] = [
     image: "scanning.jpg",
     description: "Scanning techniques",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     file: "scanning.pdf",
   },
 ];
@@ -320,6 +440,10 @@ const speakings: Speaking[] = [
       "https://images.unsplash.com/photo-1700773428278-13f13630d18d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlc3NvbnxlbnwwfHwwfHx8MA%3D%3D",
     description: "How to introduce yourself",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Self-Introduction",
     duration: 3,
   },
@@ -330,6 +454,10 @@ const speakings: Speaking[] = [
     image: "describing_people.jpg",
     description: "Learn to describe people",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "People",
     duration: 5,
   },
@@ -340,6 +468,10 @@ const speakings: Speaking[] = [
     image: "describing_places.jpg",
     description: "Learn to describe places",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Places",
     duration: 4,
   },
@@ -350,6 +482,10 @@ const speakings: Speaking[] = [
     image: "storytelling.jpg",
     description: "Tell engaging stories",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Stories",
     duration: 6,
   },
@@ -360,6 +496,10 @@ const speakings: Speaking[] = [
     image: "giving_opinions.jpg",
     description: "How to share opinions",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Opinions",
     duration: 5,
   },
@@ -370,6 +510,10 @@ const speakings: Speaking[] = [
     image: "formal_speech.jpg",
     description: "Practice formal speaking",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Formality",
     duration: 7,
   },
@@ -380,6 +524,10 @@ const speakings: Speaking[] = [
     image: "casual_talk.jpg",
     description: "Engage in casual talk",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Everyday",
     duration: 4,
   },
@@ -390,6 +538,10 @@ const speakings: Speaking[] = [
     image: "interview.jpg",
     description: "Prepare for interviews",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Job Interviews",
     duration: 10,
   },
@@ -400,6 +552,10 @@ const speakings: Speaking[] = [
     image: "debate.jpg",
     description: "Improve debating",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Debate",
     duration: 8,
   },
@@ -410,6 +566,10 @@ const speakings: Speaking[] = [
     image: "presentation.jpg",
     description: "How to present ideas",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Presentation",
     duration: 15,
   },
@@ -424,6 +584,10 @@ const listenings: Listening[] = [
       "https://images.unsplash.com/photo-1700773428278-13f13630d18d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlc3NvbnxlbnwwfHwwfHx8MA%3D%3D",
     description: "Improve basic listening",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     audioUrl: "basic_listening.mp3",
   },
   {
@@ -433,6 +597,10 @@ const listenings: Listening[] = [
     image: "news.jpg",
     description: "Understand news content",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     audioUrl: "news.mp3",
   },
   {
@@ -442,6 +610,10 @@ const listenings: Listening[] = [
     image: "stories.jpg",
     description: "Improve story listening",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     audioUrl: "stories.mp3",
   },
   {
@@ -451,6 +623,10 @@ const listenings: Listening[] = [
     image: "conversation.jpg",
     description: "Learn from conversations",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     audioUrl: "conversation.mp3",
   },
   {
@@ -460,6 +636,10 @@ const listenings: Listening[] = [
     image: "music.jpg",
     description: "Learn through songs",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     audioUrl: "music.mp3",
   },
   {
@@ -469,6 +649,10 @@ const listenings: Listening[] = [
     image: "keywords.jpg",
     description: "Spot keywords in audio",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     audioUrl: "keywords.mp3",
   },
   {
@@ -478,6 +662,10 @@ const listenings: Listening[] = [
     image: "speeches.jpg",
     description: "Understand speeches",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     audioUrl: "speeches.mp3",
   },
   {
@@ -487,6 +675,10 @@ const listenings: Listening[] = [
     image: "practice.jpg",
     description: "General practice",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     audioUrl: "practice.mp3",
   },
   {
@@ -496,6 +688,10 @@ const listenings: Listening[] = [
     image: "interviews.jpg",
     description: "Learn from interviews",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     audioUrl: "interviews.mp3",
   },
   {
@@ -505,6 +701,10 @@ const listenings: Listening[] = [
     image: "challenges.jpg",
     description: "Advanced listening",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     audioUrl: "challenges.mp3",
   },
 ];
@@ -518,6 +718,10 @@ const writings: Writing[] = [
       "https://images.unsplash.com/photo-1700773428278-13f13630d18d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlc3NvbnxlbnwwfHwwfHx8MA%3D%3D",
     description: "Learn basic writing skills",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Basics",
   },
   {
@@ -527,6 +731,10 @@ const writings: Writing[] = [
     image: "descriptive.jpg",
     description: "Learn to describe",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Description",
   },
   {
@@ -536,6 +744,10 @@ const writings: Writing[] = [
     image: "narrative.jpg",
     description: "Tell a story",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Narrative",
   },
   {
@@ -545,6 +757,10 @@ const writings: Writing[] = [
     image: "expository.jpg",
     description: "Explain concepts",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Exposition",
   },
   {
@@ -554,6 +770,10 @@ const writings: Writing[] = [
     image: "persuasive.jpg",
     description: "Convince readers",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Persuasion",
   },
   {
@@ -563,6 +783,10 @@ const writings: Writing[] = [
     image: "creative.jpg",
     description: "Unleash creativity",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Creativity",
   },
   {
@@ -572,6 +796,10 @@ const writings: Writing[] = [
     image: "formal.jpg",
     description: "Write formally",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Formality",
   },
   {
@@ -581,6 +809,10 @@ const writings: Writing[] = [
     image: "technical.jpg",
     description: "Write technical documents",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Technical",
   },
   {
@@ -590,6 +822,10 @@ const writings: Writing[] = [
     image: "essay.jpg",
     description: "Master essay writing",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Essays",
   },
   {
@@ -599,6 +835,10 @@ const writings: Writing[] = [
     image: "research.jpg",
     description: "Write research papers",
     status: true,
+    owner: {
+      id: "1",
+      name: "John Doe",
+    },
     topic: "Research",
   },
 ];

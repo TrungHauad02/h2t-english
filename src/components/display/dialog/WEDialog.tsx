@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import { useStyles } from "./useStyles";
+import { useStyles } from "../hooks/useStyles";
 
 interface WEDialogProps {
   open: boolean;
