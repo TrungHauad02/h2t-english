@@ -23,7 +23,7 @@ export default function SidebarHeader() {
           color: isDarkMode ? colors.teal400 : colors.teal600,
           fontWeight: "bold",
           fontSize: "1.25rem",
-          textAlign: { xs: "right", sm: "left" },
+          textAlign: "center",
           width: "100%",
         }}
       >
