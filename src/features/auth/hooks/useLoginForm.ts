@@ -1,35 +1,43 @@
 import { toast } from "react-toastify";
 import users from "../services/mockData";
 import { useNavigate } from "react-router-dom";
-import { RolesEnum } from "interfaces";
+import { RolesEnum, StatusEnum } from "interfaces";
 
 export const useLoginForm = () => {
   const navigate = useNavigate();
 
   const handleLogin = (email: string, password: string) => {
+    if (!email || !password) {
+      toast.error("Please fill in both email and password.");
+      return;
+    }
     const user = users.find(
       (u) => u.email === email && u.password === password
     );
 
-    if (!email || !password) {
-        toast.error("Please fill in both email and password.");
-        return;
-      }
-
     if (!user) {
       toast.error("Invalid email or password. Please try again.");
-    } else {
-      toast.success(`Welcome, ${user.name}!`);
+      return;
+    }
 
-      if (user.roleEnum === RolesEnum.STUDENT) {
+    if (user.status === StatusEnum.INACTIVE) {
+      toast.error("Account locked, please contact Admin for support!");
+      return;
+    }
+
+    toast.success(`Welcome, ${user.name}!`);
+    switch (user.roleEnum) {
+      case RolesEnum.STUDENT:
         navigate("/");
-      } else if (user.roleEnum === RolesEnum.ADMIN) {
+        break;
+      case RolesEnum.ADMIN:
         navigate("/admin");
-    } else if (user.roleEnum === RolesEnum.TEACHER) {
+        break;
+      case RolesEnum.TEACHER:
         navigate("/teacher");
-      } else {
+        break;
+      default:
         toast.error("Unauthorized role. Please contact support.");
-      }
     }
   };
 
@@ -37,4 +45,3 @@ export const useLoginForm = () => {
     handleLogin,
   };
 };
-
