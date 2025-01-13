@@ -13,6 +13,8 @@ const users: User[] = [
     roleEnum: "Student",
     startDate: new Date("2023-01-01"),
     status: true,
+    phoneNumber: "0375245932",
+    dateOfBirth: new Date("01-01-2003"),
   },
   {
     id: "2",
@@ -26,6 +28,8 @@ const users: User[] = [
     roleEnum: "Teacher",
     startDate: new Date("2022-03-15"),
     status: true,
+    phoneNumber: "0375245932",
+    dateOfBirth: new Date("01-05-2003"),
   },
   {
     id: "3",
@@ -39,6 +43,8 @@ const users: User[] = [
     roleEnum: "Admin",
     startDate: new Date("2020-10-01"),
     status: false,
+    phoneNumber: "0375245932",
+    dateOfBirth: new Date("01-11-2003"),
   },
 ];
 

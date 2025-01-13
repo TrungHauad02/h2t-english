@@ -9,5 +9,7 @@ export interface User {
     password: String,
     roleEnum: String,
     startDate: Date,
-    status: boolean
+    status: boolean,
+    phoneNumber: String,
+    dateOfBirth: Date
 }
