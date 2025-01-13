@@ -1,6 +1,7 @@
 import { toast } from "react-toastify";
 import users from "../services/mockData";
 import { useNavigate } from "react-router-dom";
+import { RolesEnum } from "interfaces";
 
 export const useLoginForm = () => {
   const navigate = useNavigate();
@@ -20,11 +21,11 @@ export const useLoginForm = () => {
     } else {
       toast.success(`Welcome, ${user.name}!`);
 
-      if (user.roleEnum === "Student") {
+      if (user.roleEnum === RolesEnum.STUDENT) {
         navigate("/");
-      } else if (user.roleEnum === "Admin") {
+      } else if (user.roleEnum === RolesEnum.ADMIN) {
         navigate("/admin");
-    } else if (user.roleEnum === "Teacher") {
+    } else if (user.roleEnum === RolesEnum.TEACHER) {
         navigate("/teacher");
       } else {
         toast.error("Unauthorized role. Please contact support.");
