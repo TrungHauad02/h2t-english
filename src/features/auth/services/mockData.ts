@@ -1,4 +1,5 @@
 import { User } from "interfaces";
+import { RolesEnum, LevelsEnum, StatusEnum } from "interfaces";
 
 const users: User[] = [
   {
@@ -7,12 +8,14 @@ const users: User[] = [
     contentMotivation: "Keep pushing forward, every step counts.",
     email: "student@gmail.com",
     endDate: new Date("2024-12-31"),
-    levelEnum: "Intermediate",
+    levelEnum: LevelsEnum.STUDENT,
     name: "John Doe",
     password: "English@web1",
-    roleEnum: "Student",
+    roleEnum: RolesEnum.STUDENT,
     startDate: new Date("2023-01-01"),
-    status: true,
+    status: StatusEnum.ACTIVE,
+    phoneNumber: "0375245932",
+    dateOfBirth: new Date("01-01-2003"),
   },
   {
     id: "2",
@@ -20,12 +23,14 @@ const users: User[] = [
     contentMotivation: "Believe in yourself and all that you are.",
     email: "teacher@gmail.com",
     endDate: new Date("2025-05-20"),
-    levelEnum: "Advanced",
+    levelEnum: LevelsEnum.BACHELOR,
     name: "Jane Smith",
     password: "English@web1",
-    roleEnum: "Teacher",
+    roleEnum: RolesEnum.TEACHER,
     startDate: new Date("2022-03-15"),
-    status: true,
+    status: StatusEnum.ACTIVE,
+    phoneNumber: "0375245932",
+    dateOfBirth: new Date("01-05-2003"),
   },
   {
     id: "3",
@@ -33,12 +38,14 @@ const users: User[] = [
     contentMotivation: "Success is the sum of small efforts, repeated day in and day out.",
     email: "admin@gmail.com",
     endDate: new Date("2026-08-15"),
-    levelEnum: "Expert",
+    levelEnum: LevelsEnum.PROFESSOR,
     name: "Alice Johnson",
     password: "English@web1",
-    roleEnum: "Admin",
+    roleEnum: RolesEnum.ADMIN,
     startDate: new Date("2020-10-01"),
-    status: false,
+    status: StatusEnum.ACTIVE,
+    phoneNumber: "0375245932",
+    dateOfBirth: new Date("01-11-2003"),
   },
 ];
 

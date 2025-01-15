@@ -14,8 +14,10 @@ const AppRoutes = () => {
         <Route path="/test/:type" element={<Pages.ListTestPage />} />
         <Route path="/test/:type/:id" element={<Pages.TestPage />} />
       </Route>
-      <Route element={<Layouts.AdminLayout />}>
-        <Route path="/admin" element={<Pages.ManageUserPage />}/>
+      <Route path="/admin" element={<Layouts.AdminLayout />}>
+        <Route index element={<Pages.ManageUserPage />} />
+        <Route path="manage-student" element={<Pages.ManageStudentPage />} />
+        <Route path="manage-teacher" element={<Pages.ManageTeacherPage />} />
       </Route>
       <Route path="*" element={<Pages.ErrorPage />} />
     </Routes>
