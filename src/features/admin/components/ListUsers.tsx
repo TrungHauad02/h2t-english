@@ -62,7 +62,7 @@ export default function ListUser({ users }: ListUserProps) {
                                         <Box
                                             sx={{
                                                 display: "inline-block",
-                                                bgcolor: user.status === StatusEnum.ACTIVE ? (isDarkMode ? color.green900 : color.green500) : color.red,
+                                                bgcolor: user.status === StatusEnum.ACTIVE ? (isDarkMode ? color.green900 : color.green300) : color.warning,
                                                 fontWeight: "bold",
                                                 borderRadius: 1,
                                                 padding: "4px 16px",
