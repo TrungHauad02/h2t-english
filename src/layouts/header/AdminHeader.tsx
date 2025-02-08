@@ -5,7 +5,9 @@ import {
   IconButton,
   Stack,
   Button,
+  Typography,
 } from "@mui/material";
+import { useLocation } from 'react-router-dom';
 import { StyledAppBar } from "./common";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
@@ -22,6 +24,24 @@ export default function AdminHeader() {
   const trigger = useScrollTrigger({ disableHysteresis: true, threshold: 50 });
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const location = useLocation();
+
+  const getTitle = () => {
+    const path = location.pathname;
+    if (path.includes("manage-student")) {
+      return "Manage Students";
+    }
+    if (path.includes("manage-teacher")) {
+      return "Manage Teachers";
+    }
+    if (path.includes("settings")) {
+      return "Settings";
+    }
+    if (path.includes("dashboard")) {
+      return "Dashboard";
+    }
+    return "Admin";
+  };
 
   return (
     <StyledAppBar
@@ -44,6 +64,11 @@ export default function AdminHeader() {
           ml: isMobile ? 7 : 0,
         }}
       >
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            {getTitle()}
+          </Typography>
+        </Box>
         <Stack direction={"row"}>
           <Box></Box>
           <Box></Box>

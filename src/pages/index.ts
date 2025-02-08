@@ -17,6 +17,6 @@ export { default as ListTestPage } from "features/listTest/pages/ListTestPage";
 export { default as TestPage } from "features/test/pages/TestPage";
 
 // Admin Pages
-export { default as ManageUserPage } from "features/admin/pages/ManageUserPage";
-export { default as ManageStudentPage } from "features/admin/pages/MansgeStudentPage";
-export { default as ManageTeacherPage } from "features/admin/pages/ManageTeacherPage";
+export { default as ManageUserPage } from "features/admin/pages/ManageUsersPage";
+export { default as ManageStudentPage } from "features/admin/pages/ManageStudentsPage";
+export { default as ManageTeacherPage } from "features/admin/pages/ManageTeachersPage";

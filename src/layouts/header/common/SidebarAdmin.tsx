@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { SidebarDrawer } from "./sidebar";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
-import LogoutIcon from "@mui/icons-material/Logout";
 import PeopleIcon from "@mui/icons-material/People";
 import SchoolIcon from "@mui/icons-material/School";
 
@@ -32,7 +31,6 @@ export default function SidebarAdmin() {
       ],
     },
     { text: "Settings", icon: <SettingsIcon />, path: "/admin/settings" },
-    { text: "Logout", icon: <LogoutIcon />, path: "/logout" },
   ];
 
   return (

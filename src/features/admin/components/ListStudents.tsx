@@ -1,9 +1,9 @@
 import { students } from "../services/mockData";
-import ListUser from "./ListUsers/ListUsers";
+import ListUser from "./ListUsers";
 
 const ListStudents = () => {
     return(
-        <ListUser users={students} title="List students" />
+        <ListUser users={students} />
     )
 }
 
