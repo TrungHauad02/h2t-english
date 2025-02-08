@@ -3,32 +3,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { StatusEnum } from "interfaces";
 
-interface UseListUserProps {
-  users: User[];
-}
-
-interface UseListUserReturn {
-  page: number;
-  usersPerPage: number;
-  paginatedUsers: User[];
-  totalPage: number;
-  openRows: Record<string, boolean>;
-  toggleRow: (id: string) => void;
-  handleChangePage: (event: React.ChangeEvent<unknown>, value: number) => void;
-  handleUsersPerPageChange: (value: string | number) => void;
-  handleEdit: (name: string) => void;
-  handleChangeStatus: (user: User) => void; 
-  confirmChangeStatus: () => void; 
-  cancelChangeStatus: () => void; 
-  handleRemove: (user: User) => void; 
-  confirmRemove: () => void; 
-  cancelRemove: () => void; 
-  isRemoveDialogOpen: boolean; 
-  isChangeStatusDialogOpen: boolean;
-  selectedUser: User | null;
-}
-
-const useListUsers = ({ users }: UseListUserProps): UseListUserReturn => {
+export default function useListUsers({ users }: { users: User[] }) {
   const [userList, setUserList] = useState<User[]>(users);
   const [openRows, setOpenRows] = useState<Record<string, boolean>>({});
   const [page, setPage] = useState(1);
@@ -60,7 +35,7 @@ const useListUsers = ({ users }: UseListUserProps): UseListUserReturn => {
 
   const handleChangeStatus = (user: User) => {
     setSelectedUser(user);
-    setChangeStatusDialogOpen(true); 
+    setChangeStatusDialogOpen(true);
   };
 
   const confirmChangeStatus = () => {
@@ -73,14 +48,13 @@ const useListUsers = ({ users }: UseListUserProps): UseListUserReturn => {
 
       setUserList(updatedUsers);
       toast.success(`User ${selectedUser.name} status changed!`);
-
       setChangeStatusDialogOpen(false);
       setSelectedUser(null);
     }
   };
 
   const cancelChangeStatus = () => {
-    setChangeStatusDialogOpen(false); 
+    setChangeStatusDialogOpen(false);
     setSelectedUser(null);
   };
 
@@ -95,7 +69,7 @@ const useListUsers = ({ users }: UseListUserProps): UseListUserReturn => {
       setUserList(updatedUsers);
       toast.success(`User ${selectedUser.name} removed!`);
       setRemoveDialogOpen(false);
-      setSelectedUser(null); 
+      setSelectedUser(null);
     }
   };
 
@@ -105,6 +79,7 @@ const useListUsers = ({ users }: UseListUserProps): UseListUserReturn => {
   };
 
   return {
+    userList,
     page,
     usersPerPage,
     paginatedUsers,
@@ -124,6 +99,4 @@ const useListUsers = ({ users }: UseListUserProps): UseListUserReturn => {
     isChangeStatusDialogOpen,
     selectedUser,
   };
-};
-
-export default useListUsers;
+}

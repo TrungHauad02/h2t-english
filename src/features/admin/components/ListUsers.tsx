@@ -1,47 +1,25 @@
 import React from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Collapse, Avatar, Typography, Box, Paper } from "@mui/material";
 import { Edit, Delete, SwapHoriz, KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
-import { User } from "interfaces";
+import { Person, Email, Phone, CalendarToday, School, Settings } from '@mui/icons-material';
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import { RolesEnum, StatusEnum } from "interfaces";
+import { User, RolesEnum, StatusEnum } from "interfaces";
 import { WEPaginationSelect } from "components/pagination";
-import useListUsers from "./useListUsers";
-import WEDialog from "../../../../components/display/dialog/WEDialog";
+import useListUsers from "../hooks/useListUsers";
+import { WEDialog } from "components/display";
 
 interface ListUserProps {
     users: User[];
-    title: string;
 }
 
-const ListUser: React.FC<ListUserProps> = ({ users, title }) => {
+export default function ListUser({ users }: ListUserProps) {
     const color = useColor();
     const { isDarkMode } = useDarkMode();
-    const {
-        page,
-        usersPerPage,
-        paginatedUsers,
-        openRows,
-        toggleRow,
-        handleChangePage,
-        handleUsersPerPageChange,
-        handleEdit,
-        handleChangeStatus,
-        confirmChangeStatus,
-        cancelChangeStatus,
-        handleRemove,
-        confirmRemove,
-        cancelRemove,
-        isRemoveDialogOpen,
-        isChangeStatusDialogOpen,
-        selectedUser,
-    } = useListUsers({ users });
+    const hooks = useListUsers({ users });
 
     return (
         <Box>
-            <Typography variant="h5" gutterBottom>
-                {title}
-            </Typography>
             <TableContainer
                 component={Paper}
                 sx={{ overflowX: "auto", maxWidth: "100%" }}
@@ -53,17 +31,18 @@ const ListUser: React.FC<ListUserProps> = ({ users, title }) => {
                             <TableCell sx={{ fontWeight: "bold" }}>Avatar</TableCell>
                             <TableCell sx={{ textAlign: "center", fontWeight: "bold" }}>Name</TableCell>
                             <TableCell sx={{ textAlign: "center", fontWeight: "bold", display: { xs: "none", sm: "table-cell" } }}>Email</TableCell>
+                            <TableCell sx={{ textAlign: "center", fontWeight: "bold", display: { xs: "none", sm: "table-cell" } }}>Role</TableCell>
                             <TableCell sx={{ textAlign: "center", fontWeight: "bold", display: { xs: "none", sm: "table-cell" } }}>Status</TableCell>
                             <TableCell sx={{ textAlign: "center", fontWeight: "bold" }}>Actions</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {paginatedUsers.map((user) => (
+                        {hooks.paginatedUsers.map((user) => (
                             <React.Fragment key={user.id}>
                                 <TableRow>
                                     <TableCell>
-                                        <IconButton size="small" onClick={() => toggleRow(user.id)}>
-                                            {openRows[user.id] ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                                        <IconButton size="small" onClick={() => hooks.toggleRow(user.id)}>
+                                            {hooks.openRows[user.id] ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
                                         </IconButton>
                                     </TableCell>
                                     <TableCell sx={{ textAlign: "center" }}>
@@ -76,10 +55,14 @@ const ListUser: React.FC<ListUserProps> = ({ users, title }) => {
                                     </TableCell>
                                     <TableCell
                                         sx={{ textAlign: "center", display: { xs: "none", sm: "table-cell" } }}>
+                                        {user.roleEnum}
+                                    </TableCell>
+                                    <TableCell
+                                        sx={{ textAlign: "center", display: { xs: "none", sm: "table-cell" } }}>
                                         <Box
                                             sx={{
                                                 display: "inline-block",
-                                                bgcolor: user.status === StatusEnum.ACTIVE ? (isDarkMode ? color.green900 : color.green500) : color.red,
+                                                bgcolor: user.status === StatusEnum.ACTIVE ? (isDarkMode ? color.green900 : color.green300) : color.warning,
                                                 fontWeight: "bold",
                                                 borderRadius: 1,
                                                 padding: "4px 16px",
@@ -90,62 +73,56 @@ const ListUser: React.FC<ListUserProps> = ({ users, title }) => {
                                     </TableCell>
 
                                     <TableCell sx={{ textAlign: "center" }}>
-                                        {user.roleEnum === RolesEnum.TEACHER && (
-                                            <IconButton size="small" onClick={() => handleEdit(user.name)}>
+                                    {(user.roleEnum === RolesEnum.TEACHER || user.roleEnum === RolesEnum.TEACHER_ADMIN) && (
+                                            <IconButton size="small" onClick={() => hooks.handleEdit(user.name)}>
                                                 <Edit />
                                             </IconButton>
                                         )}
-                                        <IconButton size="small" onClick={() => handleChangeStatus(user)}>
+                                        <IconButton size="small" onClick={() => hooks.handleChangeStatus(user)}>
                                             <SwapHoriz />
                                         </IconButton>
-                                        <IconButton size="small" onClick={() => handleRemove(user)}>
+                                        <IconButton size="small" onClick={() => hooks.handleRemove(user)}>
                                             <Delete />
                                         </IconButton>
                                     </TableCell>
                                 </TableRow>
                                 <TableRow sx={{ bgcolor: isDarkMode ? color.teal900 : color.teal100 }}>
-                                    <TableCell colSpan={6} sx={{ padding: 0, paddingLeft: { xs: 1, md: 14 } }}>
-                                        <Collapse in={openRows[user.id]} unmountOnExit>
+                                    <TableCell colSpan={7} sx={{ padding: 0, paddingLeft: { xs: 1, md: 14 } }}>
+                                        <Collapse in={hooks.openRows[user.id]} unmountOnExit>
                                             <Box margin={2}>
                                                 <Typography>
-                                                    <strong>Name: </strong>
-                                                    {user.name}
+                                                    <Person sx={{ marginRight: 1 }} />
+                                                    <strong>Role: </strong>
+                                                    {user.roleEnum}
                                                 </Typography>
                                                 <Typography>
+                                                    <Email sx={{ marginRight: 1 }} />
                                                     <strong>Email: </strong>
                                                     {user.email}
                                                 </Typography>
                                                 <Typography>
+                                                    <Settings sx={{ marginRight: 1 }} />
                                                     <strong>Status: </strong>
                                                     {user.status}
                                                 </Typography>
+                                                {(user.roleEnum === RolesEnum.TEACHER || user.roleEnum === RolesEnum.TEACHER_ADMIN) && (
+                                                <>
                                                 <Typography>
+                                                    <Phone sx={{ marginRight: 1 }} />
                                                     <strong>Phone: </strong>
                                                     {user.phoneNumber}
                                                 </Typography>
                                                 <Typography>
+                                                    <CalendarToday sx={{ marginRight: 1 }} />
                                                     <strong>Date of Birth: </strong>
                                                     {user.dateOfBirth.toLocaleDateString()}
                                                 </Typography>
-                                                {user.roleEnum === RolesEnum.STUDENT && (
-                                                    <Typography>
-                                                        <strong>Motivation: </strong>
-                                                        {user.contentMotivation}
-                                                    </Typography>
-                                                )}
                                                 <Typography>
-                                                    <strong>Start Date: </strong>
-                                                    {user.startDate.toLocaleDateString()}
-                                                </Typography>
-                                                <Typography>
-                                                    <strong>End Date: </strong>
-                                                    {user.endDate.toLocaleDateString()}
-                                                </Typography>
-                                                {user.roleEnum === RolesEnum.TEACHER && (
-                                                    <Typography>
+                                                        <School sx={{ marginRight: 1 }} />
                                                         <strong>Level: </strong>
                                                         {user.levelEnum}
                                                     </Typography>
+                                                  </>
                                                 )}
                                             </Box>
                                         </Collapse>
@@ -157,31 +134,29 @@ const ListUser: React.FC<ListUserProps> = ({ users, title }) => {
                 </Table>
             </TableContainer>
             <WEPaginationSelect
-                page={page}
-                totalPage={Math.ceil(users.length / usersPerPage)}
-                itemsPerPage={usersPerPage}
-                onPageChange={handleChangePage}
-                onItemsPerPageChange={handleUsersPerPageChange}
+                page={hooks.page}
+                totalPage={Math.ceil(users.length / hooks.usersPerPage)}
+                itemsPerPage={hooks.usersPerPage}
+                onPageChange={hooks.handleChangePage}
+                onItemsPerPageChange={hooks.handleUsersPerPageChange}
             />
             <WEDialog
-                open={isRemoveDialogOpen}
+                open={hooks.isRemoveDialogOpen}
                 title="Confirm Delete"
-                onCancel={cancelRemove}
-                onOk={confirmRemove}
+                onCancel={hooks.cancelRemove}
+                onOk={hooks.confirmRemove}
             >
-                Are you sure you want to remove {selectedUser?.name}?
+                Are you sure you want to remove {hooks.selectedUser?.name}?
             </WEDialog>
             <WEDialog
-                open={isChangeStatusDialogOpen}
+                open={hooks.isChangeStatusDialogOpen}
                 title="Confirm Status Change"
-                onCancel={cancelChangeStatus}
-                onOk={confirmChangeStatus}
+                onCancel={hooks.cancelChangeStatus}
+                onOk={hooks.confirmChangeStatus}
             >
-                Are you sure you want to change status of {selectedUser?.name} to{" "}
-                {selectedUser?.status === "ACTIVE" ? "INACTIVE" : "ACTIVE"}?
+                Are you sure you want to change status of {hooks.selectedUser?.name} to{" "}
+                {hooks.selectedUser?.status === StatusEnum.ACTIVE ? StatusEnum.INACTIVE : StatusEnum.ACTIVE}?
             </WEDialog>
         </Box>
     );
 }
-
-export default ListUser;

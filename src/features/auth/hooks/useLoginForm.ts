@@ -21,7 +21,7 @@ export const useLoginForm = () => {
     }
 
     if (user.status === StatusEnum.INACTIVE) {
-      toast.error("Account locked, please contact Admin for support!");
+      toast.error("Account locked!");
       return;
     }
 
