@@ -1,73 +1,73 @@
-interface Owner {
-  id: string;
-  name: string;
+interface BaseEntity {
+  id: number;
+  status: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface Topic {
-  id: string;
+interface Lesson extends BaseEntity {
   title: string;
-  serial: number;
   image: string;
   description: string;
-  status: boolean;
-  owner: Owner;
+  views: number;
+  routeNodeId: number;
 }
 
-export interface Grammar {
-  id: string;
+export interface Route extends BaseEntity {
   title: string;
-  serial: number;
+
   image: string;
   description: string;
-  status: boolean;
-  owner: Owner;
-  content: string;
+  routeNodes: RouteNode[];
+  ownerId: number;
+}
+
+enum RouteNodeEnum {
+  VOCABULARY = "VOCABULARY",
+  GRAMMAR = "GRAMMAR",
+  READING = "READING",
+  LISTENING = "LISTENING",
+  WRITING = "WRITING",
+  SPEAKING = "SPEAKING",
+  TEST = "TEST",
+}
+
+export interface RouteNode extends BaseEntity {
+  serial: number;
+  routeId: number;
+  nodeId: number;
+  type: RouteNodeEnum;
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+export interface Topic extends Lesson {
+  questions: number[];
+}
+
+export interface Grammar extends Lesson {
+  definition: string;
   example: string;
   file: string;
+  questions: number[];
 }
 
-export interface Reading {
-  id: string;
-  title: string;
-  serial: number;
-  image: string;
-  description: string;
-  status: boolean;
-  owner: Owner;
+export interface Reading extends Lesson {
   file: string;
+  questions: number[];
 }
 
-export interface Speaking {
-  id: string;
-  title: string;
-  serial: number;
-  image: string;
-  description: string;
-  status: boolean;
-  owner: Owner;
+export interface Speaking extends Lesson {
   topic: string;
   duration: number;
 }
 
-export interface Listening {
-  id: string;
-  title: string;
-  serial: number;
-  image: string;
-  description: string;
-  status: boolean;
-  owner: Owner;
-  audioUrl: string;
+export interface Listening extends Lesson {
+  audio: string;
 }
 
-export interface Writing {
-  id: string;
-  title: string;
-  serial: number;
-  image: string;
-  description: string;
-  status: boolean;
-  owner: Owner;
+export interface Writing extends Lesson {
   topic: string;
 }
 
@@ -78,32 +78,26 @@ export enum WordType {
   ADVERB = "adverb",
 }
 
-export interface Vocabulary {
-  id: string;
+export interface Vocabulary extends BaseEntity {
   word: string;
   image: string;
   example: string;
   phonetic: string;
   meaning: string;
-  status: boolean;
   wordType: WordType;
   topicId: string;
 }
 
-export interface Question {
-  id: string;
+export interface Question extends BaseEntity {
   content: string;
   serial: number;
   explanation: string;
-  status: boolean;
   lessonId: string;
   answers: Answer[];
 }
 
-export interface Answer {
-  id: string;
+export interface Answer extends BaseEntity {
   content: string;
   correct: boolean;
-  status: boolean;
   questionId: string;
 }
