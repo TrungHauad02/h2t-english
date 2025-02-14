@@ -1,8 +1,8 @@
 export default interface BaseEntity {
   id: number;
   status: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface Lesson extends BaseEntity {
@@ -99,4 +99,25 @@ export interface Answer extends BaseEntity {
   content: string;
   correct: boolean;
   questionId: number;
+}
+
+export interface Preparation extends BaseEntity {
+  title: string;
+  tip: string;
+  questions: number[];
+  type: "MATCH_WORD_WITH_SENTENCES" | "CLASSIFY" | "WORDS_MAKE_SENTENCES";
+}
+
+export interface PreparationClassify extends BaseEntity {
+  groupName: string;
+  members: string[];
+}
+
+export interface PreparationMakeSentences extends BaseEntity {
+  sentences: string[];
+}
+
+export interface PreparationMatchWordSentences extends BaseEntity {
+  word: string;
+  sentence: string;
 }
