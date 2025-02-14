@@ -12,7 +12,7 @@ import { RootState } from "../../redux/type";
 
 interface WERadioGroupProps {
   label?: string;
-  name: string;
+  name: number;
   options: {
     value: string | number;
     label: string;
@@ -44,7 +44,7 @@ export default function WERadioGroup({
     dispatch(
       selectAnswer({
         questionId: name,
-        answerId: event.target.value,
+        answerId: parseInt(event.target.value, 10),
       })
     );
   };
@@ -53,8 +53,8 @@ export default function WERadioGroup({
     <FormControl>
       {label && <FormLabel>{label}</FormLabel>}
       <RadioGroup
-        value={selectedAnswer?.answerId || ""}
-        name={name}
+        value={selectedAnswer?.answerId?.toString() || ""}
+        name={name.toString()}
         onChange={handleChange}
       >
         {options.map((option) => (

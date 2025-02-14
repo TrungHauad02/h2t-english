@@ -1,11 +1,11 @@
-interface BaseEntity {
+export default interface BaseEntity {
   id: number;
   status: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
-interface Lesson extends BaseEntity {
+export interface Lesson extends BaseEntity {
   title: string;
   image: string;
   description: string;
@@ -15,7 +15,6 @@ interface Lesson extends BaseEntity {
 
 export interface Route extends BaseEntity {
   title: string;
-
   image: string;
   description: string;
   routeNodes: RouteNode[];
@@ -85,19 +84,19 @@ export interface Vocabulary extends BaseEntity {
   phonetic: string;
   meaning: string;
   wordType: WordType;
-  topicId: string;
+  topicId: number;
 }
 
 export interface Question extends BaseEntity {
   content: string;
   serial: number;
   explanation: string;
-  lessonId: string;
+  lessonId: number;
   answers: Answer[];
 }
 
 export interface Answer extends BaseEntity {
   content: string;
   correct: boolean;
-  questionId: string;
+  questionId: number;
 }

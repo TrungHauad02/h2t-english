@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Answer, Question } from "interfaces";
 
 interface AQState {
   selectedAnswers: {
-    questionId: string;
-    answerId: string;
+    questionId: Question["id"];
+    answerId: Answer["id"];
   }[];
 }
 
@@ -18,8 +19,8 @@ export const aqSlice = createSlice({
     selectAnswer: (
       state,
       action: PayloadAction<{
-        questionId: string;
-        answerId: string;
+        questionId: Question["id"];
+        answerId: Answer["id"];
       }>
     ) => {
       const { questionId, answerId } = action.payload;

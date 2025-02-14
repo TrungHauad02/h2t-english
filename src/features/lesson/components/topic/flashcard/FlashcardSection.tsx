@@ -7,7 +7,7 @@ import { useState } from "react";
 
 export default function FlashcardSection() {
   const { id } = useParams();
-  const listVocab = lessonService.getVocabularyByTopicId(id ?? "");
+  const listVocab = lessonService.getVocabularyByTopicId(Number(id) || 0);
   const [page, setPage] = useState(1);
   const [lessonsPerPage, setLessonsPerPage] = useState(8);
 

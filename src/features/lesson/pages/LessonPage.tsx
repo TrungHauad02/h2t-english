@@ -30,7 +30,7 @@ export default function LessonPage() {
     | Speaking
     | Listening
     | Writing
-    | undefined = lessonService.getLessonById(type ?? "", id ?? "");
+    | undefined = lessonService.getLessonById(type ?? "", Number(id) || 0);
   const siteInfo: SiteInfo = {
     bgUrl:
       "https://firebasestorage.googleapis.com/v0/b/englishweb-5a6ce.appspot.com/o/static%2Fbg_vocabulary.png?alt=media",

@@ -10,7 +10,7 @@ import { mockData } from "features/listLesson/services/mockData";
 
 const getLessonById = (
   type: string,
-  id: string
+  id: number
 ): Topic | Grammar | Reading | Speaking | Listening | Writing | undefined => {
   switch (type) {
     case "topics":
@@ -31,7 +31,7 @@ const getLessonById = (
   }
 };
 
-const getVocabularyByTopicId = (topicId: string) => {
+const getVocabularyByTopicId = (topicId: number) => {
   return mockData.listVocabulary.filter((item) => item.topicId === topicId);
 };
 
