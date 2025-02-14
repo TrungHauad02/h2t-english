@@ -10,7 +10,7 @@ export interface ImageWord {
 
 export default function useMatchImageWord() {
   const { id } = useParams();
-  const listVocab = lessonService.getVocabularyByTopicId(id ?? "");
+  const listVocab = lessonService.getVocabularyByTopicId(Number(id) || 0);
 
   // Lưu danh sách từ được hiển thị (các từ chưa được ghép vào hình ảnh) và trộn ngẫu nhiên
   const [displayWord, setDisplayWord] = useState<string[]>(

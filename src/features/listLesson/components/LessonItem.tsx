@@ -1,28 +1,11 @@
-import {
-  Listening,
-  Reading,
-  Speaking,
-  Topic,
-  Writing,
-  Grammar,
-} from "interfaces";
-import {
-  Card,
-  CardMedia,
-  CardContent,
-  Typography,
-  Grid,
-  Stack,
-} from "@mui/material";
+import { Lesson } from "interfaces";
+import { Card, CardMedia, CardContent, Typography, Grid } from "@mui/material";
 import { useState } from "react";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { useNavigate } from "react-router-dom";
-import SerialInfo from "./SerialInfo";
-import OwnerInfo from "./OwnerInfo";
-
 interface LessonItemProps {
-  lesson: Topic | Grammar | Reading | Speaking | Listening | Writing;
+  lesson: Lesson;
 }
 
 export default function LessonItem({ lesson }: LessonItemProps) {
@@ -103,16 +86,6 @@ export default function LessonItem({ lesson }: LessonItemProps) {
           >
             {lesson.description}
           </Typography>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            spacing={2}
-            mt={2}
-          >
-            <SerialInfo serial={lesson.serial.toString()} hovered={hovered} />
-            <OwnerInfo ownerName={lesson.owner.name} hovered={hovered} />
-          </Stack>
         </CardContent>
       </Card>
     </Grid>
