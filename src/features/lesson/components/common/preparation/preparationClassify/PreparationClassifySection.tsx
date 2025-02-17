@@ -3,6 +3,8 @@ import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import ClassifyItem from "./ClassifyItem";
 import usePreparationClassifySection from "./usePreparationClassifySection";
+import WEActionButtons from "components/input/WEActionButtons";
+import { WEConfirmDialog, WEScoreDialog } from "components/display";
 
 export default function PreparationClassifySection() {
   const color = useColor();
@@ -120,6 +122,32 @@ export default function PreparationClassifySection() {
           </Grid>
         ))}
       </Grid>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mr: 2 }}>
+        <WEActionButtons
+          isSubmit={!!hooks.score}
+          onSubmit={hooks.onShowConfirm}
+          onReset={hooks.onReset}
+          onShowExplain={hooks.onShowExplain}
+          size="large"
+        />
+      </Box>
+      {hooks.isShowConfirm && (
+        <WEConfirmDialog
+          isShowConfirm={hooks.isShowConfirm}
+          onShowConfirm={hooks.onShowConfirm}
+          onSubmit={hooks.onSubmit}
+          numberAnswered={hooks.getNumberAnswered()}
+          numberOfQuestions={hooks.numberOfItems}
+        />
+      )}
+      {hooks.isShowScoreDialog && (
+        <WEScoreDialog
+          score={hooks.score}
+          isShowScoreDialog={hooks.isShowScoreDialog}
+          onCloseScoreDialog={hooks.onCloseScoreDialog}
+          numberOfQuestions={hooks.numberOfItems}
+        />
+      )}
     </Stack>
   );
 }
