@@ -2,7 +2,7 @@ import { Box, Typography } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import { Preparation } from "interfaces";
 import useColor from "theme/useColor";
-import PreparationClassifySection from "./PreparationClassifySection";
+import PreparationClassifySection from "./preparationClassify/PreparationClassifySection";
 
 export default function PreparationSection() {
   const color = useColor();
