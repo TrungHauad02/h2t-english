@@ -26,7 +26,7 @@ export default function WEButton({
     color: `${color}`,
     "&:hover": { bgcolor: `${hoverBgcolor}` },
     py: 1,
-    borderRadius: "1rem",
+    borderRadius: "0.5rem",
     ...sx,
   };
   return (
