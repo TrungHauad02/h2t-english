@@ -32,6 +32,7 @@ export default function ClassifyItem({
           ? color.gray900
           : color.gray100,
         borderRadius: 2,
+        boxShadow: 1,
         ":hover": {
           bgcolor: isDarkMode ? color.green800 : color.green200,
           cursor: "pointer",

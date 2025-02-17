@@ -1,4 +1,4 @@
-import { Grid, Stack, Typography } from "@mui/material";
+import { Box, Grid, Stack, Typography } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import ClassifyItem from "./ClassifyItem";
@@ -13,6 +13,23 @@ export default function PreparationClassifySection() {
   return (
     <Stack sx={{ mt: 1 }}>
       {/** Classify Items */}
+      <Stack direction={"row"} justifyContent={"flex-end"}>
+        <Box
+          sx={{
+            py: 1,
+            px: 2,
+            bgcolor: isDarkMode ? color.green900 : color.green100,
+            borderRadius: 2,
+            boxShadow: 1,
+            visibility: hooks.members.length !== 0 ? "visible" : "hidden",
+          }}
+        >
+          <Typography>
+            {hooks.members.length}{" "}
+            {hooks.members.length === 1 ? "item" : "items"} remaining
+          </Typography>
+        </Box>
+      </Stack>
       <Stack
         direction={"row"}
         sx={{
@@ -22,6 +39,7 @@ export default function PreparationClassifySection() {
           bgcolor: isDarkMode ? color.gray700 : color.gray300,
           borderRadius: 1,
           flexWrap: "wrap",
+          minHeight: "52px",
         }}
       >
         {hooks.members.map((item, index) => (
