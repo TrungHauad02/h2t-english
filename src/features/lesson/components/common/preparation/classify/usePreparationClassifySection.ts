@@ -1,5 +1,6 @@
 import { PreparationClassify } from "interfaces";
 import { useEffect, useMemo, useState } from "react";
+import { shuffleArray } from "utils/shuffleArray";
 
 interface GroupClassify {
   id: number;
@@ -69,7 +70,7 @@ export default function usePreparationClassifySection() {
     data.forEach((item) => {
       allMembers = allMembers.concat(item.members);
     });
-    setMembers(allMembers);
+    setMembers(shuffleArray(allMembers));
   };
 
   const resetGroup = () => {
@@ -177,8 +178,22 @@ export default function usePreparationClassifySection() {
   };
 
   const onShowExplain = () => {
-    resetState();
+    if (isShowExplain) {
+      resetState();
+    } else {
+      showResult();
+    }
     setIsShowExplain(!isShowExplain);
+  };
+
+  const showResult = () => {
+    const newGroups = data.map((item) => ({
+      id: item.id,
+      name: item.groupName,
+      members: item.members,
+    }));
+    setMembers([]);
+    setGroups(newGroups);
   };
 
   const onCloseScoreDialog = () => {
