@@ -1,7 +1,7 @@
 import { Box, Grid, Stack, Typography } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import ClassifyItem from "./ClassifyItem";
+import WordItem from "../WordItem";
 import usePreparationClassifySection from "./usePreparationClassifySection";
 import WEActionButtons from "components/input/WEActionButtons";
 import { WEConfirmDialog, WEScoreDialog } from "components/display";
@@ -45,7 +45,7 @@ export default function PreparationClassifySection() {
         }}
       >
         {hooks.members.map((item, index) => (
-          <ClassifyItem
+          <WordItem
             item={item}
             key={index}
             highlight={item === hooks.selectedItem}
@@ -111,7 +111,7 @@ export default function PreparationClassifySection() {
                 onClick={() => hooks.onSelectGroup(group)}
               >
                 {group.members.map((item, index) => (
-                  <ClassifyItem
+                  <WordItem
                     item={item}
                     key={index}
                     onClick={() => hooks.onSelectItemInGroup(item, group)}

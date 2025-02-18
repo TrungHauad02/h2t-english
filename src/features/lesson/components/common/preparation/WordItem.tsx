@@ -2,19 +2,19 @@ import { Stack } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 
-interface ClassifyItemProps {
+interface WordItemProps {
   key: number;
   item: string;
   highlight?: boolean;
   onClick?: () => void;
 }
 
-export default function ClassifyItem({
+export default function WordItem({
   key,
   item,
   highlight,
   onClick,
-}: ClassifyItemProps) {
+}: WordItemProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
