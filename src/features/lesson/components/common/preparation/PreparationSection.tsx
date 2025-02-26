@@ -2,8 +2,7 @@ import { Box, Typography } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import { Preparation } from "interfaces";
 import useColor from "theme/useColor";
-// import PreparationClassifySection from "./classify/PreparationClassifySection";
-import PreparationMatchWordSentencesSection from "./matchWordSentences/PreparationMatchWordSentencesSection";
+import PreparationMakeSentencesSection from "./makeSentences/PreparationMakeSentencesSection";
 
 export default function PreparationSection() {
   const color = useColor();
@@ -41,8 +40,7 @@ export default function PreparationSection() {
       >
         {data.tip}
       </Typography>
-      {/* <PreparationClassifySection /> */}
-      <PreparationMatchWordSentencesSection />
+      <PreparationMakeSentencesSection />
     </Box>
   );
 }
