@@ -1,9 +1,9 @@
-import { Button } from "@mui/material";
+import { Button, SxProps, Theme } from "@mui/material";
 
 interface WEButtonProps {
   children?: any;
   variant?: "contained" | "outlined" | "text";
-  sx?: any;
+  sx?: SxProps<Theme>;
   bgcolor?: string;
   hoverBgcolor?: string;
   color?: string;
