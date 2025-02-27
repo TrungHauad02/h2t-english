@@ -121,3 +121,9 @@ export interface PreparationMatchWordSentences extends BaseEntity {
   word: string;
   sentence: string;
 }
+
+export interface SpeakingConversation extends BaseEntity {
+  name: string;
+  serial: number;
+  content: string;
+}
