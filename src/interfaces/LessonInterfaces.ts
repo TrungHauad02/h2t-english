@@ -127,3 +127,11 @@ export interface SpeakingConversation extends BaseEntity {
   serial: number;
   content: string;
 }
+
+export interface ListenAndWriteAWord extends BaseEntity {
+  audio: string;
+  serial: number;
+  sentence: string;
+  missingIndex: number;
+  correctAnswer: string;
+}
