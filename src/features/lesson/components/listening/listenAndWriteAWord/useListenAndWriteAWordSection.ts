@@ -127,10 +127,7 @@ export default function useListenAndWriteAWordSection() {
   const showResult = () => {
     setStateData((prevState) => {
       return prevState.map((item, index) => {
-        if (index === curIndex) {
-          return { ...item, userAnswer: item.correctAnswer };
-        }
-        return item;
+        return { ...item, userAnswer: item.correctAnswer };
       });
     });
   };
