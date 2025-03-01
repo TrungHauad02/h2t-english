@@ -19,7 +19,7 @@ export default function PreparationSection() {
   return (
     <Box
       sx={{
-        mx: { xs: 0, md: 2 },
+        mx: { xs: 0, md: 2, lg: 4 },
         px: { xs: 2, md: 4 },
         py: { xs: 1, md: 2 },
         bgcolor: isDarkMode ? color.gray800 : color.gray200,
