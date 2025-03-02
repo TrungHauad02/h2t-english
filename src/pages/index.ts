@@ -12,6 +12,7 @@ export { default as HomePage } from "features/home/pages/HomePage";
 export { default as ListLessonPage } from "features/listLesson/pages/ListLessonPage";
 export { default as LessonPage } from "features/lesson/pages/LessonPage";
 export { default as ListRoutePage } from "features/route/pages/ListRoutePage";
+export { default as RoutePage } from "features/route/pages/RoutePage";
 
 // Test Pages
 export { default as ListTestPage } from "features/listTest/pages/ListTestPage";

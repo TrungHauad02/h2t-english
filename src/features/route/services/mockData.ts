@@ -1,4 +1,12 @@
-import { Route, RouteNode, RouteNodeEnum } from "interfaces";
+import {
+  LevelsEnum,
+  RolesEnum,
+  Route,
+  RouteNode,
+  RouteNodeEnum,
+  StatusEnum,
+  User,
+} from "interfaces";
 
 const routeNodeData: RouteNode[] = [
   {
@@ -56,7 +64,19 @@ const routeData: Route[] = [
     ownerId: 1,
   },
 ];
-
+const mockTeacher: User = {
+  id: "1",
+  avatar: "/image.jpg",
+  email: "teacher@example.com",
+  levelEnum: LevelsEnum.BACHELOR,
+  name: "John Doe",
+  password: "",
+  roleEnum: RolesEnum.TEACHER,
+  status: StatusEnum.ACTIVE,
+  phoneNumber: "123456789",
+  dateOfBirth: new Date(),
+};
 export const mockData = {
   routes: routeData,
+  teacher: mockTeacher,
 };
