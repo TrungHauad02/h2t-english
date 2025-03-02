@@ -32,7 +32,7 @@ export default function WritingTips({ tips }: WritingTipsProps) {
         backgroundColor: backgroundColor,
         borderRadius: 2,
         p: 3,
-        boxShadow: 3,
+        border: `1px solid ${color.gray300}`,
       }}
     >
       <Typography
