@@ -53,7 +53,7 @@ export default function TeacherInfoCard({ userId }: TeacherInfoCardProps) {
       }}
     >
       <CardContent>
-        <Stack direction="row" alignItems="center" spacing={2}>
+        <Stack direction="row" alignItems="center" spacing={4}>
           <Avatar
             src={teacher.avatar}
             alt={teacher.name}
