@@ -68,6 +68,10 @@ export interface Listening extends Lesson {
 
 export interface Writing extends Lesson {
   topic: string;
+  file: string;
+  tips: string[];
+  paragraphs: string;
+  questions: number[];
 }
 
 export enum WordType {
@@ -134,4 +138,10 @@ export interface ListenAndWriteAWord extends BaseEntity {
   sentence: string;
   missingIndex: number;
   correctAnswer: string;
+}
+
+export interface WritingAnswer extends BaseEntity {
+  missingIndex: number;
+  correctAnswer: string;
+  writingId: number;
 }

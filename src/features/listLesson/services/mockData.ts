@@ -7,6 +7,7 @@ import {
   Grammar,
   Vocabulary,
   WordType,
+  WritingAnswer,
 } from "interfaces";
 
 const topics: Topic[] = [
@@ -703,6 +704,14 @@ const writings: Writing[] = [
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    file: "/document.docx",
+    paragraphs:
+      "The quick brown jumps over the lazy dog. This sentence contains all the letters of the English . It is often used for typing practice.",
+    questions: [1, 2],
+    tips: [
+      "Tip 1: Always start with a clear topic sentence.",
+      "Tip 2: Use transition words to connect ideas.",
+    ],
   },
   {
     id: 2,
@@ -715,6 +724,14 @@ const writings: Writing[] = [
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    file: "/document.docx",
+    paragraphs:
+      "In the realm of advanced writing, one must consider the nuances of language and the subtleties of tone. It is not merely about conveying information but also about evoking emotion and provoking thought.",
+    questions: [3, 4],
+    tips: [
+      "Tip 1: Vary your sentence structure to maintain reader interest.",
+      "Tip 2: Use metaphors and similes to enhance your descriptions.",
+    ],
   },
   {
     id: 3,
@@ -727,6 +744,14 @@ const writings: Writing[] = [
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    file: "/document.docx",
+    paragraphs:
+      "In the realm of advanced writing, one must consider the nuances of language and the subtleties of tone. It is not merely about conveying information but also about evoking emotion and provoking thought.",
+    questions: [3, 4],
+    tips: [
+      "Tip 1: Vary your sentence structure to maintain reader interest.",
+      "Tip 2: Use metaphors and similes to enhance your descriptions.",
+    ],
   },
   {
     id: 4,
@@ -739,6 +764,14 @@ const writings: Writing[] = [
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    file: "/document.docx",
+    paragraphs:
+      "In the realm of advanced writing, one must consider the nuances of language and the subtleties of tone. It is not merely about conveying information but also about evoking emotion and provoking thought.",
+    questions: [3, 4],
+    tips: [
+      "Tip 1: Vary your sentence structure to maintain reader interest.",
+      "Tip 2: Use metaphors and similes to enhance your descriptions.",
+    ],
   },
   {
     id: 5,
@@ -751,6 +784,14 @@ const writings: Writing[] = [
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    file: "/document.docx",
+    paragraphs:
+      "In the realm of advanced writing, one must consider the nuances of language and the subtleties of tone. It is not merely about conveying information but also about evoking emotion and provoking thought.",
+    questions: [3, 4],
+    tips: [
+      "Tip 1: Vary your sentence structure to maintain reader interest.",
+      "Tip 2: Use metaphors and similes to enhance your descriptions.",
+    ],
   },
   {
     id: 6,
@@ -763,6 +804,14 @@ const writings: Writing[] = [
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    file: "/document.docx",
+    paragraphs:
+      "In the realm of advanced writing, one must consider the nuances of language and the subtleties of tone. It is not merely about conveying information but also about evoking emotion and provoking thought.",
+    questions: [3, 4],
+    tips: [
+      "Tip 1: Vary your sentence structure to maintain reader interest.",
+      "Tip 2: Use metaphors and similes to enhance your descriptions.",
+    ],
   },
   {
     id: 7,
@@ -775,6 +824,14 @@ const writings: Writing[] = [
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    file: "/document.docx",
+    paragraphs:
+      "In the realm of advanced writing, one must consider the nuances of language and the subtleties of tone. It is not merely about conveying information but also about evoking emotion and provoking thought.",
+    questions: [3, 4],
+    tips: [
+      "Tip 1: Vary your sentence structure to maintain reader interest.",
+      "Tip 2: Use metaphors and similes to enhance your descriptions.",
+    ],
   },
   {
     id: 8,
@@ -787,6 +844,14 @@ const writings: Writing[] = [
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    file: "/document.docx",
+    paragraphs:
+      "In the realm of advanced writing, one must consider the nuances of language and the subtleties of tone. It is not merely about conveying information but also about evoking emotion and provoking thought.",
+    questions: [3, 4],
+    tips: [
+      "Tip 1: Vary your sentence structure to maintain reader interest.",
+      "Tip 2: Use metaphors and similes to enhance your descriptions.",
+    ],
   },
   {
     id: 9,
@@ -799,6 +864,14 @@ const writings: Writing[] = [
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    file: "/document.docx",
+    paragraphs:
+      "In the realm of advanced writing, one must consider the nuances of language and the subtleties of tone. It is not merely about conveying information but also about evoking emotion and provoking thought.",
+    questions: [3, 4],
+    tips: [
+      "Tip 1: Vary your sentence structure to maintain reader interest.",
+      "Tip 2: Use metaphors and similes to enhance your descriptions.",
+    ],
   },
   {
     id: 10,
@@ -811,6 +884,14 @@ const writings: Writing[] = [
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    file: "/document.docx",
+    paragraphs:
+      "In the realm of advanced writing, one must consider the nuances of language and the subtleties of tone. It is not merely about conveying information but also about evoking emotion and provoking thought.",
+    questions: [3, 4],
+    tips: [
+      "Tip 1: Vary your sentence structure to maintain reader interest.",
+      "Tip 2: Use metaphors and similes to enhance your descriptions.",
+    ],
   },
 ];
 
@@ -887,6 +968,45 @@ const listVocabulary: Vocabulary[] = [
   },
 ];
 
+const writingAnswers: WritingAnswer[] = [
+  {
+    id: 1,
+    status: true,
+    missingIndex: 3,
+    correctAnswer: "fox",
+    writingId: 1,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 2,
+    status: true,
+    missingIndex: 17,
+    correctAnswer: "alphabet",
+    writingId: 1,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 3,
+    status: true,
+    missingIndex: 10,
+    correctAnswer: "nuances",
+    writingId: 2,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 4,
+    status: true,
+    missingIndex: 25,
+    correctAnswer: "emotion",
+    writingId: 2,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
+
 export const mockData = {
   topics,
   grammars,
@@ -895,4 +1015,5 @@ export const mockData = {
   listenings,
   writings,
   listVocabulary,
+  writingAnswers,
 };
