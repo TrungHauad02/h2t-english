@@ -6,6 +6,7 @@ import WEDocumentViewer from "components/display/document/WEDocumentViewer";
 import WritingTips from "./WritingTips";
 import WritingParagraph from "./writingParagraph/WritingParagraph";
 import { mockData } from "features/listLesson/services/mockData";
+import WritingTopicSection from "./WritingTopicSection";
 
 export default function WritingLesson({ lesson }: { lesson: Writing }) {
   const writingAnswer: WritingAnswer[] = mockData.writingAnswers;
@@ -28,6 +29,9 @@ export default function WritingLesson({ lesson }: { lesson: Writing }) {
             (answer) => answer.writingId === 1
           )}
         />
+      </CollapsibleSection>
+      <CollapsibleSection text="Writing Topic">
+        <WritingTopicSection topic={lesson.topic} />
       </CollapsibleSection>
     </Box>
   );

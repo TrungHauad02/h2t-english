@@ -34,7 +34,7 @@ export default function WritingParagraph({
         p: 3,
         backgroundColor: backgroundColor,
         borderRadius: 2,
-        boxShadow: 3,
+        border: `1px solid ${color.gray300}`,
       }}
     >
       <Typography

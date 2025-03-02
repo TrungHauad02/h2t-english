@@ -9,6 +9,8 @@ import {
 } from "@mui/material";
 import { convertBase64ToArrayBuffer } from "utils/convert";
 import { fetchFileFromUrl } from "utils/fetchFile";
+import { useDarkMode } from "hooks/useDarkMode";
+import useColor from "theme/useColor";
 
 interface WEDocumentViewerProps {
   base64File?: string;
@@ -39,11 +41,18 @@ export default function WEDocumentViewer({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
+  const { isDarkMode } = useDarkMode();
+  const color = useColor();
+
+  const backgroundColor = isDarkMode ? color.gray800 : color.gray50;
+  const textColor = isDarkMode ? color.gray100 : color.gray900;
+  const borderColor = isDarkMode ? color.gray700 : color.gray300;
+
   const complexSx: SxProps<Theme> = {
     maxHeight: maxHeight,
     padding: padding,
-    border: "1px solid #ccc",
-    backgroundColor: "#f9f9f9",
+    border: `1px solid ${borderColor}`,
+    backgroundColor: backgroundColor,
     borderRadius: "8px",
     overflowY: "auto",
     position: "relative",
@@ -56,6 +65,7 @@ export default function WEDocumentViewer({
     wordBreak: wordBreak as "normal" | "break-word" | "keep-all",
     whiteSpace: whiteSpace,
     padding: padding,
+    color: textColor, // Thêm màu chữ dựa trên chế độ darkMode
   };
 
   useEffect(() => {
