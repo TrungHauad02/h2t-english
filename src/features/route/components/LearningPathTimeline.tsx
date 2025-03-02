@@ -16,7 +16,8 @@ import {
 } from "@mui/lab";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import { Route } from "interfaces";
+import { Route, RouteNode, RouteNodeEnum } from "interfaces";
+import { useNavigate } from "react-router-dom";
 
 interface LearningPathTimelineProps {
   route: Route;
@@ -27,10 +28,40 @@ export default function LearningPathTimeline({
 }: LearningPathTimelineProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-
+  const navigate = useNavigate();
   const cardBackgroundColor = isDarkMode ? color.gray700 : color.white;
   const cardBorderColor = isDarkMode ? color.gray600 : color.gray300;
   const textColor = isDarkMode ? color.gray100 : color.gray900;
+
+  const handleLearnClick = (node: RouteNode) => {
+    let path = "";
+    switch (node.type) {
+      case RouteNodeEnum.VOCABULARY:
+        path = `/lesson/topics/${node.nodeId}`;
+        break;
+      case RouteNodeEnum.GRAMMAR:
+        path = `/lesson/grammars/${node.nodeId}`;
+        break;
+      case RouteNodeEnum.READING:
+        path = `/lesson/readings/${node.nodeId}`;
+        break;
+      case RouteNodeEnum.LISTENING:
+        path = `/lesson/listenings/${node.nodeId}`;
+        break;
+      case RouteNodeEnum.WRITING:
+        path = `/lesson/writings/${node.nodeId}`;
+        break;
+      case RouteNodeEnum.SPEAKING:
+        path = `/lesson/speakings/${node.nodeId}`;
+        break;
+      case RouteNodeEnum.TEST:
+        path = `/test/mixing/${node.nodeId}`;
+        break;
+      default:
+        path = "/";
+    }
+    navigate(path);
+  };
 
   return (
     <Card
@@ -76,8 +107,7 @@ export default function LearningPathTimeline({
               <TimelineContent>
                 <Stack
                   direction={index % 2 === 0 ? "row" : "row-reverse"}
-                  justifyContent={"space-between"}
-                  spacing={2}
+                  spacing={{ xs: 2, md: 4 }}
                 >
                   <Stack direction={"column"}>
                     <Typography
@@ -105,6 +135,7 @@ export default function LearningPathTimeline({
                         bgcolor: isDarkMode ? color.teal400 : color.teal600,
                       },
                     }}
+                    onClick={() => handleLearnClick(node)}
                   >
                     Learn
                   </Button>
