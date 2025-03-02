@@ -21,7 +21,7 @@ export interface Route extends BaseEntity {
   ownerId: number;
 }
 
-enum RouteNodeEnum {
+export enum RouteNodeEnum {
   VOCABULARY = "VOCABULARY",
   GRAMMAR = "GRAMMAR",
   READING = "READING",
