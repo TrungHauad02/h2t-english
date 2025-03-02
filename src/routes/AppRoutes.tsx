@@ -11,6 +11,8 @@ const AppRoutes = () => {
         <Route path="/register" element={<Pages.RegisterPage />} />
         <Route path="/lesson/:type" element={<Pages.ListLessonPage />} />
         <Route path="/lesson/:type/:id" element={<Pages.LessonPage />} />
+        <Route path="/route" element={<Pages.ListRoutePage />} />
+        <Route path="/route/:id" element={<Pages.RoutePage />} />
         <Route path="/test/:type" element={<Pages.ListTestPage />} />
         <Route path="/test/:type/:id" element={<Pages.TestPage />} />
       </Route>
