@@ -21,6 +21,10 @@ const AppRoutes = () => {
         <Route path="manage-student" element={<Pages.ManageStudentPage />} />
         <Route path="manage-teacher" element={<Pages.ManageTeacherPage />} />
       </Route>
+      <Route path="/teacher" element={<Layouts.TeacherLayout />}>
+        <Route index element={<Pages.ManageLessonPage />} />
+        <Route path="routes" element={<Pages.ManageLessonPage />} />
+      </Route>
       <Route path="*" element={<Pages.ErrorPage />} />
     </Routes>
   );
