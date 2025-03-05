@@ -103,7 +103,7 @@ export default function TeacherSidebar({
                     backgroundColor: isActive
                       ? isDarkMode
                         ? color.teal800
-                        : color.teal200
+                        : color.teal400
                       : "transparent",
                     borderRadius: "8px",
                     padding: "8px 12px",
