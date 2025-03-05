@@ -10,7 +10,7 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import { Theme } from "@mui/material"; 
+import { Theme } from "@mui/material";
 
 interface WSTextFieldProps {
   label?: string;
@@ -23,6 +23,7 @@ interface WSTextFieldProps {
   sx?: SxProps<Theme>;
   required?: boolean;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  placeholder?: string;
 }
 
 const WETextField = ({
@@ -36,6 +37,7 @@ const WETextField = ({
   sx,
   required,
   onKeyDown,
+  placeholder,
 }: WSTextFieldProps) => {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -44,7 +46,7 @@ const WETextField = ({
     "& .MuiOutlinedInput-root": {
       borderRadius: { xs: "0.75rem", sm: "1rem" },
       width: "100%",
-      paddingLeft: "0,2rem",
+      paddingLeft: "0.2rem",
       "& .MuiOutlinedInput-notchedOutline": {
         border: `1px solid ${color.gray400}`,
       },
@@ -58,7 +60,7 @@ const WETextField = ({
     maxWidth: "600px",
     ...sx,
   };
-  
+
   return (
     <Stack direction={"column"} spacing={1}>
       <Typography
@@ -78,6 +80,7 @@ const WETextField = ({
         name={name}
         sx={complexSx}
         onKeyDown={onKeyDown}
+        placeholder={placeholder}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">

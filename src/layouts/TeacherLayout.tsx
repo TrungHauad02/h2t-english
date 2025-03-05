@@ -1,10 +1,4 @@
-import {
-  Box,
-  Toolbar,
-  CssBaseline,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, CssBaseline, useMediaQuery, useTheme } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import { Outlet } from "react-router-dom";
 import useColor from "theme/useColor";
@@ -42,7 +36,6 @@ export default function TeacherLayout() {
       <Box
         component="main"
         sx={{
-          flexGrow: 1,
           bgcolor: isDarkMode ? color.gray900 : color.gray100,
           color: isDarkMode ? color.white : color.black,
           p: 3,
@@ -50,7 +43,6 @@ export default function TeacherLayout() {
           width: isMobile ? `100%` : `calc(100% - ${drawerWidth}px)`,
         }}
       >
-        <Toolbar />
         <Outlet />
       </Box>
     </Box>

@@ -1,4 +1,5 @@
 import { Button, SxProps, Theme } from "@mui/material";
+import useColor from "theme/useColor";
 
 interface WEButtonProps {
   children?: any;
@@ -21,6 +22,20 @@ export default function WEButton({
   onClick,
   size = "medium",
 }: WEButtonProps) {
+  const colors = useColor();
+
+  if (!bgcolor) {
+    bgcolor = colors.teal800;
+  }
+
+  if (!hoverBgcolor) {
+    hoverBgcolor = colors.teal700;
+  }
+
+  if (!color) {
+    color = colors.white;
+  }
+
   const complexSx = {
     bgcolor: `${bgcolor}`,
     color: `${color}`,
