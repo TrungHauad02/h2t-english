@@ -28,7 +28,11 @@ export enum RouteNodeEnum {
   LISTENING = "LISTENING",
   WRITING = "WRITING",
   SPEAKING = "SPEAKING",
-  TEST = "TEST",
+  MIXING_TEST = "MIXING_TEST",
+  READING_TEST = "READING_TEST",
+  LISTENING_TEST = "LISTENING_TEST",
+  SPEAKING_TEST = "SPEAKING_TEST",
+  WRITING_TEST = "WRITING_TEST",
 }
 
 export interface RouteNode extends BaseEntity {

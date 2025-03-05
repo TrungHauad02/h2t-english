@@ -54,8 +54,20 @@ export default function LearningPathTimeline({
       case RouteNodeEnum.SPEAKING:
         path = `/lesson/speakings/${node.nodeId}`;
         break;
-      case RouteNodeEnum.TEST:
+      case RouteNodeEnum.MIXING_TEST:
         path = `/test/mixing/${node.nodeId}`;
+        break;
+      case RouteNodeEnum.READING_TEST:
+        path = `/test/reading/${node.nodeId}`;
+        break;
+      case RouteNodeEnum.LISTENING_TEST:
+        path = `/test/listening/${node.nodeId}`;
+        break;
+      case RouteNodeEnum.SPEAKING_TEST:
+        path = `/test/speaking/${node.nodeId}`;
+        break;
+      case RouteNodeEnum.WRITING_TEST:
+        path = `/test/writing/${node.nodeId}`;
         break;
       default:
         path = "/";
