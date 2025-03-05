@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { toast } from "react-toastify";
 import users from "../services/mockData";
 import { useNavigate } from "react-router-dom";
@@ -5,6 +6,10 @@ import { RolesEnum, StatusEnum } from "interfaces";
 
 export const useLoginForm = () => {
   const navigate = useNavigate();
+
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
   const handleLogin = (email: string, password: string) => {
     if (!email || !password) {
@@ -42,6 +47,12 @@ export const useLoginForm = () => {
   };
 
   return {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    showPassword,
+    setShowPassword,
     handleLogin,
   };
 };
