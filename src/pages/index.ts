@@ -1,6 +1,7 @@
 // Auth Pages
 export { default as LoginPage } from "features/auth/pages/LoginPage";
 export { default as RegisterPage } from "features/auth/pages/RegisterPage";
+export { default as ResetPasswordPage } from "features/auth/pages/ForgotPasswordPage";
 
 // Error Page
 export { default as ErrorPage } from "pages/ErrorPage";

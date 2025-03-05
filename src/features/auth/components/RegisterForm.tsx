@@ -20,7 +20,8 @@ export default function Register() {
                 boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.1)",
                 bgcolor: isDarkMode ? color.gray900 : color.gray100,
                 color: isDarkMode ? color.white : color.black,
-                width: "80%",
+                width: "100%",
+                maxWidth: "600px",
             }}
         >
             <Box display="flex" flexDirection="column" alignItems="center" mb={2}>

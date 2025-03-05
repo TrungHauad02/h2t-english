@@ -1,4 +1,5 @@
-import { Box, Button, Typography, Link } from "@mui/material";
+import { Box, Button, Link } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { useLoginForm } from "../hooks/useLoginForm";
@@ -9,6 +10,7 @@ export default function Login() {
   const useLogin = useLoginForm();
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const navigate = useNavigate();
 
   return (
     <Box
@@ -31,7 +33,7 @@ export default function Login() {
         name="email"
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            useLogin.handleLogin(); 
+            useLogin.handleLogin();
           }
         }}
       />
@@ -63,7 +65,10 @@ export default function Login() {
         Log in
       </Button>
       <Box mt={1} display="flex" justifyContent="space-between">
-        <Link href="#" variant="body2" sx={{ color: isDarkMode ? color.gray100 : color.gray800, mt: 2, fontStyle: "italic", }}>
+        <Link
+          onClick={() => navigate("/forgot-password")}
+          variant="body2"
+          sx={{ color: isDarkMode ? color.gray100 : color.gray800, mt: 2, fontStyle: "italic" }}>
           Forgot password?
         </Link>
       </Box>
