@@ -12,12 +12,22 @@ export const useRegisterForm = () => {
     const [password, setPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
     const [avatar, setAvatar] = useState<string | null>(null);
+    const [phoneNumber, setPhoneNumber] = useState<string>("");
+    const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
+    const [role, setRole] = useState<RolesEnum>(RolesEnum.STUDENT);
 
     const handleRegister = async () => {
         if(!email || !userName || !password || !confirmPassword){
             toast.error("Please fill in all fields!");
             return;
         }
+
+        if (role === RolesEnum.TEACHER) {
+            if (!phoneNumber || !dateOfBirth) {
+                toast.error("Teacher must fill in Phone Number and Date of Birth!");
+                return;
+            }
+        }        
 
         if (password !== confirmPassword) {
             toast.error("The confirmed passwords do not match!");
@@ -51,6 +61,12 @@ export const useRegisterForm = () => {
         setConfirmPassword,
         avatar,
         setAvatar,
+        phoneNumber,
+        setPhoneNumber,
+        dateOfBirth,
+        setDateOfBirth,
+        role,
+        setRole,
         handleRegister,
         handleChooseAvatar
     };
