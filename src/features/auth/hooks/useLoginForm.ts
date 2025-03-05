@@ -11,7 +11,7 @@ export const useLoginForm = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const handleLogin = (email: string, password: string) => {
+  const handleLogin = () => {
     if (!email || !password) {
       toast.error("Please fill in both email and password.");
       return;

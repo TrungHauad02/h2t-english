@@ -31,7 +31,7 @@ export default function Login() {
         name="email"
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            useLogin.handleLogin(useLogin.email, useLogin.password); 
+            useLogin.handleLogin(); 
           }
         }}
       />
@@ -46,7 +46,7 @@ export default function Login() {
         name="password"
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            useLogin.handleLogin(useLogin.email, useLogin.password);
+            useLogin.handleLogin();
           }
         }}
       />
@@ -58,7 +58,7 @@ export default function Login() {
           color: isDarkMode ? color.black : color.white,
           mt: 1,
         }}
-        onClick={() => useLogin.handleLogin(useLogin.email, useLogin.password)}
+        onClick={() => useLogin.handleLogin()}
       >
         Log in
       </Button>
