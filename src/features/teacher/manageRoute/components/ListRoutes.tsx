@@ -33,7 +33,7 @@ export default function ListRoutes({ list }: ListRoutesProps) {
       </Typography>
       <Grid container spacing={2}>
         {list.map((route) => (
-          <Grid item xs={12} sm={6} md={4} key={route.id}>
+          <Grid item xs={12} md={6} lg={4} key={route.id}>
             <Card sx={{ maxWidth: 345, backgroundColor }}>
               <CardMedia
                 component="img"
