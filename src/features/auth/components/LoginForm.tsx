@@ -1,21 +1,12 @@
-import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-  Link,
-} from "@mui/material";
+import { Box, Button, Typography, Link } from "@mui/material";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { useLoginForm } from "../hooks/useLoginForm";
 import WETextField from "../../../components/input/WETexField"
 import "react-toastify/dist/ReactToastify.css";
 
-const Login: React.FC = () => {
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const { handleLogin } = useLoginForm();
+export default function Login() {
+  const useLogin = useLoginForm();
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
@@ -31,34 +22,31 @@ const Login: React.FC = () => {
         width: "80%",
       }}
     >
-      <Typography variant="h4" align="center" mb={2}>
-        Log in
-      </Typography>
       <WETextField
         label="Email"
         type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        value={useLogin.email}
+        onChange={(e) => useLogin.setEmail(e.target.value)}
         required={true}
         name="email"
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            handleLogin(email, password); 
+            useLogin.handleLogin(useLogin.email, useLogin.password); 
           }
         }}
       />
       <WETextField
         label="Password"
-        type={showPassword ? "text" : "password"}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        showPassword={showPassword}
-        setShowPassword={setShowPassword}
+        type={useLogin.showPassword ? "text" : "password"}
+        value={useLogin.password}
+        onChange={(e) => useLogin.setPassword(e.target.value)}
+        showPassword={useLogin.showPassword}
+        setShowPassword={useLogin.setShowPassword}
         required={true}
         name="password"
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            handleLogin(email, password);
+            useLogin.handleLogin(useLogin.email, useLogin.password);
           }
         }}
       />
@@ -70,7 +58,7 @@ const Login: React.FC = () => {
           color: isDarkMode ? color.black : color.white,
           mt: 1,
         }}
-        onClick={() => handleLogin(email, password)}
+        onClick={() => useLogin.handleLogin(useLogin.email, useLogin.password)}
       >
         Log in
       </Button>
@@ -82,5 +70,3 @@ const Login: React.FC = () => {
     </Box>
   );
 };
-
-export default Login;
