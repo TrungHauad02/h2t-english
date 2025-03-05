@@ -1,6 +1,6 @@
 import { Search } from "@mui/icons-material";
 import { Box, Stack } from "@mui/material";
-import { WEButton, WETexField } from "components/input";
+import { WEButton, WESelect, WETexField } from "components/input";
 import { useDarkMode } from "hooks/useDarkMode";
 import { Route } from "interfaces";
 import { useEffect, useState } from "react";
@@ -13,12 +13,23 @@ export default function ManageRoutePage() {
   const { isDarkMode } = useDarkMode();
 
   const [searchText, setSearchText] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [listRoutes, setListRoutes] = useState<Route[]>([]);
 
   useEffect(() => {
     const routes = routeService.getListRoute(1);
     setListRoutes(routes);
   }, []);
+
+  const handleSearch = () => {
+    const filter = {
+      status: statusFilter,
+      title: searchText,
+    };
+
+    const filteredRoutes = routeService.getListRoute(1, filter);
+    setListRoutes(filteredRoutes);
+  };
 
   return (
     <Box sx={{ mt: 6 }}>
@@ -50,9 +61,20 @@ export default function ManageRoutePage() {
                 },
               }}
             />
+            <WESelect
+              label="Filter"
+              onChange={(value) => setStatusFilter(value as string)}
+              options={[
+                { label: "All", value: "all" },
+                { label: "Published", value: "published" },
+                { label: "Unpublished", value: "unpublished" },
+              ]}
+              value={statusFilter}
+            />
             <WEButton
               variant="contained"
               sx={{ width: "40px", height: "40px" }}
+              onClick={handleSearch}
             >
               <Search />
             </WEButton>

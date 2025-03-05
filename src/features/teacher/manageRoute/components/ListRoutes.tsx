@@ -6,6 +6,7 @@ import {
   Grid,
   Button,
   CardMedia,
+  Chip,
 } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import { Route } from "interfaces";
@@ -41,22 +42,40 @@ export default function ListRoutes({ list }: ListRoutesProps) {
                 alt={route.title}
               />
               <CardContent>
-                <Typography
-                  variant="h6"
-                  component="div"
-                  gutterBottom
-                  sx={{ color: textColor }}
+                <Stack
+                  direction={"row"}
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
                 >
-                  {route.title}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ color: subTextColor }}
-                  noWrap
-                >
-                  {route.description}
-                </Typography>
+                  <Stack>
+                    <Typography
+                      variant="h6"
+                      component="div"
+                      gutterBottom
+                      sx={{ color: textColor }}
+                    >
+                      {route.title}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ color: subTextColor }}
+                      noWrap
+                    >
+                      {route.description}
+                    </Typography>
+                  </Stack>
+                  <Chip
+                    label={route.status ? "Published" : "Unpublished"}
+                    sx={{
+                      bgcolor: route.status
+                        ? buttonColor
+                        : isDarkMode
+                        ? color.gray500
+                        : color.gray300,
+                    }}
+                  />
+                </Stack>
                 <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
                   <Button
                     variant="outlined"

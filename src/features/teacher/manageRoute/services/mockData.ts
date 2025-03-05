@@ -74,7 +74,7 @@ const routeData: Route[] = [
   },
   {
     id: 4,
-    status: true,
+    status: false,
     title: "Route 4",
     image: "/image.jpg",
     description: "Description of Route 4",
