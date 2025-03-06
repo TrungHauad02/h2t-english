@@ -40,7 +40,7 @@ export const useSendOTPForm = (onOtpValidated?: () => void) => {
 
     const handleValidateOTP = () => {
         // Gọi API xác thực OTP
-        if(otp == "123456"){
+        if(otp === "123456"){
             toast.success("OTP is valid, please reset new password");
             onOtpValidated?.();
         }

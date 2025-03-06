@@ -1,6 +1,8 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, IconButton, Link, Typography } from "@mui/material";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import useColor from "theme/useColor";
 import WETextField from "../../../components/input/WETextField";
+import { useNavigate } from "react-router-dom";
 import { useDarkMode } from "hooks/useDarkMode";
 import { useEffect } from "react";
 import OTPInput from "components/input/WEOTPField";
@@ -14,9 +16,10 @@ export default function SendOTPForm({
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const useSendOTP = useSendOTPForm(onOtpValidated);
+  const navigate = useNavigate();
 
   // useEffect để xử lý đếm ngược
-  useEffect(() => {}, [useSendOTP.countdown]);
+  useEffect(() => { }, [useSendOTP.countdown]);
 
   return (
     <Box
@@ -87,6 +90,16 @@ export default function SendOTPForm({
       >
         Validate OTP
       </Button>
+      <Box display="flex" justifyContent="space-between">
+        <IconButton
+          onClick={() => navigate("/login")}
+          sx={{
+            color: isDarkMode ? color.gray100 : color.gray800,
+          }}
+        >
+          <ArrowBackIcon />
+        </IconButton>
+      </Box>
     </Box>
   );
 }

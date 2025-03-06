@@ -2,7 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import users from "../services/mockData";
 import { useNavigate } from "react-router-dom";
-import { RolesEnum, StatusEnum } from "interfaces";
+import { RolesEnum } from "interfaces";
 
 export const useLoginForm = () => {
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ export const useLoginForm = () => {
       return;
     }
 
-    if (user.status === StatusEnum.INACTIVE) {
+    if (user.status === false) {
       toast.error("Account locked!");
       return;
     }

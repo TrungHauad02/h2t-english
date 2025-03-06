@@ -4,7 +4,6 @@ import {
   Route,
   RouteNode,
   RouteNodeEnum,
-  StatusEnum,
   User,
 } from "interfaces";
 
@@ -101,7 +100,7 @@ const mockTeacher: User = {
   name: "John Doe",
   password: "",
   roleEnum: RolesEnum.TEACHER,
-  status: StatusEnum.ACTIVE,
+  status: true,
   phoneNumber: "123456789",
   dateOfBirth: new Date(),
 };
