@@ -1,10 +1,7 @@
-import { useEffect, useState } from "react";
 import { Stack, Typography, Button, CircularProgress } from "@mui/material";
-import { useParams, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import { routeService } from "../services/listRouteService";
 import {
   NodesList,
   PageHeader,
@@ -13,64 +10,16 @@ import {
   RouteDetailsView,
   RouteEditForm,
 } from "../components/detailRoute";
-import { Route } from "interfaces";
+import useDetailRoutePage from "../hooks/useDetailRoutePage";
+import AddNodeDialog from "../components/detailRoute/AddNodeDialog";
 
 export default function DetailRoutePage() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [data, setData] = useState<Route | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [editMode, setEditMode] = useState(false);
-  const [editedData, setEditedData] = useState<Route | null>(null);
-  const [openPublishDialog, setOpenPublishDialog] = useState(false);
-  const [openUnpublishDialog, setOpenUnpublishDialog] = useState(false);
 
-  useEffect(() => {
-    if (id) {
-      setLoading(true);
-      const route = routeService.getRouteById(parseInt(id));
-      if (route) {
-        setData(route);
-        setEditedData({ ...route });
-      }
-      setLoading(false);
-    }
-  }, [id]);
+  const hooks = useDetailRoutePage();
 
-  const handleGoBack = () => navigate(-1);
-  const handleEditMode = () => setEditMode(!editMode);
-
-  const handleSaveChanges = () => {
-    if (editedData) {
-      setData(editedData);
-      setEditMode(false);
-    }
-  };
-
-  const handlePublishClick = () => setOpenPublishDialog(true);
-  const handleUnpublishClick = () => setOpenUnpublishDialog(true);
-
-  const handlePublish = () => {
-    if (data) {
-      const updatedData = { ...data, status: true };
-      setData(updatedData);
-      if (editedData) setEditedData(updatedData);
-      setOpenPublishDialog(false);
-    }
-  };
-
-  const handleUnpublish = () => {
-    if (data) {
-      const updatedData = { ...data, status: false };
-      setData(updatedData);
-      if (editedData) setEditedData(updatedData);
-      setOpenUnpublishDialog(false);
-    }
-  };
-
-  if (loading) {
+  if (hooks.loading) {
     return (
       <Stack
         alignItems="center"
@@ -85,7 +34,7 @@ export default function DetailRoutePage() {
     );
   }
 
-  if (!data) {
+  if (!hooks.data) {
     return (
       <Stack sx={{ mt: 6, p: 3 }}>
         <Typography
@@ -96,7 +45,7 @@ export default function DetailRoutePage() {
         </Typography>
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={handleGoBack}
+          onClick={hooks.handleGoBack}
           sx={{
             mt: 2,
             color: isDarkMode ? color.emerald400 : color.emerald600,
@@ -110,35 +59,51 @@ export default function DetailRoutePage() {
 
   return (
     <Stack sx={{ mt: 6, mb: 6, px: { xs: 2, md: 4 } }}>
-      <PageHeader onGoBack={handleGoBack} onEditMode={handleEditMode} />
-
-      <PublishActions
-        status={data.status}
-        onPublish={handlePublishClick}
-        onUnpublish={handleUnpublishClick}
+      <PageHeader
+        onGoBack={hooks.handleGoBack}
+        onEditMode={hooks.handleEditMode}
       />
 
-      {editMode ? (
+      <PublishActions
+        status={hooks.data.status}
+        onPublish={hooks.handlePublishClick}
+        onUnpublish={hooks.handleUnpublishClick}
+      />
+
+      {hooks.editMode ? (
         <RouteEditForm
-          editedData={editedData}
-          setEditedData={setEditedData}
-          onSave={handleSaveChanges}
-          onCancel={handleEditMode}
+          editedData={hooks.editedData}
+          setEditedData={hooks.setEditedData}
+          onSave={hooks.handleSaveChanges}
+          onCancel={hooks.handleEditMode}
         />
       ) : (
         <>
-          <RouteDetailsView data={data} />
-          <NodesList nodes={data.routeNodes} />
+          <RouteDetailsView data={hooks.data} />
+          <NodesList
+            nodes={hooks.data.routeNodes}
+            onMoveUp={hooks.onMoveUp}
+            onMoveDown={hooks.onMoveDown}
+            onSaveChange={hooks.handleSaveChanges}
+            onOpenAddNodeDialog={hooks.handleOpenAddNodeDialog}
+          />
         </>
       )}
 
       <PublishDialogs
-        openPublish={openPublishDialog}
-        openUnpublish={openUnpublishDialog}
-        onCancelPublish={() => setOpenPublishDialog(false)}
-        onCancelUnpublish={() => setOpenUnpublishDialog(false)}
-        onConfirmPublish={handlePublish}
-        onConfirmUnpublish={handleUnpublish}
+        openPublish={hooks.openPublishDialog}
+        openUnpublish={hooks.openUnpublishDialog}
+        onCancelPublish={() => hooks.setOpenPublishDialog(false)}
+        onCancelUnpublish={() => hooks.setOpenUnpublishDialog(false)}
+        onConfirmPublish={hooks.handlePublish}
+        onConfirmUnpublish={hooks.handleUnpublish}
+      />
+      <AddNodeDialog
+        open={hooks.openAddNodeDialog}
+        onCancel={() => hooks.handleOpenAddNodeDialog()}
+        onOk={() => hooks.handleAddNode()}
+        data={hooks.newNode}
+        setData={hooks.setNewNode}
       />
     </Stack>
   );

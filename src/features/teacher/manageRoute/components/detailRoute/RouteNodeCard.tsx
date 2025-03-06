@@ -1,4 +1,12 @@
-import { Box, Paper, Typography, Chip } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Typography,
+  Chip,
+  Stack,
+  Button,
+  Tooltip,
+} from "@mui/material";
 import BookIcon from "@mui/icons-material/Book";
 import TranslateIcon from "@mui/icons-material/Translate";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
@@ -9,6 +17,7 @@ import QuizIcon from "@mui/icons-material/Quiz";
 import { RouteNode, RouteNodeEnum } from "interfaces";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
+import { ArrowDownward, ArrowUpward } from "@mui/icons-material";
 
 const getNodeIcon = (type: RouteNodeEnum) => {
   switch (type) {
@@ -66,9 +75,17 @@ const getNodeTypeLabel = (type: RouteNodeEnum) => {
 
 interface RouteNodeCardProps {
   node: RouteNode;
+  isEditMode: boolean;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
 }
 
-export default function RouteNodeCard({ node }: RouteNodeCardProps) {
+export default function RouteNodeCard({
+  node,
+  onMoveUp,
+  isEditMode,
+  onMoveDown,
+}: RouteNodeCardProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
@@ -84,7 +101,11 @@ export default function RouteNodeCard({ node }: RouteNodeCardProps) {
         "&:hover": {
           transform: "translateY(-5px)",
           boxShadow: 6,
-          borderColor: isDarkMode ? color.emerald400 : color.emerald600,
+          borderColor: isEditMode
+            ? isDarkMode
+              ? color.emerald400
+              : color.emerald600
+            : color.gray500,
         },
         cursor: "pointer",
         border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
@@ -108,7 +129,11 @@ export default function RouteNodeCard({ node }: RouteNodeCardProps) {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: isDarkMode ? color.emerald400 : color.emerald600,
+            backgroundColor: isEditMode
+              ? isDarkMode
+                ? color.emerald400
+                : color.emerald600
+              : color.gray500,
             color: "white",
             mr: 2,
           }}
@@ -125,36 +150,101 @@ export default function RouteNodeCard({ node }: RouteNodeCardProps) {
           {node.title}
         </Typography>
       </Box>
-      <Chip
-        label={getNodeTypeLabel(node.type)}
-        size="small"
-        sx={{
-          alignSelf: "flex-start",
-          mb: 2,
-          backgroundColor: isDarkMode ? color.gray700 : color.gray200,
-          color: isDarkMode ? color.gray100 : color.gray900,
-        }}
-      />
-      <Typography
-        variant="body2"
-        sx={{
-          color: isDarkMode ? color.gray300 : color.gray700,
-          mb: 2,
-          flex: 1,
-        }}
-      >
-        {node.description}
-      </Typography>
-      <Typography
-        variant="body2"
-        sx={{
-          color: isDarkMode ? color.gray400 : color.gray600,
-          fontSize: "0.875rem",
-          mt: "auto",
-        }}
-      >
-        Serial: {node.serial}
-      </Typography>
+      <Stack direction={"row"} justifyContent={"space-between"}>
+        <Stack>
+          <Chip
+            label={getNodeTypeLabel(node.type)}
+            size="small"
+            sx={{
+              alignSelf: "flex-start",
+              mb: 2,
+              backgroundColor: isDarkMode ? color.gray700 : color.gray200,
+              color: isDarkMode ? color.gray100 : color.gray900,
+            }}
+          />
+          <Typography
+            variant="body2"
+            sx={{
+              color: isDarkMode ? color.gray300 : color.gray700,
+              mb: 2,
+              flex: 1,
+            }}
+          >
+            {node.description}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              color: isDarkMode ? color.gray400 : color.gray600,
+              fontSize: "0.875rem",
+              mt: "auto",
+            }}
+          >
+            Serial: {node.serial}
+          </Typography>
+        </Stack>
+        <Stack
+          direction="column"
+          spacing={0.5}
+          sx={{
+            ml: 2,
+            alignSelf: "flex-start",
+            "& .MuiButton-root": {
+              minWidth: 40,
+              width: 40,
+              height: 40,
+              padding: 0,
+              borderRadius: "50%",
+              border: `1px solid ${isDarkMode ? color.gray600 : color.gray300}`,
+              "&:hover": {
+                backgroundColor: isDarkMode
+                  ? color.emerald800
+                  : color.emerald100,
+                borderColor: isDarkMode ? color.emerald400 : color.emerald600,
+                color: isDarkMode ? color.emerald400 : color.emerald600,
+              },
+            },
+          }}
+        >
+          <Tooltip title="Move up" arrow placement="top">
+            <Button
+              aria-label="Move up"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMoveUp && onMoveUp();
+              }}
+              disabled={!isEditMode}
+            >
+              <ArrowUpward
+                fontSize="small"
+                sx={{
+                  color: isDarkMode ? color.gray400 : color.gray600,
+                  transition: "color 0.2s ease",
+                }}
+              />
+            </Button>
+          </Tooltip>
+
+          <Tooltip title="Move down" arrow>
+            <Button
+              aria-label="Move down"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMoveDown && onMoveDown();
+              }}
+              disabled={!isEditMode}
+            >
+              <ArrowDownward
+                fontSize="small"
+                sx={{
+                  color: isDarkMode ? color.gray400 : color.gray600,
+                  transition: "color 0.2s ease",
+                }}
+              />
+            </Button>
+          </Tooltip>
+        </Stack>
+      </Stack>
     </Box>
   );
 }
