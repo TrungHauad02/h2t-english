@@ -67,6 +67,8 @@ const WETextField = ({
         sx={{
           color: isDarkMode ? color.gray100 : color.gray900,
           fontSize: { xs: "1rem", sm: "1rem" },
+          textAlign: "left",
+          pl: "0.2rem",
         }}
       >
         {label} {required && <span style={{ color: "red" }}>*</span>}

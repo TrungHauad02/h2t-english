@@ -26,6 +26,7 @@ const AppRoutes = () => {
         <Route index element={<Pages.ManageRoutePage />} />
         <Route path="routes" element={<Pages.ManageRoutePage />} />
         <Route path="information" element={<Pages.InformationPage />} />
+        <Route path="routes/:id" element={<Pages.DetailRoutePage />} />
       </Route>
       <Route path="*" element={<Pages.ErrorPage />} />
     </Routes>

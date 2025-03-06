@@ -1,8 +1,16 @@
 import { Stack } from "@mui/material";
-import { WEButton, WESelect, WETexField } from "components/input";
+import {
+  WEButton,
+  WESelect,
+  WESelectImage,
+  WETextField,
+} from "components/input";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { Search } from "@mui/icons-material";
+import { useState } from "react";
+import { WEDialog } from "components/display";
+import { Route } from "interfaces";
 
 interface ListRoutesHeaderProps {
   searchText: string;
@@ -22,6 +30,41 @@ export default function ListRoutesHeader({
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
+  const [isOpenCreateDialog, setIsOpenCreateDialog] = useState<boolean>(false);
+  const [data, setData] = useState<Route>({
+    id: -1,
+    title: "",
+    description: "",
+    status: false,
+    image: "",
+    ownerId: 1,
+    routeNodes: [],
+  });
+
+  const handleOpenCreateDialog = () => {
+    setIsOpenCreateDialog(!isOpenCreateDialog);
+  };
+
+  const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setData({ ...data, title: e.target.value });
+  };
+
+  const onChangeDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setData({ ...data, description: e.target.value });
+  };
+
+  const onChangeImage = (value: string) => {
+    setData({ ...data, image: value });
+  };
+
+  const onCreateRoute = () => {
+    // TODO: create new route
+    console.log(data);
+    setIsOpenCreateDialog(!isOpenCreateDialog);
+    // TODO: show success message
+    // TODO: navigate to route detail
+  };
+
   return (
     <Stack
       direction={{ xs: "column", md: "row" }}
@@ -31,7 +74,7 @@ export default function ListRoutesHeader({
     >
       {/* Search bar */}
       <Stack direction={"row"} spacing={2} alignItems={"center"}>
-        <WETexField
+        <WETextField
           type="text"
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
@@ -74,8 +117,39 @@ export default function ListRoutesHeader({
       </Stack>
       {/* Actions */}
       <Stack direction={"row"} alignItems={"center"}>
-        <WEButton variant="contained">Create Route</WEButton>
+        <WEButton variant="contained" onClick={handleOpenCreateDialog}>
+          Create Route
+        </WEButton>
       </Stack>
+      <WEDialog
+        title="Create Route"
+        open={isOpenCreateDialog}
+        onCancel={handleOpenCreateDialog}
+        onOk={onCreateRoute}
+      >
+        <Stack>
+          <WETextField
+            label="Title"
+            value={data.title}
+            onChange={onChangeTitle}
+            type="text"
+            required
+          />
+          <WETextField
+            label="Description"
+            value={data.description}
+            onChange={onChangeDescription}
+            type="text"
+            required
+          />
+          <WESelectImage
+            label="Image"
+            value={data.image}
+            onChange={onChangeImage}
+            required
+          />
+        </Stack>
+      </WEDialog>
     </Stack>
   );
 }

@@ -2,7 +2,7 @@ import { Box, Stack, Typography } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import useListenAndWriteAWordSection from "./useListenAndWriteAWordSection";
-import { WEButton, WETexField } from "components/input";
+import { WEButton, WETextField } from "components/input";
 import { CircleRounded } from "@mui/icons-material";
 import WEActionButtons from "components/input/WEActionButtons";
 import { WEConfirmDialog, WEScoreDialog } from "components/display";
@@ -73,7 +73,7 @@ export default function ListenAndWriteAWordSection() {
         {hooks.stateData[hooks.curIndex].sentence.map((item, index) =>
           item === "" ? (
             <Box key={index} sx={{ px: 1 }}>
-              <WETexField
+              <WETextField
                 type="text"
                 value={hooks.stateData[hooks.curIndex].userAnswer}
                 onChange={(e) => hooks.onChangeAnswer(e.target.value)}

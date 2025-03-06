@@ -42,6 +42,17 @@ const routeNodeData: RouteNode[] = [
     description: "Description of Reading 1",
     image: "/image.jpg",
   },
+  {
+    id: 4,
+    status: true,
+    serial: 4,
+    routeId: 1,
+    nodeId: 4,
+    type: RouteNodeEnum.MIXING_TEST,
+    title: "Mixing test 1",
+    description: "Description of Mixing test 1",
+    image: "/image.jpg",
+  },
 ];
 
 const routeData: Route[] = [
@@ -94,6 +105,7 @@ const mockTeacher: User = {
   phoneNumber: "123456789",
   dateOfBirth: new Date(),
 };
+
 export const mockData = {
   routes: routeData,
   teacher: mockTeacher,
