@@ -79,5 +79,14 @@ export default function useColor() {
     infoDarkMode: "#1e3a8a",
     errorDarkMode: "#991b1b",
     successDarkMode: "#14532d",
+
+    red100: "#fee2e2",
+    red200: "#fecaca",
+    red300: "#fca5a5",
+    red400: "#f87171",
+    red500: "#ef4444",
+    red600: "#dc2626",
+    red700: "#b91c1c",
+    red800: "#991b1b",
   };
 }

@@ -25,6 +25,9 @@ interface WSTextFieldProps {
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   placeholder?: string;
   disabled?: boolean;
+  multiline?: boolean;
+  rows?: number;
+  maxRows?: number;
 }
 
 const WETextField = ({
@@ -40,6 +43,9 @@ const WETextField = ({
   onKeyDown,
   placeholder,
   disabled,
+  multiline = false, // Mặc định là không phải trường đa dòng
+  rows = 1, // Mặc định là một dòng
+  maxRows,
 }: WSTextFieldProps) => {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -86,6 +92,9 @@ const WETextField = ({
         sx={complexSx}
         onKeyDown={onKeyDown}
         placeholder={placeholder}
+        multiline={multiline}
+        rows={rows}
+        maxRows={maxRows}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
