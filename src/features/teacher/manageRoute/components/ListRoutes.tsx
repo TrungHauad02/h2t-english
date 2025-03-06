@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import { Route } from "interfaces";
+import { useNavigate } from "react-router-dom";
 import useColor from "theme/useColor";
 
 interface ListRoutesProps {
@@ -19,12 +20,17 @@ interface ListRoutesProps {
 export default function ListRoutes({ list }: ListRoutesProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const navigate = useNavigate();
 
   const textColor = isDarkMode ? color.white : color.black;
   const subTextColor = isDarkMode ? color.gray300 : color.gray700;
   const backgroundColor = isDarkMode ? color.gray800 : color.white;
   const buttonColor = isDarkMode ? color.teal400 : color.teal500;
   const buttonTextColor = isDarkMode ? color.white : color.black;
+
+  const onViewDetail = (routeId: number) => {
+    navigate(`/teacher/routes/${routeId}`);
+  };
 
   return (
     <Stack sx={{ mt: 2 }}>
@@ -88,6 +94,7 @@ export default function ListRoutes({ list }: ListRoutesProps) {
                         backgroundColor: buttonColor,
                       },
                     }}
+                    onClick={() => onViewDetail(route.id)}
                   >
                     View detail
                   </Button>

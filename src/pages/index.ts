@@ -22,6 +22,7 @@ export { default as TestPage } from "features/test/pages/TestPage";
 // Teacher Pages
 export { default as ManageRoutePage } from "features/teacher/manageRoute/pages/ManageRoutePage";
 export { default as InformationPage } from "features/teacher/information/pages/InformationPage";
+export { default as DetailRoutePage } from "features/teacher/manageRoute/pages/DetailRoutePage";
 
 // Admin Pages
 export { default as ManageUserPage } from "features/admin/pages/ManageUsersPage";

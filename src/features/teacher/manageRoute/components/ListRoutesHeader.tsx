@@ -3,7 +3,7 @@ import {
   WEButton,
   WESelect,
   WESelectImage,
-  WETexField,
+  WETextField,
 } from "components/input";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
@@ -74,7 +74,7 @@ export default function ListRoutesHeader({
     >
       {/* Search bar */}
       <Stack direction={"row"} spacing={2} alignItems={"center"}>
-        <WETexField
+        <WETextField
           type="text"
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
@@ -128,14 +128,14 @@ export default function ListRoutesHeader({
         onOk={onCreateRoute}
       >
         <Stack>
-          <WETexField
+          <WETextField
             label="Title"
             value={data.title}
             onChange={onChangeTitle}
             type="text"
             required
           />
-          <WETexField
+          <WETextField
             label="Description"
             value={data.description}
             onChange={onChangeDescription}

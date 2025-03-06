@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { useLoginForm } from "../hooks/useLoginForm";
-import WETextField from "../../../components/input/WETexField"
 import "react-toastify/dist/ReactToastify.css";
+import { WETextField } from "components/input";
 
 export default function Login() {
   const useLogin = useLoginForm();
@@ -68,10 +68,15 @@ export default function Login() {
         <Link
           onClick={() => navigate("/forgot-password")}
           variant="body2"
-          sx={{ color: isDarkMode ? color.gray100 : color.gray800, mt: 2, fontStyle: "italic" }}>
+          sx={{
+            color: isDarkMode ? color.gray100 : color.gray800,
+            mt: 2,
+            fontStyle: "italic",
+          }}
+        >
           Forgot password?
         </Link>
       </Box>
     </Box>
   );
-};
+}
