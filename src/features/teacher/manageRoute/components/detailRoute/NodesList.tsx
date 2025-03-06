@@ -1,4 +1,4 @@
-import { Typography, Grid, Stack, IconButton } from "@mui/material";
+import { Typography, Grid, Stack, IconButton, Button } from "@mui/material";
 import RouteNodeCard from "./RouteNodeCard";
 import { RouteNode } from "interfaces";
 import useColor from "theme/useColor";
@@ -12,6 +12,7 @@ interface NodesListProps {
   onMoveUp: (index: number) => void;
   onMoveDown: (index: number) => void;
   onSaveChange: () => void;
+  onOpenAddNodeDialog: () => void;
 }
 
 export default function NodesList({
@@ -19,6 +20,7 @@ export default function NodesList({
   onMoveUp,
   onMoveDown,
   onSaveChange,
+  onOpenAddNodeDialog,
 }: NodesListProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -34,7 +36,11 @@ export default function NodesList({
 
   return (
     <>
-      <Stack direction={"row"} justifyContent={"space-between"}>
+      <Stack
+        direction={"row"}
+        justifyContent={"space-between"}
+        alignItems={"center"}
+      >
         <Typography
           variant="h5"
           sx={{
@@ -45,16 +51,28 @@ export default function NodesList({
         >
           Lessons ({nodes.length})
         </Typography>
-        <IconButton
-          sx={{
-            width: 40,
-            height: 40,
-            color: isDarkMode ? color.emerald400 : color.emerald600,
-          }}
-          onClick={onChangeEditMode}
-        >
-          {isEditMode ? <SaveIcon /> : <EditIcon />}
-        </IconButton>
+        <Stack direction={"row"} spacing={2} sx={{ mb: 2 }}>
+          <IconButton
+            sx={{
+              width: 40,
+              height: 40,
+              color: isDarkMode ? color.emerald400 : color.emerald600,
+            }}
+            onClick={onChangeEditMode}
+          >
+            {isEditMode ? <SaveIcon /> : <EditIcon />}
+          </IconButton>
+          <Button
+            sx={{
+              color: isDarkMode ? color.gray900 : color.gray100,
+              bgcolor: isDarkMode ? color.emerald400 : color.emerald600,
+              px: 2,
+            }}
+            onClick={onOpenAddNodeDialog}
+          >
+            Add new lesson
+          </Button>
+        </Stack>
       </Stack>
 
       <Grid container spacing={3}>

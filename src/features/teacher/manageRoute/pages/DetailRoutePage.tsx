@@ -11,6 +11,7 @@ import {
   RouteEditForm,
 } from "../components/detailRoute";
 import useDetailRoutePage from "../hooks/useDetailRoutePage";
+import AddNodeDialog from "../components/detailRoute/AddNodeDialog";
 
 export default function DetailRoutePage() {
   const color = useColor();
@@ -84,6 +85,7 @@ export default function DetailRoutePage() {
             onMoveUp={hooks.onMoveUp}
             onMoveDown={hooks.onMoveDown}
             onSaveChange={hooks.handleSaveChanges}
+            onOpenAddNodeDialog={hooks.handleOpenAddNodeDialog}
           />
         </>
       )}
@@ -95,6 +97,13 @@ export default function DetailRoutePage() {
         onCancelUnpublish={() => hooks.setOpenUnpublishDialog(false)}
         onConfirmPublish={hooks.handlePublish}
         onConfirmUnpublish={hooks.handleUnpublish}
+      />
+      <AddNodeDialog
+        open={hooks.openAddNodeDialog}
+        onCancel={() => hooks.handleOpenAddNodeDialog()}
+        onOk={() => hooks.handleAddNode()}
+        data={hooks.newNode}
+        setData={hooks.setNewNode}
       />
     </Stack>
   );

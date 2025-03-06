@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { routeService } from "../services/listRouteService";
-import { Route } from "interfaces";
+import { Route, RouteNode, RouteNodeEnum } from "interfaces";
 
 export default function useDetailRoutePage() {
   const { id } = useParams();
@@ -12,6 +12,21 @@ export default function useDetailRoutePage() {
   const [editedData, setEditedData] = useState<Route | null>(null);
   const [openPublishDialog, setOpenPublishDialog] = useState(false);
   const [openUnpublishDialog, setOpenUnpublishDialog] = useState(false);
+  const [openAddNodeDialog, setOpenAddNodeDialog] = useState<boolean>(false);
+
+  const emptyRouteNode = {
+    id: -1,
+    title: "",
+    description: "",
+    image: "",
+    nodeId: -1,
+    routeId: id ? parseInt(id) : -1,
+    serial: data ? data.routeNodes.length + 1 : 1,
+    status: false,
+    type: RouteNodeEnum.VOCABULARY,
+  };
+
+  const [newNode, setNewNode] = useState<RouteNode>(emptyRouteNode);
 
   useEffect(() => {
     if (id) {
@@ -27,6 +42,11 @@ export default function useDetailRoutePage() {
 
   const handleGoBack = () => navigate(-1);
   const handleEditMode = () => setEditMode(!editMode);
+
+  const handleOpenAddNodeDialog = () => {
+    setNewNode(emptyRouteNode);
+    setOpenAddNodeDialog(!openAddNodeDialog);
+  };
 
   const handleSaveChanges = () => {
     if (!editMode) {
@@ -86,6 +106,20 @@ export default function useDetailRoutePage() {
     }
   };
 
+  const handleAddNode = () => {
+    setOpenAddNodeDialog(false);
+    if (!data) return;
+    if (newNode) {
+      const updatedData: RouteNode[] = [...(data?.routeNodes || [])];
+      updatedData.push(newNode);
+      setData({ ...data, routeNodes: updatedData });
+      setNewNode(emptyRouteNode);
+    }
+
+    // TODO: Add node to db
+    // TODO: Navigate to edit route node (Lesson / test)
+  };
+
   return {
     data,
     loading,
@@ -93,6 +127,9 @@ export default function useDetailRoutePage() {
     editedData,
     openPublishDialog,
     openUnpublishDialog,
+    openAddNodeDialog,
+    newNode,
+    setNewNode,
     handleGoBack,
     handleEditMode,
     handlePublishClick,
@@ -105,5 +142,7 @@ export default function useDetailRoutePage() {
     setOpenPublishDialog,
     setOpenUnpublishDialog,
     setEditedData,
+    handleOpenAddNodeDialog,
+    handleAddNode,
   };
 }

@@ -15,7 +15,7 @@ import { Theme } from "@mui/material";
 interface WSTextFieldProps {
   label?: string;
   type: string;
-  value: string;
+  value: string | number;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   showPassword?: boolean;
   setShowPassword?: (show: boolean) => void;
@@ -24,6 +24,7 @@ interface WSTextFieldProps {
   required?: boolean;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 const WETextField = ({
@@ -38,6 +39,7 @@ const WETextField = ({
   required,
   onKeyDown,
   placeholder,
+  disabled,
 }: WSTextFieldProps) => {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -74,6 +76,7 @@ const WETextField = ({
         {label} {required && <span style={{ color: "red" }}>*</span>}
       </Typography>
       <TextField
+        disabled={disabled}
         required={required}
         fullWidth
         type={type}
