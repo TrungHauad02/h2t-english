@@ -1,8 +1,9 @@
-import { Box, Button, Typography, Avatar, } from "@mui/material";
+import { Box, Button, Avatar, FormControlLabel, Radio } from "@mui/material";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { useRegisterForm } from "../hooks/useRegisterForm";
 import WETextField from "../../../components/input/WETexField"
+import { RolesEnum } from "interfaces";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Register() {
@@ -19,7 +20,8 @@ export default function Register() {
                 boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.1)",
                 bgcolor: isDarkMode ? color.gray900 : color.gray100,
                 color: isDarkMode ? color.white : color.black,
-                width: "80%",
+                width: "100%",
+                maxWidth: "600px",
             }}
         >
             <Box display="flex" flexDirection="column" alignItems="center" mb={2}>
@@ -64,6 +66,24 @@ export default function Register() {
                     }
                 }}
             />
+            {useRegister.role === RolesEnum.TEACHER && (
+                <>
+                    <WETextField
+                        label="Phone Number"
+                        type="text"
+                        value={useRegister.phoneNumber}
+                        onChange={(e) => useRegister.setPhoneNumber}
+                        required
+                    />
+                    <WETextField
+                        label="Date of Birth"
+                        type="date"
+                        value={useRegister.dateOfBirth ? useRegister.dateOfBirth.toISOString().split("T")[0] : ""}
+                        onChange={(e) => useRegister.setDateOfBirth(new Date(e.target.value))}
+                        required
+                    />
+                </>
+            )}
             <WETextField
                 label="Password"
                 type={useRegister.showPassword ? "text" : "password"}
@@ -94,6 +114,26 @@ export default function Register() {
                     }
                 }}
             />
+            <Box display="flex" justifyContent="center" gap={2}>
+                <FormControlLabel
+                    control={
+                        <Radio
+                            checked={useRegister.role === RolesEnum.STUDENT}
+                            onChange={() => useRegister.setRole(RolesEnum.STUDENT)}
+                        />
+                    }
+                    label="Student"
+                />
+                <FormControlLabel
+                    control={
+                        <Radio
+                            checked={useRegister.role === RolesEnum.TEACHER}
+                            onChange={() => useRegister.setRole(RolesEnum.TEACHER)}
+                        />
+                    }
+                    label="Teacher"
+                />
+            </Box>
             <Button
                 fullWidth
                 variant="contained"
