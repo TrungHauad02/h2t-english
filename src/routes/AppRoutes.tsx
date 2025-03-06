@@ -27,6 +27,30 @@ const AppRoutes = () => {
         <Route path="routes" element={<Pages.ManageRoutePage />} />
         <Route path="information" element={<Pages.InformationPage />} />
         <Route path="routes/:id" element={<Pages.DetailRoutePage />} />
+        <Route
+          path="routes/:routeId/topics/:id"
+          element={<Pages.TopicDetailPage />}
+        />
+        <Route
+          path="routes/:routeId/grammars/:id"
+          element={<Pages.GrammarDetailPage />}
+        />
+        <Route
+          path="routes/:routeId/readings/:id"
+          element={<Pages.ReadingDetailPage />}
+        />
+        <Route
+          path="routes/:routeId/writings/:id"
+          element={<Pages.WritingDetailPage />}
+        />
+        <Route
+          path="routes/:routeId/listenings/:id"
+          element={<Pages.ListeningDetailPage />}
+        />
+        <Route
+          path="routes/:routeId/speakings/:id"
+          element={<Pages.SpeakingDetailPage />}
+        />
       </Route>
       <Route path="*" element={<Pages.ErrorPage />} />
     </Routes>

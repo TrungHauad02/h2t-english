@@ -18,6 +18,7 @@ import { RouteNode, RouteNodeEnum } from "interfaces";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { ArrowDownward, ArrowUpward } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 const getNodeIcon = (type: RouteNodeEnum) => {
   switch (type) {
@@ -88,6 +89,42 @@ export default function RouteNodeCard({
 }: RouteNodeCardProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    let prefix = "";
+    switch (node.type) {
+      case RouteNodeEnum.MIXING_TEST:
+      case RouteNodeEnum.READING_TEST:
+      case RouteNodeEnum.LISTENING_TEST:
+      case RouteNodeEnum.SPEAKING_TEST:
+      case RouteNodeEnum.WRITING_TEST:
+        prefix = "test";
+        break;
+      case RouteNodeEnum.VOCABULARY:
+        prefix = "topics";
+        break;
+      case RouteNodeEnum.GRAMMAR:
+        prefix = "grammars";
+        break;
+      case RouteNodeEnum.READING:
+        prefix = "readings";
+        break;
+      case RouteNodeEnum.LISTENING:
+        prefix = "listenings";
+        break;
+      case RouteNodeEnum.WRITING:
+        prefix = "writings";
+        break;
+      case RouteNodeEnum.SPEAKING:
+        prefix = "speakings";
+        break;
+      default:
+        prefix = "";
+        break;
+    }
+    navigate(`${prefix}/${node.id}`);
+  };
 
   return (
     <Box
@@ -113,6 +150,7 @@ export default function RouteNodeCard({
         display: "flex",
         flexDirection: "column",
       }}
+      onClick={handleClick}
     >
       <Box
         sx={{
