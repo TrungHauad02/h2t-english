@@ -4,7 +4,7 @@ const getQuestionByLessonId = (lessonId: string, type: string) => {
   return listAQ;
 };
 
-const getQuestionByIds = (ids: string[]) => {
+const getQuestionByIds = (ids: number[]) => {
   return listAQ;
 };
 

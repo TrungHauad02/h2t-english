@@ -4,8 +4,9 @@ import useColor from "theme/useColor";
 import NoQuestionSection from "./NoQuestionSection";
 import QuestionsHeader from "./QuestionsHeader";
 import ListQuestion from "./ListQuestion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LessonQuestion } from "interfaces";
+import { aqService } from "../../services/aqService";
 
 interface QuestionsSectionProps {
   questions: number[];
@@ -19,6 +20,11 @@ export default function QuestionsSection({ questions }: QuestionsSectionProps) {
   const accentColor = isDarkMode ? color.teal300 : color.teal600;
 
   const [data, setData] = useState<LessonQuestion[]>([]);
+
+  useEffect(() => {
+    const questionsData = aqService.getQuestionByIds(questions);
+    setData(questionsData);
+  }, [questions]);
 
   return (
     <Box
@@ -35,8 +41,8 @@ export default function QuestionsSection({ questions }: QuestionsSectionProps) {
         accentColor={accentColor}
       />
 
-      {questions.length > 0 ? (
-        <ListQuestion />
+      {data.length > 0 ? (
+        <ListQuestion data={data} setData={setData} />
       ) : (
         <NoQuestionSection secondaryTextColor={secondaryTextColor} />
       )}
