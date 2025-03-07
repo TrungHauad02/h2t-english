@@ -3,13 +3,13 @@ import { useParams } from "react-router-dom";
 import { aqService } from "../services/aqService";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAnswers } from "../../../redux/slices/aqSlice";
-import { Question } from "interfaces";
+import { LessonQuestion } from "interfaces";
 import { RootState } from "../../../redux/type";
 
 export default function useAnswerQuestion() {
   const { id, type } = useParams();
   const dispatch = useDispatch();
-  const listAQ: Question[] = aqService.getQuestionByLessonId(
+  const listAQ: LessonQuestion[] = aqService.getQuestionByLessonId(
     id ?? "",
     type ?? ""
   );

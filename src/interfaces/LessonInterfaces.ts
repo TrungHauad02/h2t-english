@@ -95,15 +95,15 @@ export interface Vocabulary extends BaseEntity {
   topicId: number;
 }
 
-export interface Question extends BaseEntity {
+export interface LessonQuestion extends BaseEntity {
   content: string;
   serial: number;
   explanation: string;
   lessonId: number;
-  answers: Answer[];
+  answers: LessonAnswer[];
 }
 
-export interface Answer extends BaseEntity {
+export interface LessonAnswer extends BaseEntity {
   content: string;
   correct: boolean;
   questionId: number;
