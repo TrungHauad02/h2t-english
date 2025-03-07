@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import {
   Stack,
   Typography,
@@ -9,9 +7,7 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useDarkMode } from "hooks/useDarkMode";
-import { Topic } from "interfaces";
 import useColor from "theme/useColor";
-import { listLessonService } from "../services/listLessonService";
 import {
   QuestionsSection,
   TopicActions,
@@ -19,59 +15,16 @@ import {
   TopicEditForm,
   TopicHeader,
 } from "../components/topic";
+import useTopicDetailPage from "../hooks/useTopicDetailPage";
+import LessonPublishDialogs from "../components/PublishDialogs";
 
 export default function TopicDetailPage() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const { id, routeId } = useParams();
-  const navigate = useNavigate();
-  const [data, setData] = useState<Topic | null>(null);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [editData, setEditData] = useState<Topic | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (id && routeId) {
-      setLoading(true);
-      setTimeout(() => {
-        const topic = listLessonService.getTopicById(parseInt(id));
-        if (topic) {
-          setData(topic);
-          setEditData({ ...topic });
-        }
-        setLoading(false);
-      }, 500);
-    }
-  }, [id, routeId]);
+  const hooks = useTopicDetailPage();
 
-  const handleEditMode = () => {
-    setIsEditMode(!isEditMode);
-    if (isEditMode) {
-      setEditData({ ...data } as Topic);
-    }
-  };
-
-  const handleSaveChanges = () => {
-    if (editData) {
-      setData(editData);
-      setIsEditMode(false);
-    }
-  };
-
-  const handleInputChange = (field: keyof Topic, value: any) => {
-    if (editData) {
-      setEditData({
-        ...editData,
-        [field]: value,
-      });
-    }
-  };
-
-  const handleGoBack = () => {
-    navigate(-1);
-  };
-
-  if (loading) {
+  if (hooks.loading) {
     return (
       <Stack
         alignItems="center"
@@ -86,7 +39,7 @@ export default function TopicDetailPage() {
     );
   }
 
-  if (!data) {
+  if (!hooks.data) {
     return (
       <Stack sx={{ mt: 6, p: 3 }}>
         <Typography
@@ -97,7 +50,7 @@ export default function TopicDetailPage() {
         </Typography>
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={handleGoBack}
+          onClick={hooks.handleGoBack}
           sx={{
             mt: 2,
             color: isDarkMode ? color.emerald400 : color.emerald600,
@@ -112,26 +65,38 @@ export default function TopicDetailPage() {
   return (
     <Container maxWidth="lg">
       <Stack sx={{ mt: 6, mb: 6, px: { xs: 2, md: 4 } }}>
-        <TopicHeader onGoBack={handleGoBack} onEditMode={handleEditMode} />
-
-        <TopicActions
-          status={data.status}
-          isEditMode={isEditMode}
-          onSave={handleSaveChanges}
-          onCancel={handleEditMode}
+        <TopicHeader
+          onGoBack={hooks.handleGoBack}
+          onEditMode={hooks.handleEditMode}
         />
 
-        {isEditMode ? (
+        <TopicActions
+          status={hooks.data.status}
+          onPublish={hooks.handlePublishClick}
+          onUnpublish={hooks.handleUnpublishClick}
+        />
+
+        {hooks.isEditMode ? (
           <TopicEditForm
-            editData={editData}
-            handleInputChange={handleInputChange}
+            editData={hooks.editData}
+            handleInputChange={hooks.handleInputChange}
+            onSave={hooks.handleSaveChanges}
+            onCancel={hooks.handleEditMode}
           />
         ) : (
-          <TopicDetailsView data={data} />
+          <TopicDetailsView data={hooks.data} />
         )}
 
-        <QuestionsSection questions={data.questions} />
+        <QuestionsSection questions={hooks.data.questions} />
       </Stack>
+      <LessonPublishDialogs
+        openPublish={hooks.openPublishDialog}
+        openUnpublish={hooks.openUnpublishDialog}
+        onCancelPublish={() => hooks.setOpenPublishDialog(false)}
+        onCancelUnpublish={() => hooks.setOpenUnpublishDialog(false)}
+        onConfirmPublish={hooks.handlePublish}
+        onConfirmUnpublish={hooks.handleUnpublish}
+      />
     </Container>
   );
 }

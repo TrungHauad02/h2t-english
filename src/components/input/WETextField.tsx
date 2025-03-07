@@ -43,8 +43,8 @@ const WETextField = ({
   onKeyDown,
   placeholder,
   disabled,
-  multiline = false, // Mặc định là không phải trường đa dòng
-  rows = 1, // Mặc định là một dòng
+  multiline = false,
+  rows = 1,
   maxRows,
 }: WSTextFieldProps) => {
   const color = useColor();
