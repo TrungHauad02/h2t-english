@@ -1,35 +1,27 @@
-import { Box, Grid, Paper, Stack } from "@mui/material";
+import { Box, Button, Grid, Paper, Stack } from "@mui/material";
 import { WETextField, WESelectImage } from "components/input";
 import { useDarkMode } from "hooks/useDarkMode";
 import { Topic } from "interfaces";
 import useColor from "theme/useColor";
-import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 
 interface TopicEditFormProps {
   editData: Topic | null;
   handleInputChange: (field: keyof Topic, value: any) => void;
+  onSave: () => void;
+  onCancel: () => void;
 }
 
 export default function TopicEditForm({
   editData,
   handleInputChange,
+  onSave,
+  onCancel,
 }: TopicEditFormProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
-  // Common styles
   const cardBgColor = isDarkMode ? color.gray700 : color.white;
   const borderColor = isDarkMode ? color.gray700 : color.gray200;
-  const accentColor = isDarkMode ? color.teal300 : color.teal600;
-
-  const handleStatusChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    handleInputChange("status", event.target.value === "true");
-  };
-
-  const statusOptions = [
-    { label: "Active", value: "true" },
-    { label: "Inactive", value: "false" },
-  ];
 
   return (
     <Box
@@ -59,6 +51,36 @@ export default function TopicEditForm({
               onChange={(base64) => handleInputChange("image", base64)}
               required
             />
+          </Box>
+          <Box sx={{ mt: 3 }}>
+            <Button
+              variant="contained"
+              onClick={onSave}
+              sx={{
+                backgroundColor: isDarkMode
+                  ? color.emerald400
+                  : color.emerald600,
+                color: "white",
+                "&:hover": {
+                  backgroundColor: isDarkMode
+                    ? color.emerald500
+                    : color.emerald700,
+                },
+                mr: 2,
+              }}
+            >
+              Save Changes
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={onCancel}
+              sx={{
+                borderColor: isDarkMode ? color.gray400 : color.gray500,
+                color: isDarkMode ? color.gray400 : color.gray500,
+              }}
+            >
+              Cancel
+            </Button>
           </Box>
         </Grid>
 
@@ -112,65 +134,6 @@ export default function TopicEditForm({
                   },
                 }}
               />
-            </Box>
-
-            {/* Status selection */}
-            <Box
-              sx={{
-                bgcolor: cardBgColor,
-                p: 3,
-                borderRadius: 3,
-                border: `1px solid ${borderColor}`,
-              }}
-            >
-              <FormControl fullWidth>
-                <InputLabel
-                  id="status-label"
-                  sx={{
-                    color: isDarkMode ? color.gray300 : color.gray700,
-                  }}
-                >
-                  Status
-                </InputLabel>
-                <Select
-                  labelId="status-label"
-                  value={editData?.status ? "true" : "false"}
-                  onChange={(e: any) => handleStatusChange(e)}
-                  label="Status"
-                  sx={{
-                    backgroundColor: isDarkMode ? color.gray800 : color.white,
-                    borderRadius: 2,
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: `1px solid ${
-                        isDarkMode ? color.gray600 : color.gray300
-                      }`,
-                    },
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      border: `2px solid ${accentColor}`,
-                    },
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: accentColor,
-                    },
-                  }}
-                >
-                  {statusOptions.map((option) => (
-                    <MenuItem
-                      key={option.value}
-                      value={option.value}
-                      sx={{
-                        "&:hover": {
-                          backgroundColor: isDarkMode
-                            ? color.teal800
-                            : color.teal100,
-                        },
-                        color: isDarkMode ? color.gray300 : color.gray800,
-                      }}
-                    >
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
             </Box>
           </Stack>
         </Grid>
