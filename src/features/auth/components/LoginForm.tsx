@@ -72,6 +72,7 @@ export default function Login() {
             color: isDarkMode ? color.gray100 : color.gray800,
             mt: 2,
             fontStyle: "italic",
+            cursor: "pointer",
           }}
         >
           Forgot password?

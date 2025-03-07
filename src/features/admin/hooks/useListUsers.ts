@@ -1,7 +1,6 @@
 import { User } from "interfaces";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { StatusEnum } from "interfaces";
 
 export default function useListUsers({ users }: { users: User[] }) {
   const [userList, setUserList] = useState<User[]>(users);
@@ -42,7 +41,7 @@ export default function useListUsers({ users }: { users: User[] }) {
     if (selectedUser) {
       const updatedUsers = userList.map((user) =>
         user.id === selectedUser.id
-          ? { ...user, status: user.status === StatusEnum.ACTIVE ? StatusEnum.INACTIVE : StatusEnum.ACTIVE }
+          ? { ...user, status: user.status === true ? false : true }
           : user
       );
 

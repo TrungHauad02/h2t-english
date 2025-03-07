@@ -48,6 +48,8 @@ export const useRegisterForm = () => {
         }
     };
 
+
+
     return {
         showPassword,
         setShowPassword,

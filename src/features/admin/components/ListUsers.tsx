@@ -4,7 +4,7 @@ import { Edit, Delete, SwapHoriz, KeyboardArrowDown, KeyboardArrowUp } from "@mu
 import { Person, Email, Phone, CalendarToday, School, Settings } from '@mui/icons-material';
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import { User, RolesEnum, StatusEnum } from "interfaces";
+import { User, RolesEnum } from "interfaces";
 import { WEPaginationSelect } from "components/pagination";
 import useListUsers from "../hooks/useListUsers";
 import { WEDialog } from "components/display";
@@ -28,11 +28,10 @@ export default function ListUser({ users }: ListUserProps) {
                     <TableHead>
                         <TableRow sx={{ bgcolor: isDarkMode ? color.emerald900 : color.emerald100 }}>
                             <TableCell sx={{ textAlign: "center", fontWeight: "bold" }} />
-                            <TableCell sx={{ fontWeight: "bold" }}>Avatar</TableCell>
+                            <TableCell sx={{ fontWeight: "bold", display: { xs: "none", sm: "none", md: "table-cell" } }}>Avatar</TableCell>
                             <TableCell sx={{ textAlign: "center", fontWeight: "bold" }}>Name</TableCell>
-                            <TableCell sx={{ textAlign: "center", fontWeight: "bold", display: { xs: "none", sm: "table-cell" } }}>Email</TableCell>
-                            <TableCell sx={{ textAlign: "center", fontWeight: "bold", display: { xs: "none", sm: "table-cell" } }}>Role</TableCell>
-                            <TableCell sx={{ textAlign: "center", fontWeight: "bold", display: { xs: "none", sm: "table-cell" } }}>Status</TableCell>
+                            <TableCell sx={{ textAlign: "center", fontWeight: "bold", display: { xs: "none", sm: "none", md: "table-cell" } }}>Role</TableCell>
+                            <TableCell sx={{ textAlign: "center", fontWeight: "bold", display: { xs: "none", sm: "none", md: "table-cell" } }}>Status</TableCell>
                             <TableCell sx={{ textAlign: "center", fontWeight: "bold" }}>Actions</TableCell>
                         </TableRow>
                     </TableHead>
@@ -50,19 +49,15 @@ export default function ListUser({ users }: ListUserProps) {
                                     </TableCell>
                                     <TableCell sx={{ textAlign: "center" }}>{user.name}</TableCell>
                                     <TableCell
-                                        sx={{ textAlign: "center", display: { xs: "none", sm: "table-cell" } }}>
-                                        {user.email}
-                                    </TableCell>
-                                    <TableCell
-                                        sx={{ textAlign: "center", display: { xs: "none", sm: "table-cell" } }}>
+                                        sx={{ textAlign: "center", display: { xs: "none", sm: "none", md: "table-cell" } }}>
                                         {user.roleEnum}
                                     </TableCell>
                                     <TableCell
-                                        sx={{ textAlign: "center", display: { xs: "none", sm: "table-cell" } }}>
+                                        sx={{ textAlign: "center", display: { xs: "none", sm: "none", md: "table-cell" } }}>
                                         <Box
                                             sx={{
                                                 display: "inline-block",
-                                                bgcolor: user.status === StatusEnum.ACTIVE ? (isDarkMode ? color.green900 : color.green300) : color.warning,
+                                                bgcolor: user.status === true ? (isDarkMode ? color.green900 : color.green300) : color.warning,
                                                 fontWeight: "bold",
                                                 borderRadius: 1,
                                                 padding: "4px 16px",
@@ -99,11 +94,6 @@ export default function ListUser({ users }: ListUserProps) {
                                                     <Email sx={{ marginRight: 1 }} />
                                                     <strong>Email: </strong>
                                                     {user.email}
-                                                </Typography>
-                                                <Typography>
-                                                    <Settings sx={{ marginRight: 1 }} />
-                                                    <strong>Status: </strong>
-                                                    {user.status}
                                                 </Typography>
                                                 {(user.roleEnum === RolesEnum.TEACHER || user.roleEnum === RolesEnum.TEACHER_ADMIN) && (
                                                 <>
@@ -155,7 +145,7 @@ export default function ListUser({ users }: ListUserProps) {
                 onOk={hooks.confirmChangeStatus}
             >
                 Are you sure you want to change status of {hooks.selectedUser?.name} to{" "}
-                {hooks.selectedUser?.status === StatusEnum.ACTIVE ? StatusEnum.INACTIVE : StatusEnum.ACTIVE}?
+                {hooks.selectedUser?.status === true ? false : true}?
             </WEDialog>
         </Box>
     );

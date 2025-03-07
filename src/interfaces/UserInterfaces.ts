@@ -1,5 +1,3 @@
-import { StatusEnum } from "./TestInterfaces"
-
 export const enum RolesEnum {
     TEACHER = "TEACHER",
     STUDENT = "STUDENT",
@@ -22,7 +20,7 @@ export interface User {
     name: string,
     password: string,
     roleEnum: RolesEnum,
-    status: StatusEnum,
+    status: boolean,
     phoneNumber: string,
     dateOfBirth: Date
 }

@@ -1,5 +1,5 @@
 import { User } from "interfaces";
-import { RolesEnum, LevelsEnum, StatusEnum } from "interfaces";
+import { RolesEnum, LevelsEnum } from "interfaces";
 
 const users: User[] = [
   {
@@ -10,7 +10,7 @@ const users: User[] = [
     name: "John Doe",
     password: "English@web1",
     roleEnum: RolesEnum.STUDENT,
-    status: StatusEnum.ACTIVE,
+    status: true,
     phoneNumber: "0375245932",
     dateOfBirth: new Date("01-01-2003"),
   },
@@ -22,7 +22,7 @@ const users: User[] = [
     name: "Jane Smith",
     password: "English@web1",
     roleEnum: RolesEnum.TEACHER,
-    status: StatusEnum.ACTIVE,
+    status: true,
     phoneNumber: "0375245932",
     dateOfBirth: new Date("01-05-2003"),
   },
@@ -34,7 +34,7 @@ const users: User[] = [
     name: "Alice Johnson",
     password: "English@web1",
     roleEnum: RolesEnum.ADMIN,
-    status: StatusEnum.ACTIVE,
+    status: true,
     phoneNumber: "0375245932",
     dateOfBirth: new Date("01-11-2003"),
   },
