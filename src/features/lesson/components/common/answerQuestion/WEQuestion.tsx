@@ -2,11 +2,11 @@ import { Box, Stack, Typography } from "@mui/material";
 import { WEExplain } from "components/display";
 import { WERadioGroup } from "components/input";
 import { useDarkMode } from "hooks/useDarkMode";
-import { Question } from "interfaces";
+import { LessonQuestion } from "interfaces";
 import useColor from "theme/useColor";
 
 interface WEQuestionProps {
-  question: Question;
+  question: LessonQuestion;
   isShowExplain?: boolean;
 }
 

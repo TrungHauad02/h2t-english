@@ -10,8 +10,9 @@ export default function useDetailRoutePage() {
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [editedData, setEditedData] = useState<Route | null>(null);
-  const [openPublishDialog, setOpenPublishDialog] = useState(false);
-  const [openUnpublishDialog, setOpenUnpublishDialog] = useState(false);
+  const [openPublishDialog, setOpenPublishDialog] = useState<boolean>(false);
+  const [openUnpublishDialog, setOpenUnpublishDialog] =
+    useState<boolean>(false);
   const [openAddNodeDialog, setOpenAddNodeDialog] = useState<boolean>(false);
 
   const emptyRouteNode = {
