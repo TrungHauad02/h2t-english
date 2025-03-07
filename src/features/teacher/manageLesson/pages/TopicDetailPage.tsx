@@ -9,7 +9,6 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import {
-  QuestionsSection,
   TopicActions,
   TopicDetailsView,
   TopicEditForm,
@@ -17,6 +16,7 @@ import {
 } from "../components/topic";
 import useTopicDetailPage from "../hooks/useTopicDetailPage";
 import LessonPublishDialogs from "../components/PublishDialogs";
+import QuestionsSection from "../components/questionsSection/QuestionsSection";
 
 export default function TopicDetailPage() {
   const color = useColor();
