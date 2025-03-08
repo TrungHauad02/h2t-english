@@ -142,7 +142,16 @@ export default function WESelect({
                 : color.gray700,
             }}
           >
-            {label} {required && "*"}
+            {label}{" "}
+            {required && (
+              <span
+                style={{
+                  color: isDarkMode ? color.errorDarkMode : color.error,
+                }}
+              >
+                *
+              </span>
+            )}
           </InputLabel>
         )}
 

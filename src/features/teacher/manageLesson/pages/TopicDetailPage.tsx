@@ -13,6 +13,7 @@ import {
   TopicDetailsView,
   TopicEditForm,
   TopicHeader,
+  VocabularySection,
 } from "../components/topic";
 import useTopicDetailPage from "../hooks/useTopicDetailPage";
 import LessonPublishDialogs from "../components/PublishDialogs";
@@ -33,6 +34,11 @@ export default function TopicDetailPage() {
     {
       id: "topic-details",
       label: "Topic Details",
+      icon: <SubjectIcon fontSize="small" />,
+    },
+    {
+      id: "vocabulary-section",
+      label: "Vocabulary Section",
       icon: <SubjectIcon fontSize="small" />,
     },
     {
@@ -107,6 +113,9 @@ export default function TopicDetailPage() {
           ) : (
             <TopicDetailsView data={hooks.data} />
           )}
+        </div>
+        <div id="vocabulary-section">
+          <VocabularySection />
         </div>
         <div id="questions-section">
           <QuestionsSection questions={hooks.data.questions} />
