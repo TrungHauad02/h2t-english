@@ -21,8 +21,6 @@ export default function TopicDetailsView({ data }: { data: Topic }) {
         p: 3,
         borderRadius: "1rem",
         backgroundColor: isDarkMode ? color.gray800 : color.gray50,
-
-        mb: 4,
       }}
     >
       <Grid container spacing={3}>
