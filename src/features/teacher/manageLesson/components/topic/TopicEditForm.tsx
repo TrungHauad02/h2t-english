@@ -1,5 +1,9 @@
-import { Box, Button, Grid, Paper, Stack } from "@mui/material";
-import { WETextField, WESelectImage } from "components/input";
+import { Box, Grid, Paper, Stack } from "@mui/material";
+import {
+  WETextField,
+  WESelectImage,
+  WESaveChangeButtons,
+} from "components/input";
 import { useDarkMode } from "hooks/useDarkMode";
 import { Topic } from "interfaces";
 import useColor from "theme/useColor";
@@ -52,36 +56,8 @@ export default function TopicEditForm({
               required
             />
           </Box>
-          <Box sx={{ mt: 3 }}>
-            <Button
-              variant="contained"
-              onClick={onSave}
-              sx={{
-                backgroundColor: isDarkMode
-                  ? color.emerald400
-                  : color.emerald600,
-                color: "white",
-                "&:hover": {
-                  backgroundColor: isDarkMode
-                    ? color.emerald500
-                    : color.emerald700,
-                },
-                mr: 2,
-              }}
-            >
-              Save Changes
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={onCancel}
-              sx={{
-                borderColor: isDarkMode ? color.gray400 : color.gray500,
-                color: isDarkMode ? color.gray400 : color.gray500,
-              }}
-            >
-              Cancel
-            </Button>
-          </Box>
+          {/* Save and cancel buttons */}
+          <WESaveChangeButtons handleSave={onSave} handleCancel={onCancel} />
         </Grid>
 
         {/* Right column - Form fields */}

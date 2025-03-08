@@ -6,8 +6,13 @@ import {
   RouteStatusSection,
   RouteTitleSection,
 } from "./routeDetailsView";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
 
 export default function RouteDetailsView({ data }: { data: Route }) {
+  const color = useColor();
+  const { isDarkMode } = useDarkMode();
+
   return (
     <Box
       component={Paper}
@@ -15,7 +20,7 @@ export default function RouteDetailsView({ data }: { data: Route }) {
       sx={{
         p: 3,
         borderRadius: "1rem",
-        backgroundColor: "white",
+        backgroundColor: isDarkMode ? color.gray800 : color.gray50,
         mb: 4,
       }}
     >

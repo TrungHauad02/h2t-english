@@ -6,8 +6,13 @@ import {
   TopicStatusSection,
   TopicTitleSection,
 } from "./topicDetailsView";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
 
 export default function TopicDetailsView({ data }: { data: Topic }) {
+  const color = useColor();
+  const { isDarkMode } = useDarkMode();
+
   return (
     <Box
       component={Paper}
@@ -15,7 +20,8 @@ export default function TopicDetailsView({ data }: { data: Topic }) {
       sx={{
         p: 3,
         borderRadius: "1rem",
-        backgroundColor: "white",
+        backgroundColor: isDarkMode ? color.gray800 : color.gray50,
+
         mb: 4,
       }}
     >

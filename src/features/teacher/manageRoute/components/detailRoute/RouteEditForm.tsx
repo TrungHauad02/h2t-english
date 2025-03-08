@@ -1,5 +1,9 @@
-import { Box, Grid, Paper, Stack, Button } from "@mui/material";
-import { WESelectImage, WETextField } from "components/input";
+import { Box, Grid, Paper, Stack } from "@mui/material";
+import {
+  WESaveChangeButtons,
+  WESelectImage,
+  WETextField,
+} from "components/input";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 
@@ -129,36 +133,7 @@ export default function RouteEditForm({
             </Box>
 
             {/* Save and Cancel buttons */}
-            <Box sx={{ mt: 3 }}>
-              <Button
-                variant="contained"
-                onClick={onSave}
-                sx={{
-                  backgroundColor: isDarkMode
-                    ? color.emerald400
-                    : color.emerald600,
-                  color: "white",
-                  "&:hover": {
-                    backgroundColor: isDarkMode
-                      ? color.emerald500
-                      : color.emerald700,
-                  },
-                  mr: 2,
-                }}
-              >
-                Save Changes
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={onCancel}
-                sx={{
-                  borderColor: isDarkMode ? color.gray400 : color.gray500,
-                  color: isDarkMode ? color.gray400 : color.gray500,
-                }}
-              >
-                Cancel
-              </Button>
-            </Box>
+            <WESaveChangeButtons handleSave={onSave} handleCancel={onCancel} />
           </Stack>
         </Grid>
       </Grid>
