@@ -17,12 +17,30 @@ import {
 import useTopicDetailPage from "../hooks/useTopicDetailPage";
 import LessonPublishDialogs from "../components/PublishDialogs";
 import QuestionsSection from "../components/questionsSection/QuestionsSection";
+import SubjectIcon from "@mui/icons-material/Subject";
+import QuizIcon from "@mui/icons-material/Quiz";
+import WEFloatingNavMenu, {
+  NavItem,
+} from "components/pagination/WEFloatingNavMenu";
 
 export default function TopicDetailPage() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
   const hooks = useTopicDetailPage();
+
+  const navItems: NavItem[] = [
+    {
+      id: "topic-details",
+      label: "Topic Details",
+      icon: <SubjectIcon fontSize="small" />,
+    },
+    {
+      id: "questions-section",
+      label: "Questions Section",
+      icon: <QuizIcon fontSize="small" />,
+    },
+  ];
 
   if (hooks.loading) {
     return (
@@ -64,30 +82,35 @@ export default function TopicDetailPage() {
 
   return (
     <Container maxWidth="lg">
+      <WEFloatingNavMenu items={navItems} />
+
       <Stack sx={{ mt: 6, mb: 6, px: { xs: 2, md: 4 } }}>
-        <TopicHeader
-          onGoBack={hooks.handleGoBack}
-          onEditMode={hooks.handleEditMode}
-        />
-
-        <TopicActions
-          status={hooks.data.status}
-          onPublish={hooks.handlePublishClick}
-          onUnpublish={hooks.handleUnpublishClick}
-        />
-
-        {hooks.isEditMode ? (
-          <TopicEditForm
-            editData={hooks.editData}
-            handleInputChange={hooks.handleInputChange}
-            onSave={hooks.handleSaveChanges}
-            onCancel={hooks.handleEditMode}
+        <div id="topic-details">
+          <TopicHeader
+            onGoBack={hooks.handleGoBack}
+            onEditMode={hooks.handleEditMode}
           />
-        ) : (
-          <TopicDetailsView data={hooks.data} />
-        )}
 
-        <QuestionsSection questions={hooks.data.questions} />
+          <TopicActions
+            status={hooks.data.status}
+            onPublish={hooks.handlePublishClick}
+            onUnpublish={hooks.handleUnpublishClick}
+          />
+
+          {hooks.isEditMode ? (
+            <TopicEditForm
+              editData={hooks.editData}
+              handleInputChange={hooks.handleInputChange}
+              onSave={hooks.handleSaveChanges}
+              onCancel={hooks.handleEditMode}
+            />
+          ) : (
+            <TopicDetailsView data={hooks.data} />
+          )}
+        </div>
+        <div id="questions-section">
+          <QuestionsSection questions={hooks.data.questions} />
+        </div>
       </Stack>
       <LessonPublishDialogs
         openPublish={hooks.openPublishDialog}
