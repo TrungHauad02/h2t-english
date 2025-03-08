@@ -43,11 +43,12 @@ export default function VocabularyViewMode({
       />
 
       {/* Content section */}
-      <Stack spacing={2} sx={{ p: 3, flex: 1 }}>
+      <Stack spacing={2} sx={{ p: 1, flex: 1 }}>
         <Stack
           direction="row"
           justifyContent="space-between"
           alignItems="center"
+          sx={{ px: 1 }}
         >
           <Typography variant="h6" fontWeight="bold">
             {vocabulary.word}

@@ -6,6 +6,7 @@ import { Vocabulary } from "interfaces";
 import { useEffect, useState } from "react";
 import { vocabService } from "../../services/vocabService";
 import { useParams } from "react-router-dom";
+import { WEPaginationSelect } from "components/pagination";
 
 export default function VocabularySection() {
   const color = useColor();
@@ -13,6 +14,9 @@ export default function VocabularySection() {
   const { id } = useParams();
 
   const [data, setData] = useState<Vocabulary[]>([]);
+  const [page, setPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
+  const totalItems = data.length;
 
   useEffect(() => {
     const vocabularyData = vocabService.getVocabByTopicId(
@@ -20,6 +24,14 @@ export default function VocabularySection() {
     );
     setData(vocabularyData);
   }, [id]);
+
+  const onPageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
+
+  const onItemsPerPageChange = (value: number) => {
+    setItemsPerPage(value);
+  };
 
   return (
     <Box
@@ -34,6 +46,14 @@ export default function VocabularySection() {
     >
       <VocabularyHeader numberOfVocab={2} />
       <ListVocabulary data={data} setData={setData} />
+
+      <WEPaginationSelect
+        page={page}
+        totalPage={Math.ceil(totalItems / itemsPerPage)}
+        itemsPerPage={itemsPerPage}
+        onPageChange={onPageChange}
+        onItemsPerPageChange={onItemsPerPageChange}
+      />
     </Box>
   );
 }

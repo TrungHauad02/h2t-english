@@ -40,7 +40,7 @@ export default function ListVocabulary({ data, setData }: ListVocabularyProps) {
     <Stack>
       <Grid container spacing={3}>
         {data.map((vocabulary) => (
-          <Grid item xs={12} sm={6} md={3} key={vocabulary.id}>
+          <Grid item xs={12} sm={12} md={6} lg={4} key={vocabulary.id}>
             <VocabularyViewMode
               vocabulary={vocabulary}
               handleEdit={handleEdit}

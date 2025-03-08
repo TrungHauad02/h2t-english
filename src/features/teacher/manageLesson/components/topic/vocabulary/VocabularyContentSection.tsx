@@ -18,7 +18,7 @@ export default function VocabularyContentSection({
   const secondaryTextColor = isDarkMode ? color.gray300 : color.gray600;
 
   return (
-    <Stack spacing={2} sx={{ p: 3, flex: 1 }}>
+    <Stack spacing={2}>
       <Box
         sx={{
           display: "flex",
