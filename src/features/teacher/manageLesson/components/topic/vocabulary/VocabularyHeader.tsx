@@ -6,14 +6,15 @@ import { useDarkMode } from "hooks/useDarkMode";
 
 interface VocabularyHeaderProps {
   numberOfVocab: number;
+  onAddClick: () => void;
 }
 
 export default function VocabularyHeader({
   numberOfVocab,
+  onAddClick,
 }: VocabularyHeaderProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-
   const accentColor = isDarkMode ? color.teal300 : color.teal600;
 
   return (
@@ -42,10 +43,10 @@ export default function VocabularyHeader({
           Vocabularies ({numberOfVocab})
         </Typography>
       </Box>
-
       <Button
         variant="contained"
         startIcon={<AddIcon />}
+        onClick={onAddClick}
         sx={{
           bgcolor: isDarkMode ? color.emerald400 : color.emerald600,
           color: "white",

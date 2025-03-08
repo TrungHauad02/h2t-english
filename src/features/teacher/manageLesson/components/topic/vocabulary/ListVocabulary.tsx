@@ -1,6 +1,6 @@
 import { Stack, Grid } from "@mui/material";
 import { useState } from "react";
-import { Vocabulary } from "interfaces";
+import { Vocabulary, WordType } from "interfaces";
 import VocabularyViewMode from "./VocabularyViewMode";
 import VocabularyEditForm from "./VocabularyEditForm";
 import WEDialog from "components/display/dialog/WEDialog";
@@ -8,11 +8,29 @@ import WEDialog from "components/display/dialog/WEDialog";
 interface ListVocabularyProps {
   data: Vocabulary[];
   setData: (data: Vocabulary[]) => void;
+  isAddDialogOpen: boolean;
+  setIsAddDialogOpen: (isOpen: boolean) => void;
 }
 
-export default function ListVocabulary({ data, setData }: ListVocabularyProps) {
+export default function ListVocabulary({
+  data,
+  setData,
+  isAddDialogOpen,
+  setIsAddDialogOpen,
+}: ListVocabularyProps) {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [editData, setEditData] = useState<Vocabulary | null>(null);
+  const [newVocabularyData, setNewVocabularyData] = useState<Vocabulary>({
+    id: 0,
+    word: "",
+    phonetic: "",
+    meaning: "",
+    example: "",
+    wordType: WordType.NOUN,
+    image: "",
+    status: true,
+    topicId: 0,
+  });
 
   const handleEdit = (vocabularyId: number) => {
     const vocabulary = data.find((v) => v.id === vocabularyId);
@@ -27,6 +45,21 @@ export default function ListVocabulary({ data, setData }: ListVocabularyProps) {
     setEditData(null);
   };
 
+  const handleAddCancel = () => {
+    setIsAddDialogOpen(false);
+    setNewVocabularyData({
+      id: 0,
+      word: "",
+      phonetic: "",
+      meaning: "",
+      example: "",
+      wordType: WordType.NOUN,
+      image: "",
+      status: true,
+      topicId: 0,
+    });
+  };
+
   const handleSave = () => {
     if (editData) {
       const newData = data.map((v) => (v.id === editData.id ? editData : v));
@@ -34,6 +67,33 @@ export default function ListVocabulary({ data, setData }: ListVocabularyProps) {
       setDialogOpen(false);
       setEditData(null);
     }
+  };
+
+  const handleAddSave = () => {
+    const newId = data.length > 0 ? Math.max(...data.map((v) => v.id)) + 1 : 1;
+
+    const topicId = data.length > 0 ? data[0].topicId : 0;
+
+    const newVocabulary = {
+      ...newVocabularyData,
+      id: newId,
+      topicId: topicId,
+    };
+
+    setData([...data, newVocabulary]);
+
+    setIsAddDialogOpen(false);
+    setNewVocabularyData({
+      id: 0,
+      word: "",
+      phonetic: "",
+      meaning: "",
+      example: "",
+      wordType: WordType.NOUN,
+      image: "",
+      status: true,
+      topicId: 0,
+    });
   };
 
   return (
@@ -60,6 +120,19 @@ export default function ListVocabulary({ data, setData }: ListVocabularyProps) {
           <VocabularyEditForm editData={editData} setEditData={setEditData} />
         </WEDialog>
       )}
+
+      {/* Dialog for adding new vocabulary */}
+      <WEDialog
+        open={isAddDialogOpen}
+        title="Add New Vocabulary"
+        onCancel={handleAddCancel}
+        onOk={handleAddSave}
+      >
+        <VocabularyEditForm
+          editData={newVocabularyData}
+          setEditData={setNewVocabularyData}
+        />
+      </WEDialog>
     </Stack>
   );
 }

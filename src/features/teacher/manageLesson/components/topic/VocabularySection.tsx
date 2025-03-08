@@ -12,11 +12,11 @@ export default function VocabularySection() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const { id } = useParams();
-
   const [data, setData] = useState<Vocabulary[]>([]);
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
   const totalItems = data.length;
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const vocabularyData = vocabService.getVocabByTopicId(
@@ -33,6 +33,10 @@ export default function VocabularySection() {
     setItemsPerPage(value);
   };
 
+  const handleAddClick = () => {
+    setIsAddDialogOpen(true);
+  };
+
   return (
     <Box
       component={Paper}
@@ -44,9 +48,16 @@ export default function VocabularySection() {
         my: 4,
       }}
     >
-      <VocabularyHeader numberOfVocab={2} />
-      <ListVocabulary data={data} setData={setData} />
-
+      <VocabularyHeader
+        numberOfVocab={data.length}
+        onAddClick={handleAddClick}
+      />
+      <ListVocabulary
+        data={data}
+        setData={setData}
+        isAddDialogOpen={isAddDialogOpen}
+        setIsAddDialogOpen={setIsAddDialogOpen}
+      />
       <WEPaginationSelect
         page={page}
         totalPage={Math.ceil(totalItems / itemsPerPage)}
