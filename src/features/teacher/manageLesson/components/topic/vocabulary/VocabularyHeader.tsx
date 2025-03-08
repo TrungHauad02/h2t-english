@@ -1,5 +1,5 @@
 import { Box, Typography, Button } from "@mui/material";
-import QuizIcon from "@mui/icons-material/Quiz";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 import AddIcon from "@mui/icons-material/Add";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
@@ -31,7 +31,7 @@ export default function VocabularyHeader({
           alignItems: "center",
         }}
       >
-        <QuizIcon
+        <MenuBookIcon
           sx={{
             mr: 1.5,
             color: accentColor,
