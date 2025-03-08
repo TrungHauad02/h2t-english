@@ -12,6 +12,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useDarkMode } from "hooks/useDarkMode";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface QuestionViewModeProps {
   question: LessonQuestion;
@@ -98,18 +99,33 @@ export function QuestionViewMode({
             </Typography>
           )}
         </Box>
-        <IconButton
-          onClick={() => handleEdit(question.id)}
-          sx={{
-            color: accentColor,
-            bgcolor: isDarkMode ? color.gray600 : color.gray200,
-            "&:hover": {
-              bgcolor: isDarkMode ? color.gray500 : color.gray300,
-            },
-          }}
-        >
-          <EditIcon />
-        </IconButton>
+        <Stack direction={"row"} spacing={2}>
+          <IconButton
+            onClick={() => handleEdit(question.id)}
+            sx={{
+              color: isDarkMode ? color.red400 : color.red600,
+              mt: 1,
+              bgcolor: isDarkMode ? color.gray600 : color.gray100,
+              "&:hover": {
+                bgcolor: isDarkMode ? color.gray500 : color.gray300,
+              },
+            }}
+          >
+            <DeleteIcon />
+          </IconButton>
+          <IconButton
+            onClick={() => handleEdit(question.id)}
+            sx={{
+              color: accentColor,
+              bgcolor: isDarkMode ? color.gray600 : color.gray100,
+              "&:hover": {
+                bgcolor: isDarkMode ? color.gray500 : color.gray300,
+              },
+            }}
+          >
+            <EditIcon />
+          </IconButton>
+        </Stack>
       </Box>
 
       <Divider
@@ -152,15 +168,36 @@ export function QuestionViewMode({
                   }}
                 />
               )}
-              <Typography
-                variant="body1"
-                sx={{
-                  color: isDarkMode ? color.white : color.gray900,
-                  fontWeight: answer.correct ? "medium" : "regular",
-                }}
+              <Stack
+                direction={"row"}
+                justifyContent={"space-between"}
+                sx={{ width: "100%" }}
               >
-                {answer.content}
-              </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: isDarkMode ? color.white : color.gray900,
+                    fontWeight: answer.correct ? "medium" : "regular",
+                  }}
+                >
+                  {answer.content}
+                </Typography>
+                <Chip
+                  label={answer.status ? "Active" : "Inactive"}
+                  color={answer.status ? "success" : "error"}
+                  size="small"
+                  sx={{
+                    bgcolor: answer.status
+                      ? isDarkMode
+                        ? color.emerald700
+                        : color.emerald600
+                      : isDarkMode
+                      ? color.red700
+                      : color.red600,
+                    color: color.white,
+                  }}
+                />
+              </Stack>
             </Box>
           ))}
         </Stack>
