@@ -7,6 +7,8 @@ import ListQuestion from "./ListQuestion";
 import { useEffect, useState } from "react";
 import { LessonQuestion } from "interfaces";
 import { aqService } from "../../services/aqService";
+import AddQuestionDialog from "./AddQuestionDialog";
+import { useParams } from "react-router-dom";
 
 interface QuestionsSectionProps {
   questions: number[];
@@ -15,16 +17,24 @@ interface QuestionsSectionProps {
 export default function QuestionsSection({ questions }: QuestionsSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-
+  const { id } = useParams();
   const secondaryTextColor = isDarkMode ? color.gray300 : color.gray600;
   const accentColor = isDarkMode ? color.teal300 : color.teal600;
-
   const [data, setData] = useState<LessonQuestion[]>([]);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   useEffect(() => {
     const questionsData = aqService.getQuestionByIds(questions);
     setData(questionsData);
   }, [questions]);
+
+  const handleAddQuestion = () => {
+    setIsAddDialogOpen(true);
+  };
+
+  const handleQuestionAdded = (newQuestion: LessonQuestion) => {
+    setData([...data, newQuestion]);
+  };
 
   return (
     <Box
@@ -37,15 +47,22 @@ export default function QuestionsSection({ questions }: QuestionsSectionProps) {
       }}
     >
       <QuestionsHeader
-        numberOfQuestions={questions.length}
+        numberOfQuestions={data.length}
         accentColor={accentColor}
+        onAddClick={handleAddQuestion}
       />
-
       {data.length > 0 ? (
         <ListQuestion data={data} setData={setData} />
       ) : (
         <NoQuestionSection secondaryTextColor={secondaryTextColor} />
       )}
+
+      <AddQuestionDialog
+        open={isAddDialogOpen}
+        onClose={() => setIsAddDialogOpen(false)}
+        lessonId={id ? parseInt(id) : 0}
+        onQuestionAdded={handleQuestionAdded}
+      />
     </Box>
   );
 }
