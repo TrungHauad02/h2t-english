@@ -7,11 +7,13 @@ import { useDarkMode } from "hooks/useDarkMode";
 interface QuestionsHeaderProps {
   numberOfQuestions: number;
   accentColor: string;
+  onAddClick: () => void;
 }
 
 export default function QuestionsHeader({
   numberOfQuestions,
   accentColor,
+  onAddClick,
 }: QuestionsHeaderProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -42,10 +44,10 @@ export default function QuestionsHeader({
           Questions ({numberOfQuestions})
         </Typography>
       </Box>
-
       <Button
         variant="contained"
         startIcon={<AddIcon />}
+        onClick={onAddClick}
         sx={{
           bgcolor: isDarkMode ? color.emerald400 : color.emerald600,
           color: "white",
