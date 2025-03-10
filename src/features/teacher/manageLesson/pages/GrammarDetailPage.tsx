@@ -18,6 +18,7 @@ import WEFloatingNavMenu, {
 } from "components/pagination/WEFloatingNavMenu";
 import { GrammarDetailsView, GrammarHeader } from "../components/grammar";
 import PublishActions from "../components/PublishActions";
+import GrammarEditForm from "../components/grammar/GrammarEditForm";
 
 export default function GrammarDetailPage() {
   const color = useColor();
@@ -86,14 +87,21 @@ export default function GrammarDetailPage() {
             onGoBack={hooks.handleGoBack}
             onEditMode={hooks.handleEditMode}
           />
-
           <PublishActions
             status={hooks.data.status}
             onPublish={hooks.handlePublishClick}
             onUnpublish={hooks.handleUnpublishClick}
           />
-
-          <GrammarDetailsView data={hooks.data} />
+          {hooks.isEditMode ? (
+            <GrammarEditForm
+              editData={hooks.editData}
+              handleInputChange={hooks.handleInputChange}
+              onSave={hooks.handleSaveChanges}
+              onCancel={hooks.handleEditMode}
+            />
+          ) : (
+            <GrammarDetailsView data={hooks.data} />
+          )}
         </div>
         <div id="questions-section">
           <QuestionsSection questions={hooks.data.questions} />
