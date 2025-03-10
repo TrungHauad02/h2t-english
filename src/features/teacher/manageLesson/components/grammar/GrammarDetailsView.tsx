@@ -5,6 +5,7 @@ import useColor from "theme/useColor";
 import {
   GrammarDefinitionSection,
   GrammarDescriptionSection,
+  GrammarExampleSection,
   GrammarImageCard,
   GrammarStatusSection,
   GrammarTitleSection,
@@ -41,6 +42,7 @@ export default function GrammarDetailsView({ data }: GrammarDetailsViewProps) {
             <GrammarTitleSection data={data} />
             <GrammarDescriptionSection data={data} />
             <GrammarDefinitionSection data={data} />
+            <GrammarExampleSection data={data} />
             <GrammarStatusSection data={data} />
           </Stack>
         </Grid>

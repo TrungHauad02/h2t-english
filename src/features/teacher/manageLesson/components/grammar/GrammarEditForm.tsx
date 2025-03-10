@@ -136,6 +136,29 @@ export default function GrammarEditForm({
                 }}
               />
             </Box>
+            {/* Example field */}
+            <Box
+              sx={{
+                bgcolor: cardBgColor,
+                p: 3,
+                borderRadius: 3,
+                border: `1px solid ${borderColor}`,
+              }}
+            >
+              <WETextField
+                label="Example"
+                type="text"
+                value={editData?.example || ""}
+                onChange={(e) => handleInputChange("example", e.target.value)}
+                multiline
+                rows={3}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 2,
+                  },
+                }}
+              />
+            </Box>
           </Stack>
         </Grid>
       </Grid>
