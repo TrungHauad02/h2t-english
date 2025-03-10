@@ -16,7 +16,11 @@ import QuizIcon from "@mui/icons-material/Quiz";
 import WEFloatingNavMenu, {
   NavItem,
 } from "components/pagination/WEFloatingNavMenu";
-import { GrammarDetailsView, GrammarHeader } from "../components/grammar";
+import {
+  GrammarDetailsView,
+  GrammarDocumentSection,
+  GrammarHeader,
+} from "../components/grammar";
 import PublishActions from "../components/PublishActions";
 import GrammarEditForm from "../components/grammar/GrammarEditForm";
 
@@ -30,6 +34,11 @@ export default function GrammarDetailPage() {
     {
       id: "grammar-details",
       label: "Grammar Details",
+      icon: <SubjectIcon fontSize="small" />,
+    },
+    {
+      id: "grammar-document",
+      label: "Grammar Document",
       icon: <SubjectIcon fontSize="small" />,
     },
     {
@@ -102,6 +111,14 @@ export default function GrammarDetailPage() {
           ) : (
             <GrammarDetailsView data={hooks.data} />
           )}
+        </div>
+        <div id="grammar-document">
+          <GrammarDocumentSection
+            documentUrl={hooks.editData ? hooks.editData.file : ""}
+            onDocumentChange={(base64) =>
+              hooks.handleInputChange("file", base64)
+            }
+          />
         </div>
         <div id="questions-section">
           <QuestionsSection questions={hooks.data.questions} />

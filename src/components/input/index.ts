@@ -5,3 +5,4 @@ export { default as WERadioGroup } from "./WERadioGroup";
 export { default as WESelectImage } from "./WESelectImage";
 export { default as WEMultipleTextField } from "./WEMultipleTextField";
 export { default as WESaveChangeButtons } from "./WESaveChangeButtons";
+export { default as WEDocumentInput } from "./WEDocumentInput";

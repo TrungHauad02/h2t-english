@@ -52,6 +52,12 @@ export default function useGrammarDetailPage() {
     }
   };
 
+  const handleDocumentChange = (base64: string) => {
+    if (editData) {
+      handleInputChange("file", base64);
+    }
+  };
+
   const handlePublish = () => {
     if (data) {
       const updatedData = { ...data, status: true };
@@ -101,5 +107,6 @@ export default function useGrammarDetailPage() {
     handleUnpublish,
     handlePublishClick,
     handleUnpublishClick,
+    handleDocumentChange,
   };
 }

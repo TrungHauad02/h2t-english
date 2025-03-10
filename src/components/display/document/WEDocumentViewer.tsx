@@ -65,7 +65,7 @@ export default function WEDocumentViewer({
     wordBreak: wordBreak as "normal" | "break-word" | "keep-all",
     whiteSpace: whiteSpace,
     padding: padding,
-    color: textColor, // Thêm màu chữ dựa trên chế độ darkMode
+    color: textColor,
   };
 
   useEffect(() => {
