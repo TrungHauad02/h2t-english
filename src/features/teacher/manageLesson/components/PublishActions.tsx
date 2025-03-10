@@ -4,17 +4,17 @@ import UnpublishedIcon from "@mui/icons-material/Unpublished";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 
-interface TopicActionsProps {
+interface PublishActionsProps {
   status: boolean;
   onPublish: () => void;
   onUnpublish: () => void;
 }
 
-export default function TopicActions({
+export default function PublishActions({
   status,
   onPublish,
   onUnpublish,
-}: TopicActionsProps) {
+}: PublishActionsProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 

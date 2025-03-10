@@ -9,7 +9,6 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import {
-  TopicActions,
   TopicDetailsView,
   TopicEditForm,
   TopicHeader,
@@ -23,6 +22,7 @@ import QuizIcon from "@mui/icons-material/Quiz";
 import WEFloatingNavMenu, {
   NavItem,
 } from "components/pagination/WEFloatingNavMenu";
+import PublishActions from "../components/PublishActions";
 
 export default function TopicDetailPage() {
   const color = useColor();
@@ -97,7 +97,7 @@ export default function TopicDetailPage() {
             onEditMode={hooks.handleEditMode}
           />
 
-          <TopicActions
+          <PublishActions
             status={hooks.data.status}
             onPublish={hooks.handlePublishClick}
             onUnpublish={hooks.handleUnpublishClick}

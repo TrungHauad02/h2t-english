@@ -1,15 +1,20 @@
 import { Box, Grid, Paper, Stack } from "@mui/material";
-import { Topic } from "interfaces";
-import {
-  TopicDescriptionSection,
-  TopicImageCard,
-  TopicStatusSection,
-  TopicTitleSection,
-} from "./detailsView";
-import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
+import { Grammar } from "interfaces";
+import useColor from "theme/useColor";
+import {
+  GrammarDefinitionSection,
+  GrammarDescriptionSection,
+  GrammarImageCard,
+  GrammarStatusSection,
+  GrammarTitleSection,
+} from "./detailsView";
 
-export default function TopicDetailsView({ data }: { data: Topic }) {
+interface GrammarDetailsViewProps {
+  data: Grammar;
+}
+
+export default function GrammarDetailsView({ data }: GrammarDetailsViewProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
@@ -26,15 +31,16 @@ export default function TopicDetailsView({ data }: { data: Topic }) {
       <Grid container spacing={3}>
         {/* Left column */}
         <Grid item xs={12} md={4}>
-          <TopicImageCard data={data} />
+          <GrammarImageCard data={data} />
         </Grid>
 
         {/* Right column */}
         <Grid item xs={12} md={8}>
           <Stack spacing={3}>
-            <TopicTitleSection data={data} />
-            <TopicDescriptionSection data={data} />
-            <TopicStatusSection data={data} />
+            <GrammarTitleSection data={data} />
+            <GrammarDescriptionSection data={data} />
+            <GrammarDefinitionSection data={data} />
+            <GrammarStatusSection data={data} />
           </Stack>
         </Grid>
       </Grid>
