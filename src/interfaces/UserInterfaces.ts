@@ -2,7 +2,7 @@ export const enum RolesEnum {
     TEACHER = "TEACHER",
     STUDENT = "STUDENT",
     ADMIN = "ADMIN",
-    TEACHER_ADMIN = "TEACHER_ADMIN"
+    TEACHER_ADVANCE = "TEACHER_ADVANCE"
 }
 export const enum LevelsEnum {
     BACHELOR = "BACHELOR",
