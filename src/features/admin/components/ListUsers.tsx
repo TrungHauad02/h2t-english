@@ -1,7 +1,7 @@
 import React from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Collapse, Avatar, Typography, Box, Paper } from "@mui/material";
 import { Edit, Delete, SwapHoriz, KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
-import { Person, Email, Phone, CalendarToday, School, Settings } from '@mui/icons-material';
+import { Person, Email, Phone, CalendarToday, School } from '@mui/icons-material';
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { User, RolesEnum } from "interfaces";
@@ -68,7 +68,7 @@ export default function ListUser({ users }: ListUserProps) {
                                     </TableCell>
 
                                     <TableCell sx={{ textAlign: "center" }}>
-                                    {(user.roleEnum === RolesEnum.TEACHER || user.roleEnum === RolesEnum.TEACHER_ADMIN) && (
+                                    {(user.roleEnum === RolesEnum.TEACHER || user.roleEnum === RolesEnum.TEACHER_ADVANCE) && (
                                             <IconButton size="small" onClick={() => hooks.handleEdit(user.name)}>
                                                 <Edit />
                                             </IconButton>
@@ -95,7 +95,7 @@ export default function ListUser({ users }: ListUserProps) {
                                                     <strong>Email: </strong>
                                                     {user.email}
                                                 </Typography>
-                                                {(user.roleEnum === RolesEnum.TEACHER || user.roleEnum === RolesEnum.TEACHER_ADMIN) && (
+                                                {(user.roleEnum === RolesEnum.TEACHER || user.roleEnum === RolesEnum.TEACHER_ADVANCE) && (
                                                 <>
                                                 <Typography>
                                                     <Phone sx={{ marginRight: 1 }} />

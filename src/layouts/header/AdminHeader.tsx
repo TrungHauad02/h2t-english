@@ -74,6 +74,11 @@ export default function AdminHeader() {
           <Box></Box>
         </Stack>
         <Stack direction={"row"} spacing={2}>
+          {location.pathname.includes("manage-teacher") && (
+            <Button variant="contained" sx={{ bgcolor: color.btnSubmitBg }}>
+              Add TEACHER ADVANCE
+            </Button>
+          )}
           <Button variant="contained" sx={{ bgcolor: color.teal500 }}>
             Logout
           </Button>
