@@ -26,6 +26,7 @@ export default function GrammarDetailsView({ data }: GrammarDetailsViewProps) {
         p: 3,
         borderRadius: "1rem",
         backgroundColor: isDarkMode ? color.gray800 : color.gray50,
+        mb: 4,
       }}
     >
       <Grid container spacing={3}>
