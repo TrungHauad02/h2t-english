@@ -5,7 +5,7 @@ import {
   RouteImageCard,
   RouteStatusSection,
   RouteTitleSection,
-} from "./routeDetailsView/";
+} from "./detailsView";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 
