@@ -68,6 +68,7 @@ export interface Speaking extends Lesson {
 
 export interface Listening extends Lesson {
   audio: string;
+  questions: number[];
 }
 
 export interface Writing extends Lesson {

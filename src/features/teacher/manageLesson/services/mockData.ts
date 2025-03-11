@@ -576,11 +576,12 @@ const listenings: Listening[] = [
       "https://images.unsplash.com/photo-1700773428278-13f13630d18d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlc3NvbnxlbnwwfHwwfHx8MA%3D%3D",
     description: "Improve basic listening",
     status: true,
-    audio: "basic_listening.mp3",
+    audio: "/basic_listening.mp3",
     views: 0,
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    questions: [1, 2, 3, 4],
   },
   {
     id: 2,
@@ -588,11 +589,12 @@ const listenings: Listening[] = [
     image: "news.jpg",
     description: "Understand news content",
     status: true,
-    audio: "basic_listening.mp3",
+    audio: "/basic_listening.mp3",
     views: 0,
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    questions: [1, 2, 3, 4],
   },
   {
     id: 3,
@@ -600,11 +602,12 @@ const listenings: Listening[] = [
     image: "stories.jpg",
     description: "Improve story listening",
     status: true,
-    audio: "basic_listening.mp3",
+    audio: "/basic_listening.mp3",
     views: 0,
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    questions: [1, 2, 3, 4],
   },
   {
     id: 4,
@@ -617,6 +620,7 @@ const listenings: Listening[] = [
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    questions: [1, 2, 3, 4],
   },
   {
     id: 5,
@@ -629,6 +633,7 @@ const listenings: Listening[] = [
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    questions: [1, 2, 3, 4],
   },
   {
     id: 6,
@@ -641,6 +646,7 @@ const listenings: Listening[] = [
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    questions: [1, 2, 3, 4],
   },
   {
     id: 7,
@@ -653,6 +659,7 @@ const listenings: Listening[] = [
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    questions: [1, 2, 3, 4],
   },
   {
     id: 8,
@@ -665,6 +672,7 @@ const listenings: Listening[] = [
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    questions: [1, 2, 3, 4],
   },
   {
     id: 9,
@@ -677,6 +685,7 @@ const listenings: Listening[] = [
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    questions: [1, 2, 3, 4],
   },
   {
     id: 10,
@@ -689,6 +698,7 @@ const listenings: Listening[] = [
     routeNodeId: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    questions: [1, 2, 3, 4],
   },
 ];
 

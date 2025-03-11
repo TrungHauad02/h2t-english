@@ -10,12 +10,14 @@ import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import useListeningDetailPage from "../hooks/useListeningDetailPage";
 import {
+  ListeningAudioSection,
   ListeningDetailsView,
   ListeningEditForm,
   ListeningHeader,
 } from "../components/listening";
 import PublishActions from "../components/PublishActions";
 import LessonPublishDialogs from "../components/PublishDialogs";
+import QuestionsSection from "../components/questionsSection/QuestionsSection";
 
 export default function ListeningDetailPage() {
   const color = useColor();
@@ -85,6 +87,16 @@ export default function ListeningDetailPage() {
         ) : (
           <ListeningDetailsView data={hooks.data} />
         )}
+
+        <ListeningAudioSection
+          audio={hooks.data.audio}
+          onAudioChange={(base64: string) =>
+            hooks.handleInputChange("audio", base64)
+          }
+          onSave={hooks.handleSaveChanges}
+        />
+
+        <QuestionsSection questions={hooks.data.questions} />
       </Stack>
       <LessonPublishDialogs
         openPublish={hooks.openPublishDialog}
