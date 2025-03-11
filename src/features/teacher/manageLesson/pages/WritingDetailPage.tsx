@@ -9,15 +9,17 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import LessonPublishDialogs from "../components/PublishDialogs";
-import QuestionsSection from "../components/questionsSection/QuestionsSection";
 import SubjectIcon from "@mui/icons-material/Subject";
-import QuizIcon from "@mui/icons-material/Quiz";
 import WEFloatingNavMenu, {
   NavItem,
 } from "components/pagination/WEFloatingNavMenu";
 import PublishActions from "../components/PublishActions";
 import useWritingDetailPage from "../hooks/useWritingDetailPage";
-import { WritingDetailsView, WritingHeader } from "../components/writing";
+import {
+  WritingDetailsView,
+  WritingEditForm,
+  WritingHeader,
+} from "../components/writing";
 
 export default function WritingDetailPage() {
   const color = useColor();
@@ -87,7 +89,16 @@ export default function WritingDetailPage() {
             onUnpublish={hooks.handleUnpublishClick}
           />
 
-          <WritingDetailsView data={hooks.data} />
+          {hooks.isEditMode ? (
+            <WritingEditForm
+              editData={hooks.editData}
+              handleInputChange={hooks.handleInputChange}
+              onSave={hooks.handleSaveChanges}
+              onCancel={hooks.handleEditMode}
+            />
+          ) : (
+            <WritingDetailsView data={hooks.data} />
+          )}
         </div>
       </Stack>
       <LessonPublishDialogs

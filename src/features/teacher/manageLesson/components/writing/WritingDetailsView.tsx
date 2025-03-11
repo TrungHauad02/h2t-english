@@ -9,7 +9,6 @@ import {
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { Writing } from "interfaces";
-import WritingTipsSection from "./detailsView/WritingTipsSection";
 
 export default function WritingDetailsView({ data }: { data: Writing }) {
   const color = useColor();
@@ -37,7 +36,6 @@ export default function WritingDetailsView({ data }: { data: Writing }) {
             <WritingTitleSection data={data} />
             <WritingDescriptionSection data={data} />
             <WritingTopicSection data={data} />
-            <WritingTipsSection data={data} />
             <WritingStatusSection data={data} />
           </Stack>
         </Grid>
