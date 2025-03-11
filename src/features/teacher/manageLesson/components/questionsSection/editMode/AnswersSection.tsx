@@ -3,8 +3,8 @@ import { LessonQuestion, LessonAnswer } from "interfaces";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import StyledCard from "./StyledCard";
 import AnswerItem from "./AnswerItem";
+import StyledCard from "../../StyledCard";
 
 interface AnswersSectionProps {
   editData: LessonQuestion;

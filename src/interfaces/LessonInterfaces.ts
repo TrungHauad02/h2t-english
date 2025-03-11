@@ -143,6 +143,7 @@ export interface ListenAndWriteAWord extends BaseEntity {
   sentence: string;
   missingIndex: number;
   correctAnswer: string;
+  listeningId: number;
 }
 
 export interface WritingAnswer extends BaseEntity {
