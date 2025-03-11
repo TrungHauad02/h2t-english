@@ -3,6 +3,7 @@ import { useDarkMode } from "hooks/useDarkMode";
 import { Listening } from "interfaces";
 import useColor from "theme/useColor";
 import VerifiedIcon from "@mui/icons-material/Verified";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
@@ -98,6 +99,28 @@ export default function TopicImageCard({ data }: { data: Listening }) {
             }}
           >
             <strong>{data.views.toLocaleString()}</strong> Views
+          </Typography>
+        </Box>
+
+        {/* Questions */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            p: 1.5,
+            bgcolor: isDarkMode ? color.gray800 : color.teal50,
+            borderRadius: 2,
+          }}
+        >
+          <HelpOutlineIcon sx={{ mr: 1.5, color: accentColor }} />
+          <Typography
+            variant="body2"
+            sx={{
+              color: secondaryTextColor,
+              fontWeight: "medium",
+            }}
+          >
+            <strong>{data.questions.length}</strong> Questions
           </Typography>
         </Box>
 
