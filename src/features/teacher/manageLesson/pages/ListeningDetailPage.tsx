@@ -18,12 +18,35 @@ import {
 import PublishActions from "../components/PublishActions";
 import LessonPublishDialogs from "../components/PublishDialogs";
 import QuestionsSection from "../components/questionsSection/QuestionsSection";
+import WEFloatingNavMenu, {
+  NavItem,
+} from "components/pagination/WEFloatingNavMenu";
+import SubjectIcon from "@mui/icons-material/Subject";
+import QuizIcon from "@mui/icons-material/Quiz";
 
 export default function ListeningDetailPage() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
   const hooks = useListeningDetailPage();
+
+  const navItems: NavItem[] = [
+    {
+      id: "listening-details",
+      label: "Listening Details",
+      icon: <SubjectIcon fontSize="small" />,
+    },
+    {
+      id: "listening-audio",
+      label: "Listening Audio",
+      icon: <SubjectIcon fontSize="small" />,
+    },
+    {
+      id: "questions-section",
+      label: "Questions Section",
+      icon: <QuizIcon fontSize="small" />,
+    },
+  ];
 
   if (hooks.loading) {
     return (
@@ -65,38 +88,46 @@ export default function ListeningDetailPage() {
 
   return (
     <Container maxWidth="lg">
+      <WEFloatingNavMenu items={navItems} />
+
       <Stack sx={{ mt: 6, mb: 6, px: { xs: 2, md: 4 } }}>
-        <ListeningHeader
-          onGoBack={hooks.handleGoBack}
-          onEditMode={hooks.handleEditMode}
-        />
-
-        <PublishActions
-          status={hooks.data.status}
-          onPublish={hooks.handlePublishClick}
-          onUnpublish={hooks.handleUnpublishClick}
-        />
-
-        {hooks.isEditMode ? (
-          <ListeningEditForm
-            editData={hooks.editData}
-            handleInputChange={hooks.handleInputChange}
-            onSave={hooks.handleSaveChanges}
-            onCancel={hooks.handleEditMode}
+        <div id="listening-details">
+          <ListeningHeader
+            onGoBack={hooks.handleGoBack}
+            onEditMode={hooks.handleEditMode}
           />
-        ) : (
-          <ListeningDetailsView data={hooks.data} />
-        )}
 
-        <ListeningAudioSection
-          audio={hooks.data.audio}
-          onAudioChange={(base64: string) =>
-            hooks.handleInputChange("audio", base64)
-          }
-          onSave={hooks.handleSaveChanges}
-        />
+          <PublishActions
+            status={hooks.data.status}
+            onPublish={hooks.handlePublishClick}
+            onUnpublish={hooks.handleUnpublishClick}
+          />
 
-        <QuestionsSection questions={hooks.data.questions} />
+          {hooks.isEditMode ? (
+            <ListeningEditForm
+              editData={hooks.editData}
+              handleInputChange={hooks.handleInputChange}
+              onSave={hooks.handleSaveChanges}
+              onCancel={hooks.handleEditMode}
+            />
+          ) : (
+            <ListeningDetailsView data={hooks.data} />
+          )}
+        </div>
+
+        <div id="listening-audio">
+          <ListeningAudioSection
+            audio={hooks.data.audio}
+            onAudioChange={(base64: string) =>
+              hooks.handleInputChange("audio", base64)
+            }
+            onSave={hooks.handleSaveChanges}
+          />
+        </div>
+
+        <div id="questions-section">
+          <QuestionsSection questions={hooks.data.questions} />
+        </div>
       </Stack>
       <LessonPublishDialogs
         openPublish={hooks.openPublishDialog}
