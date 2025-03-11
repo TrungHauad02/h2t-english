@@ -13,7 +13,7 @@ export default function StyledCard({ children }: StyledCardProps) {
   return (
     <Box
       sx={{
-        bgcolor: isDarkMode ? color.gray700 : color.white,
+        bgcolor: isDarkMode ? color.gray700 : color.gray100,
         borderRadius: 3,
         p: 3,
         border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,

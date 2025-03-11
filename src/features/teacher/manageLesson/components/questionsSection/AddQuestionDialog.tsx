@@ -1,16 +1,9 @@
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Box,
-} from "@mui/material";
 import { useState } from "react";
 import { LessonQuestion, LessonAnswer } from "interfaces";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { AnswersSection, QuestionDetailsSection } from "./editMode";
-import { WESaveChangeButtons } from "components/input";
+import { WEDialog } from "components/display";
 
 interface AddQuestionDialogProps {
   open: boolean;
@@ -114,52 +107,26 @@ export default function AddQuestionDialog({
   };
 
   return (
-    <Dialog
+    <WEDialog
       open={open}
-      onClose={onClose}
-      maxWidth="md"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: "1rem",
-          bgcolor: isDarkMode ? color.gray800 : color.gray50,
-        },
-      }}
+      title="Add New Question"
+      onCancel={handleCancel}
+      onOk={handleSave}
+      sx={{ maxWidth: "md", width: "100%" }}
     >
-      <DialogTitle
-        sx={{
-          fontSize: "1.5rem",
-          fontWeight: "medium",
-          color: isDarkMode ? color.gray100 : color.gray900,
-          pt: 3,
-          pb: 2,
-        }}
-      >
-        Add New Question
-      </DialogTitle>
-      <DialogContent sx={{ px: 3 }}>
-        <Box sx={{ p: 1 }}>
-          <QuestionDetailsSection
-            editData={newQuestion}
-            handleQuestionChange={handleQuestionChange}
-            accentColor={accentColor}
-            handleSave={handleSave}
-          />
-          <AnswersSection
-            editData={newQuestion}
-            handleAnswerChange={handleAnswerChange}
-            handleAddAnswer={addNewAnswer}
-            handleRemoveAnswer={removeAnswer}
-            accentColor={accentColor}
-          />
-        </Box>
-      </DialogContent>
-      <DialogActions sx={{ px: 3, pb: 3 }}>
-        <WESaveChangeButtons
-          handleSave={handleSave}
-          handleCancel={handleCancel}
-        />
-      </DialogActions>
-    </Dialog>
+      <QuestionDetailsSection
+        editData={newQuestion}
+        handleQuestionChange={handleQuestionChange}
+        accentColor={accentColor}
+        handleSave={handleSave}
+      />
+      <AnswersSection
+        editData={newQuestion}
+        handleAnswerChange={handleAnswerChange}
+        handleAddAnswer={addNewAnswer}
+        handleRemoveAnswer={removeAnswer}
+        accentColor={accentColor}
+      />
+    </WEDialog>
   );
 }

@@ -20,6 +20,7 @@ export default function useListenAndWriteAWordSection() {
       sentence: "I to eat an apple a day.",
       missingIndex: 1,
       correctAnswer: "like",
+      listeningId: 1,
     },
     {
       id: 2,
@@ -29,6 +30,7 @@ export default function useListenAndWriteAWordSection() {
       sentence: "like to eat an apple a day.",
       missingIndex: 0,
       correctAnswer: "I",
+      listeningId: 1,
     },
   ];
 

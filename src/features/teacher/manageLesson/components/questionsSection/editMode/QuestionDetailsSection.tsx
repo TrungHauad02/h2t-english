@@ -8,10 +8,10 @@ import {
 import FormGroup from "@mui/material/FormGroup";
 import Switch from "@mui/material/Switch";
 import { LessonQuestion } from "interfaces";
-import StyledCard from "./StyledCard";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { Save } from "@mui/icons-material";
+import StyledCard from "../../StyledCard";
 
 interface QuestionDetailsProps {
   editData: LessonQuestion;

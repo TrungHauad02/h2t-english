@@ -23,6 +23,7 @@ import WEFloatingNavMenu, {
 } from "components/pagination/WEFloatingNavMenu";
 import SubjectIcon from "@mui/icons-material/Subject";
 import QuizIcon from "@mui/icons-material/Quiz";
+import ListenAndWriteAWordSection from "../components/listening/ListenAndWriteAWordSection";
 
 export default function ListeningDetailPage() {
   const color = useColor();
@@ -35,6 +36,11 @@ export default function ListeningDetailPage() {
       id: "listening-details",
       label: "Listening Details",
       icon: <SubjectIcon fontSize="small" />,
+    },
+    {
+      id: "listen-and-write-a-word",
+      label: "Listen And Write A Word",
+      icon: <QuizIcon fontSize="small" />,
     },
     {
       id: "listening-audio",
@@ -113,6 +119,10 @@ export default function ListeningDetailPage() {
           ) : (
             <ListeningDetailsView data={hooks.data} />
           )}
+        </div>
+
+        <div id="listen-and-write-a-word">
+          <ListenAndWriteAWordSection />
         </div>
 
         <div id="listening-audio">
