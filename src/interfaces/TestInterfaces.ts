@@ -6,7 +6,7 @@ export const enum TestTypeEnum {
   WRITING = "WRITING",
 }
 
-export const enum StatusEnum {
+export enum StatusEnum {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE"
 }
