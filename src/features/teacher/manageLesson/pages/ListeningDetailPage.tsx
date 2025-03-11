@@ -45,7 +45,7 @@ export default function ListeningDetailPage() {
           variant="h5"
           color={isDarkMode ? color.gray100 : color.gray900}
         >
-          Topic not found
+          Listening not found
         </Typography>
         <Button
           startIcon={<ArrowBackIcon />}

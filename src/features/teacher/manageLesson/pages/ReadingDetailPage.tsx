@@ -70,7 +70,7 @@ export default function ReadingDetailPage() {
           variant="h5"
           color={isDarkMode ? color.gray100 : color.gray900}
         >
-          Grammar not found
+          Reading not found
         </Typography>
         <Button
           startIcon={<ArrowBackIcon />}
