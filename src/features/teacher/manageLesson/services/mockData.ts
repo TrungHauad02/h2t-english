@@ -307,7 +307,7 @@ const readings: Reading[] = [
       "https://images.unsplash.com/photo-1700773428278-13f13630d18d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlc3NvbnxlbnwwfHwwfHx8MA%3D%3D",
     description: "Introduction to reading skills",
     status: true,
-    file: "reading_basics.pdf",
+    file: "/document.docx",
     questions: [],
     views: 0,
     routeNodeId: 0,
@@ -330,10 +330,11 @@ const readings: Reading[] = [
   {
     id: 3,
     title: "Analyzing Texts",
-    image: "analyzing_texts.jpg",
+    image:
+      "https://images.unsplash.com/photo-1700773428278-13f13630d18d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlc3NvbnxlbnwwfHwwfHx8MA%3D%3D",
     description: "Learn to analyze texts",
     status: true,
-    file: "analyzing_texts.pdf",
+    file: "/document.docx",
     questions: [],
     views: 0,
     routeNodeId: 0,
