@@ -19,6 +19,7 @@ import {
   WritingDetailsView,
   WritingEditForm,
   WritingHeader,
+  WritingTipsSection,
 } from "../components/writing";
 
 export default function WritingDetailPage() {
@@ -99,6 +100,12 @@ export default function WritingDetailPage() {
           ) : (
             <WritingDetailsView data={hooks.data} />
           )}
+
+          <WritingTipsSection
+            editData={hooks.editData}
+            handleInputChange={hooks.handleInputChange}
+            onSave={hooks.handleSaveChanges}
+          />
         </div>
       </Stack>
       <LessonPublishDialogs

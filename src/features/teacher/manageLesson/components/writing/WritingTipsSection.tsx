@@ -5,44 +5,148 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Button,
+  Paper,
+  TextField,
 } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
+import EditIcon from "@mui/icons-material/Edit";
+import SaveIcon from "@mui/icons-material/Save";
+import CloseIcon from "@mui/icons-material/Close";
 import { FiberManualRecord as BulletIcon } from "@mui/icons-material";
 import { Writing } from "interfaces";
+import { useState } from "react";
 
-export default function WritingTipsSection({ data }: { data: Writing }) {
+interface WritingTipsSectionProps {
+  editData: Writing | null;
+  handleInputChange: (field: keyof Writing, value: any) => void;
+  onSave: () => void;
+}
+
+export default function WritingTipsSection({
+  editData,
+  handleInputChange,
+  onSave,
+}: WritingTipsSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
   const accentColor = isDarkMode ? color.teal300 : color.teal600;
   const textColor = isDarkMode ? color.gray100 : color.gray900;
+  const borderColor = isDarkMode ? color.gray700 : color.gray200;
+
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
+
+  const handleAddTip = () => {
+    const newTips = editData?.tips ? [...editData.tips, ""] : [""];
+    handleInputChange("tips", newTips);
+  };
+
+  const handleRemoveTip = (index: number) => {
+    const newTips = editData?.tips.filter((_, i) => i !== index);
+    handleInputChange("tips", newTips);
+  };
+
+  const handleTipChange = (index: number, value: string) => {
+    const newTips = [...(editData?.tips || [])];
+    newTips[index] = value;
+    handleInputChange("tips", newTips);
+  };
+
+  const handleSave = () => {
+    onSave();
+    setIsEditMode(false);
+  };
 
   return (
     <Box
+      component={Paper}
+      elevation={3}
       sx={{
-        bgcolor: isDarkMode ? color.gray700 : color.white,
         p: 3,
-        borderRadius: 3,
-        boxShadow: isDarkMode
-          ? "0 4px 8px rgba(0,0,0,0.2)"
-          : "0 1px 3px rgba(0,0,0,0.1)",
+        borderRadius: "1rem",
+        backgroundColor: isDarkMode ? color.gray800 : color.gray50,
+        my: 4,
+        border: `1px solid ${borderColor}`,
       }}
     >
       <Box
         sx={{
           display: "flex",
+          justifyContent: "space-between",
           alignItems: "center",
-          mb: 2,
-          pb: 1.5,
-          borderBottom: `1px solid ${color.gray200}`,
+          mb: 3,
         }}
       >
-        <LightbulbIcon sx={{ mr: 1.5, color: accentColor, fontSize: 28 }} />
-        <Typography variant="h6" fontWeight="medium">
-          Tips
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <LightbulbIcon
+            sx={{
+              mr: 1.5,
+              color: accentColor,
+              fontSize: 28,
+            }}
+          />
+          <Typography variant="h5" fontWeight="medium" color={textColor}>
+            Writing Tips
+          </Typography>
+        </Box>
+
+        {isEditMode ? (
+          <Box>
+            <Button
+              variant="contained"
+              startIcon={<SaveIcon />}
+              onClick={handleSave}
+              sx={{
+                bgcolor: isDarkMode ? color.emerald400 : color.emerald600,
+                color: "white",
+                mr: 1,
+                "&:hover": {
+                  bgcolor: isDarkMode ? color.emerald500 : color.emerald700,
+                },
+              }}
+            >
+              Save
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<CloseIcon />}
+              onClick={() => setIsEditMode(false)}
+              sx={{
+                borderColor: isDarkMode ? color.red400 : color.red600,
+                color: isDarkMode ? color.red400 : color.red600,
+                "&:hover": {
+                  borderColor: isDarkMode ? color.red500 : color.red700,
+                  bgcolor: "rgba(220, 38, 38, 0.04)",
+                },
+              }}
+            >
+              Cancel
+            </Button>
+          </Box>
+        ) : (
+          <Button
+            variant="contained"
+            startIcon={<EditIcon />}
+            onClick={() => setIsEditMode(true)}
+            sx={{
+              bgcolor: isDarkMode ? color.emerald400 : color.emerald600,
+              color: "white",
+              "&:hover": {
+                bgcolor: isDarkMode ? color.emerald500 : color.emerald700,
+              },
+            }}
+          >
+            Edit Tips
+          </Button>
+        )}
       </Box>
 
       <List
@@ -56,49 +160,105 @@ export default function WritingTipsSection({ data }: { data: Writing }) {
           },
         }}
       >
-        {data.tips.map((tip, index) => (
-          <ListItem
-            key={index}
-            sx={{
-              px: 2.5,
-              py: 1.75,
-              alignItems: "flex-start",
-            }}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: "32px !important",
-                color: accentColor,
-                alignSelf: "flex-start",
-                mt: "8px",
-              }}
-            >
-              <BulletIcon
-                sx={{
-                  fontSize: "10px",
-                  filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.1))",
-                }}
-              />
-            </ListItemIcon>
-            <ListItemText
-              primary={
-                <Typography
-                  variant="body1"
+        {isEditMode ? (
+          <Box>
+            {/* Render each tip as a separate TextField */}
+            {editData?.tips.map((tip, index) => (
+              <Box key={index} sx={{ mb: 2 }}>
+                <TextField
+                  label={`Tip ${index + 1}`}
+                  variant="outlined"
+                  fullWidth
                   sx={{
-                    color: textColor,
-                    fontSize: "1.02rem",
-                    lineHeight: "1.6",
-                    fontWeight: 400,
-                    letterSpacing: "0.02em",
+                    mb: 1,
+                    bgcolor: isDarkMode ? color.gray700 : color.white,
+                  }}
+                  value={tip}
+                  onChange={(e) => handleTipChange(index, e.target.value)}
+                />
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => handleRemoveTip(index)}
+                  sx={{
+                    display: "block",
+                    mt: 1,
+                    borderColor: isDarkMode ? color.red400 : color.red600,
+                    color: isDarkMode ? color.red400 : color.red600,
+                    "&:hover": {
+                      borderColor: isDarkMode ? color.red500 : color.red700,
+                      bgcolor: "rgba(220, 38, 38, 0.04)",
+                    },
                   }}
                 >
-                  {tip}
-                </Typography>
-              }
-              sx={{ my: 0 }}
-            />
-          </ListItem>
-        ))}
+                  Remove
+                </Button>
+              </Box>
+            ))}
+            {/* Add a new Tip button */}
+            <Button
+              variant="outlined"
+              startIcon={<EditIcon />}
+              onClick={handleAddTip}
+              sx={{
+                mt: 2,
+                borderColor: accentColor,
+                color: accentColor,
+                "&:hover": {
+                  borderColor: accentColor,
+                  bgcolor: "rgba(0, 150, 136, 0.1)",
+                },
+              }}
+            >
+              Add New Tip
+            </Button>
+          </Box>
+        ) : (
+          editData &&
+          editData.tips.map((tip, index) => (
+            <ListItem
+              key={index}
+              sx={{
+                px: 2.5,
+                py: 1.75,
+                alignItems: "flex-start",
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: "32px !important",
+                  color: accentColor,
+                  alignSelf: "flex-start",
+                  mt: "8px",
+                }}
+              >
+                <BulletIcon
+                  sx={{
+                    fontSize: "10px",
+                    filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.1))",
+                  }}
+                />
+              </ListItemIcon>
+              <ListItemText
+                primary={
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      color: textColor,
+                      fontSize: "1.02rem",
+                      lineHeight: "1.6",
+                      fontWeight: 400,
+                      letterSpacing: "0.02em",
+                    }}
+                  >
+                    {tip}
+                  </Typography>
+                }
+                sx={{ my: 0 }}
+              />
+            </ListItem>
+          ))
+        )}
       </List>
     </Box>
   );
