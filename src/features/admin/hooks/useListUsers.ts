@@ -1,6 +1,7 @@
 import { User } from "interfaces";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function useListUsers({ users }: { users: User[] }) {
   const [userList, setUserList] = useState<User[]>(users);
@@ -10,6 +11,8 @@ export default function useListUsers({ users }: { users: User[] }) {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isRemoveDialogOpen, setRemoveDialogOpen] = useState(false);
   const [isChangeStatusDialogOpen, setChangeStatusDialogOpen] = useState(false);
+  
+  const navigate = useNavigate();
 
   const toggleRow = (id: string) => {
     setOpenRows((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -29,6 +32,7 @@ export default function useListUsers({ users }: { users: User[] }) {
   const totalPage = Math.ceil(userList.length / usersPerPage);  
 
   const handleEdit = (name: string) => {
+    navigate("/admin/manage-teacher/teacher-advance");
     toast.info(`Edit user ${name}`);
   };
 
