@@ -3,6 +3,9 @@ export { default as LoginPage } from "features/auth/pages/LoginPage";
 export { default as RegisterPage } from "features/auth/pages/RegisterPage";
 export { default as ResetPasswordPage } from "features/auth/pages/ForgotPasswordPage";
 
+// Profile Page
+export { default as StudentProfilePage } from "features/profile/page/StudentProfilePage";
+
 // Error Page
 export { default as ErrorPage } from "pages/ErrorPage";
 
@@ -34,4 +37,4 @@ export { default as SpeakingDetailPage } from "features/teacher/manageLesson/pag
 export { default as ManageUserPage } from "features/admin/pages/ManageUsersPage";
 export { default as ManageStudentPage } from "features/admin/pages/ManageStudentsPage";
 export { default as ManageTeacherPage } from "features/admin/pages/ManageTeachersPage";
-export { default as ManageTeacherAdvancePage } from "features/admin/pages/ManageTeacherAdvancePage"
+export { default as ManageTeacherAdvancePage } from "features/admin/pages/ManageTeacherAdvancePage";

@@ -1,8 +1,9 @@
 import { Button, SxProps, Theme } from "@mui/material";
 import useColor from "theme/useColor";
+import { ReactNode } from "react";
 
 interface WEButtonProps {
-  children?: any;
+  children?: ReactNode;
   variant?: "contained" | "outlined" | "text";
   sx?: SxProps<Theme>;
   bgcolor?: string;
@@ -10,6 +11,8 @@ interface WEButtonProps {
   color?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   size?: "small" | "medium" | "large";
+  startIcon?: ReactNode;
+  endIcon?: ReactNode;
 }
 
 export default function WEButton({
@@ -21,6 +24,8 @@ export default function WEButton({
   color,
   onClick,
   size = "medium",
+  startIcon,
+  endIcon,
 }: WEButtonProps) {
   const colors = useColor();
 
@@ -42,8 +47,12 @@ export default function WEButton({
     "&:hover": { bgcolor: `${hoverBgcolor}` },
     py: 1,
     borderRadius: "0.5rem",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     ...sx,
   };
+
   return (
     <Button
       fullWidth
@@ -51,6 +60,8 @@ export default function WEButton({
       sx={complexSx}
       onClick={onClick}
       size={size}
+      startIcon={startIcon}
+      endIcon={endIcon}
     >
       {children}
     </Button>
