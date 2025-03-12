@@ -11,14 +11,17 @@ export default function useListUsers({ users }: { users: User[] }) {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isRemoveDialogOpen, setRemoveDialogOpen] = useState(false);
   const [isChangeStatusDialogOpen, setChangeStatusDialogOpen] = useState(false);
-  
+
   const navigate = useNavigate();
 
-  const toggleRow = (id: string) => {
+  const toggleRow = (id: number) => {
     setOpenRows((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
+  const handleChangePage = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
     setPage(value);
   };
 
@@ -28,8 +31,8 @@ export default function useListUsers({ users }: { users: User[] }) {
   };
 
   const startIndex = (page - 1) * usersPerPage;
-  const paginatedUsers = userList.slice(startIndex, startIndex + usersPerPage); 
-  const totalPage = Math.ceil(userList.length / usersPerPage);  
+  const paginatedUsers = userList.slice(startIndex, startIndex + usersPerPage);
+  const totalPage = Math.ceil(userList.length / usersPerPage);
 
   const handleEdit = (name: string) => {
     navigate("/admin/manage-teacher/teacher-advance");
@@ -68,7 +71,9 @@ export default function useListUsers({ users }: { users: User[] }) {
 
   const confirmRemove = () => {
     if (selectedUser) {
-      const updatedUsers = userList.filter((user) => user.id !== selectedUser.id);
+      const updatedUsers = userList.filter(
+        (user) => user.id !== selectedUser.id
+      );
       setUserList(updatedUsers);
       toast.success(`User ${selectedUser.name} removed!`);
       setRemoveDialogOpen(false);
@@ -92,9 +97,9 @@ export default function useListUsers({ users }: { users: User[] }) {
     handleChangePage,
     handleUsersPerPageChange,
     handleEdit,
-    handleChangeStatus, 
-    confirmChangeStatus, 
-    cancelChangeStatus, 
+    handleChangeStatus,
+    confirmChangeStatus,
+    cancelChangeStatus,
     handleRemove,
     confirmRemove,
     cancelRemove,

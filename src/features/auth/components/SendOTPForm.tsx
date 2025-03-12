@@ -1,5 +1,5 @@
-import { Box, Button, IconButton, Link, Typography } from "@mui/material";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Box, Button, IconButton, Typography } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useColor from "theme/useColor";
 import WETextField from "../../../components/input/WETextField";
 import { useNavigate } from "react-router-dom";
@@ -19,7 +19,7 @@ export default function SendOTPForm({
   const navigate = useNavigate();
 
   // useEffect để xử lý đếm ngược
-  useEffect(() => { }, [useSendOTP.countdown]);
+  useEffect(() => {}, [useSendOTP.countdown]);
 
   return (
     <Box

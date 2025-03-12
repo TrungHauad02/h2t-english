@@ -101,7 +101,7 @@ const routeData: Route[] = [
   },
 ];
 const mockTeacher: User = {
-  id: "1",
+  id: 1,
   avatar: "/image.jpg",
   email: "teacher@example.com",
   levelEnum: LevelsEnum.BACHELOR,
