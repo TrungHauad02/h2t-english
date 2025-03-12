@@ -1,31 +1,18 @@
-import { LevelsEnum, StatusEnum } from "interfaces";
+import { User } from "interfaces";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
 export default function useTeacherAdvance() {
-    const [user, setUser] = useState({
-        email: "",
-        name: "",
-        avatar: null as string | null,
-        phoneNumber: "",
-        dateOfBirth: null as Date | null,
-        level: LevelsEnum.BACHELOR,
-        status: true,
-    });
-
+    const [user, setUser] = useState<User | null>(null);
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [isRemoveDialogOpen, setRemoveDialogOpen] = useState(false);
 
-    const handleChooseAvatar = (file: File | null) => {
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setUser((prevUser) => ({
-                    ...prevUser,
-                    avatar: e.target?.result as string,
-                }));
-            };
-            reader.readAsDataURL(file);
+    const handleChooseAvatar = (base64: string) => {
+        if (user) {
+            setUser({
+                ...user,
+                avatar: base64,
+            });
         }
     };
 
@@ -35,9 +22,12 @@ export default function useTeacherAdvance() {
     };
 
     const handleChange = () => {
-        setIsEditing((prev) => !prev);
-        toast.info(isEditing ? "Editing disabled" : "Editing enabled");
-    };
+        setIsEditing((prev) => {
+            const newEditingState = !prev;
+            toast.info(newEditingState ? "Editing enabled" : "Editing disabled");
+            return newEditingState;
+        });
+    };    
 
     const handleRemove = () => {
         setRemoveDialogOpen(true);
@@ -52,23 +42,12 @@ export default function useTeacherAdvance() {
         setRemoveDialogOpen(false);
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-
+    const handleInputChange = (field: keyof User, value: any) => {
         setUser((prevUser) => ({
             ...prevUser,
-            [name]:
-                name === "dateOfBirth"
-                    ? value
-                        ? new Date(value)
-                        : null
-                    : name === "level"
-                    ? (value as LevelsEnum)
-                    : name === "status"
-                    ? value === StatusEnum.ACTIVE
-                    : value,
-        }));
-    };
+            [field]: value,
+        } as User)); 
+    };       
 
     return {
         user,

@@ -6,6 +6,7 @@ import { useDarkMode } from "hooks/useDarkMode";
 import { WEDialog } from "components/display";
 import { useNavigate } from "react-router-dom";
 import useTeacherAdvance from "../hooks/useTeacherAdvance";
+import WESelectImage from "components/input/WESelectImage";
 
 export default function TeacherAdvance() {
     const color = useColor();
@@ -15,69 +16,73 @@ export default function TeacherAdvance() {
 
     return (
         <Stack sx={{ margin: "auto", mt: 2, maxWidth: 1150, padding: 4, boxShadow: 3, borderRadius: 2, backgroundColor: "background.paper" }}>
-            <Box display="flex" flexDirection="column" alignItems="center" mb={2}>
-                <input
-                    type="file"
-                    accept="image/*"
-                    style={{ display: "none" }}
-                    id="avatar-upload"
-                    onChange={(e) => hooks.handleChooseAvatar(e.target.files?.[0] ?? null)}
-                    disabled={!hooks.isEditing}
-                />
-                <label htmlFor="avatar-upload" style={{ cursor: "pointer" }}>
-                    <Avatar src={hooks.user.avatar ?? ""} sx={{ width: 150, height: 150, mb: 1 }} />
-                </label>
-            </Box>
+            <WESelectImage
+                value={hooks.user?.avatar ?? ""}
+                onChange={(base64) => hooks.handleChooseAvatar(base64)}
+                label="Profile Picture"
+                required
+                sx={{ width: "100%", maxWidth: 300, margin: "0 auto"}}
+            />
 
             <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                     <WETextField label="Email" type="email" name="email"
-                        value={hooks.user.email}
-                        onChange={hooks.handleInputChange}
+                        value={hooks.user?.email || ""}
+                        onChange={(e) => hooks.handleInputChange("email", e.target.value)}
                         required placeholder="Enter your email"
                         disabled={!hooks.isEditing} />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <WETextField label="Name" type="text" name="name"
-                        value={hooks.user.name}
-                        onChange={hooks.handleInputChange}
+                        value={hooks.user?.name || ""}
+                        onChange={(e) => hooks.handleInputChange("name", e.target.value)}
                         required placeholder="Enter your name"
                         disabled={!hooks.isEditing} />
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                     <WETextField label="Phone Number" type="tel" name="phoneNumber"
-                        value={hooks.user.phoneNumber}
-                        onChange={hooks.handleInputChange}
+                        value={hooks.user?.phoneNumber || ""}
+                        onChange={(e) => hooks.handleInputChange("phoneNumber", e.target.value)}
                         required placeholder="Enter your phone number"
                         disabled={!hooks.isEditing} />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <WETextField label="Date of Birth" type="date" name="dateOfBirth"
-                        value={hooks.user.dateOfBirth ? hooks.user.dateOfBirth.toISOString().split("T")[0] : ""}
-                        onChange={hooks.handleInputChange} required
+                        value={
+                            hooks.user?.dateOfBirth
+                                ? new Date(hooks.user.dateOfBirth).toISOString().split("T")[0]
+                                : ""
+                        }
+                        onChange={(e) => hooks.handleInputChange("dateOfBirth", e.target.value)} required
                         disabled={!hooks.isEditing} />
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
-                    <TextField label="Level" name="level" value={hooks.user.level} onChange={hooks.handleInputChange} select fullWidth disabled={!hooks.isEditing}>
+                    <TextField
+                        label="Level"
+                        name="level"
+                        value={hooks.user?.levelEnum || ""}
+                        onChange={(e) => hooks.handleInputChange("levelEnum", e.target.value)}
+                        select
+                        fullWidth
+                        disabled={!hooks.isEditing}
+                    >
                         {Object.values(LevelsEnum).map((level) => (
                             <MenuItem key={level} value={level}>
                                 {level}
                             </MenuItem>
                         ))}
                     </TextField>
+
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
                     <TextField
                         label="Status"
                         name="status"
-                        value={hooks.user.status ? StatusEnum.ACTIVE : StatusEnum.INACTIVE}
-                        onChange={(e) => hooks.setUser((prevUser) => ({
-                            ...prevUser,
-                            status: e.target.value === StatusEnum.ACTIVE
-                        }))}
+                        value={hooks.user?.status ? StatusEnum.ACTIVE : StatusEnum.INACTIVE}
+                        onChange={(e) => hooks.setUser((prevUser) => prevUser ? { ...prevUser, status: e.target.value === StatusEnum.ACTIVE } : null)}
                         select
                         fullWidth
                         disabled={!hooks.isEditing}
