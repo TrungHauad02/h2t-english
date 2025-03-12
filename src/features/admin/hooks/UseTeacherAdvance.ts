@@ -2,14 +2,17 @@ import { LevelsEnum, StatusEnum } from "interfaces";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
-export default function UseTeacherAdvance() {
-    const [email, setEmail] = useState<string>("");
-    const [name, setName] = useState<string>("");
-    const [avatar, setAvatar] = useState<string | null>(null);
-    const [phoneNumber, setPhoneNumber] = useState<string>("");
-    const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
-    const [level, setLevel] = useState<LevelsEnum>(LevelsEnum.BACHELOR);
-    const [status, setStatus] = useState<boolean>(true);
+export default function useTeacherAdvance() {
+    const [user, setUser] = useState({
+        email: "",
+        name: "",
+        avatar: null as string | null,
+        phoneNumber: "",
+        dateOfBirth: null as Date | null,
+        level: LevelsEnum.BACHELOR,
+        status: true,
+    });
+
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [isRemoveDialogOpen, setRemoveDialogOpen] = useState(false);
 
@@ -17,7 +20,10 @@ export default function UseTeacherAdvance() {
         if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                setAvatar(e.target?.result as string);
+                setUser((prevUser) => ({
+                    ...prevUser,
+                    avatar: e.target?.result as string,
+                }));
             };
             reader.readAsDataURL(file);
         }
@@ -48,46 +54,25 @@ export default function UseTeacherAdvance() {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-    
-        switch (name) {
-            case "email":
-                setEmail(value);
-                break;
-            case "name":
-                setName(value);
-                break;
-            case "phoneNumber":
-                setPhoneNumber(value);
-                break;
-            case "dateOfBirth":
-                setDateOfBirth(value ? new Date(value) : null);
-                break;
-            case "level":
-                setLevel(value as LevelsEnum);
-                break;
-            case "status":
-                setStatus(value === StatusEnum.ACTIVE);
-                break;
-            default:
-                break;
-        }
-    };    
+
+        setUser((prevUser) => ({
+            ...prevUser,
+            [name]:
+                name === "dateOfBirth"
+                    ? value
+                        ? new Date(value)
+                        : null
+                    : name === "level"
+                    ? (value as LevelsEnum)
+                    : name === "status"
+                    ? value === StatusEnum.ACTIVE
+                    : value,
+        }));
+    };
 
     return {
-        email,
-        setEmail,
-        name,
-        setName,
-        avatar,
-        setAvatar,
-        phoneNumber,
-        setPhoneNumber,
-        dateOfBirth,
-        setDateOfBirth,
-        level,
-        setLevel,
-        status,
-        setStatus,
+        user,
+        setUser,
         isEditing,
         setIsEditing,
         handleChange,
@@ -97,6 +82,6 @@ export default function UseTeacherAdvance() {
         confirmRemove,
         cancelRemove,
         isRemoveDialogOpen,
-        handleInputChange
+        handleInputChange,
     };
 }
