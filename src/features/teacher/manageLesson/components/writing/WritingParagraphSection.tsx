@@ -4,11 +4,12 @@ import { Writing } from "interfaces";
 import useColor from "theme/useColor";
 import {
   AnswersList,
-  HeaderSection,
   ParagraphEditor,
   ParagraphPreview,
   useWritingParagraphSection,
 } from "./paragraph";
+import DescriptionIcon from "@mui/icons-material/Description";
+import SectionHeader from "../SectionHeader";
 
 interface WritingParagraphSectionProps {
   editData: Writing | null;
@@ -45,10 +46,13 @@ export default function WritingParagraphSection({
         border: `1px solid ${borderColor}`,
       }}
     >
-      <HeaderSection
+      <SectionHeader
+        title="Writing Paragraphs"
+        editText="Edit Paragraph"
+        icon={<DescriptionIcon />}
         isEditMode={hooks.isEditMode}
-        handleEditMode={hooks.handleEditMode}
         handleSaveChanges={hooks.handleSaveChanges}
+        handleEditMode={hooks.handleEditMode}
         handleCancelEdit={hooks.handleCancelEdit}
       />
 

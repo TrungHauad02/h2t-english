@@ -13,11 +13,10 @@ import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import EditIcon from "@mui/icons-material/Edit";
-import SaveIcon from "@mui/icons-material/Save";
-import CloseIcon from "@mui/icons-material/Close";
 import { FiberManualRecord as BulletIcon } from "@mui/icons-material";
 import { Writing } from "interfaces";
 import { useState } from "react";
+import SectionHeader from "../SectionHeader";
 
 interface WritingTipsSectionProps {
   editData: Writing | null;
@@ -72,82 +71,15 @@ export default function WritingTipsSection({
         border: `1px solid ${borderColor}`,
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <LightbulbIcon
-            sx={{
-              mr: 1.5,
-              color: accentColor,
-              fontSize: 28,
-            }}
-          />
-          <Typography variant="h5" fontWeight="medium" color={textColor}>
-            Writing Tips
-          </Typography>
-        </Box>
-
-        {isEditMode ? (
-          <Box>
-            <Button
-              variant="contained"
-              startIcon={<SaveIcon />}
-              onClick={handleSave}
-              sx={{
-                bgcolor: isDarkMode ? color.emerald400 : color.emerald600,
-                color: "white",
-                mr: 1,
-                "&:hover": {
-                  bgcolor: isDarkMode ? color.emerald500 : color.emerald700,
-                },
-              }}
-            >
-              Save
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<CloseIcon />}
-              onClick={() => setIsEditMode(false)}
-              sx={{
-                borderColor: isDarkMode ? color.red400 : color.red600,
-                color: isDarkMode ? color.red400 : color.red600,
-                "&:hover": {
-                  borderColor: isDarkMode ? color.red500 : color.red700,
-                  bgcolor: "rgba(220, 38, 38, 0.04)",
-                },
-              }}
-            >
-              Cancel
-            </Button>
-          </Box>
-        ) : (
-          <Button
-            variant="contained"
-            startIcon={<EditIcon />}
-            onClick={() => setIsEditMode(true)}
-            sx={{
-              bgcolor: isDarkMode ? color.emerald400 : color.emerald600,
-              color: "white",
-              "&:hover": {
-                bgcolor: isDarkMode ? color.emerald500 : color.emerald700,
-              },
-            }}
-          >
-            Edit Tips
-          </Button>
-        )}
-      </Box>
+      <SectionHeader
+        title="Writing Tips"
+        editText="Edit Tips"
+        icon={<LightbulbIcon />}
+        isEditMode={isEditMode}
+        handleSaveChanges={handleSave}
+        handleEditMode={() => setIsEditMode(false)}
+        handleCancelEdit={() => setIsEditMode(true)}
+      />
 
       <List
         sx={{
