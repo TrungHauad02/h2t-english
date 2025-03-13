@@ -19,6 +19,7 @@ import {
   WritingDetailsView,
   WritingEditForm,
   WritingHeader,
+  WritingParagraphSection,
   WritingTipsSection,
 } from "../components/writing";
 
@@ -102,6 +103,12 @@ export default function WritingDetailPage() {
           )}
 
           <WritingTipsSection
+            editData={hooks.editData}
+            handleInputChange={hooks.handleInputChange}
+            onSave={hooks.handleSaveChanges}
+          />
+
+          <WritingParagraphSection
             editData={hooks.editData}
             handleInputChange={hooks.handleInputChange}
             onSave={hooks.handleSaveChanges}

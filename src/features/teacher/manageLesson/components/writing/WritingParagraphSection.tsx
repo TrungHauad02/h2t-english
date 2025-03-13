@@ -1,0 +1,74 @@
+import { Box, Paper } from "@mui/material";
+import { useDarkMode } from "hooks/useDarkMode";
+import { Writing } from "interfaces";
+import useColor from "theme/useColor";
+import {
+  AnswersList,
+  HeaderSection,
+  ParagraphEditor,
+  ParagraphPreview,
+  useWritingParagraphSection,
+} from "./paragraph";
+
+interface WritingParagraphSectionProps {
+  editData: Writing | null;
+  handleInputChange: (field: keyof Writing, value: any) => void;
+  onSave: () => void;
+}
+
+export default function WritingParagraphSection({
+  editData,
+  handleInputChange,
+  onSave,
+}: WritingParagraphSectionProps) {
+  const color = useColor();
+  const { isDarkMode } = useDarkMode();
+  const borderColor = isDarkMode ? color.gray700 : color.gray200;
+
+  const hooks = useWritingParagraphSection({
+    editData,
+    handleInputChange,
+    onSave,
+  });
+
+  const preview = hooks.renderParagraphPreview();
+
+  return (
+    <Box
+      component={Paper}
+      elevation={3}
+      sx={{
+        p: 3,
+        borderRadius: "1rem",
+        backgroundColor: isDarkMode ? color.gray800 : color.gray50,
+        my: 4,
+        border: `1px solid ${borderColor}`,
+      }}
+    >
+      <HeaderSection
+        isEditMode={hooks.isEditMode}
+        handleEditMode={hooks.handleEditMode}
+        handleSaveChanges={hooks.handleSaveChanges}
+        handleCancelEdit={hooks.handleCancelEdit}
+      />
+
+      {hooks.isEditMode ? (
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 3 }}>
+          <ParagraphEditor
+            paragraph={hooks.paragraph}
+            setParagraph={hooks.setParagraph}
+          />
+          <ParagraphPreview isEditMode={hooks.isEditMode} preview={preview} />
+          <AnswersList
+            answers={hooks.answers}
+            handleAddAnswer={hooks.handleAddAnswer}
+            handleAnswerChange={hooks.handleAnswerChange}
+            handleDeleteAnswer={hooks.handleDeleteAnswer}
+          />
+        </Box>
+      ) : (
+        <ParagraphPreview isEditMode={hooks.isEditMode} preview={preview} />
+      )}
+    </Box>
+  );
+}

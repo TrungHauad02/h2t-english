@@ -88,5 +88,6 @@ export default function useColor() {
     red600: "#dc2626",
     red700: "#b91c1c",
     red800: "#991b1b",
+    red900: "#b71c1c",
   };
 }
