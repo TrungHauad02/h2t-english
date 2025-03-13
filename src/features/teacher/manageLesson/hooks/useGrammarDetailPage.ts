@@ -1,11 +1,10 @@
 import { Grammar } from "interfaces";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { listLessonService } from "../services/listLessonService";
 
 export default function useGrammarDetailPage() {
   const { id, routeId } = useParams();
-  const navigate = useNavigate();
   const [data, setData] = useState<Grammar | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editData, setEditData] = useState<Grammar | null>(null);
@@ -86,10 +85,6 @@ export default function useGrammarDetailPage() {
     setOpenUnpublishDialog(true);
   };
 
-  const handleGoBack = () => {
-    navigate(-1);
-  };
-
   return {
     data,
     isEditMode,
@@ -100,7 +95,6 @@ export default function useGrammarDetailPage() {
     handleEditMode,
     handleSaveChanges,
     handleInputChange,
-    handleGoBack,
     setOpenPublishDialog,
     setOpenUnpublishDialog,
     handlePublish,

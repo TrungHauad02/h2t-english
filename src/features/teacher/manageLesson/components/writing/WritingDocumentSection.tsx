@@ -7,15 +7,15 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import WEDocumentViewer from "components/display/document/WEDocumentViewer";
 import SectionHeader from "../SectionHeader";
 
-interface GrammarDocumentSectionProps {
+interface WritingDocumentSectionProps {
   documentUrl: string;
   onDocumentChange: (base64: string) => void;
 }
 
-export default function GrammarDocumentSection({
+export default function WritingDocumentSection({
   documentUrl,
   onDocumentChange,
-}: GrammarDocumentSectionProps) {
+}: WritingDocumentSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const [isEditMode, setIsEditMode] = useState(false);
@@ -58,7 +58,7 @@ export default function GrammarDocumentSection({
       }}
     >
       <SectionHeader
-        title="Grammar Document"
+        title="Writing Document"
         editText="Edit Document"
         icon={<DescriptionIcon />}
         isEditMode={isEditMode}
@@ -72,7 +72,7 @@ export default function GrammarDocumentSection({
           <WEDocumentInput
             value={tempDocument}
             onChange={handleDocumentChange}
-            label="Grammar Practice Document"
+            label="Writing Document"
             maxHeight="400px"
             padding="16px"
             errorMessage="Cannot load document. Please try a different file."
@@ -83,7 +83,7 @@ export default function GrammarDocumentSection({
             fileUrl={documentUrl}
             maxHeight="400px"
             padding="16px"
-            errorMessage="Cannot load practice document. Please try again later."
+            errorMessage="Cannot load document. Please try again later."
             fontFamily="Roboto, sans-serif"
             lineHeight="1.6"
             wordBreak="break-word"
@@ -118,14 +118,14 @@ export default function GrammarDocumentSection({
                 mb: 1,
               }}
             >
-              No practice document has been uploaded
+              No document has been uploaded
             </Typography>
             <Typography
               variant="body2"
               sx={{ color: isDarkMode ? color.gray500 : color.gray500 }}
             >
               Click the Edit Document button to upload a document for this
-              grammar lesson.
+              writing lesson.
             </Typography>
           </Box>
         )}

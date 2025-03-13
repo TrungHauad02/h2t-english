@@ -1,33 +1,25 @@
-import {
-  Stack,
-  Typography,
-  Container,
-  Button,
-  CircularProgress,
-} from "@mui/material";
-import { useDarkMode } from "hooks/useDarkMode";
-import useColor from "theme/useColor";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import LessonPublishDialogs from "../components/PublishDialogs";
+import { Stack, Container } from "@mui/material";
 import QuestionsSection from "../components/questionsSection/QuestionsSection";
 import SubjectIcon from "@mui/icons-material/Subject";
 import QuizIcon from "@mui/icons-material/Quiz";
 import useReadingDetailPage from "../hooks/useReadingDetailPage";
-import PublishActions from "../components/PublishActions";
 import {
   ReadingDetailsView,
   ReadingDocumentSection,
   ReadingEditForm,
-  ReadingHeader,
 } from "../components/reading";
 import WEFloatingNavMenu, {
   NavItem,
 } from "components/pagination/WEFloatingNavMenu";
+import {
+  NotFoundLesson,
+  LoadingLesson,
+  PublishActions,
+  LessonHeader,
+  PublishDialogs,
+} from "../components";
 
 export default function ReadingDetailPage() {
-  const color = useColor();
-  const { isDarkMode } = useDarkMode();
-
   const hooks = useReadingDetailPage();
 
   const navItems: NavItem[] = [
@@ -48,43 +40,9 @@ export default function ReadingDetailPage() {
     },
   ];
 
-  if (hooks.loading) {
-    return (
-      <Stack
-        alignItems="center"
-        justifyContent="center"
-        sx={{ mt: 6, minHeight: "60vh" }}
-      >
-        <CircularProgress
-          size={40}
-          sx={{ color: isDarkMode ? color.emerald400 : color.emerald600 }}
-        />
-      </Stack>
-    );
-  }
+  if (hooks.loading) return <LoadingLesson />;
 
-  if (!hooks.data) {
-    return (
-      <Stack sx={{ mt: 6, p: 3 }}>
-        <Typography
-          variant="h5"
-          color={isDarkMode ? color.gray100 : color.gray900}
-        >
-          Reading not found
-        </Typography>
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={hooks.handleGoBack}
-          sx={{
-            mt: 2,
-            color: isDarkMode ? color.emerald400 : color.emerald600,
-          }}
-        >
-          Go Back
-        </Button>
-      </Stack>
-    );
-  }
+  if (!hooks.data) return <NotFoundLesson title="Reading not found" />;
 
   return (
     <Container maxWidth="lg">
@@ -92,8 +50,8 @@ export default function ReadingDetailPage() {
 
       <Stack sx={{ mt: 6, mb: 6, px: { xs: 2, md: 4 } }}>
         <div id="reading-details">
-          <ReadingHeader
-            onGoBack={hooks.handleGoBack}
+          <LessonHeader
+            title="Reading Details"
             onEditMode={hooks.handleEditMode}
           />
           <PublishActions
@@ -124,7 +82,7 @@ export default function ReadingDetailPage() {
           <QuestionsSection questions={hooks.data.questions} />
         </div>
       </Stack>
-      <LessonPublishDialogs
+      <PublishDialogs
         openPublish={hooks.openPublishDialog}
         openUnpublish={hooks.openUnpublishDialog}
         onCancelPublish={() => hooks.setOpenPublishDialog(false)}

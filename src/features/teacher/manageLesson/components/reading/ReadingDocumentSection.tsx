@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { Box, Paper, Typography, Stack, Button } from "@mui/material";
+import { Box, Paper, Typography, Stack } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { WEDocumentInput } from "components/input";
-import EditIcon from "@mui/icons-material/Edit";
-import SaveIcon from "@mui/icons-material/Save";
-import CloseIcon from "@mui/icons-material/Close";
 import DescriptionIcon from "@mui/icons-material/Description";
 import WEDocumentViewer from "components/display/document/WEDocumentViewer";
+import SectionHeader from "../SectionHeader";
 
 interface ReadingDocumentSectionProps {
   documentUrl: string;
@@ -24,9 +22,7 @@ export default function ReadingDocumentSection({
   const [tempDocument, setTempDocument] = useState<string>("");
 
   const cardBgColor = isDarkMode ? color.gray800 : color.gray50;
-  const textColor = isDarkMode ? color.gray100 : color.gray900;
   const borderColor = isDarkMode ? color.gray700 : color.gray200;
-  const accentColor = isDarkMode ? color.teal300 : color.teal600;
   const secondaryBgColor = isDarkMode ? color.gray900 : color.gray100;
   const secondaryTextColor = isDarkMode ? color.gray400 : color.gray600;
 
@@ -61,82 +57,15 @@ export default function ReadingDocumentSection({
         border: `1px solid ${borderColor}`,
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <DescriptionIcon
-            sx={{
-              mr: 1.5,
-              color: accentColor,
-              fontSize: 28,
-            }}
-          />
-          <Typography variant="h5" fontWeight="medium" color={textColor}>
-            Reading Document
-          </Typography>
-        </Box>
-
-        {isEditMode ? (
-          <Box>
-            <Button
-              variant="contained"
-              startIcon={<SaveIcon />}
-              onClick={handleSaveChanges}
-              sx={{
-                bgcolor: isDarkMode ? color.emerald400 : color.emerald600,
-                color: "white",
-                mr: 1,
-                "&:hover": {
-                  bgcolor: isDarkMode ? color.emerald500 : color.emerald700,
-                },
-              }}
-            >
-              Save
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<CloseIcon />}
-              onClick={handleCancelEdit}
-              sx={{
-                borderColor: isDarkMode ? color.red400 : color.red600,
-                color: isDarkMode ? color.red400 : color.red600,
-                "&:hover": {
-                  borderColor: isDarkMode ? color.red500 : color.red700,
-                  bgcolor: "rgba(220, 38, 38, 0.04)",
-                },
-              }}
-            >
-              Cancel
-            </Button>
-          </Box>
-        ) : (
-          <Button
-            variant="contained"
-            startIcon={<EditIcon />}
-            onClick={handleEditMode}
-            sx={{
-              bgcolor: isDarkMode ? color.emerald400 : color.emerald600,
-              color: "white",
-              "&:hover": {
-                bgcolor: isDarkMode ? color.emerald500 : color.emerald700,
-              },
-            }}
-          >
-            Edit Document
-          </Button>
-        )}
-      </Box>
+      <SectionHeader
+        title="Reading Document"
+        editText="Edit Document"
+        icon={<DescriptionIcon />}
+        isEditMode={isEditMode}
+        handleSaveChanges={handleSaveChanges}
+        handleEditMode={handleEditMode}
+        handleCancelEdit={handleCancelEdit}
+      />
 
       <Stack spacing={2}>
         {isEditMode ? (

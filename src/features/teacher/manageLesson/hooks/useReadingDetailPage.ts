@@ -1,11 +1,10 @@
 import { Reading } from "interfaces";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { listLessonService } from "../services/listLessonService";
 
 export default function useReadingDetailPage() {
   const { id, routeId } = useParams();
-  const navigate = useNavigate();
   const [data, setData] = useState<Reading | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editData, setEditData] = useState<Reading | null>(null);
@@ -79,9 +78,6 @@ export default function useReadingDetailPage() {
   const handleUnpublishClick = () => {
     setOpenUnpublishDialog(true);
   };
-  const handleGoBack = () => {
-    navigate(-1);
-  };
 
   return {
     data,
@@ -93,7 +89,6 @@ export default function useReadingDetailPage() {
     handleEditMode,
     handleSaveChanges,
     handleInputChange,
-    handleGoBack,
     setOpenPublishDialog,
     setOpenUnpublishDialog,
     handlePublish,

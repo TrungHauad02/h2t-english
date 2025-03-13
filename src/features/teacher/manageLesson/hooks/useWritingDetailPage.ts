@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Writing } from "interfaces";
 import { listLessonService } from "../services/listLessonService";
 
 export default function useWritingDetailPage() {
   const { id, routeId } = useParams();
-  const navigate = useNavigate();
   const [data, setData] = useState<Writing | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editData, setEditData] = useState<Writing | null>(null);
@@ -80,10 +79,6 @@ export default function useWritingDetailPage() {
     setOpenUnpublishDialog(true);
   };
 
-  const handleGoBack = () => {
-    navigate(-1);
-  };
-
   return {
     data,
     isEditMode,
@@ -94,7 +89,6 @@ export default function useWritingDetailPage() {
     handleEditMode,
     handleSaveChanges,
     handleInputChange,
-    handleGoBack,
     setOpenPublishDialog,
     setOpenUnpublishDialog,
     handlePublish,
