@@ -1,4 +1,6 @@
 import { Stack, Container } from "@mui/material";
+import DescriptionIcon from "@mui/icons-material/Description";
+import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import SubjectIcon from "@mui/icons-material/Subject";
 import WEFloatingNavMenu, {
   NavItem,
@@ -6,6 +8,7 @@ import WEFloatingNavMenu, {
 import useWritingDetailPage from "../hooks/useWritingDetailPage";
 import {
   WritingDetailsView,
+  WritingDocumentSection,
   WritingEditForm,
   WritingParagraphSection,
   WritingTipsSection,
@@ -26,6 +29,21 @@ export default function WritingDetailPage() {
       id: "writing-details",
       label: "Writing Details",
       icon: <SubjectIcon fontSize="small" />,
+    },
+    {
+      id: "writing-tips",
+      label: "Writing Tips",
+      icon: <LightbulbIcon fontSize="small" />,
+    },
+    {
+      id: "writing-document",
+      label: "Writing Document",
+      icon: <DescriptionIcon fontSize="small" />,
+    },
+    {
+      id: "writing-paragraph",
+      label: "Writing Paragraph",
+      icon: <DescriptionIcon fontSize="small" />,
     },
   ];
 
@@ -59,13 +77,25 @@ export default function WritingDetailPage() {
           ) : (
             <WritingDetailsView data={hooks.data} />
           )}
+        </div>
 
+        <div id="writing-tips">
           <WritingTipsSection
             editData={hooks.editData}
             handleInputChange={hooks.handleInputChange}
             onSave={hooks.handleSaveChanges}
           />
+        </div>
 
+        <div id="writing-document">
+          <WritingDocumentSection
+            documentUrl={hooks.editData ? hooks.editData.file : ""}
+            onDocumentChange={(base64) =>
+              hooks.handleInputChange("file", base64)
+            }
+          />
+        </div>
+        <div id="writing-paragraph">
           <WritingParagraphSection
             editData={hooks.editData}
             handleInputChange={hooks.handleInputChange}
