@@ -3,18 +3,21 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
+import { useNavigate } from "react-router-dom";
 
-interface TopicHeaderProps {
-  onGoBack: () => void;
+interface LessonHeaderProps {
+  title: string;
   onEditMode: () => void;
 }
 
-export default function TopicHeader({
-  onGoBack,
-  onEditMode,
-}: TopicHeaderProps) {
+export default function LessonHeader({ title, onEditMode }: LessonHeaderProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const navigate = useNavigate();
+
+  const handleGoBack = () => {
+    navigate(-1);
+  };
 
   return (
     <Box
@@ -26,7 +29,7 @@ export default function TopicHeader({
       }}
     >
       <IconButton
-        onClick={onGoBack}
+        onClick={handleGoBack}
         sx={{
           color: isDarkMode ? color.gray100 : color.gray900,
         }}
@@ -42,7 +45,7 @@ export default function TopicHeader({
           textAlign: "center",
         }}
       >
-        Topic Details
+        {title}
       </Typography>
       <IconButton
         onClick={onEditMode}
