@@ -51,7 +51,7 @@ const WESelectImage = ({
   };
 
   return (
-    <Stack spacing={1} sx={sx}>
+    <Stack spacing={1} sx={sx} pb={2}>
       {label && (
         <Typography
           sx={{
@@ -126,7 +126,7 @@ const WESelectImage = ({
         )}
       </Box>
       {value && (
-        <Box>
+        <Box display="flex" justifyContent="center" mt={2}>
           <Button
             variant="contained"
             color="error"

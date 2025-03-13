@@ -1,25 +1,18 @@
-import { LevelsEnum, StatusEnum } from "interfaces";
+import { User } from "interfaces";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
-export default function UseTeacherAdvance() {
-    const [email, setEmail] = useState<string>("");
-    const [name, setName] = useState<string>("");
-    const [avatar, setAvatar] = useState<string | null>(null);
-    const [phoneNumber, setPhoneNumber] = useState<string>("");
-    const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
-    const [level, setLevel] = useState<LevelsEnum>(LevelsEnum.BACHELOR);
-    const [status, setStatus] = useState<boolean>(true);
+export default function useTeacherAdvance() {
+    const [user, setUser] = useState<User | null>(null);
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [isRemoveDialogOpen, setRemoveDialogOpen] = useState(false);
 
-    const handleChooseAvatar = (file: File | null) => {
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setAvatar(e.target?.result as string);
-            };
-            reader.readAsDataURL(file);
+    const handleChooseAvatar = (base64: string) => {
+        if (user) {
+            setUser({
+                ...user,
+                avatar: base64,
+            });
         }
     };
 
@@ -29,9 +22,12 @@ export default function UseTeacherAdvance() {
     };
 
     const handleChange = () => {
-        setIsEditing((prev) => !prev);
-        toast.info(isEditing ? "Editing disabled" : "Editing enabled");
-    };
+        setIsEditing((prev) => {
+            const newEditingState = !prev;
+            toast.info(newEditingState ? "Editing enabled" : "Editing disabled");
+            return newEditingState;
+        });
+    };    
 
     const handleRemove = () => {
         setRemoveDialogOpen(true);
@@ -46,48 +42,16 @@ export default function UseTeacherAdvance() {
         setRemoveDialogOpen(false);
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-    
-        switch (name) {
-            case "email":
-                setEmail(value);
-                break;
-            case "name":
-                setName(value);
-                break;
-            case "phoneNumber":
-                setPhoneNumber(value);
-                break;
-            case "dateOfBirth":
-                setDateOfBirth(value ? new Date(value) : null);
-                break;
-            case "level":
-                setLevel(value as LevelsEnum);
-                break;
-            case "status":
-                setStatus(value === StatusEnum.ACTIVE);
-                break;
-            default:
-                break;
-        }
-    };    
+    const handleInputChange = (field: keyof User, value: any) => {
+        setUser((prevUser) => ({
+            ...prevUser,
+            [field]: value,
+        } as User)); 
+    };       
 
     return {
-        email,
-        setEmail,
-        name,
-        setName,
-        avatar,
-        setAvatar,
-        phoneNumber,
-        setPhoneNumber,
-        dateOfBirth,
-        setDateOfBirth,
-        level,
-        setLevel,
-        status,
-        setStatus,
+        user,
+        setUser,
         isEditing,
         setIsEditing,
         handleChange,
@@ -97,6 +61,6 @@ export default function UseTeacherAdvance() {
         confirmRemove,
         cancelRemove,
         isRemoveDialogOpen,
-        handleInputChange
+        handleInputChange,
     };
 }
