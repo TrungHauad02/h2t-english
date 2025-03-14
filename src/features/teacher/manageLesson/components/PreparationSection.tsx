@@ -1,4 +1,4 @@
-import { Box, Paper } from "@mui/material";
+import { Box, Divider, Paper } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import QuizIcon from "@mui/icons-material/Quiz";
@@ -28,7 +28,7 @@ export default function PreparationSection() {
       title: "Preparation 1",
       tip: "This is tip for studying",
       type: PreparationType.MATCH_WORD_WITH_SENTENCES,
-      questions: [],
+      questions: [1, 2, 3],
     };
     setData(initialData);
     setEditData(initialData);
@@ -64,11 +64,13 @@ export default function PreparationSection() {
 
     switch (currentData?.type) {
       case PreparationType.MATCH_WORD_WITH_SENTENCES:
-        return <MatchWordWithSentenceSection isEditMode={isEditMode} />;
+        return (
+          <MatchWordWithSentenceSection questions={currentData.questions} />
+        );
       case PreparationType.CLASSIFY:
-        return <ClassifySection isEditMode={isEditMode} />;
+        return <ClassifySection questions={currentData.questions} />;
       case PreparationType.WORDS_MAKE_SENTENCES:
-        return <WordsMakeSentencesSection isEditMode={isEditMode} />;
+        return <WordsMakeSentencesSection questions={currentData.questions} />;
       default:
         return <></>;
     }
@@ -105,7 +107,7 @@ export default function PreparationSection() {
       ) : (
         <PreparationDetailsView data={data} />
       )}
-
+      <Divider />
       {renderPreparation()}
     </Box>
   );

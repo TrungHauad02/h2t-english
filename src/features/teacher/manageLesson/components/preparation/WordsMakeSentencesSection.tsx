@@ -1,11 +1,11 @@
 import { Box } from "@mui/material";
 
 interface WordsMakeSentencesSectionProps {
-  isEditMode: boolean;
+  questions: number[];
 }
 
 export default function WordsMakeSentencesSection({
-  isEditMode,
+  questions,
 }: WordsMakeSentencesSectionProps) {
   return <Box></Box>;
 }
