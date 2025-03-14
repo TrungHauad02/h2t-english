@@ -53,7 +53,7 @@ export default function ReadingDocumentSection({
         p: 3,
         borderRadius: "1rem",
         backgroundColor: cardBgColor,
-        mb: 4,
+        my: 4,
         border: `1px solid ${borderColor}`,
       }}
     >
