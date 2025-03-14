@@ -3,7 +3,7 @@ import { useState } from "react";
 
 export default function useStudentProfile() {
     const [data, setData] = useState<User | null>(null);
-    const [editMode, setEditMode] = useState(false);
+    const [isEditMode, setIseditMode] = useState(false);
     const [formData, setFormData] = useState<User | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,12 +17,14 @@ export default function useStudentProfile() {
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (formData) {
+            const selectedDate = e.target.value;
+            const [year, month, day] = selectedDate.split("-").map(Number);
             setFormData({
                 ...formData,
-                dateOfBirth: new Date(e.target.value),
+                dateOfBirth: new Date(year, month - 1, day ),
             });
         }
-    };
+    }           
 
     const handleAvatarChange = (base64: string) => {
         if (formData) {
@@ -37,20 +39,24 @@ export default function useStudentProfile() {
         if (formData) {
             setData(formData);
             // Here you would normally call an API to save the data
-            setEditMode(false);
+            setIseditMode(false);
         }
     };
 
     const handleCancel = () => {
         setFormData(data);
-        setEditMode(false);
+        setIseditMode(false);
+    };  
+
+    const formatDate = (date: Date) => {
+        return date.toLocaleDateString("en-CA");
     };
 
     return {
         data,
         setData,
-        editMode,
-        setEditMode,
+        isEditMode,
+        setIseditMode,
         formData,
         setFormData,
         handleChange,
@@ -58,5 +64,6 @@ export default function useStudentProfile() {
         handleAvatarChange,
         handleSave,
         handleCancel,
+        formatDate
     };
 }

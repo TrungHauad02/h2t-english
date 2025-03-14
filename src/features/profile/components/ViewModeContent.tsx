@@ -1,15 +1,4 @@
-import {
-    Avatar,
-    Box,
-    CardContent,
-    Divider,
-    FormControl,
-    Grid,
-    InputAdornment,
-    OutlinedInput,
-    Stack,
-    Typography,
-} from "@mui/material";
+import { Avatar, Box, CardContent, FormControl, Grid, InputAdornment, OutlinedInput, Stack, Typography } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
 import CakeIcon from "@mui/icons-material/Cake";
@@ -29,20 +18,19 @@ export const ViewModeContent = ({ data }: ViewModeContentProps) => {
     const { isDarkMode } = useDarkMode();
 
     const textColor = isDarkMode ? color.gray200 : color.gray900;
-    const borderColor = isDarkMode ? color.gray700 : color.gray300;
     const accentColor = isDarkMode ? color.teal300 : color.teal600;
     const secondaryTextColor = isDarkMode ? color.gray300 : color.gray600;
 
     return (
-        <CardContent sx={{ pb: 4, pt: 10, position: "relative" }}>
+        <CardContent sx={{ pb: 4, pt: 10, position: "relative", width: { md: "1200px" } }}>
             <Box
                 sx={{
                     position: "absolute",
-                    top: -60,
-                    left: { xs: "50%", md: 40 },
+                    top: -80,
+                    left: { xs: "50%", md: 100 },
                     transform: { xs: "translateX(-50%)", md: "none" },
-                    width: 120,
-                    height: 120,
+                    width: 150,
+                    height: 150,
                     borderRadius: "50%",
                     border: `4px solid ${isDarkMode ? color.teal700 : color.white}`,
                     overflow: "hidden",
@@ -52,23 +40,24 @@ export const ViewModeContent = ({ data }: ViewModeContentProps) => {
                 <Avatar src={data?.avatar} alt={data?.name} sx={{ width: "100%", height: "100%" }} />
             </Box>
 
-            <Grid container spacing={4}>
+            <Typography
+                variant="h4"
+                sx={{
+                    position: {md: "absolute"},
+                    top: 0,
+                    left: { xs: "50%", md: 300 },
+                    fontWeight: "bold",
+                    textAlign: { xs: "center", md: "left" },
+                    mt: { xs: 2, md: 0 },
+                    color: isDarkMode ? color.teal300 : color.teal700,
+                }}
+            >
+                {data?.name}
+            </Typography>
+
+            <Grid container spacing={4} mt={0}>
                 <Grid item xs={12} md={6}>
                     <Stack spacing={3}>
-                        <Typography
-                            variant="h5"
-                            sx={{
-                                fontWeight: "bold",
-                                textAlign: { xs: "center", md: "left" },
-                                mt: { xs: 2, md: 0 },
-                                color: isDarkMode ? color.teal300 : color.teal700,
-                            }}
-                        >
-                            {data?.name}
-                        </Typography>
-
-                        <Divider sx={{ borderColor: borderColor }} />
-
                         <Box>
                             <Typography variant="subtitle2" sx={{ color: secondaryTextColor, mb: 1 }}>
                                 Contact Information

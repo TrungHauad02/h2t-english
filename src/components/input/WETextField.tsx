@@ -67,7 +67,7 @@ const WETextField = ({
       marginBottom: "1rem",
     },
     width: "100%",
-    maxWidth: "600px",
+    maxWidth: "1000px",
     ...sx,
   };
 
