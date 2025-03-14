@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
-import { Preparation } from "interfaces";
+import { Preparation, PreparationType } from "interfaces";
 import useColor from "theme/useColor";
 import PreparationMakeSentencesSection from "./makeSentences/PreparationMakeSentencesSection";
 
@@ -14,7 +14,7 @@ export default function PreparationSection() {
     status: true,
     tip: "This is tip for studying",
     title: "Preparation Classify",
-    type: "CLASSIFY",
+    type: PreparationType.CLASSIFY,
   };
 
   const backgroundColor = isDarkMode ? color.gray800 : color.gray50;

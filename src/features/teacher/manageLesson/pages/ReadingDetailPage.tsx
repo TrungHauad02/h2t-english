@@ -17,6 +17,7 @@ import {
   PublishActions,
   LessonHeader,
   PublishDialogs,
+  PreparationSection,
 } from "../components";
 
 export default function ReadingDetailPage() {
@@ -26,6 +27,11 @@ export default function ReadingDetailPage() {
     {
       id: "reading-details",
       label: "Reading Details",
+      icon: <SubjectIcon fontSize="small" />,
+    },
+    {
+      id: "preparation-section",
+      label: "Preparation Section",
       icon: <SubjectIcon fontSize="small" />,
     },
     {
@@ -69,6 +75,9 @@ export default function ReadingDetailPage() {
           ) : (
             <ReadingDetailsView data={hooks.data} />
           )}
+        </div>
+        <div id="preparation-section">
+          <PreparationSection />
         </div>
         <div id="reading-document">
           <ReadingDocumentSection

@@ -110,11 +110,17 @@ export interface LessonAnswer extends BaseEntity {
   questionId: number;
 }
 
+export enum PreparationType {
+  MATCH_WORD_WITH_SENTENCES = "MATCH_WORD_WITH_SENTENCES",
+  CLASSIFY = "CLASSIFY",
+  WORDS_MAKE_SENTENCES = "WORDS_MAKE_SENTENCES",
+}
+
 export interface Preparation extends BaseEntity {
   title: string;
   tip: string;
   questions: number[];
-  type: "MATCH_WORD_WITH_SENTENCES" | "CLASSIFY" | "WORDS_MAKE_SENTENCES";
+  type: PreparationType;
 }
 
 export interface PreparationClassify extends BaseEntity {
