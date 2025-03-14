@@ -1,4 +1,4 @@
-import { Avatar, Badge, CardHeader, Tooltip, Typography } from "@mui/material";
+import { Avatar, Chip, CardHeader, Typography } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 
@@ -55,27 +55,19 @@ export default function ClassifyCardHeader({
         </Typography>
       }
       action={
-        isEditMode ? null : (
-          <Tooltip title={item.status ? "Active" : "Inactive"}>
-            <Badge
-              variant="dot"
-              sx={{
-                "& .MuiBadge-badge": {
-                  backgroundColor: item.status
-                    ? isDarkMode
-                      ? color.emerald400
-                      : color.emerald500
-                    : isDarkMode
-                    ? color.gray400
-                    : color.gray500,
-                  width: 12,
-                  height: 12,
-                  borderRadius: "50%",
-                },
-              }}
-            />
-          </Tooltip>
-        )
+        <Chip
+          label={item.status ? "Active" : "Inactive"}
+          sx={{
+            color: isDarkMode ? color.white : color.white,
+            bgcolor: item.status
+              ? color.emerald500
+              : isDarkMode
+              ? color.gray600
+              : color.gray500,
+            fontWeight: "medium",
+          }}
+          size="small"
+        />
       }
       sx={{
         pb: 1,

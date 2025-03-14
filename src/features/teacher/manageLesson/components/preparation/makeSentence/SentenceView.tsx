@@ -11,23 +11,23 @@ import {
   Chip,
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
-import { PreparationMatchWordSentences } from "interfaces";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
+import { PreparationMakeSentences } from "interfaces";
 
-interface WordSentenceTableProps {
-  data: PreparationMatchWordSentences[];
+interface SentenceViewProps {
+  data: PreparationMakeSentences[];
   isEditMode: boolean;
-  onEdit: (item: PreparationMatchWordSentences) => void;
+  onEdit: (item: PreparationMakeSentences) => void;
   onDelete: (id: number) => void;
 }
 
-export default function WordSentenceTable({
+export default function SentenceView({
   data,
   isEditMode,
   onEdit,
   onDelete,
-}: WordSentenceTableProps) {
+}: SentenceViewProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
@@ -53,7 +53,7 @@ export default function WordSentenceTable({
                 fontWeight: "bold",
               }}
             >
-              Word
+              Sentence
             </TableCell>
             <TableCell
               sx={{
@@ -61,7 +61,7 @@ export default function WordSentenceTable({
                 fontWeight: "bold",
               }}
             >
-              Sentence
+              Words
             </TableCell>
             <TableCell
               sx={{
@@ -95,12 +95,23 @@ export default function WordSentenceTable({
                   fontWeight: "bold",
                 }}
               >
-                {item.word}
+                {item.sentences.join(" ")}
               </TableCell>
               <TableCell
                 sx={{ color: isDarkMode ? color.gray200 : color.gray800 }}
               >
-                {item.sentence}
+                {item.sentences.map((word, index) => (
+                  <Chip
+                    key={index}
+                    label={word}
+                    sx={{
+                      mr: 1,
+                      boxShadow: 1,
+                      color: isDarkMode ? color.gray100 : color.gray900,
+                      bgcolor: isDarkMode ? color.gray500 : color.gray200,
+                    }}
+                  />
+                ))}
               </TableCell>
               <TableCell>
                 <Chip
