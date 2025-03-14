@@ -65,11 +65,11 @@ export default function StudentProfile() {
                 >
                     Student Profile
                 </Typography>
-                {!hooks.editMode ? (
+                {!hooks.isEditMode ? (
                     <Button
                         variant="contained"
                         startIcon={<EditIcon />}
-                        onClick={() => hooks.setEditMode(true)}
+                        onClick={() => hooks.setIseditMode(true)}
                         sx={{
                             bgcolor: color.edit,
                             color: color.gray900,
@@ -123,7 +123,7 @@ export default function StudentProfile() {
                     border: `1px solid ${borderColor}`,
                 }}
             >
-                {!hooks.editMode && (
+                {!hooks.isEditMode && (
                     <Box
                         sx={{
                             height: 120,
@@ -133,7 +133,7 @@ export default function StudentProfile() {
                     />
                 )}
 
-                {hooks.editMode ? <EditModeContent
+                {hooks.isEditMode ? <EditModeContent
                     formData={hooks.formData}
                     handleChange={hooks.handleChange}
                     handleAvatarChange={hooks.handleAvatarChange}
