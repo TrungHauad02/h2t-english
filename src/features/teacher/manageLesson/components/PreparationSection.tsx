@@ -88,6 +88,7 @@ export default function PreparationSection() {
         p: 3,
         borderRadius: "1rem",
         backgroundColor: isDarkMode ? color.gray800 : color.gray50,
+        mt: 4,
       }}
     >
       <SectionHeader
