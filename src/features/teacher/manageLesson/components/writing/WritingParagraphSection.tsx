@@ -42,7 +42,6 @@ export default function WritingParagraphSection({
         p: 3,
         borderRadius: "1rem",
         backgroundColor: isDarkMode ? color.gray800 : color.gray50,
-        my: 4,
         border: `1px solid ${borderColor}`,
       }}
     >
