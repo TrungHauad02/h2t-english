@@ -452,7 +452,8 @@ const speakings: Speaking[] = [
   {
     id: 2,
     title: "Describing People",
-    image: "describing_people.jpg",
+    image:
+      "https://images.unsplash.com/photo-1700773428278-13f13630d18d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlc3NvbnxlbnwwfHwwfHx8MA%3D%3D",
     description: "Learn to describe people",
     status: true,
     topic: "People",
@@ -465,7 +466,7 @@ const speakings: Speaking[] = [
   {
     id: 3,
     title: "Describing Places",
-    image: "describing_places.jpg",
+    image: "/image.jpg",
     description: "Learn to describe places",
     status: true,
     topic: "Places",
