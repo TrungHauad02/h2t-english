@@ -28,6 +28,7 @@ interface WSTextFieldProps {
   multiline?: boolean;
   rows?: number;
   maxRows?: number;
+  onKeyPress?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const WETextField = ({
@@ -46,6 +47,7 @@ const WETextField = ({
   multiline = false,
   rows = 1,
   maxRows,
+  onKeyPress,
 }: WSTextFieldProps) => {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -95,6 +97,7 @@ const WETextField = ({
         multiline={multiline}
         rows={rows}
         maxRows={maxRows}
+        onKeyPress={onKeyPress}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">

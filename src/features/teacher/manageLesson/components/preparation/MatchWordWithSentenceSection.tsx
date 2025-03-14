@@ -4,10 +4,10 @@ import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import {
   EditDialog,
-  EditModeButtons,
   WordSentenceTable,
   useMatchWordWithSentenceSection,
 } from "./matchWordSentence";
+import EditModeButtons from "./EditModeButtons";
 
 interface MatchWordWithSentenceSectionProps {
   questions: number[];
@@ -54,7 +54,7 @@ export default function MatchWordWithSentenceSection({
       </Box>
 
       <WordSentenceTable
-        data={hooks.filteredData}
+        data={hooks.data}
         isEditMode={hooks.isEditMode}
         onEdit={hooks.handleOpenDialog}
         onDelete={hooks.handleDelete}

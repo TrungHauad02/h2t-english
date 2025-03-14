@@ -59,18 +59,8 @@ const mockData: PreparationMatchWordSentences[] = [
 ];
 
 export default function useMatchWordWithSentenceSection(questions: number[]) {
-  const filterDataByQuestions = (
-    data: PreparationMatchWordSentences[],
-    questionIds: number[]
-  ) => {
-    if (!questionIds || questionIds.length === 0) return data;
-    return data.filter((item) => questionIds.includes(item.id));
-  };
-
   const [data, setData] = useState<PreparationMatchWordSentences[]>([]);
-  const [filteredData, setFilteredData] = useState<
-    PreparationMatchWordSentences[]
-  >([]);
+
   const [isEditMode, setIsEditMode] = useState(false);
   const [editItem, setEditItem] =
     useState<PreparationMatchWordSentences | null>(null);
@@ -86,11 +76,6 @@ export default function useMatchWordWithSentenceSection(questions: number[]) {
   useEffect(() => {
     setData(mockData);
   }, []);
-
-  useEffect(() => {
-    const filtered = filterDataByQuestions(data, questions);
-    setFilteredData(filtered);
-  }, [data, questions]);
 
   const handleToggleEditMode = () => {
     setIsEditMode(!isEditMode);
@@ -171,7 +156,7 @@ export default function useMatchWordWithSentenceSection(questions: number[]) {
   };
 
   return {
-    filteredData,
+    data,
     isEditMode,
     isDialogOpen,
     tempItem,
