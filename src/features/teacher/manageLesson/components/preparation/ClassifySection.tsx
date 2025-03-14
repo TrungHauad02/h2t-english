@@ -1,9 +1,9 @@
 import { Box } from "@mui/material";
 
 interface ClassifySectionProps {
-  isEditMode: boolean;
+  questions: number[];
 }
 
-export default function ClassifySection({ isEditMode }: ClassifySectionProps) {
+export default function ClassifySection({ questions }: ClassifySectionProps) {
   return <Box></Box>;
 }

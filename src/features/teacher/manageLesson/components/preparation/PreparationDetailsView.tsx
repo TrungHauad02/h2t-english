@@ -1,7 +1,5 @@
 import { Box, Grid } from "@mui/material";
 import { Preparation } from "interfaces";
-import useColor from "theme/useColor";
-import { useDarkMode } from "hooks/useDarkMode";
 import { ContentSection, PreparationInfoSection } from "./detailsView";
 
 interface PreparationDetailsViewProps {
@@ -11,15 +9,11 @@ interface PreparationDetailsViewProps {
 export default function PreparationDetailsView({
   data,
 }: PreparationDetailsViewProps) {
-  const color = useColor();
-  const { isDarkMode } = useDarkMode();
-
   return (
     <Box
       sx={{
         p: 3,
         borderRadius: "1rem",
-        backgroundColor: isDarkMode ? color.gray800 : color.gray50,
         mb: 4,
       }}
     >
