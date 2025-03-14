@@ -30,11 +30,6 @@ export default function ReadingDetailPage() {
       icon: <SubjectIcon fontSize="small" />,
     },
     {
-      id: "preparation-section",
-      label: "Preparation Section",
-      icon: <SubjectIcon fontSize="small" />,
-    },
-    {
       id: "reading-document",
       label: "Reading Document",
       icon: <SubjectIcon fontSize="small" />,
@@ -43,6 +38,11 @@ export default function ReadingDetailPage() {
       id: "questions-section",
       label: "Questions Section",
       icon: <QuizIcon fontSize="small" />,
+    },
+    {
+      id: "preparation-section",
+      label: "Preparation Section",
+      icon: <SubjectIcon fontSize="small" />,
     },
   ];
 
@@ -76,9 +76,6 @@ export default function ReadingDetailPage() {
             <ReadingDetailsView data={hooks.data} />
           )}
         </div>
-        <div id="preparation-section">
-          <PreparationSection />
-        </div>
         <div id="reading-document">
           <ReadingDocumentSection
             documentUrl={hooks.data.file}
@@ -89,6 +86,10 @@ export default function ReadingDetailPage() {
         </div>
         <div id="questions-section">
           <QuestionsSection questions={hooks.data.questions} />
+        </div>
+
+        <div id="preparation-section">
+          <PreparationSection />
         </div>
       </Stack>
       <PublishDialogs

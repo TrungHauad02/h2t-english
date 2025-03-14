@@ -18,6 +18,7 @@ import {
   PublishActions,
   LessonHeader,
   PublishDialogs,
+  PreparationSection,
 } from "../components";
 
 export default function ListeningDetailPage() {
@@ -43,6 +44,11 @@ export default function ListeningDetailPage() {
       id: "questions-section",
       label: "Questions Section",
       icon: <QuizIcon fontSize="small" />,
+    },
+    {
+      id: "preparation-section",
+      label: "Preparation Section",
+      icon: <SubjectIcon fontSize="small" />,
     },
   ];
 
@@ -95,6 +101,10 @@ export default function ListeningDetailPage() {
 
         <div id="questions-section">
           <QuestionsSection questions={hooks.data.questions} />
+        </div>
+
+        <div id="preparation-section">
+          <PreparationSection />
         </div>
       </Stack>
       <PublishDialogs
