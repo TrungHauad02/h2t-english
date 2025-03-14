@@ -1,4 +1,4 @@
-import { Avatar, Button, MenuItem, Stack, TextField, Grid, Box } from "@mui/material";
+import { Button, MenuItem, Stack, TextField, Grid, Box } from "@mui/material";
 import WETextField from "components/input/WETextField";
 import { LevelsEnum, StatusEnum } from "interfaces";
 import useColor from "theme/useColor";
