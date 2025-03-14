@@ -19,6 +19,7 @@ import {
   PublishActions,
   LessonHeader,
   PublishDialogs,
+  PreparationSection,
 } from "../components";
 
 export default function WritingDetailPage() {
@@ -44,6 +45,11 @@ export default function WritingDetailPage() {
       id: "writing-paragraph",
       label: "Writing Paragraph",
       icon: <DescriptionIcon fontSize="small" />,
+    },
+    {
+      id: "preparation-section",
+      label: "Preparation Section",
+      icon: <SubjectIcon fontSize="small" />,
     },
   ];
 
@@ -101,6 +107,10 @@ export default function WritingDetailPage() {
             handleInputChange={hooks.handleInputChange}
             onSave={hooks.handleSaveChanges}
           />
+        </div>
+
+        <div id="preparation-section">
+          <PreparationSection />
         </div>
       </Stack>
       <PublishDialogs
