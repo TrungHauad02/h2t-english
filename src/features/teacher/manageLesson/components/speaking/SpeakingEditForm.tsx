@@ -5,22 +5,22 @@ import {
   WESaveChangeButtons,
 } from "components/input";
 import { useDarkMode } from "hooks/useDarkMode";
-import { Topic } from "interfaces";
+import { Speaking } from "interfaces";
 import useColor from "theme/useColor";
 
-interface TopicEditFormProps {
-  editData: Topic | null;
-  handleInputChange: (field: keyof Topic, value: any) => void;
+interface SpeakingEditFormProps {
+  editData: Speaking | null;
+  handleInputChange: (field: keyof Speaking, value: any) => void;
   onSave: () => void;
   onCancel: () => void;
 }
 
-export default function TopicEditForm({
+export default function SpeakingEditForm({
   editData,
   handleInputChange,
   onSave,
   onCancel,
-}: TopicEditFormProps) {
+}: SpeakingEditFormProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
@@ -50,7 +50,7 @@ export default function TopicEditForm({
             }}
           >
             <WESelectImage
-              label="Topic Image"
+              label="Speaking Image"
               value={editData?.image || ""}
               onChange={(base64) => handleInputChange("image", base64)}
               required
@@ -77,6 +77,29 @@ export default function TopicEditForm({
                 type="text"
                 value={editData?.title || ""}
                 onChange={(e) => handleInputChange("title", e.target.value)}
+                required
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 2,
+                  },
+                }}
+              />
+            </Box>
+
+            {/* Topic field */}
+            <Box
+              sx={{
+                bgcolor: cardBgColor,
+                p: 3,
+                borderRadius: 3,
+                border: `1px solid ${borderColor}`,
+              }}
+            >
+              <WETextField
+                label="Topic"
+                type="text"
+                value={editData?.topic || ""}
+                onChange={(e) => handleInputChange("topic", e.target.value)}
                 required
                 sx={{
                   "& .MuiOutlinedInput-root": {
