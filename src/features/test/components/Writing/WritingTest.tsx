@@ -1,10 +1,10 @@
 import { TestWriting } from "interfaces";
 
-interface Props {
-  testWritings: TestWriting[];
+interface WritingTestProps {
+  writingTestWritings: TestWriting[];
 }
 
-export default function WritingTest({ testWritings }: Props) {
+export default function WritingTest({ writingTestWritings }: WritingTestProps) {
   return (
     <div>
       <h1>Writing Test</h1>

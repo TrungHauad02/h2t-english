@@ -3,7 +3,7 @@ import { mockData } from "./mockData";
 const getListTestByType = (type: string) => {
     
     switch (type) {
-        case "mixing":
+        case "mixings":
           return mockData.tests.filter((test) => test.type === "MIXING");
         case "readings":
           return mockData.tests.filter((test) => test.type === "READING");

@@ -1,5 +1,13 @@
-export const enum TestTypeEnum {
+export enum TestTypeEnum {
   MIXING = "MIXING",
+  READING = "READING",
+  LISTENING = "LISTENING",
+  SPEAKING = "SPEAKING",
+  WRITING = "WRITING",
+}
+export enum TestPartTypeEnum {
+  VOCABULARY = "VOCABULARY",
+  GRAMMAR = "GRAMMAR",
   READING = "READING",
   LISTENING = "LISTENING",
   SPEAKING = "SPEAKING",
@@ -10,101 +18,59 @@ export enum StatusEnum {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE"
 }
-export interface Test {
-  id: string;
+
+export default interface BaseEntity {
+  id: number;
+  status: StatusEnum;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+export interface Test extends BaseEntity {
   title: string;
-  serial: number;
+  description: string;
+  type: TestTypeEnum;
   duration: number;
+  parts:  number[];
   totalQuestions: number;
   scoreLastOfTest: number | null;
-  type: TestTypeEnum;
-  status: StatusEnum;
+  routeNodeId: number;
 }
-export interface TestMixingQuestion {
-  id: string;
-  content: string;
-  serial: number;
-  status: StatusEnum;
-  explanation: string;
-  testId: string;
-}
-
-export interface TestMixingAnswer {
-  id: string;
-  content: string;
-  isCorrect: boolean;
-  status: StatusEnum;
-  testQuestionMixingId: string;
-}
-export interface TestReading {
-  id: string;
-  serial: number;
-  content: string;
-  image: string | null;
-  status: StatusEnum;
-  testId: string;
-}
-
-export interface TestReadingQuestion {
-  id: string;
-  content: string;
-  serial: number;
-  explanation: string;
-  status: StatusEnum;
-  testReadingId: string;
-}
-
-export interface TestReadingAnswer {
-  id: string;
-  content: string;
-  isCorrect: boolean;
-  status: StatusEnum;
-  testQuestionReadingId: string;
-}
-export interface TestListening {
-  id: string;
-  serial: number;
-  content: string;
-  transcript: string ;
-  status: StatusEnum;
-  testId: string;
-}
-
-export interface TestListeningQuestion {
-  id: string;
-  content: string;
-  serial: number;
-  status: StatusEnum;
-  testListeningId: string;
-}
-
-export interface TestListeningAnswer {
-  id: string;
-  content: string;
-  isCorrect: boolean;
-  status: StatusEnum;
-  testQuestionListeningId: string;
-}
-export interface TestSpeaking {
-  id: string;
-  serial: number;
+export interface CompetitionTest extends BaseEntity {
   title: string;
-  status: StatusEnum;
-  testId: string;
+  duration: number;
+  startTime: Date;
+  endTime: Date;
+  parts:  number[];
+}
+export interface TestPart extends BaseEntity {
+  type: TestPartTypeEnum;
+  questions: number[];
+}
+export interface TestReading extends BaseEntity {
+  file: string;
+  questions: number[];
+}
+export interface TestListening extends BaseEntity {
+  audio: string;
+  transcript: string;
+  questions: number[];
+}
+export interface TestSpeaking extends BaseEntity {
+  file: string;
+  questions: number[];
+}
+export interface TestWriting extends BaseEntity {
+  topic: string;
+  minWords: number;
+  maxWords: number;
 }
 
-export interface TestSpeakingQuestion {
-  id: string;
+export interface Question extends BaseEntity {
   content: string;
-  serial: number;
-  status: StatusEnum;
-  testSpeakingId: string;
-}
-export interface TestWriting {
-  id: string;
-  serial: number;
-  content: string;
-  status: StatusEnum;
-  testId: string;
+  answers: Answer[];
 }
 
+export interface Answer extends BaseEntity {
+  content: string;
+  correct: boolean;
+}

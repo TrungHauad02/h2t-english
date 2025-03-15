@@ -22,7 +22,7 @@ const MENU_ITEMS = [
     path: "/test",
     label: "Test",
     children: [
-      { path: "/mixing", label: "Mixing" },
+      { path: "/mixings", label: "Mixing" },
       { path: "/readings", label: "Reading" },
       { path: "/speakings", label: "Speaking" },
       { path: "/listenings", label: "Listening" },
