@@ -1,27 +1,27 @@
 import React from "react";
 import {
-  TestMixingQuestion,
+  Question,
   TestListening,
   TestReading,
   TestSpeaking,
   TestWriting,
 } from "interfaces";
 
-interface Props {
-  testMixingQuestions: TestMixingQuestion[];
-  testListenings: TestListening[];
-  testReadings: TestReading[];
-  testSpeakings: TestSpeaking[];
-  testWritings: TestWriting[];
+interface MixingTestProps {
+  mixingQuestions: Question[];
+  mixingTestListenings: TestListening[];
+  mixingTestReadings: TestReading[];
+  mixingTestSpeakings: TestSpeaking[];
+  mixingTestWritings: TestWriting[];
 }
 
 export default function MixingTest({
-  testMixingQuestions,
-  testListenings,
-  testReadings,
-  testSpeakings,
-  testWritings,
-}: Props) {
+  mixingQuestions,
+  mixingTestListenings,
+  mixingTestReadings,
+  mixingTestSpeakings,
+  mixingTestWritings,
+}: MixingTestProps) {
   return (
     <div>
       <h1>Mixing Test</h1>

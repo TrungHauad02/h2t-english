@@ -3,7 +3,7 @@ import { SiteInfo } from "components/sections/types";
 export default function useListTestPage() {
   const sites: SiteInfo[] = [
     {
-      type: "mixing",
+      type: "mixings",
       title: "Mixing",
       bgUrl:
         "https://firebasestorage.googleapis.com/v0/b/englishweb-5a6ce.appspot.com/o/static%2Fbg_test.png?alt=media",
