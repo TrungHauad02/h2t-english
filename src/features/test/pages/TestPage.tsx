@@ -4,13 +4,6 @@ import { SiteInfo } from "components/sections/types";
 import { useParams } from "react-router-dom";
 import { testService } from "../services/testServices";
 import {
-  Test,
-  TestPart,
-  TestReading,
-  TestListening,
-  TestSpeaking,
-  TestWriting,
-  Question,
   TestTypeEnum,
   TestPartTypeEnum,
 } from "interfaces";
@@ -25,48 +18,34 @@ import {
 export default function TestPage() {
   const { type, id } = useParams();
   const testType = type?.toUpperCase().slice(0, -1) as keyof typeof TestTypeEnum;
-
   const testId = Number(id);
+
   if (isNaN(testId)) {
-    return <Box sx={{ textAlign: "center", mt: 4 }}></Box>;
+    return <Box sx={{ textAlign: "center", mt: 4 }}>Invalid Test ID</Box>;
   }
 
-  let test: Test | null = null;
-  let testParts: TestPart[] = [];
-  let questions: Question[] = [];
-  test = testId && testType ? testService.getTestByIdAndType(testId, testType) : null;
-
+  const test = testService.getTestByIdAndType(testId, testType);
   if (!test) {
     return <Box sx={{ textAlign: "center", mt: 4 }}>Test not found.</Box>;
   }
-  testParts = testService.getTestPartsByIds(test.parts);
-  const testReadings: TestReading[] = [];
-  const testListenings: TestListening[] = [];
-  const testSpeakings: TestSpeaking[] = [];
-  const testWritings: TestWriting[] = [];
 
-  testParts.forEach((part) => {
-    switch (part.type) {
-      case TestPartTypeEnum.VOCABULARY:
-      case TestPartTypeEnum.GRAMMAR:
-        questions.push(...testService.getQuestionsByIds(part.questions));
-        break;
-      case TestPartTypeEnum.READING:
-        testReadings.push(...testService.getTestReadingsByIds(part.questions));
-        break;
-      case TestPartTypeEnum.LISTENING:
-        testListenings.push(...testService.getTestListeningsByIds(part.questions));
-        break;
-      case TestPartTypeEnum.SPEAKING:
-        testSpeakings.push(...testService.getTestSpeakingsByIds(part.questions));
-        break;
-      case TestPartTypeEnum.WRITING:
-        testWritings.push(...testService.getTestWritingsByIds(part.questions));
-        break;
-      default:
-        break;
-    }
-  });
+  const testParts = testService.getTestPartsByIds(test.parts);
+
+  const testReadings = testService.getTestReadingsByIds(
+    testParts.filter((p) => p.type === TestPartTypeEnum.READING).map((p) => p.id)
+  );
+
+  const testListenings = testService.getTestListeningsByIds(
+    testParts.filter((p) => p.type === TestPartTypeEnum.LISTENING).map((p) => p.id)
+  );
+
+  const testSpeakings = testService.getTestSpeakingsByIds(
+    testParts.filter((p) => p.type === TestPartTypeEnum.SPEAKING).map((p) => p.id)
+  );
+
+  const testWritings = testService.getTestWritingsByIds(
+    testParts.filter((p) => p.type === TestPartTypeEnum.WRITING).map((p) => p.id)
+  );
 
   const siteInfo: SiteInfo = {
     bgUrl:
@@ -77,23 +56,15 @@ export default function TestPage() {
   const renderTest = () => {
     switch (test.type) {
       case TestTypeEnum.MIXING:
-        return (
-          <MixingTest
-            mixingQuestions={questions} 
-            mixingTestReadings={testReadings}
-            mixingTestListenings={testListenings}
-            mixingTestSpeakings={testSpeakings}
-            mixingTestWritings={testWritings}
-          />
-        );
+        return <MixingTest mixingTestParts={testParts} />;
       case TestTypeEnum.READING:
-        return <ReadingTest readingTestReadings={testReadings} />;
+        return <ReadingTest testReadings={testReadings} />;
       case TestTypeEnum.LISTENING:
-        return <ListeningTest listeningTestListenings={testListenings} />;
+        return <ListeningTest testListenings={testListenings} />;
       case TestTypeEnum.SPEAKING:
-        return <SpeakingTest speakingTestSpeakings={testSpeakings} />;
+        return <SpeakingTest testSpeakings={testSpeakings} />;
       case TestTypeEnum.WRITING:
-        return <WritingTest writingTestWritings={testWritings} />;
+        return <WritingTest testWritings={testWritings} />;
       default:
         return <Box sx={{ textAlign: "center", mt: 4 }}>Invalid test type.</Box>;
     }
