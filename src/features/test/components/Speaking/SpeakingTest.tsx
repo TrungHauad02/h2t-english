@@ -1,13 +1,21 @@
+import { Box, Typography } from "@mui/material";
 import { TestSpeaking } from "interfaces";
 
 interface SpeakingTestProps {
-  speakingTestSpeakings: TestSpeaking[];
+  testSpeakings: TestSpeaking[];
 }
 
-export default function SpeakingTest({ speakingTestSpeakings }: SpeakingTestProps) {
+export default function SpeakingTest({ testSpeakings }: SpeakingTestProps) {
   return (
-    <div>
-      <h1>Speaking Test</h1>
-    </div>
+    <Box>
+      <Typography variant="h5">Speaking Test</Typography>
+      {testSpeakings.length > 0 ? (
+        testSpeakings.map((speaking) => (
+          <Typography key={speaking.id}>{`Speaking File: ${speaking.file}`}</Typography>
+        ))
+      ) : (
+        <Typography>No speaking files available.</Typography>
+      )}
+    </Box>
   );
 }
