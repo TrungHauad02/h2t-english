@@ -1,12 +1,12 @@
 import { Button, MenuItem, Stack, TextField, Grid, Box } from "@mui/material";
 import WETextField from "components/input/WETextField";
-import { LevelsEnum, StatusEnum } from "interfaces";
+import { LevelsEnum } from "interfaces";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { WEDialog } from "components/display";
 import { useNavigate } from "react-router-dom";
 import WESelectImage from "components/input/WESelectImage";
-import useTeacherAdvance from "../hooks/UseTeacherAdvance";
+import useTeacherAdvance from "../hooks/useTeacherAdvance";
 
 export default function TeacherAdvance() {
   const color = useColor();
@@ -117,23 +117,18 @@ export default function TeacherAdvance() {
           <TextField
             label="Status"
             name="status"
-            value={hooks.user?.status ? StatusEnum.ACTIVE : StatusEnum.INACTIVE}
+            value={hooks.user?.status ? "true" : "false"}
             onChange={(e) =>
               hooks.setUser((prevUser) =>
-                prevUser
-                  ? {
-                      ...prevUser,
-                      status: e.target.value === StatusEnum.ACTIVE,
-                    }
-                  : null
+                prevUser ? { ...prevUser, status: e.target.value === "true" } : null
               )
             }
             select
             fullWidth
             disabled={!hooks.isEditing}
           >
-            <MenuItem value={StatusEnum.ACTIVE}>ACTIVE</MenuItem>
-            <MenuItem value={StatusEnum.INACTIVE}>INACTIVE</MenuItem>
+            <MenuItem value="true">ACTIVE</MenuItem>
+            <MenuItem value="false">INACTIVE</MenuItem>
           </TextField>
         </Grid>
 
