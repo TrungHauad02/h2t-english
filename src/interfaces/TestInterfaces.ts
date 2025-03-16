@@ -74,3 +74,23 @@ export interface Answer extends BaseEntity {
   content: string;
   correct: boolean;
 }
+
+export interface SubmitTest extends BaseEntity {
+  user_id: number;
+  test_id: number;
+  score: number | null;
+  comment: string;
+}
+
+export interface SubmitToeic extends BaseEntity {
+  user_id: number;
+  toeic_id: number;
+  score: number | null;
+  comment: string;
+}
+
+export interface SubmitCompetition extends BaseEntity {
+  user_id: number;
+  competition_id: number;
+  score: number | null;
+}
