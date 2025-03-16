@@ -1,3 +1,5 @@
+import BaseEntity from "./LessonInterfaces";
+
 export enum TestTypeEnum {
   MIXING = "MIXING",
   READING = "READING",
@@ -14,23 +16,12 @@ export enum TestPartTypeEnum {
   WRITING = "WRITING",
 }
 
-export enum StatusEnum {
-  ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE"
-}
-
-export default interface BaseEntity {
-  id: number;
-  status: StatusEnum;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
 export interface Test extends BaseEntity {
   title: string;
   description: string;
   type: TestTypeEnum;
   duration: number;
-  parts:  number[];
+  parts: number[];
   totalQuestions: number;
   scoreLastOfTest: number | null;
   routeNodeId: number;
@@ -40,7 +31,7 @@ export interface CompetitionTest extends BaseEntity {
   duration: number;
   startTime: Date;
   endTime: Date;
-  parts:  number[];
+  parts: number[];
 }
 export interface TestPart extends BaseEntity {
   type: TestPartTypeEnum;

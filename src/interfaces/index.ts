@@ -1,3 +1,8 @@
 export * from "./UserInterfaces";
 export * from "./LessonInterfaces";
 export * from "./TestInterfaces";
+
+export enum StatusEnum {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+}
