@@ -6,7 +6,7 @@ import { useDarkMode } from "hooks/useDarkMode";
 import { WEDialog } from "components/display";
 import { useNavigate } from "react-router-dom";
 import WESelectImage from "components/input/WESelectImage";
-import useTeacherAdvance from "../hooks/useTeacherAdvance";
+import useTeacherAdvance from "../hooks/UseTeacherAdvance";
 
 export default function TeacherAdvance() {
   const color = useColor();
