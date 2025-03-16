@@ -6,7 +6,7 @@ import { useDarkMode } from "hooks/useDarkMode";
 import { WEDialog } from "components/display";
 import { useNavigate } from "react-router-dom";
 import WESelectImage from "components/input/WESelectImage";
-import useTeacherAdvance from "../hooks/UseTeacherAdvance";
+import useTeacherAdvance from "../hooks/useTeacherAdvance";
 
 export default function TeacherAdvance() {
   const color = useColor();
@@ -31,6 +31,7 @@ export default function TeacherAdvance() {
         onChange={(base64) => hooks.handleChooseAvatar(base64)}
         label="Profile Picture"
         required
+        disabled={!hooks.isEditing}
         sx={{ width: "100%", maxWidth: 300, margin: "0 auto" }}
       />
 
