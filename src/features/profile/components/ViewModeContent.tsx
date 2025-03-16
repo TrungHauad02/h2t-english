@@ -22,7 +22,7 @@ export const ViewModeContent = ({ data }: ViewModeContentProps) => {
     const secondaryTextColor = isDarkMode ? color.gray300 : color.gray600;
 
     return (
-        <CardContent sx={{ pb: 4, pt: 10, position: "relative", width: { md: "1200px" } }}>
+        <CardContent sx={{ pb: 4, pt: 10, position: "relative", maxwidth: { md: "1400px" } }}>
             <Box
                 sx={{
                     position: "absolute",

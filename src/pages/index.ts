@@ -6,6 +6,9 @@ export { default as ResetPasswordPage } from "features/auth/pages/ForgotPassword
 // Profile Page
 export { default as StudentProfilePage } from "features/profile/page/StudentProfilePage";
 
+// Profile Page
+export { default as HistoryTest } from "features/historyTest/pages/HistoryTestPage";
+
 // Error Page
 export { default as ErrorPage } from "pages/ErrorPage";
 

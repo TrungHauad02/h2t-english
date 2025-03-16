@@ -18,6 +18,7 @@ interface WESelectImageProps {
   label?: string;
   sx?: SxProps<Theme>;
   required?: boolean;
+  disabled?: boolean;
 }
 
 const WESelectImage = ({
@@ -26,6 +27,7 @@ const WESelectImage = ({
   label,
   sx,
   required,
+  disabled,
 }: WESelectImageProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { isDarkMode } = useDarkMode();
@@ -40,6 +42,7 @@ const WESelectImage = ({
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (disabled) return; 
     const file = e.target.files?.[0];
     if (file && file.type.startsWith("image/")) {
       handleFileRead(file);
@@ -47,6 +50,7 @@ const WESelectImage = ({
   };
 
   const handleClick = () => {
+    if (disabled) return; 
     fileInputRef.current?.click();
   };
 
@@ -74,7 +78,7 @@ const WESelectImage = ({
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          cursor: "pointer",
+          cursor: disabled ? "not-allowed" : "pointer", 
           backgroundColor: isDarkMode ? color.gray800 : color.gray50,
           minHeight: 200,
           overflow: "hidden",
@@ -125,7 +129,7 @@ const WESelectImage = ({
           </>
         )}
       </Box>
-      {value && (
+      {value && !disabled && (
         <Box display="flex" justifyContent="center" mt={2}>
           <Button
             variant="contained"

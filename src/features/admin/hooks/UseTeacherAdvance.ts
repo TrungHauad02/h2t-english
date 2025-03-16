@@ -8,13 +8,10 @@ export default function useTeacherAdvance() {
     const [isRemoveDialogOpen, setRemoveDialogOpen] = useState(false);
 
     const handleChooseAvatar = (base64: string) => {
-        if (user) {
-            setUser({
-                ...user,
-                avatar: base64,
-            });
-        }
-    };
+        setUser((prevUser) => 
+            prevUser ? { ...prevUser, avatar: base64 } : { avatar: base64 } as User
+        );
+    };    
 
     const handleSubmit = () => {
         setIsEditing(false);

@@ -26,7 +26,7 @@ const EditModeContent: React.FC<EditModeContentProps> = ({
     const hooks = useStudentProfile();
 
     return (
-        <CardContent sx={{ width: { md: "1200px" }, overflow: "hidden", p: 4 }}>
+        <CardContent sx={{ maxwidth: { md: "1400px" }, overflow: "hidden", p: 4 }}>
             <Grid container spacing={4}>
                 <Grid item xs={12} md={3}>
                     <Stack spacing={3} alignItems="center">
