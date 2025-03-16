@@ -5,7 +5,7 @@ import { TestPart, TestPartTypeEnum } from "interfaces";
 import VocabularyAndGrammarPart from "./vocabularyAndGrammarPart/VocabularyAndGrammarPart";
 import ReadingPart from "./readingPart/ReadingPart";
 import ListeningPart from "./listeningPart/ListeningPart";
-import SpeakingPart from "./speakingPart/SpeakingPart"; 
+import SpeakingPart from "./speakingPart/SpeakingPart";
 import WritingPart from "./writingPart/WritingPart";
 import { testService } from "features/test/services/testServices";
 
@@ -22,8 +22,10 @@ const tabOrder: TestPartTypeEnum[] = [
   TestPartTypeEnum.WRITING,
 ];
 
-const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
-  const [activeTab, setActiveTab] = useState<TestPartTypeEnum>(TestPartTypeEnum.VOCABULARY);
+export default function MixingTest({ mixingTestParts }: MixingTestProps) {
+  const [activeTab, setActiveTab] = useState<TestPartTypeEnum>(
+    TestPartTypeEnum.VOCABULARY
+  );
 
   const questionCounts = useMemo(() => {
     const counts: Record<TestPartTypeEnum, number> = {
@@ -37,14 +39,29 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
 
     mixingTestParts.forEach((part) => {
       if (part.type === TestPartTypeEnum.READING) {
-        const fetchedTests = testService.getTestReadingsByIds(part.questions as number[]);
-        counts[part.type] += fetchedTests.reduce((total, test) => total + test.questions.length, 0);
+        const fetchedTests = testService.getTestReadingsByIds(
+          part.questions as number[]
+        );
+        counts[part.type] += fetchedTests.reduce(
+          (total, test) => total + test.questions.length,
+          0
+        );
       } else if (part.type === TestPartTypeEnum.LISTENING) {
-        const fetchedTests = testService.getTestListeningsByIds(part.questions as number[]);
-        counts[part.type] += fetchedTests.reduce((total, test) => total + test.questions.length, 0);
+        const fetchedTests = testService.getTestListeningsByIds(
+          part.questions as number[]
+        );
+        counts[part.type] += fetchedTests.reduce(
+          (total, test) => total + test.questions.length,
+          0
+        );
       } else if (part.type === TestPartTypeEnum.SPEAKING) {
-        const fetchedTests = testService.getTestSpeakingsByIds(part.questions as number[]);
-        counts[part.type] += fetchedTests.reduce((total, test) => total + test.questions.length, 0);
+        const fetchedTests = testService.getTestSpeakingsByIds(
+          part.questions as number[]
+        );
+        counts[part.type] += fetchedTests.reduce(
+          (total, test) => total + test.questions.length,
+          0
+        );
       } else {
         counts[part.type] += part.questions.length;
       }
@@ -60,24 +77,42 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
     <Box sx={{ p: 3 }}>
       <TestTabs
         activeTab={activeTab.toLowerCase()}
-        onTabChange={(newTab) => setActiveTab(newTab.toUpperCase() as TestPartTypeEnum)}
+        onTabChange={(newTab) =>
+          setActiveTab(newTab.toUpperCase() as TestPartTypeEnum)
+        }
       />
       <Typography variant="h5" sx={{ mt: 3 }}>
-        {activeTab.charAt(0).toUpperCase() + activeTab.slice(1).toLowerCase()} Test
+        {activeTab.charAt(0).toUpperCase() + activeTab.slice(1).toLowerCase()}{" "}
+        Test
       </Typography>
-      {activeTab === TestPartTypeEnum.VOCABULARY || activeTab === TestPartTypeEnum.GRAMMAR ? (
-        <VocabularyAndGrammarPart mixingTestParts={mixingTestParts} startSerial={startSerial} type={activeTab} />
+      {activeTab === TestPartTypeEnum.VOCABULARY ||
+      activeTab === TestPartTypeEnum.GRAMMAR ? (
+        <VocabularyAndGrammarPart
+          mixingTestParts={mixingTestParts}
+          startSerial={startSerial}
+          type={activeTab}
+        />
       ) : activeTab === TestPartTypeEnum.READING ? (
-        <ReadingPart mixingTestParts={mixingTestParts} startSerial={startSerial} />
+        <ReadingPart
+          mixingTestParts={mixingTestParts}
+          startSerial={startSerial}
+        />
       ) : activeTab === TestPartTypeEnum.LISTENING ? (
-        <ListeningPart mixingTestParts={mixingTestParts} startSerial={startSerial} />
+        <ListeningPart
+          mixingTestParts={mixingTestParts}
+          startSerial={startSerial}
+        />
       ) : activeTab === TestPartTypeEnum.SPEAKING ? (
-        <SpeakingPart mixingTestParts={mixingTestParts} startSerial={startSerial} />
+        <SpeakingPart
+          mixingTestParts={mixingTestParts}
+          startSerial={startSerial}
+        />
       ) : activeTab === TestPartTypeEnum.WRITING ? (
-        <WritingPart mixingTestParts={mixingTestParts} startSerial={startSerial} />
+        <WritingPart
+          mixingTestParts={mixingTestParts}
+          startSerial={startSerial}
+        />
       ) : null}
     </Box>
   );
-};
-
-export default MixingTest;
+}
