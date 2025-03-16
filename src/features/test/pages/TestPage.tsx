@@ -3,7 +3,10 @@ import { MainPictureSection } from "components/sections";
 import { SiteInfo } from "components/sections/types";
 import { useParams } from "react-router-dom";
 import { testService } from "../services/testServices";
-import { TestTypeEnum, TestPartTypeEnum } from "interfaces";
+import {
+  TestTypeEnum,
+  TestPartTypeEnum,
+} from "interfaces";
 import {
   ReadingTest,
   SpeakingTest,
@@ -14,9 +17,7 @@ import {
 
 export default function TestPage() {
   const { type, id } = useParams();
-  const testType = type
-    ?.toUpperCase()
-    .slice(0, -1) as keyof typeof TestTypeEnum;
+  const testType = type?.toUpperCase().slice(0, -1) as keyof typeof TestTypeEnum;
   const testId = Number(id);
 
   if (isNaN(testId)) {
@@ -31,27 +32,19 @@ export default function TestPage() {
   const testParts = testService.getTestPartsByIds(test.parts);
 
   const testReadings = testService.getTestReadingsByIds(
-    testParts
-      .filter((p) => p.type === TestPartTypeEnum.READING)
-      .map((p) => p.id)
+    testParts.filter((p) => p.type === TestPartTypeEnum.READING).map((p) => p.id)
   );
 
   const testListenings = testService.getTestListeningsByIds(
-    testParts
-      .filter((p) => p.type === TestPartTypeEnum.LISTENING)
-      .map((p) => p.id)
+    testParts.filter((p) => p.type === TestPartTypeEnum.LISTENING).map((p) => p.id)
   );
 
   const testSpeakings = testService.getTestSpeakingsByIds(
-    testParts
-      .filter((p) => p.type === TestPartTypeEnum.SPEAKING)
-      .map((p) => p.id)
+    testParts.filter((p) => p.type === TestPartTypeEnum.SPEAKING).map((p) => p.id)
   );
 
   const testWritings = testService.getTestWritingsByIds(
-    testParts
-      .filter((p) => p.type === TestPartTypeEnum.WRITING)
-      .map((p) => p.id)
+    testParts.filter((p) => p.type === TestPartTypeEnum.WRITING).map((p) => p.id)
   );
 
   const siteInfo: SiteInfo = {
@@ -63,11 +56,17 @@ export default function TestPage() {
   const renderTest = () => {
     switch (test.type) {
       case TestTypeEnum.MIXING:
-        return <Box></Box>;
+        return <MixingTest mixingTestParts={testParts} />;
+      case TestTypeEnum.READING:
+        return <ReadingTest testReadings={testReadings} />;
+      case TestTypeEnum.LISTENING:
+        return <ListeningTest testListenings={testListenings} />;
+      case TestTypeEnum.SPEAKING:
+        return <SpeakingTest testSpeakings={testSpeakings} />;
+      case TestTypeEnum.WRITING:
+        return <WritingTest testWritings={testWritings} />;
       default:
-        return (
-          <Box sx={{ textAlign: "center", mt: 4 }}>Invalid test type.</Box>
-        );
+        return <Box sx={{ textAlign: "center", mt: 4 }}>Invalid test type.</Box>;
     }
   };
 
