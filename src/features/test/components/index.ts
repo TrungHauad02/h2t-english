@@ -1,5 +1,5 @@
-export { default as ListeningTest } from "./Listening/ListeningTest";
-export { default as ReadingTest } from "./Reading/ReadingTest";
-export { default as SpeakingTest } from "./Speaking/SpeakingTest";
-export { default as WritingTest } from "./Writing/WritingTest";
-export { default as MixingTest } from "./Mixing/MixingTest";
+export { default as ListeningTest } from "./listening/ListeningTest";
+export { default as ReadingTest } from "./reading/ReadingTest";
+export { default as SpeakingTest } from "./speaking/SpeakingTest";
+export { default as WritingTest } from "./writing/WritingTest";
+export { default as MixingTest } from "./mixing/MixingTest";

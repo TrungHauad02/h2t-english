@@ -19,6 +19,33 @@ const getTestPartsByIds = (partIds: number[]): TestPart[] => {
 const getQuestionsByIds = (questionIds: number[]): Question[] => {
   return mockData.questions.filter((q) => questionIds.includes(q.id));
 };
+const getQuestionsByIdsAndType = (questionIds: number[], type: TestPartTypeEnum): Question[] => {
+
+  switch (type) {
+    case TestPartTypeEnum.VOCABULARY:
+    case TestPartTypeEnum.GRAMMAR:
+      return mockData.questions.filter((q) => questionIds.includes(q.id));
+
+    case TestPartTypeEnum.READING:
+      return mockData.testReadings
+        .filter((reading) => questionIds.includes(reading.id))
+        .flatMap((reading) => mockData.questions.filter((q) => reading.questions.includes(q.id)));
+
+    case TestPartTypeEnum.LISTENING:
+      return mockData.testListenings
+        .filter((listening) => questionIds.includes(listening.id))
+        .flatMap((listening) => mockData.questions.filter((q) => listening.questions.includes(q.id)));
+
+    case TestPartTypeEnum.SPEAKING:
+      return mockData.testSpeakings
+        .filter((speaking) => questionIds.includes(speaking.id))
+        .flatMap((speaking) => mockData.questions.filter((q) => speaking.questions.includes(q.id)));
+    default:
+      return [];
+  }
+};
+
+
 const getTestReadingsByIds = (testIds: number[]): TestReading[] => {
   return mockData.testReadings.filter((t) => testIds.includes(t.id));
 };
@@ -100,4 +127,5 @@ export const testService = {
   getTestSpeakingsByIds,
   getTestWritingsByIds,
   getDataTestByTypeAndId,
+  getQuestionsByIdsAndType,
 };
