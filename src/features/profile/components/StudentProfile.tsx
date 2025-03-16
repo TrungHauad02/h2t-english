@@ -48,23 +48,14 @@ export default function StudentProfile() {
     const borderColor = isDarkMode ? color.gray700 : color.gray300;
 
     return (
-        <Stack spacing={4} sx={{ mt: 9, px: { xs: 2, sm: 4, md: 6 }, pb: 8 }}>
+        <Stack spacing={4} sx={{ mt: 4, px: { xs: 2, sm: 4, md: 6 }, pb: 8 }}>
             <Box
                 sx={{
                     display: "flex",
-                    justifyContent: "space-between",
+                    justifyContent: "flex-end",
                     alignItems: "center",
                 }}
             >
-                <Typography
-                    variant="h4"
-                    sx={{
-                        fontWeight: "bold",
-                        color: isDarkMode ? color.teal300 : color.teal700,
-                    }}
-                >
-                    Student Profile
-                </Typography>
                 {!hooks.isEditMode ? (
                     <Button
                         variant="contained"
