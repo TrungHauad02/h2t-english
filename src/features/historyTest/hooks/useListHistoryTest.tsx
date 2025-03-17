@@ -5,9 +5,9 @@ import useColor from "theme/useColor";
 import SchoolIcon from "@mui/icons-material/School";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import { mockData } from "../../services/mockData";
-import { historyTestService } from "../../services/historyTestService";
-import { HistoryRecord } from "../../type";
+import { mockData } from "../services/mockData";
+import { historyTestService } from "../services/historyTestService";
+import { HistoryRecord } from "../type";
 
 export default function useListHistoryTest() {
   const color = useColor();
