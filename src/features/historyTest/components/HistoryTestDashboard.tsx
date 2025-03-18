@@ -21,28 +21,6 @@ export default function HistoryTestDashboard({
 
     return (
         <Box>
-            <Typography
-                variant="h4"
-                component="h1"
-                sx={{
-                    mb: 3,
-                    color: textColor,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    fontWeight: 600,
-                }}
-            >
-                <TrendingUpIcon
-                    sx={{
-                        mr: 1,
-                        color: isDarkMode ? color.teal400 : color.teal600,
-                        fontSize: 32,
-                    }}
-                />
-                Test History Dashboard
-            </Typography>
-
             {/* Stats Summary at top for better visibility */}
             <Box
                 sx={{
