@@ -25,7 +25,6 @@ export default function TestTabs({ activeTab, onTabChange }: TestTabsProps) {
   return (
     <Box
       sx={{
-        bgcolor: isDarkMode ? color.gray800 : "#E6F4F1",
         p: 1,
         borderRadius: "8px",
       }}
@@ -41,7 +40,6 @@ export default function TestTabs({ activeTab, onTabChange }: TestTabsProps) {
           "& .MuiTab-root": {
             textTransform: "none",
             fontWeight: "bold",
-            bgcolor: isDarkMode ? color.gray800 : "#E6F4F1",
             borderRadius: "8px",
             mx: { xs: 0.2, sm: 0.5 },
             fontSize: { xs: "0.75rem", sm: "0.9rem" },

@@ -33,7 +33,7 @@ export default function TestPage() {
 
   const testReadings = testService.getTestReadingsByIds(
     testParts.filter((p) => p.type === TestPartTypeEnum.READING).map((p) => p.id)
-  );
+  );  
 
   const testListenings = testService.getTestListeningsByIds(
     testParts.filter((p) => p.type === TestPartTypeEnum.LISTENING).map((p) => p.id)
