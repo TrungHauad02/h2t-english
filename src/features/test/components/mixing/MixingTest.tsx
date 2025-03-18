@@ -25,6 +25,7 @@ const tabOrder: TestPartTypeEnum[] = [
   TestPartTypeEnum.WRITING,
 ];
 
+
 const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
@@ -44,6 +45,7 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
     return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
+
   const questionCounts = useMemo(() => {
     const counts: Record<TestPartTypeEnum, number> = {
       [TestPartTypeEnum.VOCABULARY]: 0,
@@ -56,14 +58,29 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
 
     mixingTestParts.forEach((part) => {
       if (part.type === TestPartTypeEnum.READING) {
-        const fetchedTests = testService.getTestReadingsByIds(part.questions as number[]);
-        counts[part.type] += fetchedTests.reduce((total, test) => total + test.questions.length, 0);
+        const fetchedTests = testService.getTestReadingsByIds(
+          part.questions as number[]
+        );
+        counts[part.type] += fetchedTests.reduce(
+          (total, test) => total + test.questions.length,
+          0
+        );
       } else if (part.type === TestPartTypeEnum.LISTENING) {
-        const fetchedTests = testService.getTestListeningsByIds(part.questions as number[]);
-        counts[part.type] += fetchedTests.reduce((total, test) => total + test.questions.length, 0);
+        const fetchedTests = testService.getTestListeningsByIds(
+          part.questions as number[]
+        );
+        counts[part.type] += fetchedTests.reduce(
+          (total, test) => total + test.questions.length,
+          0
+        );
       } else if (part.type === TestPartTypeEnum.SPEAKING) {
-        const fetchedTests = testService.getTestSpeakingsByIds(part.questions as number[]);
-        counts[part.type] += fetchedTests.reduce((total, test) => total + test.questions.length, 0);
+        const fetchedTests = testService.getTestSpeakingsByIds(
+          part.questions as number[]
+        );
+        counts[part.type] += fetchedTests.reduce(
+          (total, test) => total + test.questions.length,
+          0
+        );
       } else {
         counts[part.type] += part.questions.length;
       }
@@ -76,6 +93,7 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
     .reduce((sum, type) => sum + questionCounts[type], 1);
 
   return (
+
     <Grid container spacing={2} sx={{ p: 3 }}>
       <Grid item xs={12} md={9}>
         <TestTabs
@@ -121,3 +139,4 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
 };
 
 export default MixingTest;
+
