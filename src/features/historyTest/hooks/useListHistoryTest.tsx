@@ -5,14 +5,15 @@ import useColor from "theme/useColor";
 import SchoolIcon from "@mui/icons-material/School";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import { mockData } from "../../services/mockData";
-import { historyTestService } from "../../services/historyTestService";
-import { HistoryRecord } from "../../type";
+import { mockData } from "../services/mockData";
+import { historyTestService } from "../services/historyTestService";
+import { HistoryRecord } from "../type";
 
 export default function useListHistoryTest() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const [activeTab, setActiveTab] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState(8);
 
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -22,7 +23,6 @@ export default function useListHistoryTest() {
 
   // State for pagination
   const [page, setPage] = useState<number>(1);
-  const rowsPerPage = 5;
 
   // State for loading
   const [loading, setLoading] = useState<boolean>(false);
@@ -169,7 +169,7 @@ export default function useListHistoryTest() {
   const paginatedHistory = useMemo(() => {
     const startIndex = (page - 1) * rowsPerPage;
     return filteredHistory.slice(startIndex, startIndex + rowsPerPage);
-  }, [filteredHistory, page]);
+  }, [filteredHistory, page, rowsPerPage]);   
 
   // Handle tab change
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -236,6 +236,11 @@ export default function useListHistoryTest() {
     }
   };
 
+  const handleItemsPerPageChange = (value: number) => {
+    setRowsPerPage(value);
+    setPage(1); // Reset về trang đầu khi thay đổi số dòng trên mỗi trang
+  };   
+
   return {
     filteredHistory,
     paginatedHistory,
@@ -255,5 +260,7 @@ export default function useListHistoryTest() {
     page,
     rowsPerPage,
     loading,
+    setRowsPerPage,
+    handleItemsPerPageChange
   };
 }
