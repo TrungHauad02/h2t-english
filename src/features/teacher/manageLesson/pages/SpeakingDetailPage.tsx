@@ -12,7 +12,11 @@ import WEFloatingNavMenu, {
   NavItem,
 } from "components/pagination/WEFloatingNavMenu";
 import SubjectIcon from "@mui/icons-material/Subject";
-import { SpeakingDetailsView, SpeakingEditForm } from "../components/speaking";
+import {
+  ConversationSection,
+  SpeakingDetailsView,
+  SpeakingEditForm,
+} from "../components/speaking";
 
 export default function SpeakingDetailPage() {
   const hooks = useSpeakingDetailPage();
@@ -21,6 +25,11 @@ export default function SpeakingDetailPage() {
     {
       id: "speaking-details",
       label: "Speaking Details",
+      icon: <SubjectIcon fontSize="small" />,
+    },
+    {
+      id: "conversation-section",
+      label: "Conversation Section",
       icon: <SubjectIcon fontSize="small" />,
     },
     {
@@ -60,6 +69,10 @@ export default function SpeakingDetailPage() {
           ) : (
             <SpeakingDetailsView data={hooks.data} />
           )}
+        </div>
+
+        <div id="conversation-section">
+          <ConversationSection />
         </div>
 
         <div id="preparation-section">

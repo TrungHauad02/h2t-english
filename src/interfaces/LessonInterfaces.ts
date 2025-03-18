@@ -141,6 +141,7 @@ export interface SpeakingConversation extends BaseEntity {
   name: string;
   serial: number;
   content: string;
+  audioUrl?: string;
 }
 
 export interface ListenAndWriteAWord extends BaseEntity {
@@ -156,4 +157,9 @@ export interface WritingAnswer extends BaseEntity {
   missingIndex: number;
   correctAnswer: string;
   writingId: number;
+}
+
+export interface Voice {
+  voice: string;
+  file: string;
 }
