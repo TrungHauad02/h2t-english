@@ -13,6 +13,7 @@ export default function useListHistoryTest() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const [activeTab, setActiveTab] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState(8);
 
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -22,7 +23,6 @@ export default function useListHistoryTest() {
 
   // State for pagination
   const [page, setPage] = useState<number>(1);
-  const rowsPerPage = 5;
 
   // State for loading
   const [loading, setLoading] = useState<boolean>(false);
@@ -255,5 +255,6 @@ export default function useListHistoryTest() {
     page,
     rowsPerPage,
     loading,
+    setRowsPerPage,
   };
 }
