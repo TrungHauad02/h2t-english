@@ -1,7 +1,7 @@
 import { Stack } from "@mui/material";
 import { ListComponent } from "components/list";
 import { Question } from "interfaces";
-import WEQuestion from "./WEQuestion";
+import WEQuestion from "./QuestionTest";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 

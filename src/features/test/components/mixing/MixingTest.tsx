@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Grid, Button } from "@mui/material";
 import TestTabs from "./TestTabs";
 import { TestPart, TestPartTypeEnum } from "interfaces";
 import VocabularyAndGrammarPart from "./vocabularyAndGrammarPart/VocabularyAndGrammarPart";
@@ -8,6 +8,9 @@ import ListeningPart from "./listeningPart/ListeningPart";
 import SpeakingPart from "./speakingPart/SpeakingPart";
 import WritingPart from "./writingPart/WritingPart";
 import { testService } from "features/test/services/testServices";
+import TestQuestionGrid from "./TestQuestionGrid";
+import { useDarkMode } from "hooks/useDarkMode";
+import useColor from "theme/useColor";
 
 interface MixingTestProps {
   mixingTestParts: TestPart[];
@@ -22,10 +25,26 @@ const tabOrder: TestPartTypeEnum[] = [
   TestPartTypeEnum.WRITING,
 ];
 
-export default function MixingTest({ mixingTestParts }: MixingTestProps) {
-  const [activeTab, setActiveTab] = useState<TestPartTypeEnum>(
-    TestPartTypeEnum.VOCABULARY
-  );
+
+const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
+  const { isDarkMode } = useDarkMode();
+  const color = useColor();
+  const [activeTab, setActiveTab] = useState<TestPartTypeEnum>(TestPartTypeEnum.VOCABULARY);
+  const [timeRemaining, setTimeRemaining] = useState<number>(59 * 60);
+
+  useMemo(() => {
+    const timer = setInterval(() => {
+      setTimeRemaining((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
+  };
+
 
   const questionCounts = useMemo(() => {
     const counts: Record<TestPartTypeEnum, number> = {
@@ -74,45 +93,50 @@ export default function MixingTest({ mixingTestParts }: MixingTestProps) {
     .reduce((sum, type) => sum + questionCounts[type], 1);
 
   return (
-    <Box sx={{ p: 3 }}>
-      <TestTabs
-        activeTab={activeTab.toLowerCase()}
-        onTabChange={(newTab) =>
-          setActiveTab(newTab.toUpperCase() as TestPartTypeEnum)
-        }
-      />
-      <Typography variant="h5" sx={{ mt: 3 }}>
-        {activeTab.charAt(0).toUpperCase() + activeTab.slice(1).toLowerCase()}{" "}
-        Test
-      </Typography>
-      {activeTab === TestPartTypeEnum.VOCABULARY ||
-      activeTab === TestPartTypeEnum.GRAMMAR ? (
-        <VocabularyAndGrammarPart
-          mixingTestParts={mixingTestParts}
-          startSerial={startSerial}
-          type={activeTab}
+
+    <Grid container spacing={2} sx={{ p: 3 }}>
+      <Grid item xs={12} md={9}>
+        <TestTabs
+          activeTab={activeTab.toLowerCase()}
+          onTabChange={(newTab) => setActiveTab(newTab.toUpperCase() as TestPartTypeEnum)}
         />
-      ) : activeTab === TestPartTypeEnum.READING ? (
-        <ReadingPart
-          mixingTestParts={mixingTestParts}
-          startSerial={startSerial}
-        />
-      ) : activeTab === TestPartTypeEnum.LISTENING ? (
-        <ListeningPart
-          mixingTestParts={mixingTestParts}
-          startSerial={startSerial}
-        />
-      ) : activeTab === TestPartTypeEnum.SPEAKING ? (
-        <SpeakingPart
-          mixingTestParts={mixingTestParts}
-          startSerial={startSerial}
-        />
-      ) : activeTab === TestPartTypeEnum.WRITING ? (
-        <WritingPart
-          mixingTestParts={mixingTestParts}
-          startSerial={startSerial}
-        />
-      ) : null}
-    </Box>
+        {activeTab === TestPartTypeEnum.VOCABULARY || activeTab === TestPartTypeEnum.GRAMMAR ? (
+          <VocabularyAndGrammarPart mixingTestParts={mixingTestParts} startSerial={startSerial} type={activeTab} />
+        ) : activeTab === TestPartTypeEnum.READING ? (
+          <ReadingPart mixingTestParts={mixingTestParts} startSerial={startSerial} />
+        ) : activeTab === TestPartTypeEnum.LISTENING ? (
+          <ListeningPart mixingTestParts={mixingTestParts} startSerial={startSerial} />
+        ) : activeTab === TestPartTypeEnum.SPEAKING ? (
+          <SpeakingPart mixingTestParts={mixingTestParts} startSerial={startSerial} />
+        ) : activeTab === TestPartTypeEnum.WRITING ? (
+          <WritingPart mixingTestParts={mixingTestParts} startSerial={startSerial} />
+        ) : null}
+      </Grid>
+      <Grid item xs={12} md={3}>
+      <Box
+          sx={{
+            p: 2,
+            border: "2px solid",
+            borderColor: isDarkMode ? color.gray700 : "#ccc",
+            borderRadius: "10px",
+            bgcolor: isDarkMode ? color.gray900 : "#f9f9f9",
+            textAlign: "center",
+            mb: 2,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+
+          }}
+        >
+          <Typography variant="h6" sx={{ color: isDarkMode ? color.gray200 : "black" }}>
+            Time remaining: 
+          </Typography>
+        </Box>
+        <TestQuestionGrid questionCounts={questionCounts} />
+      </Grid>
+    </Grid>
   );
-}
+};
+
+export default MixingTest;
+
