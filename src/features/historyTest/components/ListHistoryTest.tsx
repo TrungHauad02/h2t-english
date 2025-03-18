@@ -60,7 +60,7 @@ export default function ListHistoryTest() {
           totalPage={Math.ceil(hooks.filteredHistory.length / hooks.rowsPerPage)}
           itemsPerPage={hooks.rowsPerPage}
           onPageChange={hooks.handlePageChange}
-          onItemsPerPageChange={hooks.setRowsPerPage}
+          onItemsPerPageChange={hooks.handleItemsPerPageChange}
         />
 
       </Paper>

@@ -169,7 +169,7 @@ export default function useListHistoryTest() {
   const paginatedHistory = useMemo(() => {
     const startIndex = (page - 1) * rowsPerPage;
     return filteredHistory.slice(startIndex, startIndex + rowsPerPage);
-  }, [filteredHistory, page]);
+  }, [filteredHistory, page, rowsPerPage]);   
 
   // Handle tab change
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -236,6 +236,11 @@ export default function useListHistoryTest() {
     }
   };
 
+  const handleItemsPerPageChange = (value: number) => {
+    setRowsPerPage(value);
+    setPage(1); // Reset về trang đầu khi thay đổi số dòng trên mỗi trang
+  };   
+
   return {
     filteredHistory,
     paginatedHistory,
@@ -256,5 +261,6 @@ export default function useListHistoryTest() {
     rowsPerPage,
     loading,
     setRowsPerPage,
+    handleItemsPerPageChange
   };
 }

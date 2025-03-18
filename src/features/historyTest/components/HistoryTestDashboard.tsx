@@ -8,7 +8,7 @@ import useListHistoryTest from "../hooks/useListHistoryTest";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 
-export default function HIstoryTestDashboard() {
+export default function HistoryTestDashboard() {
     const color = useColor();
     const { isDarkMode } = useDarkMode();
     const hooks = useListHistoryTest();
