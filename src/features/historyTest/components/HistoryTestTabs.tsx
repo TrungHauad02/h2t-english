@@ -6,22 +6,25 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { useTheme, useMediaQuery } from "@mui/material";
 
 interface HistoryTestTabsProps {
-    hooks: {
-        activeTab: number;
-        handleTabChange: (event: React.SyntheticEvent, newValue: number) => void;
-    };
+    activeTab: number;
+    handleTabChange: (event: React.SyntheticEvent, newValue: number) => void;
     color: any;
     isDarkMode: boolean;
-}
-
-export default function HistoryTestTabs({ hooks, color, isDarkMode }: HistoryTestTabsProps) {
+  }
+  
+  export default function HistoryTestTabs({
+    activeTab,
+    handleTabChange,
+    color,
+    isDarkMode,
+  }: HistoryTestTabsProps) {
     const theme = useTheme();
-    const isXsDown = useMediaQuery(theme.breakpoints.down("sm"));
+    const isXsDown = useMediaQuery(theme.breakpoints.down("sm"));  
 
     return (
         <Tabs
-            value={hooks.activeTab}
-            onChange={hooks.handleTabChange}
+            value={activeTab}
+            onChange={handleTabChange}
             variant="scrollable"
             scrollButtons="auto"
             textColor="primary"

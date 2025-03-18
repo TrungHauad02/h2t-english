@@ -1,18 +1,21 @@
 import { Typography, Box } from "@mui/material";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import StatCard from "./historyTest/StatCard";
-import useColor from "theme/useColor";
-import { useDarkMode } from "hooks/useDarkMode";
 import { calculateAverageScore, calculateHighestScore } from "./historyTest/utils";
-import useListHistoryTest from "../hooks/useListHistoryTest";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 
-export default function HistoryTestDashboard() {
-    const color = useColor();
-    const { isDarkMode } = useDarkMode();
-    const hooks = useListHistoryTest();
+interface HistoryTestDashboardProps {
+    color: any;
+    isDarkMode: boolean;
+    filteredHistory: any[];
+}
 
+export default function HistoryTestDashboard({
+    color,
+    isDarkMode,
+    filteredHistory,
+}: HistoryTestDashboardProps) {
     const textColor = isDarkMode ? color.gray100 : color.gray800;
     const paperBgColor = isDarkMode ? color.gray800 : color.white;
 
@@ -51,7 +54,7 @@ export default function HistoryTestDashboard() {
             >
                 <StatCard
                     title="Average Score"
-                    value={calculateAverageScore(hooks.filteredHistory)}
+                    value={calculateAverageScore(filteredHistory)}
                     icon={<TrendingUpIcon />}
                     color={isDarkMode ? color.teal400 : color.teal600}
                     isDarkMode={isDarkMode}
@@ -59,7 +62,7 @@ export default function HistoryTestDashboard() {
                 />
                 <StatCard
                     title="Tests Taken"
-                    value={hooks.filteredHistory.length.toString()}
+                    value={filteredHistory.length.toString()}
                     icon={<AssignmentIcon />}
                     color={isDarkMode ? color.emerald400 : color.emerald600}
                     isDarkMode={isDarkMode}
@@ -67,7 +70,7 @@ export default function HistoryTestDashboard() {
                 />
                 <StatCard
                     title="High Score"
-                    value={calculateHighestScore(hooks.filteredHistory)}
+                    value={calculateHighestScore(filteredHistory)}
                     icon={<EmojiEventsIcon />}
                     color={isDarkMode ? color.green400 : color.green600}
                     isDarkMode={isDarkMode}
@@ -75,5 +78,5 @@ export default function HistoryTestDashboard() {
                 />
             </Box>
         </Box>
-    )
+    );
 }

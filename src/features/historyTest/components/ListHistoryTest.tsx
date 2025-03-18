@@ -25,8 +25,11 @@ export default function ListHistoryTest() {
   return (
     <Box sx={{ p: { xs: 1, sm: 2, md: 4 } }}>
 
-      <HistoryTestDashboard />
-
+      <HistoryTestDashboard
+        color={color}
+        isDarkMode={isDarkMode}
+        filteredHistory={hooks.filteredHistory}
+      />
       <Paper
         elevation={isDarkMode ? 1 : 3}
         sx={{
@@ -37,14 +40,30 @@ export default function ListHistoryTest() {
           border: `1px solid ${borderColor}`,
         }}
       >
-        <HistoryTestTabs hooks={hooks} color={color} isDarkMode={isDarkMode} />
-
+        <HistoryTestTabs
+          activeTab={hooks.activeTab}
+          handleTabChange={hooks.handleTabChange}
+          color={color}
+          isDarkMode={isDarkMode}
+        />
         {/* Filter controls */}
-        <HistoryTestFilter hooks={hooks} color={color} isDarkMode={isDarkMode} />
+        <HistoryTestFilter
+          searchTerm={hooks.searchTerm}
+          handleSearchChange={hooks.handleSearchChange}
+          filterType={hooks.filterType}
+          handleFilterChange={hooks.handleFilterChange}
+          sortBy={hooks.sortBy}
+          handleSortChange={hooks.handleSortChange}
+          sortDirection={hooks.sortDirection}
+          toggleSortDirection={hooks.toggleSortDirection}
+          color={color}
+          isDarkMode={isDarkMode}
+        />
 
         {/* Table of test history */}
         <HistoryTestTable
-          hooks={hooks}
+          loading={hooks.loading}
+          paginatedHistory={hooks.paginatedHistory}
           color={color}
           isDarkMode={isDarkMode}
           textColor={textColor}
