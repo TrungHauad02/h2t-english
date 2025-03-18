@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Box, Typography, Grid, Button } from "@mui/material";
+import { Box, Typography, Grid } from "@mui/material";
 import TestTabs from "./TestTabs";
 import { TestPart, TestPartTypeEnum } from "interfaces";
 import VocabularyAndGrammarPart from "./vocabularyAndGrammarPart/VocabularyAndGrammarPart";
@@ -25,11 +25,12 @@ const tabOrder: TestPartTypeEnum[] = [
   TestPartTypeEnum.WRITING,
 ];
 
-
 const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
-  const [activeTab, setActiveTab] = useState<TestPartTypeEnum>(TestPartTypeEnum.VOCABULARY);
+  const [activeTab, setActiveTab] = useState<TestPartTypeEnum>(
+    TestPartTypeEnum.VOCABULARY
+  );
   const [timeRemaining, setTimeRemaining] = useState<number>(59 * 60);
 
   useMemo(() => {
@@ -44,7 +45,6 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
     const secs = seconds % 60;
     return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
   };
-
 
   const questionCounts = useMemo(() => {
     const counts: Record<TestPartTypeEnum, number> = {
@@ -93,27 +93,45 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
     .reduce((sum, type) => sum + questionCounts[type], 1);
 
   return (
-
     <Grid container spacing={2} sx={{ p: 3 }}>
       <Grid item xs={12} md={9}>
         <TestTabs
           activeTab={activeTab.toLowerCase()}
-          onTabChange={(newTab) => setActiveTab(newTab.toUpperCase() as TestPartTypeEnum)}
+          onTabChange={(newTab) =>
+            setActiveTab(newTab.toUpperCase() as TestPartTypeEnum)
+          }
         />
-        {activeTab === TestPartTypeEnum.VOCABULARY || activeTab === TestPartTypeEnum.GRAMMAR ? (
-          <VocabularyAndGrammarPart mixingTestParts={mixingTestParts} startSerial={startSerial} type={activeTab} />
+        {activeTab === TestPartTypeEnum.VOCABULARY ||
+        activeTab === TestPartTypeEnum.GRAMMAR ? (
+          <VocabularyAndGrammarPart
+            mixingTestParts={mixingTestParts}
+            startSerial={startSerial}
+            type={activeTab}
+          />
         ) : activeTab === TestPartTypeEnum.READING ? (
-          <ReadingPart mixingTestParts={mixingTestParts} startSerial={startSerial} />
+          <ReadingPart
+            mixingTestParts={mixingTestParts}
+            startSerial={startSerial}
+          />
         ) : activeTab === TestPartTypeEnum.LISTENING ? (
-          <ListeningPart mixingTestParts={mixingTestParts} startSerial={startSerial} />
+          <ListeningPart
+            mixingTestParts={mixingTestParts}
+            startSerial={startSerial}
+          />
         ) : activeTab === TestPartTypeEnum.SPEAKING ? (
-          <SpeakingPart mixingTestParts={mixingTestParts} startSerial={startSerial} />
+          <SpeakingPart
+            mixingTestParts={mixingTestParts}
+            startSerial={startSerial}
+          />
         ) : activeTab === TestPartTypeEnum.WRITING ? (
-          <WritingPart mixingTestParts={mixingTestParts} startSerial={startSerial} />
+          <WritingPart
+            mixingTestParts={mixingTestParts}
+            startSerial={startSerial}
+          />
         ) : null}
       </Grid>
       <Grid item xs={12} md={3}>
-      <Box
+        <Box
           sx={{
             p: 2,
             border: "2px solid",
@@ -125,11 +143,13 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
-
           }}
         >
-          <Typography variant="h6" sx={{ color: isDarkMode ? color.gray200 : "black" }}>
-            Time remaining: 
+          <Typography
+            variant="h6"
+            sx={{ color: isDarkMode ? color.gray200 : "black" }}
+          >
+            Time remaining:
           </Typography>
         </Box>
         <TestQuestionGrid questionCounts={questionCounts} />
@@ -139,4 +159,3 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
 };
 
 export default MixingTest;
-
