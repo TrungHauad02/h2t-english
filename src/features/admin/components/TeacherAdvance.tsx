@@ -120,7 +120,9 @@ export default function TeacherAdvance() {
             value={hooks.user?.status ? "true" : "false"}
             onChange={(e) =>
               hooks.setUser((prevUser) =>
-                prevUser ? { ...prevUser, status: e.target.value === "true" } : null
+                prevUser
+                  ? { ...prevUser, status: e.target.value === "true" }
+                  : null
               )
             }
             select
