@@ -5,10 +5,8 @@ import { format } from "date-fns";
 import { useTheme, useMediaQuery } from "@mui/material";
 
 interface HistoryTestTableProps {
-    hooks: {
-        loading: boolean;
-        paginatedHistory: any[];
-    };
+    loading: boolean;
+    paginatedHistory: any[];
     color: any;
     isDarkMode: boolean;
     textColor: string;
@@ -16,10 +14,11 @@ interface HistoryTestTableProps {
     headerBgColor: string;
     hoverBgColor: string;
     borderColor: string;
-}
-
-export default function HistoryTestTable({
-    hooks,
+  }
+  
+  export default function HistoryTestTable({
+    loading,
+    paginatedHistory,
     color,
     isDarkMode,
     textColor,
@@ -27,10 +26,10 @@ export default function HistoryTestTable({
     headerBgColor,
     hoverBgColor,
     borderColor,
-}: HistoryTestTableProps) {
+  }: HistoryTestTableProps) {
     const theme = useTheme();
     const isMdDown = useMediaQuery(theme.breakpoints.down("md"));
-    const isSmDown = useMediaQuery(theme.breakpoints.down("sm"));
+    const isSmDown = useMediaQuery(theme.breakpoints.down("sm"));  
 
     return (
         <TableContainer
@@ -83,14 +82,14 @@ export default function HistoryTestTable({
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {hooks.loading ? (
+                    {loading ? (
                         <TableRow>
                             <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
                                 <CircularProgress color="primary" />
                             </TableCell>
                         </TableRow>
-                    ) : hooks.paginatedHistory.length > 0 ? (
-                        hooks.paginatedHistory.map((record) => (
+                    ) : paginatedHistory.length > 0 ? (
+                        paginatedHistory.map((record) => (
                             <Fade in={true} key={`${record.type}-${record.id}`}>
                                 <TableRow sx={{ transition: "background-color 0.2s", cursor: "pointer", "&:hover": { bgcolor: hoverBgColor }, borderBottom: `1px solid ${borderColor}` }}>
                                     <TableCell component="th" scope="row" sx={{ color: textColor, fontWeight: "medium" }}>
