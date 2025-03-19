@@ -1,124 +1,17 @@
-import { Box, Stack, Typography, Divider, Button } from "@mui/material";
-import { useState, useEffect } from "react";
+import { Box, Typography } from "@mui/material";
 import { TestReading } from "interfaces";
-import { testService } from "features/test/services/testServices";
-import WEDocumentViewer from "components/display/document/WEDocumentViewer";
-import AnswerQuestionSection from "../common/answerQuestion/AnswerQuestionSection";
-import NavigationControls from "../common/NavigationControls";
 
 interface ReadingTestProps {
   testReadings: TestReading[];
 }
 
 export default function ReadingTest({ testReadings }: ReadingTestProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [questionsList, setQuestionsList] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    async function fetchQuestions() {
-      try {
-        console.log(testReadings);
-        
-        setLoading(true);
-        setError(false);
-        let currentSerial = 1;
-        const fetchedQuestions = await Promise.all(
-          testReadings.map(async (reading) => {
-            const questions = await testService.getQuestionsByIds(reading.questions);
-            const startSerial = currentSerial;
-            currentSerial += questions.length;
-            return {
-              file: reading.file,
-              questions,
-              startSerial,
-              endSerial: currentSerial - 1,
-            };
-          })
-        );
-        setQuestionsList(fetchedQuestions);
-      } catch (error) {
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchQuestions();
-  }, [testReadings]);
-
-  const totalReadings = testReadings.length;
-  const currentReading = questionsList[currentIndex];
-
-  const handleNext = () => {
-    if (currentIndex < totalReadings - 1) {
-      setCurrentIndex(currentIndex + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
-  };
-
   return (
-    <Box sx={{ width: "100%", p: 2 }}>
-      <NavigationControls
-        currentIndex={currentIndex}
-        totalItems={totalReadings}
-        onPrevious={handlePrevious}
-        onNext={handleNext}
-      />
-
-      {loading ? (
-        <Typography sx={{ textAlign: "center", mt: 5 }}>Loading...</Typography>
-      ) : error ? (
-        <Typography sx={{ textAlign: "center", mt: 5, color: "red" }}>Cannot load data. Try again</Typography>
-      ) : (
-        currentReading && (
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{
-              width: "100%",
-              height: "70vh",
-              border: `1px solid #ccc`,
-              borderRadius: 2,
-              overflow: "hidden",
-            }}
-          >
-            <Box sx={{ width: "50%", p: 2, overflowY: "auto" }}>
-              <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
-                Question {currentReading.startSerial} - {currentReading.endSerial}
-              </Typography>
-              <WEDocumentViewer fileUrl={currentReading.file} lineHeight="2" />
-            </Box>
-
-            <Divider orientation="vertical" flexItem sx={{ bgcolor: "#ccc" }} />
-
-            <Box sx={{ width: "50%", p: 2, overflowY: "auto" }}>
-              <AnswerQuestionSection questions={currentReading.questions} startSerial={currentReading.startSerial} />
-            </Box>
-          </Stack>
-        )
-      )}
-
-      <Stack direction="row" justifyContent="center" sx={{ mt: 3 }}>
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: "#2E7D32",
-            color: "white",
-            width: "200px",
-            fontWeight: "bold",
-            fontSize: "16px",
-          }}
-        >
-          SUBMIT
-        </Button>
-      </Stack>
+    <Box>
+      <Typography variant="h5">Reading Test</Typography>
+      {testReadings.map((reading) => (
+        <Typography key={reading.id}>{`Reading Passage: ${reading.file}`}</Typography>
+      ))}
     </Box>
   );
 }

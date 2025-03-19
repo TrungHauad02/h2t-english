@@ -47,9 +47,6 @@ const getQuestionsByIdsAndType = (questionIds: number[], type: TestPartTypeEnum)
 
 
 const getTestReadingsByIds = (testIds: number[]): TestReading[] => {
-  console.log(mockData.testReadings.filter((t) => testIds.includes(t.id)));
-  console.log(testIds);
-  
   return mockData.testReadings.filter((t) => testIds.includes(t.id));
 };
 const getTestListeningsByIds = (testIds: number[]): TestListening[] => {

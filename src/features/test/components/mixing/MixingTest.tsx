@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Box, Typography, Grid } from "@mui/material";
+import { Box, Typography, Grid, Button } from "@mui/material";
 import TestTabs from "./TestTabs";
 import { TestPart, TestPartTypeEnum } from "interfaces";
 import VocabularyAndGrammarPart from "./vocabularyAndGrammarPart/VocabularyAndGrammarPart";
@@ -29,10 +29,20 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
   const [activeTab, setActiveTab] = useState<TestPartTypeEnum>(TestPartTypeEnum.VOCABULARY);
+  const [timeRemaining, setTimeRemaining] = useState<number>(59 * 60);
 
+  useMemo(() => {
+    const timer = setInterval(() => {
+      setTimeRemaining((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
-
-
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
+  };
 
   const questionCounts = useMemo(() => {
     const counts: Record<TestPartTypeEnum, number> = {

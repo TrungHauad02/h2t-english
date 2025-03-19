@@ -12,8 +12,7 @@ import {
   TestPartTypeEnum,
 } from "interfaces";
 
-// 📌 Tạo danh sách câu hỏi (200 câu hỏi)
-const questions: Question[] = Array.from({ length: 210 }, (_, i) => ({
+const questions: Question[] = Array.from({ length: 200 }, (_, i) => ({
   id: i + 1,
   content: `Question ${i + 1}`,
   answers: Array.from({ length: 4 }, (_, j) => ({
@@ -29,35 +28,15 @@ const questions: Question[] = Array.from({ length: 210 }, (_, i) => ({
   updatedAt: new Date(),
 }));
 
-// 📌 Danh sách bài đọc (Reading)
-const testReadings: TestReading[] = [
-  ...Array.from({ length: 10 }, (_, i) => ({
-    id: i + 1,
-    file: `reading_${i + 1}.pdf`,
-    questions: questions.slice(i * 5, i * 5 + 5).map((q) => q.id),
-    status: StatusEnum.ACTIVE,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  })),
-  {
-    id: 11, // ✅ Thêm bài đọc mới
-    file: `reading_11.pdf`,
-    questions: questions.slice(200, 205).map((q) => q.id), // Lấy 5 câu cuối cùng
-    status: StatusEnum.ACTIVE,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 12, // ✅ Thêm bài đọc mới
-    file: `reading_12.pdf`,
-    questions: questions.slice(205, 210).map((q) => q.id), // Lấy 5 câu cuối cùng
-    status: StatusEnum.ACTIVE,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
+const testReadings: TestReading[] = Array.from({ length: 10 }, (_, i) => ({
+  id: i + 1,
+  file: `reading_${i + 1}.pdf`,
+  questions: questions.slice(i * 5, i * 5 + 5).map((q) => q.id),
+  status: StatusEnum.ACTIVE,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+}));
 
-// 📌 Danh sách bài nghe (Listening)
 const testListenings: TestListening[] = Array.from({ length: 10 }, (_, i) => ({
   id: i + 1,
   audio: `listening_${i + 1}.mp3`,
@@ -68,7 +47,6 @@ const testListenings: TestListening[] = Array.from({ length: 10 }, (_, i) => ({
   updatedAt: new Date(),
 }));
 
-// 📌 Danh sách bài nói (Speaking)
 const testSpeakings: TestSpeaking[] = Array.from({ length: 10 }, (_, i) => ({
   id: i + 1,
   file: `speaking_${i + 1}.mp4`,
@@ -78,7 +56,6 @@ const testSpeakings: TestSpeaking[] = Array.from({ length: 10 }, (_, i) => ({
   updatedAt: new Date(),
 }));
 
-// 📌 Danh sách bài viết (Writing)
 const testWritings: TestWriting[] = Array.from({ length: 10 }, (_, i) => ({
   id: i + 1,
   topic: `Writing Topic ${i + 1}`,
@@ -89,7 +66,6 @@ const testWritings: TestWriting[] = Array.from({ length: 10 }, (_, i) => ({
   updatedAt: new Date(),
 }));
 
-// 📌 Danh sách phần bài kiểm tra (Test Parts)
 const testParts: TestPart[] = [
   {
     id: 1,
@@ -139,25 +115,8 @@ const testParts: TestPart[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
   },
-  {
-    id: 11, // ✅ Thêm phần Reading mới
-    type: TestPartTypeEnum.READING,
-    questions: testReadings.find((r) => r.id === 11)?.questions || [],
-    status: StatusEnum.ACTIVE,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 12, // ✅ Thêm phần Reading mới
-    type: TestPartTypeEnum.READING,
-    questions: testReadings.find((r) => r.id === 12)?.questions || [],
-    status: StatusEnum.ACTIVE,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
 ];
 
-// 📌 Danh sách bài kiểm tra (Tests)
 const tests: Test[] = [
   {
     id: 1,
@@ -173,23 +132,8 @@ const tests: Test[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
   },
-  {
-    id: 11, // ✅ Thêm bài kiểm tra Reading mới
-    title: `Reading Test 11`,
-    description: `A dedicated reading test with multiple questions.`,
-    duration: 60, // 60 phút
-    type: TestTypeEnum.READING, // Định dạng bài kiểm tra Reading
-    parts: [11,12], // Chỉ bao gồm phần Reading mới tạo
-    totalQuestions: testParts.find((p) => p.id === 11)?.questions.length || 0,
-    scoreLastOfTest: null,
-    routeNodeId: 102,
-    status: StatusEnum.ACTIVE,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
 ];
 
-// 📌 Xuất dữ liệu
 export const mockData = {
   tests,
   testParts,
