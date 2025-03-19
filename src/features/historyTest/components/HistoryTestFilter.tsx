@@ -2,6 +2,8 @@ import { Box, TextField, InputAdornment, FormControl, InputLabel, Select, MenuIt
 import SearchIcon from "@mui/icons-material/Search";
 import SortIcon from "@mui/icons-material/Sort";
 import { useTheme, useMediaQuery } from "@mui/material";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
 
 interface HistoryTestFilterProps {
     searchTerm: string;
@@ -12,8 +14,6 @@ interface HistoryTestFilterProps {
     handleSortChange: (event: SelectChangeEvent<string>) => void;
     sortDirection: "asc" | "desc";
     toggleSortDirection: () => void;
-    color: any;
-    isDarkMode: boolean;
   }
   
   export default function HistoryTestFilter({
@@ -25,11 +25,11 @@ interface HistoryTestFilterProps {
     handleSortChange,
     sortDirection,
     toggleSortDirection,
-    color,
-    isDarkMode,
   }: HistoryTestFilterProps) {
     const theme = useTheme();
     const isSmDown = useMediaQuery(theme.breakpoints.down("sm"));  
+    const color = useColor();
+    const { isDarkMode } = useDarkMode();
   
     return (
       <Box

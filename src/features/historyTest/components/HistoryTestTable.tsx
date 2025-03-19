@@ -3,12 +3,12 @@ import { getChipColorByType, getTestTypeIcon, getIconColorByType, getScoreColor 
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import { format } from "date-fns";
 import { useTheme, useMediaQuery } from "@mui/material";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
 
 interface HistoryTestTableProps {
     loading: boolean;
     paginatedHistory: any[];
-    color: any;
-    isDarkMode: boolean;
     textColor: string;
     secondaryTextColor: string;
     headerBgColor: string;
@@ -19,8 +19,6 @@ interface HistoryTestTableProps {
   export default function HistoryTestTable({
     loading,
     paginatedHistory,
-    color,
-    isDarkMode,
     textColor,
     secondaryTextColor,
     headerBgColor,
@@ -30,6 +28,8 @@ interface HistoryTestTableProps {
     const theme = useTheme();
     const isMdDown = useMediaQuery(theme.breakpoints.down("md"));
     const isSmDown = useMediaQuery(theme.breakpoints.down("sm"));  
+    const color = useColor();
+    const { isDarkMode } = useDarkMode();
 
     return (
         <TableContainer

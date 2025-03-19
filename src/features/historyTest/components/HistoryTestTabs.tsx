@@ -4,23 +4,22 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import SchoolIcon from "@mui/icons-material/School";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { useTheme, useMediaQuery } from "@mui/material";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
 
 interface HistoryTestTabsProps {
     activeTab: number;
     handleTabChange: (event: React.SyntheticEvent, newValue: number) => void;
-    color: any;
-    isDarkMode: boolean;
   }
   
   export default function HistoryTestTabs({
     activeTab,
     handleTabChange,
-    color,
-    isDarkMode,
   }: HistoryTestTabsProps) {
     const theme = useTheme();
     const isXsDown = useMediaQuery(theme.breakpoints.down("sm"));  
-
+    const color = useColor();
+    const { isDarkMode } = useDarkMode();
     return (
         <Tabs
             value={activeTab}

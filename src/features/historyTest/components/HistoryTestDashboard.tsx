@@ -4,19 +4,18 @@ import StatCard from "./historyTest/StatCard";
 import { calculateAverageScore, calculateHighestScore } from "./historyTest/utils";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
 
 interface HistoryTestDashboardProps {
-    color: any;
-    isDarkMode: boolean;
     filteredHistory: any[];
 }
 
 export default function HistoryTestDashboard({
-    color,
-    isDarkMode,
     filteredHistory,
 }: HistoryTestDashboardProps) {
-    const textColor = isDarkMode ? color.gray100 : color.gray800;
+    const color = useColor();
+    const { isDarkMode } = useDarkMode();
     const paperBgColor = isDarkMode ? color.gray800 : color.white;
 
     return (

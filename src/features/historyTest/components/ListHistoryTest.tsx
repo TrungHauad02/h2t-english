@@ -26,8 +26,6 @@ export default function ListHistoryTest() {
     <Box sx={{ p: { xs: 1, sm: 2, md: 4 } }}>
 
       <HistoryTestDashboard
-        color={color}
-        isDarkMode={isDarkMode}
         filteredHistory={hooks.filteredHistory}
       />
       <Paper
@@ -43,8 +41,6 @@ export default function ListHistoryTest() {
         <HistoryTestTabs
           activeTab={hooks.activeTab}
           handleTabChange={hooks.handleTabChange}
-          color={color}
-          isDarkMode={isDarkMode}
         />
         {/* Filter controls */}
         <HistoryTestFilter
@@ -56,16 +52,12 @@ export default function ListHistoryTest() {
           handleSortChange={hooks.handleSortChange}
           sortDirection={hooks.sortDirection}
           toggleSortDirection={hooks.toggleSortDirection}
-          color={color}
-          isDarkMode={isDarkMode}
         />
 
         {/* Table of test history */}
         <HistoryTestTable
           loading={hooks.loading}
           paginatedHistory={hooks.paginatedHistory}
-          color={color}
-          isDarkMode={isDarkMode}
           textColor={textColor}
           secondaryTextColor={secondaryTextColor}
           headerBgColor={headerBgColor}
