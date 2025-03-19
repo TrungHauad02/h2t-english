@@ -11,7 +11,7 @@ import {
   TestPartTypeEnum,
 } from "interfaces";
 
-const questions: Question[] = Array.from({ length: 200 }, (_, i) => ({
+const questions: Question[] = Array.from({ length: 300 }, (_, i) => ({
   id: i + 1,
   content: `Question ${i + 1}`,
   answers: Array.from({ length: 4 }, (_, j) => ({
@@ -158,6 +158,20 @@ const tests: Test[] = [
     duration: 90,
     type: TestTypeEnum.MIXING,
     parts: testParts.map((p) => p.id),
+    totalQuestions: 30,
+    scoreLastOfTest: null,
+    routeNodeId: 101,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 11,
+    title: `Mixing Test 1`,
+    description: `Mixing test including vocabulary, grammar, reading, listening, speaking, and writing.`,
+    duration: 90,
+    type: TestTypeEnum.READING,
+    parts: [11,12],
     totalQuestions: 30,
     scoreLastOfTest: null,
     routeNodeId: 101,
