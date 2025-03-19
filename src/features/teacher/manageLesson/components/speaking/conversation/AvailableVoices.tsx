@@ -2,11 +2,36 @@ import { Box, Grid, Typography } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
+import { useState, useRef } from "react";
 import { Voice } from "interfaces";
 
 export default function AvailableVoices({ voices }: { voices: Voice[] }) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const audioRefs = useRef<{ [key: string]: HTMLAudioElement }>({});
+  const [playingVoice, setPlayingVoice] = useState<string | null>(null);
+
+  const handlePlayVoice = (voice: Voice) => {
+    if (playingVoice) {
+      audioRefs.current[playingVoice].pause();
+      audioRefs.current[playingVoice].currentTime = 0;
+    }
+
+    if (playingVoice === voice.file) {
+      setPlayingVoice(null);
+      return;
+    }
+
+    if (!audioRefs.current[voice.file]) {
+      const audio = new Audio(voice.file);
+      audio.onended = () => setPlayingVoice(null);
+      audioRefs.current[voice.file] = audio;
+    }
+
+    audioRefs.current[voice.file].play();
+    setPlayingVoice(voice.file);
+  };
+
   return (
     <Box>
       <Typography
@@ -21,7 +46,6 @@ export default function AvailableVoices({ voices }: { voices: Voice[] }) {
         <RecordVoiceOverIcon sx={{ mr: 1 }} />
         Available Voices
       </Typography>
-
       <Grid container spacing={2}>
         {voices.map((voice, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
@@ -46,9 +70,27 @@ export default function AvailableVoices({ voices }: { voices: Voice[] }) {
               </Typography>
               <RecordVoiceOverIcon
                 sx={{
-                  color: isDarkMode ? color.teal300 : color.teal600,
+                  color:
+                    playingVoice === voice.file
+                      ? isDarkMode
+                        ? color.teal100
+                        : color.teal800
+                      : isDarkMode
+                      ? color.teal300
+                      : color.teal600,
                   fontSize: 20,
+                  cursor: "pointer",
+                  animation:
+                    playingVoice === voice.file
+                      ? "pulse 1.5s infinite"
+                      : "none",
+                  "@keyframes pulse": {
+                    "0%": { opacity: 1 },
+                    "50%": { opacity: 0.5 },
+                    "100%": { opacity: 1 },
+                  },
                 }}
+                onClick={() => handlePlayVoice(voice)}
               />
             </Box>
           </Grid>

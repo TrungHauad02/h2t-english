@@ -195,6 +195,37 @@ export default function useConversationSection() {
     }, 2000);
   };
 
+  // Add new move up/down functionality
+  const onMoveUp = (index: number) => {
+    if (index > 0) {
+      const updatedConversations = [...conversations];
+      const temp = updatedConversations[index];
+      updatedConversations[index] = updatedConversations[index - 1];
+      updatedConversations[index - 1] = temp;
+
+      // Update serial numbers
+      updatedConversations[index].serial = index + 1;
+      updatedConversations[index - 1].serial = index;
+
+      setConversations(updatedConversations);
+    }
+  };
+
+  const onMoveDown = (index: number) => {
+    if (index < conversations.length - 1) {
+      const updatedConversations = [...conversations];
+      const temp = updatedConversations[index];
+      updatedConversations[index] = updatedConversations[index + 1];
+      updatedConversations[index + 1] = temp;
+
+      // Update serial numbers
+      updatedConversations[index].serial = index + 1;
+      updatedConversations[index + 1].serial = index + 2;
+
+      setConversations(updatedConversations);
+    }
+  };
+
   return {
     conversations,
     isEditMode,
@@ -216,5 +247,7 @@ export default function useConversationSection() {
     handleCancelEdit,
     handlePlayAudio,
     handleGenerateAudio,
+    onMoveUp,
+    onMoveDown,
   };
 }
