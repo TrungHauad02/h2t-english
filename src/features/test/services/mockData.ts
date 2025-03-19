@@ -27,14 +27,32 @@ const questions: Question[] = Array.from({ length: 200 }, (_, i) => ({
   updatedAt: new Date(),
 }));
 
-const testReadings: TestReading[] = Array.from({ length: 10 }, (_, i) => ({
-  id: i + 1,
-  file: `reading_${i + 1}.pdf`,
-  questions: questions.slice(i * 5, i * 5 + 5).map((q) => q.id),
-  status: true,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-}));
+const testReadings: TestReading[] = [
+  ...Array.from({ length: 10 }, (_, i) => ({
+    id: i + 1,
+    file: `reading_${i + 1}.pdf`,
+    questions: questions.slice(i * 5, i * 5 + 5).map((q) => q.id),
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  })),
+  {
+    id: 11,
+    file: `reading_11.pdf`,
+    questions: questions.slice(200, 205).map((q) => q.id), 
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 12, 
+    file: `reading_12.pdf`,
+    questions: questions.slice(205, 210).map((q) => q.id),
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
 
 const testListenings: TestListening[] = Array.from({ length: 10 }, (_, i) => ({
   id: i + 1,
@@ -110,6 +128,22 @@ const testParts: TestPart[] = [
     id: 6,
     type: TestPartTypeEnum.WRITING,
     questions: [testWritings[0].id],
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 11,
+    type: TestPartTypeEnum.READING,
+    questions: testReadings.find((r) => r.id === 11)?.questions || [],
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 12,
+    type: TestPartTypeEnum.READING,
+    questions: testReadings.find((r) => r.id === 12)?.questions || [],
     status: true,
     createdAt: new Date(),
     updatedAt: new Date(),
