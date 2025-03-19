@@ -3,8 +3,8 @@ import {
   Typography,
   Grid,
   IconButton,
-  Switch,
-  FormControlLabel,
+  Tooltip,
+  Stack,
 } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
@@ -12,24 +12,31 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { ArrowDownward, ArrowUpward } from "@mui/icons-material";
 import { SpeakingConversation } from "interfaces";
 
 interface ConversationItemProps {
+  isEditMode: boolean;
   conversation: SpeakingConversation;
   onPlayAudio: (audioUrl: string, id: number) => void;
   isPlaying: boolean;
   currentPlayingId: number | null;
   onEdit: (conversation: SpeakingConversation) => void;
   onDelete: (id: number) => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
 }
 
 export default function ConversationItem({
+  isEditMode,
   conversation,
   onPlayAudio,
   isPlaying,
   currentPlayingId,
   onEdit,
   onDelete,
+  onMoveUp,
+  onMoveDown,
 }: ConversationItemProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -44,7 +51,7 @@ export default function ConversationItem({
       }}
     >
       <Grid container spacing={2}>
-        <Grid item xs={10}>
+        <Grid item xs={10} sx={{ height: "100%" }}>
           <Typography
             variant="h6"
             sx={{ color: isDarkMode ? color.teal300 : color.teal700, mb: 1 }}
@@ -52,22 +59,77 @@ export default function ConversationItem({
             {conversation.name} #{conversation.serial}
           </Typography>
         </Grid>
-        <Grid item xs={2} sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <IconButton
-            size="small"
-            onClick={() => onEdit(conversation)}
-            sx={{ color: isDarkMode ? color.teal300 : color.teal600, mr: 1 }}
+        {isEditMode && (
+          <Grid
+            item
+            xs={2}
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+            }}
           >
-            <EditIcon fontSize="small" />
-          </IconButton>
-          <IconButton
-            size="small"
-            onClick={() => onDelete(conversation.id)}
-            sx={{ color: isDarkMode ? color.red400 : color.red500 }}
-          >
-            <DeleteIcon fontSize="small" />
-          </IconButton>
-        </Grid>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Stack direction="column" spacing={0.5}>
+                <Tooltip title="Move up" arrow placement="top">
+                  <IconButton
+                    size="small"
+                    onClick={onMoveUp}
+                    disabled={!onMoveUp}
+                    sx={{
+                      color: isDarkMode ? color.teal300 : color.teal600,
+                      backgroundColor: isDarkMode ? color.gray800 : color.white,
+                      "&:hover": {
+                        backgroundColor: isDarkMode
+                          ? color.teal800
+                          : color.teal100,
+                      },
+                      "&.Mui-disabled": {
+                        color: isDarkMode ? color.gray500 : color.gray400,
+                      },
+                    }}
+                  >
+                    <ArrowUpward fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Move down" arrow placement="bottom">
+                  <IconButton
+                    size="small"
+                    onClick={onMoveDown}
+                    disabled={!onMoveDown}
+                    sx={{
+                      color: isDarkMode ? color.teal300 : color.teal600,
+                      backgroundColor: isDarkMode ? color.gray800 : color.white,
+                      "&:hover": {
+                        backgroundColor: isDarkMode
+                          ? color.teal800
+                          : color.teal100,
+                      },
+                      "&.Mui-disabled": {
+                        color: isDarkMode ? color.gray500 : color.gray400,
+                      },
+                    }}
+                  >
+                    <ArrowDownward fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+              <IconButton
+                size="small"
+                onClick={() => onEdit(conversation)}
+                sx={{ color: isDarkMode ? color.teal300 : color.teal600 }}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+              <IconButton
+                size="small"
+                onClick={() => onDelete(conversation.id)}
+                sx={{ color: isDarkMode ? color.red400 : color.red500 }}
+              >
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </Stack>
+          </Grid>
+        )}
         <Grid item xs={12}>
           <Typography
             variant="body1"
@@ -120,32 +182,6 @@ export default function ConversationItem({
             </Box>
           </Grid>
         )}
-        <Grid item xs={12}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={conversation.status}
-                disabled
-                sx={{
-                  "& .MuiSwitch-switchBase.Mui-checked": {
-                    color: color.teal500,
-                  },
-                  "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                    backgroundColor: color.teal300,
-                  },
-                }}
-              />
-            }
-            label={
-              <Typography
-                variant="body2"
-                sx={{ color: isDarkMode ? color.gray300 : color.gray600 }}
-              >
-                Active
-              </Typography>
-            }
-          />
-        </Grid>
       </Grid>
     </Box>
   );

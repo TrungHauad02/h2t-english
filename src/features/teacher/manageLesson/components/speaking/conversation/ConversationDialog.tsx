@@ -6,8 +6,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  Switch,
-  FormControlLabel,
   CircularProgress,
 } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
@@ -68,6 +66,7 @@ export default function ConversationDialog({
         <Grid item xs={4}>
           <WETextField
             required
+            disabled
             label="Serial Number"
             type="number"
             value={editData.serial}
@@ -203,31 +202,6 @@ export default function ConversationDialog({
           >
             {isGenerating ? "Generating..." : "Generate Audio"}
           </Button>
-
-          <FormControlLabel
-            control={
-              <Switch
-                checked={editData.status}
-                onChange={(e) => handleInputChange("status", e.target.checked)}
-                sx={{
-                  "& .MuiSwitch-switchBase.Mui-checked": {
-                    color: color.teal500,
-                  },
-                  "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                    backgroundColor: color.teal300,
-                  },
-                }}
-              />
-            }
-            label={
-              <Typography
-                variant="body2"
-                sx={{ color: isDarkMode ? color.gray300 : color.gray600 }}
-              >
-                Active
-              </Typography>
-            }
-          />
         </Grid>
       </Grid>
     </WEDialog>
