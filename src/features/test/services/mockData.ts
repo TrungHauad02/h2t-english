@@ -11,7 +11,7 @@ import {
   TestPartTypeEnum,
 } from "interfaces";
 
-const questions: Question[] = Array.from({ length: 200 }, (_, i) => ({
+const questions: Question[] = Array.from({ length: 300 }, (_, i) => ({
   id: i + 1,
   content: `Question ${i + 1}`,
   answers: Array.from({ length: 4 }, (_, j) => ({
@@ -27,14 +27,32 @@ const questions: Question[] = Array.from({ length: 200 }, (_, i) => ({
   updatedAt: new Date(),
 }));
 
-const testReadings: TestReading[] = Array.from({ length: 10 }, (_, i) => ({
-  id: i + 1,
-  file: `reading_${i + 1}.pdf`,
-  questions: questions.slice(i * 5, i * 5 + 5).map((q) => q.id),
-  status: true,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-}));
+const testReadings: TestReading[] = [
+  ...Array.from({ length: 10 }, (_, i) => ({
+    id: i + 1,
+    file: `reading_${i + 1}.pdf`,
+    questions: questions.slice(i * 5, i * 5 + 5).map((q) => q.id),
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  })),
+  {
+    id: 11,
+    file: `reading_11.pdf`,
+    questions: questions.slice(200, 205).map((q) => q.id), 
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 12, 
+    file: `reading_12.pdf`,
+    questions: questions.slice(205, 210).map((q) => q.id),
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
 
 const testListenings: TestListening[] = Array.from({ length: 10 }, (_, i) => ({
   id: i + 1,
@@ -114,6 +132,22 @@ const testParts: TestPart[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
   },
+  {
+    id: 11,
+    type: TestPartTypeEnum.READING,
+    questions: testReadings.find((r) => r.id === 11)?.questions || [],
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 12,
+    type: TestPartTypeEnum.READING,
+    questions: testReadings.find((r) => r.id === 12)?.questions || [],
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
 ];
 
 const tests: Test[] = [
@@ -124,6 +158,20 @@ const tests: Test[] = [
     duration: 90,
     type: TestTypeEnum.MIXING,
     parts: testParts.map((p) => p.id),
+    totalQuestions: 30,
+    scoreLastOfTest: null,
+    routeNodeId: 101,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 11,
+    title: `Mixing Test 1`,
+    description: `Mixing test including vocabulary, grammar, reading, listening, speaking, and writing.`,
+    duration: 90,
+    type: TestTypeEnum.READING,
+    parts: [11,12],
     totalQuestions: 30,
     scoreLastOfTest: null,
     routeNodeId: 101,
