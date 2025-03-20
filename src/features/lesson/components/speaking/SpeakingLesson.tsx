@@ -2,8 +2,8 @@ import { Box } from "@mui/material";
 import { CollapsibleSection } from "components/sections";
 import { Speaking } from "interfaces";
 import PreparationSection from "../common/preparation/PreparationSection";
-import ConversationSection from "./conversation/ConversationSection";
 import SpeakingTopicSection from "./SpeakingTopicSection";
+import ConversationSection from "./ConversationSection";
 
 export default function SpeakingLesson({ lesson }: { lesson: Speaking }) {
   return (
