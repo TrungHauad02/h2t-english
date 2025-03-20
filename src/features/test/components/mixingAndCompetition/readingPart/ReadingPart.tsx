@@ -6,16 +6,16 @@ import { testService } from "features/test/services/testServices";
 import WEDocumentViewer from "components/display/document/WEDocumentViewer";
 
 interface ReadingPartProps {
-  mixingTestParts: TestPart[];
+  testParts: TestPart[];
   startSerial: number;
 }
 
-export default function ReadingPart({ mixingTestParts, startSerial }: ReadingPartProps) {
+export default function ReadingPart({ testParts, startSerial }: ReadingPartProps) {
   const [readingTests, setReadingTests] = useState<any[]>([]);
 
   useEffect(() => {
     async function fetchReadingTests() {
-      const readingParts = mixingTestParts.filter(
+      const readingParts = testParts.filter(
         (part) => part.type === TestPartTypeEnum.READING
       );
 
@@ -32,7 +32,7 @@ export default function ReadingPart({ mixingTestParts, startSerial }: ReadingPar
     }
 
     fetchReadingTests();
-  }, [mixingTestParts]);
+  }, [testParts]);
 
   let currentSerial = startSerial;
 

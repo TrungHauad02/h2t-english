@@ -5,16 +5,16 @@ import AnswerQuestionSection from "../../common/answerQuestion/AnswerQuestionSec
 import { testService } from "features/test/services/testServices";
 
 interface ListeningPartProps {
-  mixingTestParts: TestPart[];
+  testParts: TestPart[];
   startSerial: number;
 }
 
-export default function ListeningPart({ mixingTestParts, startSerial }: ListeningPartProps) {
+export default function ListeningPart({ testParts, startSerial }: ListeningPartProps) {
   const [listeningTests, setListeningTests] = useState<any[]>([]);
 
   useEffect(() => {
     async function fetchListeningTests() {
-      const listeningParts = mixingTestParts.filter(
+      const listeningParts = testParts.filter(
         (part) => part.type === TestPartTypeEnum.LISTENING
       );
 
@@ -34,7 +34,7 @@ export default function ListeningPart({ mixingTestParts, startSerial }: Listenin
     }
 
     fetchListeningTests();
-  }, [mixingTestParts]);
+  }, [testParts]);
 
   let currentSerial = startSerial;
 
@@ -56,8 +56,6 @@ export default function ListeningPart({ mixingTestParts, startSerial }: Listenin
                 <source src={audio} type="audio/mpeg" />
                 Your browser does not support the audio element.
               </audio>
-
-              <Box sx={{ fontStyle: "italic", my: 2 }}>{transcript}</Box>
             </Stack>
 
             <AnswerQuestionSection questions={questions} startSerial={startSerialForSection} />

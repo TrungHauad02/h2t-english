@@ -29,6 +29,7 @@ export interface Test extends BaseEntity {
 export interface CompetitionTest extends BaseEntity {
   title: string;
   duration: number;
+  totalQuestions: number | null;
   startTime: Date;
   endTime: Date;
   parts: number[];
