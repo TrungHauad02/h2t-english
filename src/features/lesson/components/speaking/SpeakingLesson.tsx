@@ -15,7 +15,7 @@ export default function SpeakingLesson({ lesson }: { lesson: Speaking }) {
         <ConversationSection />
       </CollapsibleSection>
       <CollapsibleSection text="Speaking Topic">
-        <SpeakingTopicSection />
+        <SpeakingTopicSection data={lesson} />
       </CollapsibleSection>
     </Box>
   );
