@@ -11,7 +11,7 @@ import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import ScoreSection from "./ScoreSection";
-import StrengthsAreasToImproveSection from "./StrengthsAreasToImproveSection";
+import StrengthsAreasToImproveSection from "../StrengthsAreasToImproveSection";
 
 interface AssessmentResultsCardProps {
   score: number;
