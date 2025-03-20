@@ -29,11 +29,6 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
   const [activeTab, setActiveTab] = useState<TestPartTypeEnum>(TestPartTypeEnum.VOCABULARY);
-
-
-
-
-
   const questionCounts = useMemo(() => {
     const counts: Record<TestPartTypeEnum, number> = {
       [TestPartTypeEnum.VOCABULARY]: 0,
@@ -73,15 +68,15 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
           onTabChange={(newTab) => setActiveTab(newTab.toUpperCase() as TestPartTypeEnum)}
         />
         {activeTab === TestPartTypeEnum.VOCABULARY || activeTab === TestPartTypeEnum.GRAMMAR ? (
-          <VocabularyAndGrammarPart mixingTestParts={mixingTestParts} startSerial={startSerial} type={activeTab} />
+          <VocabularyAndGrammarPart testParts={mixingTestParts} startSerial={startSerial} type={activeTab} />
         ) : activeTab === TestPartTypeEnum.READING ? (
-          <ReadingPart mixingTestParts={mixingTestParts} startSerial={startSerial} />
+          <ReadingPart testParts={mixingTestParts} startSerial={startSerial} />
         ) : activeTab === TestPartTypeEnum.LISTENING ? (
-          <ListeningPart mixingTestParts={mixingTestParts} startSerial={startSerial} />
+          <ListeningPart testParts={mixingTestParts} startSerial={startSerial} />
         ) : activeTab === TestPartTypeEnum.SPEAKING ? (
-          <SpeakingPart mixingTestParts={mixingTestParts} startSerial={startSerial} />
+          <SpeakingPart testParts={mixingTestParts} startSerial={startSerial} />
         ) : activeTab === TestPartTypeEnum.WRITING ? (
-          <WritingPart mixingTestParts={mixingTestParts} startSerial={startSerial} />
+          <WritingPart testParts={mixingTestParts} startSerial={startSerial} />
         ) : null}
       </Grid>
       <Grid item xs={12} md={3}>

@@ -5,6 +5,7 @@ import { testService } from "features/test/services/testServices";
 import WEDocumentViewer from "components/display/document/WEDocumentViewer";
 import AnswerQuestionSection from "../common/answerQuestion/AnswerQuestionSection";
 import NavigationControls from "../common/NavigationControls";
+import TimeRemaining from "../common/TimeRemaining";
 
 interface ReadingTestProps {
   testReadings: TestReading[];
@@ -19,8 +20,6 @@ export default function ReadingTest({ testReadings }: ReadingTestProps) {
   useEffect(() => {
     async function fetchQuestions() {
       try {
-        console.log(testReadings);
-        
         setLoading(true);
         setError(false);
         let currentSerial = 1;
@@ -65,12 +64,8 @@ export default function ReadingTest({ testReadings }: ReadingTestProps) {
 
   return (
     <Box sx={{ width: "100%", p: 2 }}>
-      <NavigationControls
-        currentIndex={currentIndex}
-        totalItems={totalReadings}
-        onPrevious={handlePrevious}
-        onNext={handleNext}
-      />
+        <TimeRemaining />
+       <NavigationControls currentIndex={currentIndex} totalItems={totalReadings} onPrevious={handlePrevious} onNext={handleNext} />
 
       {loading ? (
         <Typography sx={{ textAlign: "center", mt: 5 }}>Loading...</Typography>
@@ -78,17 +73,7 @@ export default function ReadingTest({ testReadings }: ReadingTestProps) {
         <Typography sx={{ textAlign: "center", mt: 5, color: "red" }}>Cannot load data. Try again</Typography>
       ) : (
         currentReading && (
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{
-              width: "100%",
-              height: "70vh",
-              border: `1px solid #ccc`,
-              borderRadius: 2,
-              overflow: "hidden",
-            }}
-          >
+          <Stack direction="row" spacing={2} sx={{ width: "100%", height: "70vh", border: "1px solid #ccc", borderRadius: 2, overflow: "hidden" }}>
             <Box sx={{ width: "50%", p: 2, overflowY: "auto" }}>
               <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
                 Question {currentReading.startSerial} - {currentReading.endSerial}
@@ -106,16 +91,7 @@ export default function ReadingTest({ testReadings }: ReadingTestProps) {
       )}
 
       <Stack direction="row" justifyContent="center" sx={{ mt: 3 }}>
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: "#2E7D32",
-            color: "white",
-            width: "200px",
-            fontWeight: "bold",
-            fontSize: "16px",
-          }}
-        >
+        <Button variant="contained" sx={{ backgroundColor: "#2E7D32", color: "white", width: "200px", fontWeight: "bold", fontSize: "16px" }}>
           SUBMIT
         </Button>
       </Stack>

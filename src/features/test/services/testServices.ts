@@ -1,6 +1,7 @@
 import { mockData } from "./mockData";
 import {
   Test,
+  CompetitionTest,
   TestPart,
   TestReading,
   TestListening,
@@ -12,6 +13,9 @@ import {
 
 const getTestById = (testId: number): Test | null => {
   return mockData.tests.find((t) => t.id === testId) || null;
+};
+const getCompetitionTestById = (competitionTestId: number): CompetitionTest | null => {
+  return mockData.CompetitionTests.find((t) => t.id === competitionTestId) || null;
 };
 const getTestPartsByIds = (partIds: number[]): TestPart[] => {
   return mockData.testParts.filter((part) => partIds.includes(part.id));
@@ -120,6 +124,7 @@ const getTestByIdAndType = (testId: number, testType: string): Test | null => {
 export const testService = {
   getTestById,
   getTestByIdAndType,
+  getCompetitionTestById,
   getTestPartsByIds,
   getQuestionsByIds,
   getTestReadingsByIds,

@@ -3,21 +3,22 @@ import { Box, Typography, Button, Stack, Fab, Grid } from "@mui/material";
 import MicNoneIcon from "@mui/icons-material/MicNone";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { TestSpeaking, Question } from "interfaces";
+import { TestPart } from "interfaces";
 import { testService } from "features/test/services/testServices";
-import TestSpeakingQuestionGrid from "./TestSpeakingQuestionGrid"; 
 
-interface SpeakingTestProps {
-  testSpeakings: TestSpeaking[];
+interface SpeakingPartProps {
+  testParts: TestPart[];
+  startSerial: number;
 }
 
-export default function SpeakingTest({ testSpeakings }: SpeakingTestProps) {
+export default function SpeakingPart({ testParts, startSerial }: SpeakingPartProps) {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [questionsList, setQuestionsList] = useState<Partial<Question>[]>([]);
+  const [questionsList, setQuestionsList] = useState<{ content: string; serial: number }[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [audioURL, setAudioURL] = useState<string>("");
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunks = useRef<Blob[]>([]);
 
@@ -27,11 +28,17 @@ export default function SpeakingTest({ testSpeakings }: SpeakingTestProps) {
         setLoading(true);
         setError(false);
 
+        const speakingParts = testParts.filter((part) => part.type === "SPEAKING");
+        const speakingTests = await testService.getTestSpeakingsByIds(
+          speakingParts.flatMap((part) => part.questions as number[])
+        );
+
         const fetchedQuestions = await Promise.all(
-          testSpeakings.flatMap(async (speaking) => {
-            const questions = await testService.getQuestionsByIds(speaking.questions);
-            return questions.map((question: Question) => ({
-              content: question.content,
+          speakingTests.flatMap(async (test) => {
+            const questions = await testService.getQuestionsByIds(test.questions);
+            return questions.map((q, idx) => ({
+              content: q.content,
+              serial: startSerial + idx,
             }));
           })
         );
@@ -45,15 +52,15 @@ export default function SpeakingTest({ testSpeakings }: SpeakingTestProps) {
     }
 
     fetchQuestions();
-  }, [testSpeakings]);
+  }, [testParts, startSerial]);
 
-  const totalSpeakings = questionsList.length;
+  const totalQuestions = questionsList.length;
   const currentQuestion = questionsList[currentIndex];
 
   return (
     <Box sx={{ margin: "5%", p: 2 }}>
       <Grid container spacing={2}>
-        <Grid item xs={9}>
+        <Grid item xs={12}>
           <Stack
             direction="column"
             spacing={2}
@@ -72,13 +79,16 @@ export default function SpeakingTest({ testSpeakings }: SpeakingTestProps) {
               <Typography sx={{ textAlign: "center", color: "red" }}>Cannot load data. Try again.</Typography>
             ) : (
               <>
-              <Typography variant="h5" sx={{ 
+              <Typography 
+              variant="h5" 
+              sx={{ 
                 px: 4, 
                 fontWeight: "bold", 
-                alignSelf: "flex-start"
-              }}>
-                Question {currentIndex+1}
-              </Typography>
+                alignSelf: "flex-start" // Căn lề trái
+              }}
+            >
+              Question {startSerial}
+            </Typography>
               <Typography variant="h5" sx={{ textAlign: "center", px: 4, fontWeight: "bold" }}>
                 {currentQuestion?.content || "No content available"}
               </Typography>
@@ -144,8 +154,8 @@ export default function SpeakingTest({ testSpeakings }: SpeakingTestProps) {
               <Button
                 variant="contained"
                 endIcon={<ArrowForwardIcon />}
-                onClick={() => setCurrentIndex((prev) => Math.min(prev + 1, totalSpeakings - 1))}
-                disabled={currentIndex === totalSpeakings - 1}
+                onClick={() => setCurrentIndex((prev) => Math.min(prev + 1, totalQuestions - 1))}
+                disabled={currentIndex === totalQuestions - 1}
                 sx={{
                   backgroundColor: "#1B5E20",
                   color: "white",
@@ -158,9 +168,6 @@ export default function SpeakingTest({ testSpeakings }: SpeakingTestProps) {
               </Button>
             </Stack>
           </Stack>
-        </Grid>
-        <Grid item xs={3}>
-          <TestSpeakingQuestionGrid testSpeakings={testSpeakings} />
         </Grid>
       </Grid>
     </Box>

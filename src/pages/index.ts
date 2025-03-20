@@ -23,8 +23,9 @@ export { default as RoutePage } from "features/route/pages/RoutePage";
 
 // Test Pages
 export { default as ListTestPage } from "features/listTest/pages/ListTestPage";
+export { default as ListCompetitionTestPage } from "features/listTest/pages/ListCompetitionTestPage";
 export { default as TestPage } from "features/test/pages/TestPage";
-
+export { default as CompetitionTestPage } from "features/test/pages/CompetitionTestPage";
 // Teacher Pages
 export { default as ManageRoutePage } from "features/teacher/manageRoute/pages/ManageRoutePage";
 export { default as InformationPage } from "features/teacher/information/pages/InformationPage";

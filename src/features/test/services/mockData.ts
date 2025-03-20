@@ -9,6 +9,7 @@ import {
   Answer,
   TestTypeEnum,
   TestPartTypeEnum,
+  CompetitionTest,
 } from "interfaces";
 
 const questions: Question[] = Array.from({ length: 300 }, (_, i) => ({
@@ -28,7 +29,7 @@ const questions: Question[] = Array.from({ length: 300 }, (_, i) => ({
 }));
 
 const testReadings: TestReading[] = [
-  ...Array.from({ length: 10 }, (_, i) => ({
+  ...Array.from({ length: 20 }, (_, i) => ({
     id: i + 1,
     file: `reading_${i + 1}.pdf`,
     questions: questions.slice(i * 5, i * 5 + 5).map((q) => q.id),
@@ -36,25 +37,9 @@ const testReadings: TestReading[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
   })),
-  {
-    id: 11,
-    file: `reading_11.pdf`,
-    questions: questions.slice(200, 205).map((q) => q.id), 
-    status: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 12, 
-    file: `reading_12.pdf`,
-    questions: questions.slice(205, 210).map((q) => q.id),
-    status: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
 ];
 
-const testListenings: TestListening[] = Array.from({ length: 10 }, (_, i) => ({
+const testListenings: TestListening[] = Array.from({ length: 20 }, (_, i) => ({
   id: i + 1,
   audio: `listening_${i + 1}.mp3`,
   transcript: `Transcript for listening ${i + 1}`,
@@ -103,7 +88,7 @@ const testParts: TestPart[] = [
   {
     id: 3,
     type: TestPartTypeEnum.READING,
-    questions: [testReadings[0].id],
+    questions: [testReadings[3].id],
     status: true,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -111,7 +96,7 @@ const testParts: TestPart[] = [
   {
     id: 4,
     type: TestPartTypeEnum.LISTENING,
-    questions: [testListenings[0].id],
+    questions: [testListenings[4].id],
     status: true,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -133,9 +118,17 @@ const testParts: TestPart[] = [
     updatedAt: new Date(),
   },
   {
+    id: 7,
+    type: TestPartTypeEnum.WRITING,
+    questions: [testWritings[1].id],
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
     id: 11,
     type: TestPartTypeEnum.READING,
-    questions: testReadings.find((r) => r.id === 11)?.questions || [],
+    questions: [testReadings[11].id],
     status: true,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -143,7 +136,31 @@ const testParts: TestPart[] = [
   {
     id: 12,
     type: TestPartTypeEnum.READING,
-    questions: testReadings.find((r) => r.id === 12)?.questions || [],
+    questions: [testReadings[12].id],
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 13,
+    type: TestPartTypeEnum.LISTENING,
+    questions: [testListenings[13].id],
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 14,
+    type: TestPartTypeEnum.LISTENING,
+    questions: [testListenings[14].id],
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 15,
+    type: TestPartTypeEnum.SPEAKING,
+    questions: [testSpeakings[0].id],
     status: true,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -157,7 +174,7 @@ const tests: Test[] = [
     description: `Mixing test including vocabulary, grammar, reading, listening, speaking, and writing.`,
     duration: 90,
     type: TestTypeEnum.MIXING,
-    parts: testParts.map((p) => p.id),
+    parts: [1,2,3,4,5,6,7,11],
     totalQuestions: 30,
     scoreLastOfTest: null,
     routeNodeId: 101,
@@ -167,7 +184,7 @@ const tests: Test[] = [
   },
   {
     id: 11,
-    title: `Mixing Test 1`,
+    title: `Reading Test 1`,
     description: `Mixing test including vocabulary, grammar, reading, listening, speaking, and writing.`,
     duration: 90,
     type: TestTypeEnum.READING,
@@ -179,10 +196,67 @@ const tests: Test[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
   },
+  {
+    id: 21,
+    title: `Listening Test 1`,
+    description: `.`,
+    duration: 90,
+    type: TestTypeEnum.LISTENING,
+    parts: [13,14],
+    totalQuestions: 30,
+    scoreLastOfTest: null,
+    routeNodeId: 101,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 31,
+    title: `Speaking Test 1`,
+    description: `.`,
+    duration: 90,
+    type: TestTypeEnum.SPEAKING,
+    parts: [5,15],
+    totalQuestions: 30,
+    scoreLastOfTest: null,
+    routeNodeId: 101,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 41,
+    title: `Writing Test 1`,
+    description: `.`,
+    duration: 90,
+    type: TestTypeEnum.WRITING,
+    parts: [6,7],
+    totalQuestions: 30,
+    scoreLastOfTest: null,
+    routeNodeId: 101,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
+const CompetitionTests: CompetitionTest[] = [
+  {
+    id: 1,
+    title: `Competition Test 1`,
+    duration: 90,
+    parts: testParts.map((p) => p.id),
+    totalQuestions: 30,
+    status: true,
+    startTime: new Date(),
+    endTime: new Date(Date.now() + 90 * 60000), 
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
 ];
 
 export const mockData = {
   tests,
+  CompetitionTests,
   testParts,
   questions,
   testReadings,

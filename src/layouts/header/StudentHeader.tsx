@@ -29,6 +29,10 @@ const MENU_ITEMS = [
       { path: "/writings", label: "Writing" },
     ],
   },
+  {
+    path: "/competition-test",
+    label: "Competition",
+  },
 ];
 
 export default function StudentHeader() {

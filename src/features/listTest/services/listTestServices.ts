@@ -16,8 +16,6 @@ const getListTestByType = (type: string) => {
       }
 };
 
-
-
 export const listTestService = {
     getListTestByType,
 };

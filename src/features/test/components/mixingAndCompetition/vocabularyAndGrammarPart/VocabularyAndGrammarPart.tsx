@@ -4,13 +4,13 @@ import AnswerQuestionSection from "../../common/answerQuestion/AnswerQuestionSec
 import { testService } from "features/test/services/testServices";
 
 interface VocabularyAndGrammarPartProps {
-  mixingTestParts: TestPart[];
+  testParts: TestPart[];
   startSerial: number;
   type: TestPartTypeEnum.VOCABULARY | TestPartTypeEnum.GRAMMAR;
 }
 
-export default function VocabularyAndGrammarPart({ mixingTestParts, startSerial, type }: VocabularyAndGrammarPartProps) {
-  const parts = mixingTestParts.filter(
+export default function VocabularyAndGrammarPart({ testParts, startSerial, type }: VocabularyAndGrammarPartProps) {
+  const parts = testParts.filter(
     (part) => part.type === type
   );
 
