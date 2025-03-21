@@ -80,5 +80,6 @@ export default function useAnswerQuestion() {
     onShowConfirm,
     onCloseScoreDialog,
     getNumberAnswered,
+    calculateScore,
   };
 }
