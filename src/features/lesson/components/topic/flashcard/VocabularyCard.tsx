@@ -1,40 +1,59 @@
+import { Box } from "@mui/material";
 import { Vocabulary } from "interfaces";
 import { useState } from "react";
 import ReactCardFlip from "react-card-flip";
 import FrontCard from "./FrontCard";
 import BackCard from "./BackCard";
-import { styled } from "@mui/material/styles";
-import { Card } from "@mui/material";
 
-export const VocabCard = styled(Card)(({ theme }) => ({
-  width: "250px",
-  height: "300px",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  boxShadow: "0 0 5px 0 rgba(0, 0, 0, 0.3)",
-  borderRadius: "10px",
-  backgroundColor: theme.palette.mode === "dark" ? "#1f1f1f" : "#f1f1f1",
-  position: "relative",
-  margin: "1rem auto",
-  marginTop: "1rem",
-}));
+interface VocabularyCardProps {
+  vocab: Vocabulary;
+}
 
-export default function VocabularyCard({ vocab }: { vocab: Vocabulary }) {
+export default function VocabularyCard({ vocab }: VocabularyCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
 
-  const onFlipClick = () => {
+  const handleFlip = () => {
     setIsFlipped((prev) => !prev);
   };
 
   return (
-    <ReactCardFlip isFlipped={isFlipped}>
-      <VocabCard onClick={onFlipClick}>
-        <FrontCard vocab={vocab} />
-      </VocabCard>
-      <VocabCard onClick={onFlipClick}>
-        <BackCard vocab={vocab} />
-      </VocabCard>
-    </ReactCardFlip>
+    <Box
+      sx={{
+        p: 1.5,
+        height: 320,
+        perspective: 1000,
+      }}
+    >
+      <ReactCardFlip
+        isFlipped={isFlipped}
+        flipDirection="horizontal"
+        flipSpeedBackToFront={0.8}
+        flipSpeedFrontToBack={0.8}
+        containerStyle={{
+          width: "100%",
+          height: "100%",
+        }}
+      >
+        <Box
+          onClick={handleFlip}
+          sx={{
+            height: "100%",
+            width: "100%",
+            transform: "rotateY(0deg)",
+          }}
+        >
+          <FrontCard vocab={vocab} />
+        </Box>
+        <Box
+          onClick={handleFlip}
+          sx={{
+            height: "100%",
+            width: "100%",
+          }}
+        >
+          <BackCard vocab={vocab} />
+        </Box>
+      </ReactCardFlip>
+    </Box>
   );
 }
