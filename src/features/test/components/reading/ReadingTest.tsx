@@ -1,4 +1,4 @@
-import { Box, Stack, Typography, Divider, Button } from "@mui/material";
+import { Box, Stack, Typography, Divider, Button, useMediaQuery } from "@mui/material";
 import { useState, useEffect } from "react";
 import { TestReading } from "interfaces";
 import { testService } from "features/test/services/testServices";
@@ -16,6 +16,8 @@ export default function ReadingTest({ testReadings }: ReadingTestProps) {
   const [questionsList, setQuestionsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+
+  const isMobile = useMediaQuery((theme: any) => theme.breakpoints.down("sm"));
 
   useEffect(() => {
     async function fetchQuestions() {
@@ -63,9 +65,14 @@ export default function ReadingTest({ testReadings }: ReadingTestProps) {
   };
 
   return (
-    <Box sx={{ width: "100%", p: 2 }}>
-        <TimeRemaining />
-       <NavigationControls currentIndex={currentIndex} totalItems={totalReadings} onPrevious={handlePrevious} onNext={handleNext} />
+    <Box sx={{ width: "100%", p: { xs: 2, sm: 3 } }}>
+      <TimeRemaining />
+      <NavigationControls
+        currentIndex={currentIndex}
+        totalItems={totalReadings}
+        onPrevious={handlePrevious}
+        onNext={handleNext}
+      />
 
       {loading ? (
         <Typography sx={{ textAlign: "center", mt: 5 }}>Loading...</Typography>
@@ -73,25 +80,43 @@ export default function ReadingTest({ testReadings }: ReadingTestProps) {
         <Typography sx={{ textAlign: "center", mt: 5, color: "red" }}>Cannot load data. Try again</Typography>
       ) : (
         currentReading && (
-          <Stack direction="row" spacing={2} sx={{ width: "100%", height: "70vh", border: "1px solid #ccc", borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ width: "50%", p: 2, overflowY: "auto" }}>
+          <Stack
+            direction={isMobile ? "column" : "row"}
+            spacing={2}
+            sx={{
+              width: "100%",
+              height: { xs: "auto", sm: "70vh" },
+              border: "1px solid #ccc",
+              borderRadius: 2,
+              overflow: "hidden",
+            }}
+          >
+            <Box sx={{ width: isMobile ? "100%" : "50%", p: 2, overflowY: "auto" }}>
               <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
                 Question {currentReading.startSerial} - {currentReading.endSerial}
               </Typography>
               <WEDocumentViewer fileUrl={currentReading.file} lineHeight="2" />
             </Box>
 
-            <Divider orientation="vertical" flexItem sx={{ bgcolor: "#ccc" }} />
+            {!isMobile && <Divider orientation="vertical" flexItem sx={{ bgcolor: "#ccc" }} />}
 
-            <Box sx={{ width: "50%", p: 2, overflowY: "auto" }}>
+            <Box sx={{ width: isMobile ? "100%" : "50%", p: 2, overflowY: "auto" }}>
               <AnswerQuestionSection questions={currentReading.questions} startSerial={currentReading.startSerial} />
             </Box>
           </Stack>
         )
       )}
-
       <Stack direction="row" justifyContent="center" sx={{ mt: 3 }}>
-        <Button variant="contained" sx={{ backgroundColor: "#2E7D32", color: "white", width: "200px", fontWeight: "bold", fontSize: "16px" }}>
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: "#2E7D32",
+            color: "white",
+            width: "200px",
+            fontWeight: "bold",
+            fontSize: "16px",
+          }}
+        >
           SUBMIT
         </Button>
       </Stack>

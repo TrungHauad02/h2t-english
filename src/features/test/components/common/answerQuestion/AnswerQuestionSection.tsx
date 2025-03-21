@@ -25,12 +25,16 @@ export default function AnswerQuestion({ questions, startSerial = 1 }: AnswerQue
         mx: 4,
         mb: 2,
         borderBottom: `1px solid ${isDarkMode ? color.gray400 : color.gray600}`,
+        fontSize: {xs: "0.6rem", sm: "0.7rem", md: "1rem" },
+    p: { xs: 1, sm: 1.5 },
+
       }}
     >
      <ListComponent
         data={indexedQuestions}
         renderItem={(item) => (
-          <WEQuestion question={item.question} index={item.index} />
+          <WEQuestion question={item.question} index={item.index}
+           />
         )}
       />
     </Stack>

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { Box, Typography, TextField, Button, Paper, Stack } from "@mui/material";
+import { Box, Typography, TextField, Button, Stack, Paper, useMediaQuery } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { TestPart, TestPartTypeEnum, TestWriting } from "interfaces";
 import { testService } from "features/test/services/testServices";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
-const StyledPaper = styled(Paper)({
-  padding: "2rem",
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3),
   borderRadius: "1rem",
   display: "flex",
   flexDirection: "row",
@@ -15,7 +15,11 @@ const StyledPaper = styled(Paper)({
   alignItems: "flex-start",
   minHeight: "350px",
   width: "100%",
-});
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+    padding: theme.spacing(2),
+  },
+}));
 
 interface WritingPartProps {
   testParts: TestPart[];
@@ -32,6 +36,7 @@ export default function WritingPart({ testParts, startSerial }: WritingPartProps
   );
 
   const wordCount = essay.trim().split(/\s+/).filter((word) => word !== "").length;
+  const isMobile = useMediaQuery((theme: any) => theme.breakpoints.down("sm"));
 
   const handleEssayChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setEssay(e.target.value);
@@ -54,16 +59,18 @@ export default function WritingPart({ testParts, startSerial }: WritingPartProps
   const currentWriting = testWritings[currentIndex];
 
   return (
-    <Box sx={{ margin: "5%", p: 3, display: "flex", justifyContent: "center" }}>
+    <Box sx={{ margin: { xs: "3%", sm: "5%" }, p: { xs: 1.5, sm: 3 }, display: "flex", flexDirection: "column", alignItems: "center" }}>
       <StyledPaper elevation={3}>
-        <Box sx={{ width: "45%", paddingRight: "2rem" }}>
+        <Box sx={{ width: { xs: "100%", sm: "45%" }, paddingRight: { xs: 0, sm: "2rem" }, mb: { xs: 2, sm: 0 } }}>
           {currentWriting ? (
             <>
-              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                Question {startSerial}
+              <Typography variant="h6" sx={{ fontWeight: "bold", fontSize: { xs: "1rem", sm: "1.2rem", md: "1.3rem" } }}>
+                Question {startSerial + currentIndex}
               </Typography>
-              <Typography variant="body1" sx={{ mt: 2 }}>{currentWriting.topic}</Typography>
-              <Typography variant="body1" sx={{ fontWeight: "bold", mt: 2 }}>
+              <Typography variant="body1" sx={{ mt: 2, fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+                {currentWriting.topic}
+              </Typography>
+              <Typography variant="body1" sx={{ fontWeight: "bold", mt: 2, fontSize: { xs: "0.85rem", sm: "1rem" } }}>
                 You should write <strong>at least {currentWriting.minWords} words</strong>
                 {currentWriting.maxWords ? ` and at most ${currentWriting.maxWords} words.` : "."}
               </Typography>
@@ -73,53 +80,52 @@ export default function WritingPart({ testParts, startSerial }: WritingPartProps
           )}
         </Box>
 
-        <Box sx={{ width: "50%" }}>
-          <TextField
-            fullWidth
-            multiline
-            rows={8}
-            value={essay}
-            onChange={handleEssayChange}
-            placeholder="Type your essay here..."
-            variant="outlined"
-          />
-          <Typography variant="body2" sx={{ mt: 2, fontStyle: "italic" }}>
+        <Box sx={{ width: { xs: "100%", sm: "50%" }, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+          <TextField fullWidth multiline rows={isMobile ? 6 : 8} value={essay} onChange={handleEssayChange} placeholder="Type your essay here..." variant="outlined" sx={{ fontSize: { xs: "0.85rem", sm: "1rem" } }} />
+          <Typography variant="body2" sx={{ mt: 2, fontStyle: "italic", fontSize: { xs: "0.75rem", sm: "0.85rem" } }}>
             Words Count: <strong>{wordCount}</strong>
           </Typography>
+          <Stack direction={isMobile ? "row" : "row"} justifyContent="space-between" alignItems="center" sx={{ width: "100%", maxWidth: "600px", mt: 3, gap: { xs: 1.5, sm: 2 } }}>
+        <Button
+          variant="contained"
+          startIcon={<ArrowBackIcon />}
+          onClick={handlePrevious}
+          disabled={currentIndex === 0}
+          sx={{
+            backgroundColor: "#1B5E20",
+            color: "white",
+            px: { xs: 2, sm: 3 },
+            py: { xs: 0.8, sm: 1 },
+            fontSize: { xs: "0.75rem", sm: "0.9rem" },
+            fontWeight: "bold",
+            minWidth: "120px",
+          }}
+        >
+          Previous
+        </Button>
 
-          <Stack direction="row" justifyContent="space-between" sx={{ width: "100%", mt: 3 }}>
-            <Button
-              variant="contained"
-              startIcon={<ArrowBackIcon />}
-              onClick={handlePrevious}
-              disabled={currentIndex === 0}
-              sx={{
-                backgroundColor: "#1B5E20",
-                color: "white",
-                padding: "10px 20px",
-                fontWeight: "bold",
-              }}
-            >
-              Previous
-            </Button>
-
-            <Button
-              variant="contained"
-              endIcon={<ArrowForwardIcon />}
-              onClick={handleNext}
-              disabled={currentIndex === testWritings.length - 1}
-              sx={{
-                backgroundColor: "#1B5E20",
-                color: "white",
-                padding: "10px 20px",
-                fontWeight: "bold",
-              }}
-            >
-              Next
-            </Button>
-          </Stack>
+        <Button
+          variant="contained"
+          endIcon={<ArrowForwardIcon />}
+          onClick={handleNext}
+          disabled={currentIndex === testWritings.length - 1}
+          sx={{
+            backgroundColor: "#1B5E20",
+            color: "white",
+            px: { xs: 2, sm: 3 },
+            py: { xs: 0.8, sm: 1 },
+            fontSize: { xs: "0.75rem", sm: "0.9rem" },
+            fontWeight: "bold",
+            minWidth: "120px",
+          }}
+        >
+          Next
+        </Button>
+      </Stack>
         </Box>
       </StyledPaper>
+
+      
     </Box>
   );
 }

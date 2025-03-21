@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Box, Typography, Button, Stack, Fab, Grid } from "@mui/material";
+import { Box, Typography, Button, Stack, Fab, Grid, useMediaQuery } from "@mui/material";
 import MicNoneIcon from "@mui/icons-material/MicNone";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { TestSpeaking, Question } from "interfaces";
 import { testService } from "features/test/services/testServices";
 import TestSpeakingQuestionGrid from "./TestSpeakingQuestionGrid"; 
-
+import useColor from "theme/useColor";
 interface SpeakingTestProps {
   testSpeakings: TestSpeaking[];
 }
@@ -20,7 +20,8 @@ export default function SpeakingTest({ testSpeakings }: SpeakingTestProps) {
   const [audioURL, setAudioURL] = useState<string>("");
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunks = useRef<Blob[]>([]);
-
+  const isMobile = useMediaQuery((theme: any) => theme.breakpoints.down("sm"));
+  const color = useColor();
   useEffect(() => {
     async function fetchQuestions() {
       try {
@@ -52,8 +53,8 @@ export default function SpeakingTest({ testSpeakings }: SpeakingTestProps) {
 
   return (
     <Box sx={{ margin: "5%", p: 2 }}>
-      <Grid container spacing={2}>
-        <Grid item xs={9}>
+      <Grid container spacing={2} direction={isMobile ? "column-reverse" : "row"}>
+        <Grid item xs={12} sm={9}>
           <Stack
             direction="column"
             spacing={2}
@@ -72,17 +73,13 @@ export default function SpeakingTest({ testSpeakings }: SpeakingTestProps) {
               <Typography sx={{ textAlign: "center", color: "red" }}>Cannot load data. Try again.</Typography>
             ) : (
               <>
-              <Typography variant="h5" sx={{ 
-                px: 4, 
-                fontWeight: "bold", 
-                alignSelf: "flex-start"
-              }}>
-                Question {currentIndex+1}
-              </Typography>
-              <Typography variant="h5" sx={{ textAlign: "center", px: 4, fontWeight: "bold" }}>
-                {currentQuestion?.content || "No content available"}
-              </Typography>
-            </>
+                <Typography variant="h5" sx={{ px: 4, fontWeight: "bold", alignSelf: "flex-start" }}>
+                  Question {currentIndex + 1}
+                </Typography>
+                <Typography variant="h5" sx={{ textAlign: "center", px: 4, fontWeight: "bold" }}>
+                  {currentQuestion?.content || "No content available"}
+                </Typography>
+              </>
             )}
 
             <Box sx={{ position: "relative", mt: 3 }}>
@@ -112,9 +109,13 @@ export default function SpeakingTest({ testSpeakings }: SpeakingTestProps) {
                     console.error("Error accessing microphone:", error);
                   }
                 }}
-                sx={{ boxShadow: "0 2px 10px rgba(0,0,0,0.1)" }}
+                sx={{
+                  width: isMobile ? 48 : 56,
+                  height: isMobile ? 48 : 56,
+                  boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                }}
               >
-                <MicNoneIcon sx={{ fontSize: "3rem" }} />
+                <MicNoneIcon sx={{ fontSize: isMobile ? "2.5rem" : "3rem" }} />
               </Fab>
             </Box>
 
@@ -125,41 +126,28 @@ export default function SpeakingTest({ testSpeakings }: SpeakingTestProps) {
             )}
 
             <Stack direction="row" justifyContent="space-between" sx={{ width: "80%", marginTop: "20px" }}>
-              <Button
-                variant="contained"
-                startIcon={<ArrowBackIcon />}
-                onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
-                disabled={currentIndex === 0}
-                sx={{
-                  backgroundColor: "#1B5E20",
-                  color: "white",
-                  padding: "10px 20px",
-                  fontWeight: "bold",
-                  boxShadow: "2px 2px 5px rgba(0,0,0,0.2)",
-                }}
-              >
+              <Button   sx={{
+                    bgcolor: color.emerald400,
+                    "&:hover": {
+                      bgcolor: color.emerald500,
+                    },
+                  }} variant="contained" startIcon={<ArrowBackIcon />} onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))} disabled={currentIndex === 0}>
                 Previous
               </Button>
 
-              <Button
-                variant="contained"
-                endIcon={<ArrowForwardIcon />}
-                onClick={() => setCurrentIndex((prev) => Math.min(prev + 1, totalSpeakings - 1))}
-                disabled={currentIndex === totalSpeakings - 1}
-                sx={{
-                  backgroundColor: "#1B5E20",
-                  color: "white",
-                  padding: "10px 20px",
-                  fontWeight: "bold",
-                  boxShadow: "2px 2px 5px rgba(0,0,0,0.2)",
-                }}
-              >
+              <Button  
+                  sx={{
+                    bgcolor: color.emerald400,
+                    "&:hover": {
+                      bgcolor: color.emerald500,
+                    },
+                  }} variant="contained" endIcon={<ArrowForwardIcon />} onClick={() => setCurrentIndex((prev) => Math.min(prev + 1, totalSpeakings - 1))} disabled={currentIndex === totalSpeakings - 1}>
                 Next
               </Button>
             </Stack>
           </Stack>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={12} sm={3}>
           <TestSpeakingQuestionGrid testSpeakings={testSpeakings} />
         </Grid>
       </Grid>

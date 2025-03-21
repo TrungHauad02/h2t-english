@@ -17,7 +17,13 @@ export default function NavigationControls({
   const { isDarkMode } = useDarkMode();
 
   return (
-    <Stack direction="row" justifyContent="center" alignItems="center" spacing={2} sx={{ mb: 3 }}>
+    <Stack
+      direction="row"
+      justifyContent="center"
+      alignItems="center"
+      spacing={1.5} 
+      sx={{ mb: 2 }}
+    >
       <Button
         variant="contained"
         onClick={onPrevious}
@@ -26,8 +32,10 @@ export default function NavigationControls({
           backgroundColor: currentIndex === 0 ? (isDarkMode ? "#757575" : "#BDBDBD") : "#2E7D32",
           color: "white",
           fontWeight: "bold",
-          width: "140px",
-          py: 1,
+          minWidth: { xs: "90px", sm: "120px", md: "140px" }, 
+          fontSize: { xs: "0.7rem", sm: "0.9rem" }, 
+          py: { xs: 0.6, sm: 1 },
+          borderRadius: "8px",
           "&:hover": {
             backgroundColor: currentIndex === 0 ? (isDarkMode ? "#757575" : "#BDBDBD") : "#1B5E20",
           },
@@ -38,16 +46,17 @@ export default function NavigationControls({
 
       <Box
         sx={{
-          px: 3,
-          py: 1,
-          bgcolor: isDarkMode ? "#4E342E" : "#D7CCC8",
-          color: isDarkMode ? "#FFF" : "#3E2723",
-          borderRadius: 1,
+          px: { xs: 2, sm: 3 },
+          py: { xs: 0.6, sm: 1 },
+          fontSize: { xs: "0.8rem", sm: "1rem" },
+          bgcolor: isDarkMode ? "#424242" : "#EFEFEF",
+          color: isDarkMode ? "#FFF" : "#333",
+          borderRadius: "6px",
           fontWeight: "bold",
           textAlign: "center",
-          width: "80px",
+          minWidth: "65px", 
           border: `1px solid ${isDarkMode ? "#5D4037" : "#A1887F"}`,
-          boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
+          boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
         }}
       >
         {`${currentIndex + 1}/${totalItems}`}
@@ -61,8 +70,10 @@ export default function NavigationControls({
           backgroundColor: currentIndex === totalItems - 1 ? (isDarkMode ? "#757575" : "#BDBDBD") : "#2E7D32",
           color: "white",
           fontWeight: "bold",
-          width: "140px",
-          py: 1,
+          minWidth: { xs: "90px", sm: "120px", md: "140px" },
+          fontSize: { xs: "0.7rem", sm: "0.9rem" }, 
+          py: { xs: 0.6, sm: 1 },
+          borderRadius: "8px",
           "&:hover": {
             backgroundColor: currentIndex === totalItems - 1 ? (isDarkMode ? "#757575" : "#BDBDBD") : "#1B5E20",
           },
