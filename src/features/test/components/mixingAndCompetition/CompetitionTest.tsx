@@ -11,7 +11,7 @@ import { testService } from "features/test/services/testServices";
 import TestQuestionGrid from "./TestQuestionGrid";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-
+import IntroducePartTest from "./InroducePartTest"
 interface CompetitionTestProps {
   competitionTestParts: TestPart[];
 }
@@ -68,6 +68,7 @@ const CompetitionTest: React.FC<CompetitionTestProps> = ({ competitionTestParts 
           activeTab={activeTab.toLowerCase()}
           onTabChange={(newTab) => setActiveTab(newTab.toUpperCase() as TestPartTypeEnum)}
         />
+        <IntroducePartTest type={activeTab} /> 
         {activeTab === TestPartTypeEnum.VOCABULARY || activeTab === TestPartTypeEnum.GRAMMAR ? (
           <VocabularyAndGrammarPart testParts={competitionTestParts} startSerial={startSerial} type={activeTab} />
         ) : activeTab === TestPartTypeEnum.READING ? (

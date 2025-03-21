@@ -11,6 +11,7 @@ import { testService } from "features/test/services/testServices";
 import TestQuestionGrid from "./TestQuestionGrid";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
+import IntroducePartTest from "./InroducePartTest"
 
 interface MixingTestProps {
   mixingTestParts: TestPart[];
@@ -67,6 +68,7 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
           activeTab={activeTab.toLowerCase()}
           onTabChange={(newTab) => setActiveTab(newTab.toUpperCase() as TestPartTypeEnum)}
         />
+        <IntroducePartTest type={activeTab} /> 
         {activeTab === TestPartTypeEnum.VOCABULARY || activeTab === TestPartTypeEnum.GRAMMAR ? (
           <VocabularyAndGrammarPart testParts={mixingTestParts} startSerial={startSerial} type={activeTab} />
         ) : activeTab === TestPartTypeEnum.READING ? (
