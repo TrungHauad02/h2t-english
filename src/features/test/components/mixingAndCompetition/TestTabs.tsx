@@ -27,6 +27,7 @@ export default function TestTabs({ activeTab, onTabChange }: TestTabsProps) {
       sx={{
         p: 1,
         borderRadius: "8px",
+     
       }}
     >
       <Tabs
@@ -41,9 +42,8 @@ export default function TestTabs({ activeTab, onTabChange }: TestTabsProps) {
             textTransform: "none",
             fontWeight: "bold",
             borderRadius: "8px",
-            mx: { xs: 0.2, sm: 0.5 },
-            fontSize: { xs: "0.75rem", sm: "0.9rem" },
-            minWidth: { xs: "auto", sm: 120 },
+            fontSize: { xs: "0.6rem", sm: "0.7rem", md: "1rem" },
+   
             "&:hover": {
               bgcolor: isDarkMode ? color.gray700 : "#D9ECE8",
             },
@@ -52,6 +52,7 @@ export default function TestTabs({ activeTab, onTabChange }: TestTabsProps) {
               color: "white",
             },
           },
+          
         }}
       >
         {tabs.map((tab) => (

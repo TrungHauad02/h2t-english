@@ -1,4 +1,4 @@
-import { Box, Stack, Typography, Button } from "@mui/material";
+import { Box, Stack, Typography, Button, useMediaQuery } from "@mui/material";
 import { useState, useEffect } from "react";
 import { TestListening } from "interfaces";
 import { testService } from "features/test/services/testServices";
@@ -16,6 +16,8 @@ export default function ListeningTest({ testListenings }: ListeningTestProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  const isMobile = useMediaQuery((theme: any) => theme.breakpoints.down("sm"));
+
   useEffect(() => {
     async function fetchQuestions() {
       try {
@@ -25,7 +27,6 @@ export default function ListeningTest({ testListenings }: ListeningTestProps) {
         const fetchedQuestions = await Promise.all(
           testListenings.map(async (listening) => {
             const questions = await testService.getQuestionsByIds(listening.questions);
-
             const startSerial = currentSerial;
             currentSerial += questions.length;
             return {
@@ -63,27 +64,35 @@ export default function ListeningTest({ testListenings }: ListeningTestProps) {
   };
 
   return (
-    <Box sx={{  p: 2 ,marginRight:'5%',marginLeft:"5%"}}>
-        <TimeRemaining />
-        <NavigationControls currentIndex={currentIndex} totalItems={totalListenings} onPrevious={handlePrevious} onNext={handleNext} />
+    <Box sx={{ p: 2, marginX: "5%" }}>
+       <TimeRemaining />
+      <NavigationControls currentIndex={currentIndex} totalItems={totalListenings} onPrevious={handlePrevious} onNext={handleNext} />
+
       {loading ? (
         <Typography sx={{ textAlign: "center", mt: 5 }}>Loading...</Typography>
       ) : error ? (
         <Typography sx={{ textAlign: "center", mt: 5, color: "red" }}>Cannot load data. Try again</Typography>
       ) : (
         currentListening && (
-          <Stack direction="column" spacing={2} sx={{ width: "100%", height: "70vh", border: "1px solid #ccc", borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{  p: 2,  }}>
-            <Typography variant="h5" sx={{  fontWeight: "bold" }}>
+          <Stack
+            direction="column"
+            spacing={2}
+            sx={{
+              width: "100%",
+              height: { xs: "auto", sm: "70vh" },
+              border: "1px solid #ccc",
+              borderRadius: 2,
+              overflow: "hidden",
+            }}
+          >
+            <Box sx={{ p: 2 }}>
+              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                 Questions {currentListening.startSerial} - {currentListening.endSerial}
               </Typography>
-
               <audio autoPlay hidden>
                 <source src={currentListening.audio} type="audio/mpeg" />
               </audio>
             </Box>
-
-         
 
             <Box sx={{ width: "100%", p: 2, overflowY: "auto" }}>
               <AnswerQuestionSection questions={currentListening.questions} startSerial={currentListening.startSerial} />

@@ -63,7 +63,7 @@ const CompetitionTest: React.FC<CompetitionTestProps> = ({ competitionTestParts 
 
   return (
     <Grid container spacing={2} sx={{ p: 3 }}>
-      <Grid item xs={12} md={9}>
+      <Grid item xs={9} sm={8} md={9} lg={8}>
         <TestTabs
           activeTab={activeTab.toLowerCase()}
           onTabChange={(newTab) => setActiveTab(newTab.toUpperCase() as TestPartTypeEnum)}
@@ -80,26 +80,30 @@ const CompetitionTest: React.FC<CompetitionTestProps> = ({ competitionTestParts 
           <WritingPart testParts={competitionTestParts} startSerial={startSerial} />
         ) : null}
       </Grid>
-      <Grid item xs={12} md={3}>
-        <Box
-          sx={{
-            p: 2,
-            border: "2px solid",
-            borderColor: isDarkMode ? color.gray700 : "#ccc",
-            borderRadius: "10px",
-            bgcolor: isDarkMode ? color.gray900 : "#f9f9f9",
-            textAlign: "center",
-            mb: 2,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <Typography variant="h6" sx={{ color: isDarkMode ? color.gray200 : "black" }}>
-            Time remaining: 
-          </Typography>
-        </Box>
-        <TestQuestionGrid questionCounts={questionCounts} />
+      <Grid item xs={3} sm={4} md={3} lg={4}>
+      <Box
+            sx={{
+              p: { xs: 1.5, sm: 2 },
+              mx: "auto",
+              border: "2px solid",
+              borderColor: isDarkMode ? color.gray700 : "#ccc",
+              borderRadius: "10px",
+              bgcolor: isDarkMode ? color.gray900 : "#f9f9f9",
+              textAlign: "center",
+              mb: 2,
+              maxWidth: { md: "40%"},
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              fontSize: {xs: "0.6rem", sm: "0.7rem", md: "1rem",lg:'1.2rem' },
+
+            }}
+          >
+            <Typography  sx={{ fontSize: {xs: "0.6rem", sm: "0.7rem", md: "1rem",lg:'1.2rem' },color: isDarkMode ? color.gray200 : "black" }}>
+              Time remaining: 
+            </Typography>
+          </Box>
+          <TestQuestionGrid questionCounts={questionCounts} />
       </Grid>
     </Grid>
   );

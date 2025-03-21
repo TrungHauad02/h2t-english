@@ -28,7 +28,7 @@ export default function CompetitionTestPage() {
   const competitionTestParts = testService.getTestPartsByIds(competitionTest.parts);
 
   return (
-    <Box sx={{ mt: 8 }}>
+    <Box sx={{ mt: 8 ,width:"100%" }}>
       <MainPictureSection siteInfo={siteInfo} />
       <CompetitionTest competitionTestParts={competitionTestParts} />
     </Box>

@@ -16,15 +16,15 @@ const TestQuestionGrid: React.FC<TestQuestionGridProps> = ({ questionCounts }) =
   return (
     <Box
       sx={{
-        p: { xs: 1.5, sm: 2 },
+        p: { xs: 0.5, sm: 2 },
         border: "2px solid",
         borderColor: isDarkMode ? color.gray700 : "#ccc",
         borderRadius: "10px",
         bgcolor: isDarkMode ? color.gray900 : "#f9f9f9",
         textAlign: "center",
-        width: { xs: "95%", sm: "80%", md: "250px" },
-        maxWidth: "300px",
+        maxWidth: { md: "40%"},
         mx: "auto",
+        fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
       }}
     >
       {Object.entries(questionCounts).map(([section, count]) => (
@@ -35,7 +35,7 @@ const TestQuestionGrid: React.FC<TestQuestionGridProps> = ({ questionCounts }) =
               fontWeight: "bold",
               textAlign: "center",
               mb: { xs: 1, sm: 1.5 },
-              fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
+              fontSize: { xs: "0.7rem", sm: "0.9rem", md: "1rem" },
               color: isDarkMode ? color.gray200 : "black",
             }}
           >
@@ -47,7 +47,7 @@ const TestQuestionGrid: React.FC<TestQuestionGridProps> = ({ questionCounts }) =
                 item
                 key={serial}
                 sx={{
-                  flexBasis: { xs: "22%", sm: "18%", md: "16%" },
+                  flexBasis: { xs: "15%", sm: "18%", md: "16%" },
                   display: "flex",
                   justifyContent: "center",
                 }}
@@ -56,9 +56,9 @@ const TestQuestionGrid: React.FC<TestQuestionGridProps> = ({ questionCounts }) =
                   sx={{
                     border: "1px solid",
                     borderColor: isDarkMode ? color.gray600 : "black",
-                    padding: { xs: 0.3, sm: 0.6 },
-                    minWidth: { xs: 20, sm: 24, md: 28 },
-                    minHeight: { xs: 20, sm: 24, md: 28 },
+                    padding: { xs: 0.1, sm: 0.6 },
+                    minWidth: { xs: 15, sm: 24, md: 28 },
+                    minHeight: { xs: 15, sm: 24, md: 28 },
                     alignItems: "center",
                     justifyContent: "center",
                     fontSize: { xs: "0.75rem", sm: "0.85rem" },
@@ -79,7 +79,7 @@ const TestQuestionGrid: React.FC<TestQuestionGridProps> = ({ questionCounts }) =
         sx={{
           width: "100%",
           mt: { xs: 1.5, sm: 2 },
-          fontSize: { xs: "0.9rem", sm: "1rem" },
+          fontSize: { xs: "0.6rem", sm: "1rem" },
           py: { xs: 0.4, sm: 0.6 },
           bgcolor: color.emerald400,
           "&:hover": {
