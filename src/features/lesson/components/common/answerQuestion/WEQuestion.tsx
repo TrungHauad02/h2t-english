@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { alpha, Box, Paper, Typography } from "@mui/material";
 import { WEExplain } from "components/display";
 import { WERadioGroup } from "components/input";
 import { useDarkMode } from "hooks/useDarkMode";
@@ -23,40 +23,77 @@ export default function WEQuestion({
   }));
 
   return (
-    <Stack
+    <Paper
+      elevation={3}
       sx={{
-        mt: 2,
-        boxShadow: 3,
-        borderRadius: 5,
-        bgcolor: isDarkMode ? color.gray800 : color.gray100,
+        mt: 3,
+        mb: 4,
+        borderRadius: 4,
+        overflow: "hidden",
+        bgcolor: isDarkMode ? alpha(color.gray800, 0.7) : color.gray50,
+        border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+        transition: "all 0.3s ease",
+        "&:hover": {
+          boxShadow: `0 8px 24px ${
+            isDarkMode ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.1)"
+          }`,
+        },
       }}
     >
-      <Typography variant="subtitle1" fontWeight={"bold"}>
+      {/* Question header */}
+      <Box
+        sx={{
+          p: 2,
+          borderBottom: `1px solid ${
+            isDarkMode ? color.gray700 : color.gray200
+          }`,
+          bgcolor: isDarkMode
+            ? alpha(color.gray700, 0.5)
+            : alpha(color.gray100, 0.7),
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
         <Box
           sx={{
-            display: "inline-flex",
+            display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            borderRadius: "50% 0 0 0",
-            width: 60,
+            borderRadius: "50%",
+            width: 40,
             height: 40,
             mr: 2,
-            bgcolor: color.emerald400,
+            bgcolor: isDarkMode ? color.emerald600 : color.emerald400,
+            color: isDarkMode ? color.gray100 : color.white,
+            fontWeight: "bold",
+            flexShrink: 0,
           }}
         >
           {question.serial}
-        </Box>{" "}
-        {question.content}
-      </Typography>
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        justifyContent={"space-between"}
-      >
-        <Stack sx={{ ml: { xs: 4, sm: 6 }, my: 1, width: "100%" }}>
-          <WERadioGroup name={question.id} options={options} />
-        </Stack>
-        {isShowExplain && <WEExplain text={question.explanation} />}
-      </Stack>
-    </Stack>
+        </Box>
+
+        <Typography
+          variant={"h6"}
+          fontWeight="600"
+          sx={{
+            color: isDarkMode ? color.gray100 : color.gray900,
+            lineHeight: 1.4,
+          }}
+        >
+          {question.content}
+        </Typography>
+      </Box>
+
+      {/* Question content */}
+      <Box sx={{ p: 3 }}>
+        <WERadioGroup name={question.id} options={options} />
+
+        {isShowExplain && (
+          <Box sx={{ mt: 2 }}>
+            <WEExplain text={question.explanation} />
+          </Box>
+        )}
+      </Box>
+    </Paper>
   );
 }

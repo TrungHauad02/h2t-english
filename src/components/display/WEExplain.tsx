@@ -1,4 +1,4 @@
-import { Stack, SxProps, Theme, Typography } from "@mui/material";
+import { alpha, Box, Stack, SxProps, Theme, Typography } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 
@@ -12,18 +12,37 @@ export default function WEExplain({ text, sx }: WEExplainProps) {
   const color = useColor();
 
   const complexSx = {
-    m: 2,
-    p: 2,
-    borderRadius: 4,
-    width: { xs: "80%", sm: "100%" },
+    my: 3,
+    p: 3,
+    borderRadius: 3,
+    borderLeft: `6px solid ${isDarkMode ? color.emerald400 : color.emerald500}`,
+    width: "100%",
+    bgcolor: isDarkMode
+      ? alpha(color.teal800, 0.5)
+      : alpha(color.emerald100, 0.7),
     ...sx,
-    bgcolor: isDarkMode ? color.teal800 : color.emerald200,
   };
 
   return (
     <Stack sx={complexSx}>
-      <Typography variant="subtitle1">
-        <span style={{ fontWeight: "bold" }}>Explain:</span> {text}
+      <Typography variant="subtitle1" sx={{ lineHeight: 1.6 }}>
+        <Box
+          component="span"
+          sx={{
+            fontWeight: "bold",
+            color: isDarkMode ? color.emerald300 : color.emerald700,
+            display: "block",
+            mb: 1,
+          }}
+        >
+          Explanation:
+        </Box>
+        <Box
+          component="span"
+          sx={{ color: isDarkMode ? color.gray200 : color.gray800 }}
+        >
+          {text}
+        </Box>
       </Typography>
     </Stack>
   );
