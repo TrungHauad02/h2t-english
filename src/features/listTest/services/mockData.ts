@@ -29,8 +29,8 @@ const competitionTests: CompetitionTest[] = [
     title: "English Championship 2025",
     duration: 120,
     totalQuestions: 50,
-    startTime: new Date("2025-04-01T10:00:00"),
-    endTime: new Date("2025-04-01T12:00:00"),
+    startTime: new Date("2025-03-01T10:00:00"),
+    endTime: new Date("2025-03-01T12:00:00"),
     parts: [1, 2, 3],
   },
   {
@@ -41,8 +41,8 @@ const competitionTests: CompetitionTest[] = [
     title: "Advanced Listening Competition",
     duration: 60,
     totalQuestions: 50,
-    startTime: new Date("2025-04-02T14:00:00"),
-    endTime: new Date("2025-04-02T15:00:00"),
+    startTime: new Date("2025-03-22T14:00:00"),
+    endTime: new Date("2025-03-23T15:00:00"),
     parts: [4],
   },
   {
