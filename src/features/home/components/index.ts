@@ -7,3 +7,7 @@ export { default as RoutesSection } from "./RoutesSection";
 export { default as TestimonialsSection } from "./TestimonialsSection";
 export { default as TestsSection } from "./TestsSection";
 export { default as ToeicSection } from "./ToeicSection";
+export { default as HeroSectionTitle } from "../components/HeroSection/HeroSectionTitle";
+export { default as HeroSectionButtons } from "../components/HeroSection/HeroSectionButtons";
+export { default as HeroSectionImage } from "../components/HeroSection/HeroSectionImage";
+export { default as HeroSectionInfo } from "../components/HeroSection/HeroSectionInfo";
