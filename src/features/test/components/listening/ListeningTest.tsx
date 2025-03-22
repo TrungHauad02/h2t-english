@@ -1,11 +1,12 @@
-import { Box, Stack, Typography, Button, useMediaQuery } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import { TestListening } from "interfaces";
 import { testService } from "features/test/services/testServices";
 import AnswerQuestionSection from "../common/answerQuestion/AnswerQuestionSection";
 import NavigationControls from "../common/NavigationControls";
+import TestInstruction from "../common/TestInstruction";
 import TimeRemaining from "../common/TimeRemaining";
-
+import SubmitTestButton from "../common/SubmitTestButton"; 
 interface ListeningTestProps {
   testListenings: TestListening[];
 }
@@ -15,8 +16,6 @@ export default function ListeningTest({ testListenings }: ListeningTestProps) {
   const [questionsList, setQuestionsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-
-  const isMobile = useMediaQuery((theme: any) => theme.breakpoints.down("sm"));
 
   useEffect(() => {
     async function fetchQuestions() {
@@ -65,6 +64,7 @@ export default function ListeningTest({ testListenings }: ListeningTestProps) {
 
   return (
     <Box sx={{ p: 2, marginX: "5%" }}>
+      <TestInstruction type="listening" />
        <TimeRemaining />
       <NavigationControls currentIndex={currentIndex} totalItems={totalListenings} onPrevious={handlePrevious} onNext={handleNext} />
 
@@ -96,16 +96,14 @@ export default function ListeningTest({ testListenings }: ListeningTestProps) {
 
             <Box sx={{ width: "100%", p: 2, overflowY: "auto" }}>
               <AnswerQuestionSection questions={currentListening.questions} startSerial={currentListening.startSerial} />
+              <SubmitTestButton />
             </Box>
           </Stack>
+       
         )
       )}
 
-      <Stack direction="row" justifyContent="center" sx={{ mt: 3 }}>
-        <Button variant="contained" sx={{ backgroundColor: "#2E7D32", color: "white", width: "200px", fontWeight: "bold", fontSize: "16px" }}>
-          SUBMIT
-        </Button>
-      </Stack>
+ 
     </Box>
   );
 }

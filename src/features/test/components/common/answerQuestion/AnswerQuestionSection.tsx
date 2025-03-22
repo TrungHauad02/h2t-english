@@ -26,7 +26,7 @@ export default function AnswerQuestion({ questions, startSerial = 1 }: AnswerQue
         mb: 2,
         borderBottom: `1px solid ${isDarkMode ? color.gray400 : color.gray600}`,
         fontSize: {xs: "0.6rem", sm: "0.7rem", md: "1rem" },
-    p: { xs: 1, sm: 1.5 },
+    p: { xs: 1, sm: 1.2 },
 
       }}
     >

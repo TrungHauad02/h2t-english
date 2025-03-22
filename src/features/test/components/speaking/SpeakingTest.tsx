@@ -6,6 +6,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { TestSpeaking, Question } from "interfaces";
 import { testService } from "features/test/services/testServices";
 import TestSpeakingQuestionGrid from "./TestSpeakingQuestionGrid"; 
+import TestInstruction from "../common/TestInstruction";
 import useColor from "theme/useColor";
 interface SpeakingTestProps {
   testSpeakings: TestSpeaking[];
@@ -53,6 +54,7 @@ export default function SpeakingTest({ testSpeakings }: SpeakingTestProps) {
 
   return (
     <Box sx={{ margin: "5%", p: 2 }}>
+      <TestInstruction type="speaking" />
       <Grid container spacing={2} direction={isMobile ? "column-reverse" : "row"}>
         <Grid item xs={12} sm={9}>
           <Stack

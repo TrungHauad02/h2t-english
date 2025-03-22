@@ -12,9 +12,10 @@ export default function TimeRemaining() {
       sx={{
         p: 2,
         borderRadius: "12px",
+        maxWidth: { xs:"60%"},
         bgcolor: isDarkMode ? color.emerald600 : color.emerald100,
         display: "flex",
-        maxWidth: { xs:"60%",sm:"30%"},
+        mx: { sm:"auto" },
         alignItems: "center",
         justifyContent: "flex-start",
         gap: 1.5,
