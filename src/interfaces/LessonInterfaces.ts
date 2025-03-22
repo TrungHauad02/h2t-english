@@ -52,6 +52,7 @@ export interface Topic extends Lesson {
 export interface Grammar extends Lesson {
   definition: string;
   example: string;
+  tips: string[];
   file: string;
   questions: number[];
 }
