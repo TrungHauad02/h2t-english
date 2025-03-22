@@ -5,7 +5,7 @@ import { StyledAppBar } from "./common";
 
 const MENU_ITEMS = [
   { path: "/", label: "Home" },
-  { path: "/route", label: "Route" },
+  { path: "/routes", label: "Route" },
   {
     path: "/lesson",
     label: "Lesson",

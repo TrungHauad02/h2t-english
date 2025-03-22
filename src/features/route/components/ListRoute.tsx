@@ -66,7 +66,7 @@ export default function ListRoute({ searchQuery = "" }: ListRouteProps) {
   }, [searchQuery]);
 
   const handleViewDetail = (routeId: number) => {
-    navigate(`/route/${routeId}`);
+    navigate(`/routes/${routeId}`);
   };
 
   // Helper function to determine difficulty level color
