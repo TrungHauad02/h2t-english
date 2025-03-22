@@ -85,6 +85,8 @@ const routeData: Route[] = [
     description: "Description of Route 1",
     routeNodes: routeNodeData,
     ownerId: 1,
+    createdAt: new Date(),
+    updatedAt: new Date(),
   },
   {
     id: 2,
@@ -94,6 +96,8 @@ const routeData: Route[] = [
     description: "Description of Route 2",
     routeNodes: routeNodeData,
     ownerId: 1,
+    createdAt: new Date(),
+    updatedAt: new Date(),
   },
 ];
 const mockTeacher: User = {
