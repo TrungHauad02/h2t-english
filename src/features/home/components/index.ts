@@ -1,0 +1,9 @@
+export { default as CompetitionsSection } from "./CompetitionsSection";
+export { default as FeaturesSection } from "./FeaturesSection";
+export { default as HeroSection } from "./HeroSection";
+export { default as LeaderboardSection } from "./LeaderboardSection";
+export { default as LessonsSection } from "./LessonsSection";
+export { default as RoutesSection } from "./RoutesSection";
+export { default as TestimonialsSection } from "./TestimonialsSection";
+export { default as TestsSection } from "./TestsSection";
+export { default as ToeicSection } from "./ToeicSection";
