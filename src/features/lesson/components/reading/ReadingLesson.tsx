@@ -1,5 +1,5 @@
 import { Reading } from "interfaces";
-import { Box } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import { CollapsibleSection } from "components/sections";
 import PreparationSection from "../common/preparation/PreparationSection";
 import WEDocumentViewer from "components/display/document/WEDocumentViewer";
@@ -12,11 +12,13 @@ export default function ReadingLesson({ lesson }: { lesson: Reading }) {
         <PreparationSection />
       </CollapsibleSection>
       <CollapsibleSection text="Reading Document">
-        <WEDocumentViewer
-          fileUrl={"/document.docx"}
-          lineHeight="2"
-          sx={{ my: 2 }}
-        />
+        <Container maxWidth="lg">
+          <WEDocumentViewer
+            fileUrl={"/document.docx"}
+            lineHeight="2"
+            sx={{ my: 2 }}
+          />
+        </Container>
       </CollapsibleSection>
       <CollapsibleSection text="Reading Quiz">
         <AnswerQuestionSection />
