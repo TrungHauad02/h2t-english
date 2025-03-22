@@ -15,7 +15,8 @@ export default function ListCompetitionTest() {
     { label: "20", value: 20 },
   ];
 
-  const listCompetitionTest: CompetitionTest[] = listCompetitionTestService.getListCompetitionTest() || [];
+  const listCompetitionTest: CompetitionTest[] =
+    listCompetitionTestService.getListCompetitionTest() || [];
 
   const handleChangePage = (
     event: React.ChangeEvent<unknown>,
@@ -35,7 +36,7 @@ export default function ListCompetitionTest() {
   );
 
   return (
-    <Box sx={{ mx: 4 }}>
+    <Box sx={{ mx: 4, mt: 2 }}>
       <Grid container spacing={3}>
         {paginatedTests.map((test) => (
           <CompetitionTestItem test={test} key={test.id} />
