@@ -20,6 +20,7 @@
     "mammoth": "^1.9.0",
     "react": "^19.0.0",
     "react-card-flip": "^1.2.3",
+    "react-countup": "^6.5.3",
     "react-dom": "^19.0.0",
     "react-mic": "^12.4.6",
     "react-redux": "^9.2.0",
