@@ -26,6 +26,7 @@ export default function HomePage() {
         flexDirection: "column",
         bgcolor: isDarkMode ? color.gray900 : color.gray100,
         color: isDarkMode ? color.white : color.black,
+        overflowX: "hidden",
       }}
     >
       <StudentHeader />
