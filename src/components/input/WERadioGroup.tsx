@@ -23,6 +23,7 @@ interface WERadioGroupProps {
   }[];
   size?: "small" | "medium";
   onChange?: (value: string | number) => void;
+  disabled?: boolean;
 }
 
 export default function WERadioGroup({
@@ -31,6 +32,7 @@ export default function WERadioGroup({
   options,
   size,
   onChange,
+  disabled = false,
 }: WERadioGroupProps) {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
@@ -68,6 +70,7 @@ export default function WERadioGroup({
         value={selectedAnswer?.answerId?.toString() || ""}
         name={name.toString()}
         onChange={handleChange}
+        
       >
         {options.map((option) => (
           <FormControlLabel
@@ -99,6 +102,7 @@ export default function WERadioGroup({
                     color: isDarkMode ? color.emerald300 : color.emerald500,
                   },
                 }}
+                disabled={disabled}
               />
             }
             label={

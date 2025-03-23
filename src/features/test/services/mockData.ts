@@ -15,6 +15,7 @@ import {
 const questions: Question[] = Array.from({ length: 300 }, (_, i) => ({
   id: i + 1,
   content: `Question ${i + 1}`,
+  explanation:"1",
   answers: Array.from({ length: 4 }, (_, j) => ({
     id: i * 4 + j + 1,
     content: `Answer ${j + 1} for question ${i + 1}`,

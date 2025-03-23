@@ -23,24 +23,23 @@ const TestSpeakingQuestionGrid: React.FC<Props> = ({
   const [questionsList, setQuestionsList] = useState<Question[]>([]);
 
   useEffect(() => {
-    const fetchQuestions = async () => {
+    async function fetchQuestions() {
       try {
-        const questionPromises = testSpeakings.flatMap((s) =>
-          testService.getQuestionsByIds(s.questions)
+        const fetched = await Promise.all(
+          testSpeakings.flatMap((s) => testService.getQuestionsByIds(s.questions))
         );
-        const fetchedQuestions = await Promise.all(questionPromises);
-        setQuestionsList(fetchedQuestions.flat());
-      } catch (error) {
-        console.error("Failed to fetch questions", error);
-      }
-    };
+        setQuestionsList(fetched.flat());
+      } catch {}
+    }
 
     fetchQuestions();
   }, [testSpeakings]);
 
-  const isAnswered = (questionId: number) => {
-    const submit = submitSpeakings.find((s) => s.question_id === questionId);
-    return Boolean(submit && submit.transcript?.trim());
+  const getColor = (index: number) => {
+    const question = questionsList[index];
+    const answer = submitSpeakings.find((s) => s.question_id === question?.id);
+    if (!answer || !answer.transcript?.trim()) return color.red500;
+    return color.emerald500;
   };
 
   return (
@@ -55,22 +54,20 @@ const TestSpeakingQuestionGrid: React.FC<Props> = ({
         width: "100%",
       }}
     >
-      <Grid container spacing={1}>
-        {questionsList.map((question, index) => (
-          <Grid item key={question.id} xs={2}>
+      <Grid container spacing={1} justifyContent="center">
+        {questionsList.map((_, index) => (
+          <Grid item key={index} xs={2} >
             <Stack
               onClick={() => onSelect(index)}
               sx={{
                 border: "1px solid",
-                padding: 0.5,
-                minWidth: 24,
-                minHeight: 24,
+                p: 0.5,
+                minWidth: 32,
+                minHeight: 32,
                 alignItems: "center",
                 justifyContent: "center",
                 cursor: "pointer",
-                bgcolor: isAnswered(question.id)
-                  ? color.emerald500
-                  : color.red500,
+                bgcolor: getColor(index),
                 color: "white",
                 fontWeight: "bold",
                 boxShadow:
@@ -78,6 +75,7 @@ const TestSpeakingQuestionGrid: React.FC<Props> = ({
                     ? `0 0 0 2px ${color.emerald300}`
                     : undefined,
                 transition: "0.2s",
+               
               }}
             >
               {index + 1}

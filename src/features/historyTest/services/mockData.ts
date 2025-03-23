@@ -12,6 +12,9 @@ import {
   SubmitCompetition,
   TestTypeEnum,
   TestPartTypeEnum,
+  SubmitTestAnswer,
+  SubmitTestSpeaking,
+  SubmitTestWriting,
 } from "interfaces";
 
 const test: Test[] = [
@@ -383,6 +386,7 @@ const question: Question[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     content: "What is the capital of France?",
+    explanation:"1",
     answers: [
       { id: 1, status: true, content: "Paris", correct: true },
       { id: 2, status: true, content: "London", correct: false },
@@ -395,6 +399,7 @@ const question: Question[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     content: "Which language is spoken in Brazil?",
+    explanation:"1",
     answers: [
       { id: 1, status: true, content: "Portuguese", correct: true },
       { id: 2, status: true, content: "Spanish", correct: false },
@@ -407,6 +412,7 @@ const question: Question[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     content: "What is 5 + 5?",
+    explanation:"1",
     answers: [
       { id: 1, status: true, content: "10", correct: true },
       { id: 2, status: true, content: "12", correct: false },
@@ -419,6 +425,7 @@ const question: Question[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     content: "Who wrote 'Romeo and Juliet'?",
+    explanation:"1",
     answers: [
       { id: 1, status: true, content: "William Shakespeare", correct: true },
       { id: 2, status: true, content: "Charles Dickens", correct: false },
@@ -431,6 +438,7 @@ const question: Question[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     content: "What is the largest planet in our solar system?",
+    explanation:"1",
     answers: [
       { id: 1, status: true, content: "Jupiter", correct: true },
       { id: 2, status: true, content: "Earth", correct: false },
@@ -592,6 +600,56 @@ const submitCompetition: SubmitCompetition[] = [
     score: 78,
   },
 ];
+const submitTestAnswer: SubmitTestAnswer[] = [
+  {
+    id: 1,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitTest_id: 1,
+    question_id: 1,
+    answer_id: 1,
+  },
+  {
+    id: 2,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitTest_id: 1,
+    question_id: 2,
+    answer_id: 1,
+  },
+];
+
+const submitTestSpeaking: SubmitTestSpeaking[] = [
+  {
+    id: 1,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    file: "1",
+    submitTest_id: 1,
+    question_id: 16,
+    transcript: "I like to travel to the mountains during holidays.",
+    score: 4,
+    comment: "Clear and fluent response."
+  },
+];
+
+const submitTestWriting: SubmitTestWriting[] = [
+  {
+    id: 1,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitTest_id: 1,
+    testWriting_id: 1,
+    content: "My favorite holiday is Lunar New Year because...",
+    score: 7,
+    comment: "Good structure and ideas. Some grammar mistakes."
+  },
+];
+
 
 export const mockData = {
   test,
@@ -605,4 +663,7 @@ export const mockData = {
   submitTest,
   submitToeic,
   submitCompetition,
+  submitTestAnswer,
+  submitTestSpeaking,
+  submitTestWriting,
 };

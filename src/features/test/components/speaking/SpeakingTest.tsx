@@ -150,8 +150,13 @@ export default function SpeakingTest({ testSpeakings }: SpeakingTestProps) {
           </Stack>
         </Grid>
         <Grid item xs={12} sm={3}>
-          <TestSpeakingQuestionGrid testSpeakings={testSpeakings} />
-        </Grid>
+        <TestSpeakingQuestionGrid
+          testSpeakings={testSpeakings}
+          submitSpeakings={[]} 
+          currentIndex={currentIndex}
+          onSelect={(index) => setCurrentIndex(index)}
+        />
+      </Grid>
       </Grid>
     </Box>
   );
