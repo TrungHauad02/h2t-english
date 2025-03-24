@@ -1,12 +1,13 @@
-import { Box, Stack, Typography, Divider, Button, useMediaQuery } from "@mui/material";
+import { Box, Stack, Typography, Divider, useMediaQuery } from "@mui/material";
 import { useState, useEffect } from "react";
 import { TestReading } from "interfaces";
 import { testService } from "features/test/services/testServices";
 import WEDocumentViewer from "components/display/document/WEDocumentViewer";
 import AnswerQuestionSection from "../common/answerQuestion/AnswerQuestionSection";
+import TestInstruction from "../common/TestInstruction";
 import NavigationControls from "../common/NavigationControls";
 import TimeRemaining from "../common/TimeRemaining";
-
+import SubmitTestButton from "../common/SubmitTestButton"; 
 interface ReadingTestProps {
   testReadings: TestReading[];
 }
@@ -66,6 +67,7 @@ export default function ReadingTest({ testReadings }: ReadingTestProps) {
 
   return (
     <Box sx={{ width: "100%", p: { xs: 2, sm: 3 } }}>
+      <TestInstruction type="reading" />
       <TimeRemaining />
       <NavigationControls
         currentIndex={currentIndex}
@@ -102,24 +104,12 @@ export default function ReadingTest({ testReadings }: ReadingTestProps) {
 
             <Box sx={{ width: isMobile ? "100%" : "50%", p: 2, overflowY: "auto" }}>
               <AnswerQuestionSection questions={currentReading.questions} startSerial={currentReading.startSerial} />
+              <SubmitTestButton />
             </Box>
           </Stack>
         )
       )}
-      <Stack direction="row" justifyContent="center" sx={{ mt: 3 }}>
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: "#2E7D32",
-            color: "white",
-            width: "200px",
-            fontWeight: "bold",
-            fontSize: "16px",
-          }}
-        >
-          SUBMIT
-        </Button>
-      </Stack>
+      
     </Box>
   );
 }

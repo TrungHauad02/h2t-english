@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Box, Typography, Grid } from "@mui/material";
+import {Grid, useMediaQuery, useTheme } from "@mui/material";
 import TestTabs from "./TestTabs";
 import { TestPart, TestPartTypeEnum } from "interfaces";
 import VocabularyAndGrammarPart from "./vocabularyAndGrammarPart/VocabularyAndGrammarPart";
@@ -9,10 +9,9 @@ import SpeakingPart from "./speakingPart/SpeakingPart";
 import WritingPart from "./writingPart/WritingPart";
 import { testService } from "features/test/services/testServices";
 import TestQuestionGrid from "./TestQuestionGrid";
-import { useDarkMode } from "hooks/useDarkMode";
-import useColor from "theme/useColor";
-import IntroducePartTest from "./InroducePartTest"
-
+import IntroducePartTest from "./InroducePartTest";
+import TimeRemaining from "./TimeRemaining";
+import SubmitTestButton from "../common/SubmitTestButton"; 
 interface MixingTestProps {
   mixingTestParts: TestPart[];
 }
@@ -27,9 +26,11 @@ const tabOrder: TestPartTypeEnum[] = [
 ];
 
 const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
-  const { isDarkMode } = useDarkMode();
-  const color = useColor();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
   const [activeTab, setActiveTab] = useState<TestPartTypeEnum>(TestPartTypeEnum.VOCABULARY);
+
   const questionCounts = useMemo(() => {
     const counts: Record<TestPartTypeEnum, number> = {
       [TestPartTypeEnum.VOCABULARY]: 0,
@@ -62,13 +63,19 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
     .reduce((sum, type) => sum + questionCounts[type], 1);
 
   return (
-    <Grid container spacing={2}> 
-      <Grid item xs={9} sm={8} md={9} lg={8}>
-      <TestTabs
+    <Grid container spacing={2}>
+      {isSmallScreen && (
+        <Grid item xs={12}>
+           <TimeRemaining />
+        </Grid>
+      )}
+
+      <Grid item xs={12} sm={8} md={9} lg={8}>
+        <TestTabs
           activeTab={activeTab.toLowerCase()}
           onTabChange={(newTab) => setActiveTab(newTab.toUpperCase() as TestPartTypeEnum)}
         />
-        <IntroducePartTest type={activeTab} /> 
+        <IntroducePartTest type={activeTab} />
         {activeTab === TestPartTypeEnum.VOCABULARY || activeTab === TestPartTypeEnum.GRAMMAR ? (
           <VocabularyAndGrammarPart testParts={mixingTestParts} startSerial={startSerial} type={activeTab} />
         ) : activeTab === TestPartTypeEnum.READING ? (
@@ -80,32 +87,16 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
         ) : activeTab === TestPartTypeEnum.WRITING ? (
           <WritingPart testParts={mixingTestParts} startSerial={startSerial} />
         ) : null}
+          {isSmallScreen && (
+        <SubmitTestButton/>
+      )}
       </Grid>
-      <Grid item xs={3} sm={4} md={3} lg={4}>
-      <Box
-            sx={{
-              p: { xs: 1.5, sm: 2 },
-              mx: "auto",
-              border: "2px solid",
-              borderColor: isDarkMode ? color.gray700 : "#ccc",
-              borderRadius: "10px",
-              bgcolor: isDarkMode ? color.gray900 : "#f9f9f9",
-              textAlign: "center",
-              mb: 2,
-              maxWidth: { md: "40%"},
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              fontSize: {xs: "0.6rem", sm: "0.7rem", md: "1rem",lg:'1.2rem' },
-
-            }}
-          >
-            <Typography  sx={{ fontSize: {xs: "0.6rem", sm: "0.7rem", md: "1rem",lg:'1.2rem' },color: isDarkMode ? color.gray200 : "black" }}>
-              Time remaining: 
-            </Typography>
-          </Box>
+      {!isSmallScreen && (
+        <Grid item sm={4} md={3} lg={4}>
+           <TimeRemaining />
           <TestQuestionGrid questionCounts={questionCounts} />
-      </Grid>
+        </Grid>
+      )}
     </Grid>
   );
 };

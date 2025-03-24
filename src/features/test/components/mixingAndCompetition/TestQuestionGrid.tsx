@@ -1,8 +1,9 @@
 import React from "react";
-import { Box, Typography, Grid, Button, Stack } from "@mui/material";
+import { Box, Typography, Grid, Stack } from "@mui/material";
 import { TestPartTypeEnum } from "interfaces";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
+import SubmitTestButton from "../common/SubmitTestButton"; 
 
 interface TestQuestionGridProps {
   questionCounts: Record<TestPartTypeEnum, number>;
@@ -22,7 +23,7 @@ const TestQuestionGrid: React.FC<TestQuestionGridProps> = ({ questionCounts }) =
         borderRadius: "10px",
         bgcolor: isDarkMode ? color.gray900 : "#f9f9f9",
         textAlign: "center",
-        maxWidth: { md: "40%"},
+        maxWidth: { xs: "40%" },
         mx: "auto",
         fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
       }}
@@ -74,21 +75,7 @@ const TestQuestionGrid: React.FC<TestQuestionGridProps> = ({ questionCounts }) =
           </Grid>
         </Box>
       ))}
-      <Button
-        variant="contained"
-        sx={{
-          width: "100%",
-          mt: { xs: 1.5, sm: 2 },
-          fontSize: { xs: "0.6rem", sm: "1rem" },
-          py: { xs: 0.4, sm: 0.6 },
-          bgcolor: color.emerald400,
-          "&:hover": {
-            bgcolor: color.emerald500,
-          },
-        }}
-      >
-        SUBMIT
-      </Button>
+      <SubmitTestButton />
     </Box>
   );
 };

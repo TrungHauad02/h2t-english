@@ -71,9 +71,12 @@ export default function TestPage() {
   };
 
   return (
-    <Box sx={{ mt: 8 ,width:"100%" }}>
-      <MainPictureSection siteInfo={siteInfo} />
+    <Box sx={{ mt: 8 ,width:"100%",marginBottom:'1rem' }}>
+      <MainPictureSection  siteInfo={siteInfo} />
+      <Box sx={{ marginTop:'2rem' }}>
       {renderTest()}
+      </Box>
+
     </Box>
   );
 }

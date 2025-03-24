@@ -8,7 +8,8 @@ const AppRoutes = () => {
       <Route path="/" element={<Pages.HomePage />} />
       <Route element={<Layouts.StudentLayout />}>
         <Route path="/profile" element={<Pages.StudentProfilePage />} />
-        <Route path="/history-test" element={<Pages.HistoryTest />} />
+        <Route path="/history-test" element={<Pages.ListHistoryTestPage />} />
+        <Route path="/history-test/:type/:id" element={<Pages.HistoryTestPage />} />
         <Route path="/login" element={<Pages.LoginPage />} />
         <Route path="/register" element={<Pages.RegisterPage />} />
         <Route path="/forgot-password" element={<Pages.ResetPasswordPage />} />

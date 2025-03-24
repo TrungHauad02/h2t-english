@@ -4,7 +4,7 @@ import { styled } from "@mui/material/styles";
 import { TestWriting } from "interfaces";
 import NavigationControls from "../common/NavigationControls";
 import TimeRemaining from "../common/TimeRemaining";
-
+import TestInstruction from "../common/TestInstruction";
 const StyledPaper = styled(Paper)({
   padding: "2rem",
   borderRadius: "1rem",
@@ -48,6 +48,7 @@ export default function WritingTest({ testWritings }: WritingTestProps) {
 
   return (
     <Box sx={{ margin: "5%", p: 3 }}>
+      <TestInstruction type="writing" />
       <TimeRemaining />
       <NavigationControls currentIndex={currentIndex} totalItems={testWritings.length} onPrevious={handlePrevious} onNext={handleNext} />
       

@@ -7,8 +7,8 @@ export { default as ResetPasswordPage } from "features/auth/pages/ForgotPassword
 export { default as StudentProfilePage } from "features/profile/page/StudentProfilePage";
 
 // Profile Page
-export { default as HistoryTest } from "features/historyTest/pages/HistoryTestPage";
-
+export { default as ListHistoryTestPage } from "features/historyTest/pages/ListHistoryTestPage";
+export { default as HistoryTestPage } from "features/historyTest/pages/HistoryTestPage";
 // Error Page
 export { default as ErrorPage } from "pages/ErrorPage";
 

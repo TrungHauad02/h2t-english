@@ -59,6 +59,7 @@ export interface TestWriting extends BaseEntity {
 
 export interface Question extends BaseEntity {
   content: string;
+  explanation: string;
   answers: Answer[];
 }
 
@@ -85,4 +86,47 @@ export interface SubmitCompetition extends BaseEntity {
   user_id: number;
   competition_id: number;
   score: number | null;
+}
+
+export interface SubmitCompetitionAnswer extends BaseEntity {
+  submitCompetition_id: number;
+  question_id: number;
+  answer_id: number;
+}
+
+export interface SubmitCompetitionSpeaking extends BaseEntity {
+  submitCompetition_id: number;
+  question_id: number;
+  transcript: string;
+  score: number;
+}
+
+export interface SubmitCompetitionWriting extends BaseEntity {
+  submitCompetition_id: number;
+  CompetitionWriting_id: number;
+  content: string;
+  score: number;
+}
+
+export interface SubmitTestAnswer extends BaseEntity {
+  submitTest_id: number;
+  question_id: number;
+  answer_id: number;
+}
+
+export interface SubmitTestSpeaking extends BaseEntity {
+  submitTest_id: number;
+  question_id: number;
+  file: string;
+  transcript: string;
+  score: number;
+  comment: string;
+}
+
+export interface SubmitTestWriting extends BaseEntity {
+  submitTest_id: number;
+  testWriting_id: number;
+  content: string;
+  score: number;
+  comment: string;
 }

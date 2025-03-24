@@ -44,9 +44,17 @@ export default function WEQuestion({ question, index }: WEQuestionProps) {
         </Box>{" "}
         {question.content}
       </Typography>
-      <Stack sx={{ ml: { xs: 3, sm: 6 }, my: 1, width: "auto" ,      fontSize: {xs: "0.6rem", sm: "0.7rem", md: "1rem" },}}>
+      <Stack
+        sx={{
+          width: "100%",
+          my: 1,
+          px: { xs: 1, sm: 2 }, 
+          boxSizing: "border-box", 
+        }}
+      >
         <WERadioGroup name={question.id} options={options} />
       </Stack>
+
     </Stack>
   );
 }
