@@ -6,16 +6,13 @@ import useManageRoutePage from "../hooks/useManageRoutePage";
 
 export default function ManageRoutePage() {
   const hooks = useManageRoutePage();
-
   return (
     <Box sx={{ mt: 6 }}>
       <Stack direction={"column"} sx={{ minHeight: "88vh" }}>
         {/* Header */}
         <ListRoutesHeader
-          searchText={hooks.searchText}
-          setSearchText={hooks.setSearchText}
-          statusFilter={hooks.statusFilter}
-          setStatusFilter={hooks.setStatusFilter}
+          filter={hooks.filter}
+          updateFilter={hooks.updateFilter}
           handleSearch={hooks.handleSearch}
         />
         {/* List Routes */}
