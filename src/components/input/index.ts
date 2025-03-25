@@ -8,3 +8,5 @@ export { default as WESaveChangeButtons } from "./WESaveChangeButtons";
 export { default as WEDocumentInput } from "./WEDocumentInput";
 export { default as WEAudioInput } from "./WEAudioInput";
 export { default as WEAdvanceFilter } from "./WEAdvanceFilter";
+export { default as WEDocxInput } from "./WEDocxInput";
+export { default as WEAudioInputVer2 } from "./WEAudioInputVer2";

@@ -104,6 +104,8 @@ export default function DetailRoutePage() {
         onOk={() => hooks.handleAddNode()}
         data={hooks.newNode}
         setData={hooks.setNewNode}
+        newLesson={hooks.newLesson}
+        setNewLesson={hooks.setNewLesson}
       />
     </Stack>
   );

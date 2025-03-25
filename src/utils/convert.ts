@@ -34,6 +34,46 @@ export const base64ToBlobUrl = (base64: string): string => {
   return URL.createObjectURL(blob);
 };
 
+export const base64DocxToBlobUrl = (base64: string): string => {
+  if (base64.startsWith("blob:")) {
+    return base64;
+  }
+  const base64Data = base64.split(",")[1];
+
+  const byteCharacters = atob(base64Data);
+
+  const byteArray = new Uint8Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteArray[i] = byteCharacters.charCodeAt(i);
+  }
+
+  const blob = new Blob([byteArray], {
+    type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  });
+
+  return URL.createObjectURL(blob);
+};
+
+export const base64AudioToBlobUrl = (base64: string): string => {
+  if (base64.startsWith("blob:")) {
+    return base64;
+  }
+  const base64Data = base64.split(",")[1];
+
+  const byteCharacters = atob(base64Data);
+
+  const byteArray = new Uint8Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteArray[i] = byteCharacters.charCodeAt(i);
+  }
+
+  const blob = new Blob([byteArray], {
+    type: "audio/mpeg",
+  });
+
+  return URL.createObjectURL(blob);
+};
+
 export const convertToDate = (
   dateString: string | undefined
 ): Date | undefined => {
