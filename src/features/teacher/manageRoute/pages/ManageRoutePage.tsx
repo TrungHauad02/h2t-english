@@ -19,7 +19,7 @@ export default function ManageRoutePage() {
           handleSearch={hooks.handleSearch}
         />
         {/* List Routes */}
-        <ListRoutes list={hooks.displayedRoutes} />
+        <ListRoutes list={hooks.listRoutes} />
         {/* Pagination */}
         <Box sx={{ mt: "auto" }}>
           <WEPaginationSelect

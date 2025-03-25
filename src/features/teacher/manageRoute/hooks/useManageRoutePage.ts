@@ -1,6 +1,6 @@
 import { Route } from "interfaces";
 import { useEffect, useState } from "react";
-import { routeService } from "../services/listRouteService";
+import { routeService } from "../services/routeService";
 
 export default function useManageRoutePage() {
   const [searchText, setSearchText] = useState("");
@@ -8,20 +8,29 @@ export default function useManageRoutePage() {
   const [listRoutes, setListRoutes] = useState<Route[]>([]);
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
-    const filteredRoutes = routeService.getListRoute(1);
-    setListRoutes(filteredRoutes);
+    const fetchData = async () => {
+      const responseData = await routeService.getRoutesByTeacherId(1);
+      const routeData: Route[] = responseData.data.content;
+      console.log(routeData);
+      setTotalPages(responseData.data.totalPages);
+      setListRoutes(routeData);
+    };
+    fetchData();
   }, []);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     const filter = {
       status: statusFilter,
       title: searchText,
     };
 
-    const filteredRoutes = routeService.getListRoute(1, filter);
-    setListRoutes(filteredRoutes);
+    const responseData = await routeService.getRoutesByTeacherId(1, filter);
+    const routeData: Route[] = responseData.data.content;
+    console.log(routeData);
+    setListRoutes(responseData.data.content);
   };
 
   const handleChangePage = (e: React.ChangeEvent<unknown>, newPage: number) => {
@@ -31,13 +40,6 @@ export default function useManageRoutePage() {
   const handleLessonsPerPageChange = (newItemsPerPage: number) => {
     setItemsPerPage(newItemsPerPage);
   };
-
-  const totalPages = Math.ceil(listRoutes.length / itemsPerPage);
-
-  const displayedRoutes = listRoutes.slice(
-    (page - 1) * itemsPerPage,
-    page * itemsPerPage
-  );
 
   return {
     searchText,
@@ -54,6 +56,5 @@ export default function useManageRoutePage() {
     handleChangePage,
     handleLessonsPerPageChange,
     totalPages,
-    displayedRoutes,
   };
 }

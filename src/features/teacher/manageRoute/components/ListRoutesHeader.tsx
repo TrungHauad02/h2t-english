@@ -11,6 +11,8 @@ import { Search } from "@mui/icons-material";
 import { useState } from "react";
 import { WEDialog } from "components/display";
 import { Route } from "interfaces";
+import { routeService } from "../services/routeService";
+import { useNavigate } from "react-router-dom";
 
 interface ListRoutesHeaderProps {
   searchText: string;
@@ -30,6 +32,8 @@ export default function ListRoutesHeader({
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
+  const navigate = useNavigate();
+
   const [isOpenCreateDialog, setIsOpenCreateDialog] = useState<boolean>(false);
   const [data, setData] = useState<Route>({
     id: -1,
@@ -37,7 +41,7 @@ export default function ListRoutesHeader({
     description: "",
     status: false,
     image: "",
-    ownerId: 1,
+    ownerId: 1, // TODO: get teacher id
     routeNodes: [],
   });
 
@@ -57,12 +61,17 @@ export default function ListRoutesHeader({
     setData({ ...data, image: value });
   };
 
-  const onCreateRoute = () => {
-    // TODO: create new route
-    console.log(data);
-    setIsOpenCreateDialog(!isOpenCreateDialog);
-    // TODO: show success message
-    // TODO: navigate to route detail
+  const onCreateRoute = async () => {
+    try {
+      // create new route
+      const responseData = await routeService.createRoute(data);
+      console.log(responseData);
+      setIsOpenCreateDialog(!isOpenCreateDialog);
+      // TODO: show success message
+      navigate(`/teacher/routes/${responseData.data.id}`);
+    } catch {
+      // TODO: show error message
+    }
   };
 
   return (
