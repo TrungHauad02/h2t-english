@@ -9,7 +9,9 @@ const getRoutesByTeacherId = async (
   filter?: RouteFilter
 ) => {
   try {
-    let url = `/routes?page=${page}&size=${itemsPerPage}&ownerId=${teacherId}`;
+    let url = `/routes?page=${
+      page - 1
+    }&size=${itemsPerPage}&ownerId=${teacherId}`;
     console.log(url);
     if (filter) {
       if (filter.status !== undefined && filter.status !== null) {

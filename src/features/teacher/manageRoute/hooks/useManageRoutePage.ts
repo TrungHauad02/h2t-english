@@ -20,7 +20,8 @@ export default function useManageRoutePage() {
         const responseData = await routeService.getRoutesByTeacherId(
           page,
           itemsPerPage,
-          1
+          1, // TODO: Teacher ID
+          filter
         );
         const routeData: Route[] = responseData.data.content;
         setTotalPages(responseData.data.totalPages);
