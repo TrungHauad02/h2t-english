@@ -3,11 +3,13 @@ import apiClient from "services/apiClient";
 import { base64ToBlobUrl } from "utils/convert";
 
 const getRoutesByTeacherId = async (
+  page: number,
+  itemsPerPage: number,
   teacherId: number,
   filter?: RouteFilter
 ) => {
   try {
-    let url = `/routes?ownerId=${teacherId}`;
+    let url = `/routes?page=${page}&size=${itemsPerPage}&ownerId=${teacherId}`;
     console.log(url);
     if (filter) {
       if (filter.status !== undefined && filter.status !== null) {

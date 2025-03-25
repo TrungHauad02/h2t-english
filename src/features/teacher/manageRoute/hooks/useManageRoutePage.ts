@@ -17,7 +17,11 @@ export default function useManageRoutePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseData = await routeService.getRoutesByTeacherId(1, filter);
+        const responseData = await routeService.getRoutesByTeacherId(
+          page,
+          itemsPerPage,
+          1
+        );
         const routeData: Route[] = responseData.data.content;
         setTotalPages(responseData.data.totalPages);
         setListRoutes(routeData);
@@ -26,11 +30,16 @@ export default function useManageRoutePage() {
       }
     };
     fetchData();
-  }, []);
+  }, [itemsPerPage, page]);
 
   const handleSearch = async () => {
     try {
-      const responseData = await routeService.getRoutesByTeacherId(1, filter);
+      const responseData = await routeService.getRoutesByTeacherId(
+        page,
+        itemsPerPage,
+        1, // TODO: Teacher ID
+        filter
+      );
       const routeData: Route[] = responseData.data.content;
       console.log(routeData);
       setListRoutes(responseData.data.content);
