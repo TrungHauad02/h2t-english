@@ -1,7 +1,20 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { routeService } from "../services/routeService";
-import { Route, RouteNode, RouteNodeEnum } from "interfaces";
+import {
+  Grammar,
+  Listening,
+  Reading,
+  Route,
+  RouteNode,
+  RouteNodeEnum,
+  Speaking,
+  Test,
+  Topic,
+  Writing,
+} from "interfaces";
+import { routeNodeService } from "../services/routeNodeService";
+import { lessonService } from "../services/lessonService";
 
 export default function useDetailRoutePage() {
   const { id } = useParams();
@@ -27,7 +40,23 @@ export default function useDetailRoutePage() {
     type: RouteNodeEnum.VOCABULARY,
   };
 
+  const emptyTopic: Topic = {
+    id: -1,
+    title: "",
+    description: "",
+    image: "",
+    status: false,
+    questions: [],
+    views: 0,
+    routeNodeId: -1,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
   const [newNode, setNewNode] = useState<RouteNode>(emptyRouteNode);
+  const [newLesson, setNewLesson] = useState<
+    Topic | Grammar | Reading | Speaking | Listening | Writing | Test
+  >(emptyTopic);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,6 +78,7 @@ export default function useDetailRoutePage() {
 
   const handleOpenAddNodeDialog = () => {
     setNewNode(emptyRouteNode);
+    setNewLesson(emptyTopic);
     setOpenAddNodeDialog(!openAddNodeDialog);
   };
 
@@ -118,14 +148,78 @@ export default function useDetailRoutePage() {
     }
   };
 
-  const handleAddNode = () => {
+  const handleAddNode = async () => {
     setOpenAddNodeDialog(false);
     if (!data) return;
-    if (newNode) {
-      const updatedData: RouteNode[] = [...(data?.routeNodes || [])];
-      updatedData.push(newNode);
+    // if (newNode) {
+    //   const resData = await routeNodeService.createRouteNode(newNode);
+    //   const updatedData: RouteNode[] = [...(data?.routeNodes || [])];
+    //   updatedData.push(resData.data);
+    //   setData({ ...data, routeNodes: updatedData });
+    //   setNewNode(emptyRouteNode);
+    // }
+
+    try {
+      // Xử lý bài kiểm tra (TODO)
+      const isTestNode = [
+        RouteNodeEnum.MIXING_TEST,
+        RouteNodeEnum.READING_TEST,
+        RouteNodeEnum.LISTENING_TEST,
+        RouteNodeEnum.SPEAKING_TEST,
+        RouteNodeEnum.WRITING_TEST,
+      ].includes(newNode.type);
+
+      if (isTestNode) {
+        console.log("TODO: Add test to database");
+        return;
+      }
+
+      // Tạo bài học trước
+      let lessonRes;
+      switch (newNode.type) {
+        case RouteNodeEnum.VOCABULARY:
+          lessonRes = await lessonService.createTopic(newLesson as Topic);
+          break;
+        case RouteNodeEnum.GRAMMAR:
+          lessonRes = await lessonService.createGrammar(newLesson as Grammar);
+          break;
+        case RouteNodeEnum.READING:
+          lessonRes = await lessonService.createReading(newLesson as Reading);
+          break;
+        case RouteNodeEnum.LISTENING:
+          lessonRes = await lessonService.createListening(
+            newLesson as Listening
+          );
+          break;
+        case RouteNodeEnum.SPEAKING:
+          lessonRes = await lessonService.createSpeaking(newLesson as Speaking);
+          break;
+        case RouteNodeEnum.WRITING:
+          lessonRes = await lessonService.createWriting(newLesson as Writing);
+          break;
+        default:
+          throw new Error("Invalid node type");
+      }
+
+      // Cập nhật nodeId từ bài học vừa tạo
+      const updatedNode = {
+        ...newNode,
+        nodeId: lessonRes.data.id,
+      };
+
+      // Tạo RouteNode
+      const routeNodeRes = await routeNodeService.createRouteNode(updatedNode);
+
+      // Cập nhật state
+      const updatedData = [...data.routeNodes, routeNodeRes.data];
       setData({ ...data, routeNodes: updatedData });
+
+      // Reset state
       setNewNode(emptyRouteNode);
+      setNewLesson(emptyTopic);
+    } catch (error) {
+      console.error("Error adding node:", error);
+      // TODO: Show error message
     }
 
     // TODO: Add node to db
@@ -141,7 +235,9 @@ export default function useDetailRoutePage() {
     openUnpublishDialog,
     openAddNodeDialog,
     newNode,
+    newLesson,
     setNewNode,
+    setNewLesson,
     handleGoBack,
     handleEditMode,
     handlePublishClick,
