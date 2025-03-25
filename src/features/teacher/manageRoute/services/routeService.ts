@@ -72,4 +72,42 @@ const createRoute = async (routeData: Route) => {
   }
 };
 
-export const routeService = { getRoutesByTeacherId, createRoute };
+const getRouteById = async (routeId: number) => {
+  try {
+    const response = await apiClient.get(`/routes/${routeId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching route:", error);
+    throw error;
+  }
+};
+
+const updateRoute = async (routeId: number, routeData: Route) => {
+  try {
+    routeData.image = base64ToBlobUrl(routeData.image);
+    const response = await apiClient.put(`/routes/${routeId}`, routeData);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating route:", error);
+    throw error;
+  }
+};
+
+const patchRoute = async (routeId: number, routeData: any) => {
+  try {
+    routeData.image = base64ToBlobUrl(routeData.image);
+    const response = await apiClient.patch(`/routes/${routeId}`, routeData);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating route:", error);
+    throw error;
+  }
+};
+
+export const routeService = {
+  getRoutesByTeacherId,
+  createRoute,
+  getRouteById,
+  updateRoute,
+  patchRoute,
+};

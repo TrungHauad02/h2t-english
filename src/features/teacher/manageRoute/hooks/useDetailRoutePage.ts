@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { routeService } from "../services/listRouteService";
+import { routeService } from "../services/routeService";
 import { Route, RouteNode, RouteNodeEnum } from "interfaces";
 
 export default function useDetailRoutePage() {
@@ -30,15 +30,18 @@ export default function useDetailRoutePage() {
   const [newNode, setNewNode] = useState<RouteNode>(emptyRouteNode);
 
   useEffect(() => {
-    if (id) {
-      setLoading(true);
-      const route = routeService.getRouteById(parseInt(id));
-      if (route) {
-        setData(route);
-        setEditedData({ ...route });
+    const fetchData = async () => {
+      if (id) {
+        setLoading(true);
+        const responseData = await routeService.getRouteById(parseInt(id));
+        if (responseData) {
+          setData(responseData.data);
+          setEditedData({ ...responseData.data });
+        }
+        setLoading(false);
       }
-      setLoading(false);
-    }
+    };
+    fetchData();
   }, [id]);
 
   const handleGoBack = () => navigate(-1);
@@ -49,13 +52,17 @@ export default function useDetailRoutePage() {
     setOpenAddNodeDialog(!openAddNodeDialog);
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     if (!editMode) {
-      // TODO: Save serial change
+      // TODO: Haven't test yet
+      const resData = await routeService.patchRoute(data!.id, data?.routeNodes);
+      setData(resData.data);
       return;
     }
     if (editedData) {
-      setData(editedData);
+      // Save change on editData
+      const resData = await routeService.updateRoute(editedData.id, editedData);
+      setData(resData.data);
       setEditMode(false);
     }
   };
@@ -63,20 +70,24 @@ export default function useDetailRoutePage() {
   const handlePublishClick = () => setOpenPublishDialog(true);
   const handleUnpublishClick = () => setOpenUnpublishDialog(true);
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     if (data) {
-      const updatedData = { ...data, status: true };
-      setData(updatedData);
-      if (editedData) setEditedData(updatedData);
+      const responseData = await routeService.patchRoute(data.id, {
+        status: true,
+      });
+      setData(responseData.data);
+      if (editedData) setEditedData(responseData.data);
       setOpenPublishDialog(false);
     }
   };
 
-  const handleUnpublish = () => {
+  const handleUnpublish = async () => {
     if (data) {
-      const updatedData = { ...data, status: false };
-      setData(updatedData);
-      if (editedData) setEditedData(updatedData);
+      const responseData = await routeService.patchRoute(data.id, {
+        status: false,
+      });
+      setData(responseData.data);
+      if (editedData) setEditedData(responseData.data);
       setOpenUnpublishDialog(false);
     }
   };
