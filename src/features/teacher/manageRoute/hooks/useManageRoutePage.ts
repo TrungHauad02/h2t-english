@@ -1,10 +1,14 @@
-import { Route } from "interfaces";
+import { Route, RouteFilter } from "interfaces";
 import { useEffect, useState } from "react";
 import { routeService } from "../services/routeService";
 
 export default function useManageRoutePage() {
-  const [searchText, setSearchText] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [filter, setFilter] = useState<RouteFilter>({
+    status: null,
+    title: "",
+    sortBy: "-createdAt",
+  });
+
   const [listRoutes, setListRoutes] = useState<Route[]>([]);
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
@@ -12,25 +16,34 @@ export default function useManageRoutePage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const responseData = await routeService.getRoutesByTeacherId(1);
-      const routeData: Route[] = responseData.data.content;
-      console.log(routeData);
-      setTotalPages(responseData.data.totalPages);
-      setListRoutes(routeData);
+      try {
+        const responseData = await routeService.getRoutesByTeacherId(1, filter);
+        const routeData: Route[] = responseData.data.content;
+        setTotalPages(responseData.data.totalPages);
+        setListRoutes(routeData);
+      } catch (error) {
+        console.error("Error fetching routes:", error);
+      }
     };
     fetchData();
   }, []);
 
   const handleSearch = async () => {
-    const filter = {
-      status: statusFilter,
-      title: searchText,
-    };
+    try {
+      const responseData = await routeService.getRoutesByTeacherId(1, filter);
+      const routeData: Route[] = responseData.data.content;
+      console.log(routeData);
+      setListRoutes(responseData.data.content);
+    } catch (error) {
+      console.error("Error searching routes:", error);
+    }
+  };
 
-    const responseData = await routeService.getRoutesByTeacherId(1, filter);
-    const routeData: Route[] = responseData.data.content;
-    console.log(routeData);
-    setListRoutes(responseData.data.content);
+  const updateFilter = (updates: Partial<RouteFilter>) => {
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      ...updates,
+    }));
   };
 
   const handleChangePage = (e: React.ChangeEvent<unknown>, newPage: number) => {
@@ -42,10 +55,8 @@ export default function useManageRoutePage() {
   };
 
   return {
-    searchText,
-    setSearchText,
-    statusFilter,
-    setStatusFilter,
+    filter,
+    updateFilter,
     listRoutes,
     setListRoutes,
     page,

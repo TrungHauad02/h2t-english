@@ -7,3 +7,4 @@ export { default as WEMultipleTextField } from "./WEMultipleTextField";
 export { default as WESaveChangeButtons } from "./WESaveChangeButtons";
 export { default as WEDocumentInput } from "./WEDocumentInput";
 export { default as WEAudioInput } from "./WEAudioInput";
+export { default as WEAdvanceFilter } from "./WEAdvanceFilter";

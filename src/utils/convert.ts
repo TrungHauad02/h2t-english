@@ -30,3 +30,12 @@ export const base64ToBlobUrl = (base64: string): string => {
 
   return URL.createObjectURL(blob);
 };
+
+export const convertToDate = (
+  dateString: string | undefined
+): Date | undefined => {
+  if (!dateString) return undefined;
+  const date = new Date(dateString);
+  date.setHours(23, 59, 59, 999);
+  return date;
+};
