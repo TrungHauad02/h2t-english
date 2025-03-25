@@ -17,6 +17,9 @@ export const convertBase64ToArrayBuffer = (base64: string): ArrayBuffer => {
 };
 
 export const base64ToBlobUrl = (base64: string): string => {
+  if (base64.startsWith("blob:")) {
+    return base64;
+  }
   const base64Data = base64.split(",")[1];
 
   const byteCharacters = atob(base64Data);
