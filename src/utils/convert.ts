@@ -17,6 +17,7 @@ export const convertBase64ToArrayBuffer = (base64: string): ArrayBuffer => {
 };
 
 export const base64ToBlobUrl = (base64: string): string => {
+  if (!base64) return "";
   if (base64.startsWith("blob:")) {
     return base64;
   }
@@ -35,6 +36,7 @@ export const base64ToBlobUrl = (base64: string): string => {
 };
 
 export const base64DocxToBlobUrl = (base64: string): string => {
+  if (!base64) return "";
   if (base64.startsWith("blob:")) {
     return base64;
   }
@@ -55,6 +57,7 @@ export const base64DocxToBlobUrl = (base64: string): string => {
 };
 
 export const base64AudioToBlobUrl = (base64: string): string => {
+  if (!base64) return "";
   if (base64.startsWith("blob:")) {
     return base64;
   }

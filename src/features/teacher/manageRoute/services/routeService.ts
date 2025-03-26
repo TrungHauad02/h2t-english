@@ -95,8 +95,11 @@ const updateRoute = async (routeId: number, routeData: Route) => {
 
 const patchRoute = async (routeId: number, routeData: any) => {
   try {
-    routeData.image = base64ToBlobUrl(routeData.image);
+    if (routeData.image) {
+      routeData.image = base64ToBlobUrl(routeData.image);
+    }
     const response = await apiClient.patch(`/routes/${routeId}`, routeData);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error updating route:", error);

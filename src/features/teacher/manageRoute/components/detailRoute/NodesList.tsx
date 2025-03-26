@@ -27,6 +27,8 @@ export default function NodesList({
 
   const [isEditMode, setIsEditMode] = useState(false);
 
+  const sortedNodes = nodes.sort((a, b) => a.serial - b.serial);
+
   const onChangeEditMode = () => {
     if (isEditMode) {
       onSaveChange();
@@ -76,7 +78,7 @@ export default function NodesList({
       </Stack>
 
       <Grid container spacing={3}>
-        {nodes.map((node, index) => (
+        {sortedNodes.map((node, index) => (
           <Grid item xs={12} sm={12} md={6} lg={4} key={node.id}>
             <RouteNodeCard
               node={node}
