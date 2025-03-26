@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import {
   RouteNode,
   RouteNodeEnum,
@@ -16,16 +16,20 @@ import { base64ToBlobUrl } from "utils/convert";
 export interface UseAddNodeDialogProps {
   data: RouteNode;
   setData: (data: RouteNode) => void;
+  newLesson: Topic | Grammar | Listening | Reading | Speaking | Writing | Test;
+  setNewLesson: Dispatch<
+    SetStateAction<
+      Topic | Grammar | Listening | Reading | Speaking | Writing | Test
+    >
+  >;
 }
 
 export default function useAddNodeDialog({
   data,
   setData,
+  newLesson,
+  setNewLesson,
 }: UseAddNodeDialogProps) {
-  const [newLesson, setNewLesson] = useState<
-    Topic | Grammar | Listening | Reading | Speaking | Writing | Test
-  >(createInitialLesson(data));
-
   const [tips, setTips] = useState<string[]>(
     (newLesson as Grammar)?.tips || []
   );
@@ -171,6 +175,7 @@ function createInitialLesson(
       return {
         ...baseLesson,
         audio: "",
+        transcript: "",
       } as Listening;
 
     case RouteNodeEnum.WRITING:
@@ -179,7 +184,7 @@ function createInitialLesson(
         topic: "",
         file: "",
         tips: [],
-        paragraphs: "",
+        paragraph: "",
       } as Writing;
 
     case RouteNodeEnum.SPEAKING:

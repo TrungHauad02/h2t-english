@@ -24,6 +24,7 @@ import {
   useAddNodeDialog,
   WritingFields,
 } from "./addNode";
+import { base64ToBlobUrl } from "utils/convert";
 
 interface AddNodeDialogProps {
   open: boolean;
@@ -48,7 +49,7 @@ export default function AddNodeDialog({
   onOk,
   setData,
 }: AddNodeDialogProps) {
-  const hooks = useAddNodeDialog({ data, setData });
+  const hooks = useAddNodeDialog({ data, setData, newLesson, setNewLesson });
 
   return (
     <WEDialog
@@ -84,7 +85,7 @@ export default function AddNodeDialog({
         <WETextField
           label="Title"
           type="text"
-          value={data.title || ""}
+          value={newLesson.title || ""}
           onChange={hooks.handleChange}
           name="title"
           required
@@ -93,7 +94,7 @@ export default function AddNodeDialog({
         <WETextField
           label="Description"
           type="text"
-          value={data.description || ""}
+          value={newLesson.description || ""}
           onChange={hooks.handleChange}
           name="description"
           required
@@ -139,18 +140,30 @@ export default function AddNodeDialog({
         )}
 
         {data.type === RouteNodeEnum.LISTENING && (
-          <WEAudioInputVer2
-            label="Listening Audio"
-            value={(newLesson as Listening).audio}
-            onChange={(base64) =>
-              setNewLesson((prev) => ({
-                ...(prev as Listening),
-                audio: base64,
-              }))
-            }
-            accept=".mp3,.wav"
-            required
-          />
+          <Stack direction={"column"} spacing={2}>
+            <WEAudioInputVer2
+              label="Listening Audio"
+              value={(newLesson as Listening).audio}
+              onChange={(base64) =>
+                setNewLesson((prev) => ({
+                  ...(prev as Listening),
+                  audio: base64ToBlobUrl(base64, "audio/wav"),
+                }))
+              }
+              accept=".mp3,.wav"
+              required
+            />
+
+            <WETextField
+              label="Transcript"
+              type="text"
+              value={(newLesson as Listening).transcript}
+              onChange={hooks.handleChange}
+              name="transcript"
+              required
+              placeholder="Enter listening transcript"
+            />
+          </Stack>
         )}
 
         {data.type === RouteNodeEnum.WRITING && (

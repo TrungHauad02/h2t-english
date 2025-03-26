@@ -155,7 +155,7 @@ export default function useDetailRoutePage() {
     if (!data) return;
 
     try {
-      // Xử lý bài kiểm tra (TODO)
+      // TODO: Xử lý bài kiểm tra
       const isTestNode = [
         RouteNodeEnum.MIXING_TEST,
         RouteNodeEnum.READING_TEST,
@@ -168,7 +168,7 @@ export default function useDetailRoutePage() {
         console.log("TODO: Add test to database");
         return;
       }
-
+      console.log("New lesson: ", newLesson);
       // Tạo bài học trước
       let lessonRes;
       switch (newNode.type) {

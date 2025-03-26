@@ -38,6 +38,21 @@ export default function WritingFields({
         placeholder="Enter writing topic"
         sx={{ mb: 2 }}
       />
+      <WETextField
+        label="Writing Paragraph"
+        type="text"
+        value={(newLesson as Writing).paragraph}
+        onChange={(e) =>
+          setNewLesson((prev) => ({
+            ...(prev as Writing),
+            paragraph: e.target.value,
+          }))
+        }
+        name="paragraph"
+        required
+        placeholder="Enter writing paragraphs"
+        sx={{ mb: 2 }}
+      />
       <WEDocxInput
         label="Writing File"
         value={(newLesson as Writing).file}

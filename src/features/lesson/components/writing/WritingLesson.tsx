@@ -24,7 +24,7 @@ export default function WritingLesson({ lesson }: { lesson: Writing }) {
       </CollapsibleSection>
       <CollapsibleSection text="Writing Paragraph">
         <WritingParagraph
-          paragraph={lesson.paragraphs}
+          paragraph={lesson.paragraph}
           writingAnswer={writingAnswer.filter(
             (answer) => answer.writingId === 1
           )}
