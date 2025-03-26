@@ -83,7 +83,7 @@ export default function WEDocxInput({
     } else if (!value) {
       setFileInfo(null);
     }
-  }, [value, fileInfo]);
+  }, [value]);
 
   const handleFileRead = (file: File) => {
     const reader = new FileReader();

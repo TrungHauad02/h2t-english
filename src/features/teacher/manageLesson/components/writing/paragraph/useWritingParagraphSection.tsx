@@ -25,7 +25,7 @@ export default function useWritingParagraphSection({
 
   useEffect(() => {
     if (editData) {
-      setParagraph(editData.paragraphs || "");
+      setParagraph(editData.paragraph || "");
       const fetchedAnswers = editData.questions.map((questionId) => {
         const answerData = {
           id: questionId,
@@ -50,7 +50,7 @@ export default function useWritingParagraphSection({
 
       setAnswers(fetchedAnswers);
       setOriginalData({
-        paragraph: editData.paragraphs || "",
+        paragraph: editData.paragraph || "",
         answers: [...fetchedAnswers],
       });
     }
@@ -62,7 +62,7 @@ export default function useWritingParagraphSection({
 
   const handleSaveChanges = () => {
     if (editData) {
-      handleInputChange("paragraphs", paragraph);
+      handleInputChange("paragraph", paragraph);
       const questionIds = answers.map((answer) => answer.id);
       handleInputChange("questions", questionIds);
     }

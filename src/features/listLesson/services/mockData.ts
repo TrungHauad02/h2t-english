@@ -591,123 +591,7 @@ const listenings: Listening[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     questions: [1, 2, 3, 4],
-  },
-  {
-    id: 2,
-    title: "Listening to News",
-    image: "news.jpg",
-    description: "Understand news content",
-    status: true,
-    audio: "basic_listening.mp3",
-    views: 0,
-    routeNodeId: 0,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    questions: [1, 2, 3, 4],
-  },
-  {
-    id: 3,
-    title: "Listening to Stories",
-    image: "stories.jpg",
-    description: "Improve story listening",
-    status: true,
-    audio: "basic_listening.mp3",
-    views: 0,
-    routeNodeId: 0,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    questions: [1, 2, 3, 4],
-  },
-  {
-    id: 4,
-    title: "Conversation Listening",
-    image: "conversation.jpg",
-    description: "Learn from conversations",
-    status: true,
-    audio: "basic_listening.mp3",
-    views: 0,
-    routeNodeId: 0,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    questions: [1, 2, 3, 4],
-  },
-  {
-    id: 5,
-    title: "Listening to Music",
-    image: "music.jpg",
-    description: "Learn through songs",
-    status: true,
-    audio: "basic_listening.mp3",
-    views: 0,
-    routeNodeId: 0,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    questions: [1, 2, 3, 4],
-  },
-  {
-    id: 6,
-    title: "Listening for Keywords",
-    image: "keywords.jpg",
-    description: "Spot keywords in audio",
-    status: true,
-    audio: "basic_listening.mp3",
-    views: 0,
-    routeNodeId: 0,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    questions: [1, 2, 3, 4],
-  },
-  {
-    id: 7,
-    title: "Listening to Speeches",
-    image: "speeches.jpg",
-    description: "Understand speeches",
-    status: true,
-    audio: "basic_listening.mp3",
-    views: 0,
-    routeNodeId: 0,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    questions: [1, 2, 3, 4],
-  },
-  {
-    id: 8,
-    title: "Listening Practice",
-    image: "practice.jpg",
-    description: "General practice",
-    status: true,
-    audio: "basic_listening.mp3",
-    views: 0,
-    routeNodeId: 0,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    questions: [1, 2, 3, 4],
-  },
-  {
-    id: 9,
-    title: "Listening to Interviews",
-    image: "interviews.jpg",
-    description: "Learn from interviews",
-    status: true,
-    audio: "basic_listening.mp3",
-    views: 0,
-    routeNodeId: 0,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    questions: [1, 2, 3, 4],
-  },
-  {
-    id: 10,
-    title: "Listening Challenges",
-    image: "challenges.jpg",
-    description: "Advanced listening",
-    status: true,
-    audio: "basic_listening.mp3",
-    views: 0,
-    routeNodeId: 0,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    questions: [1, 2, 3, 4],
+    transcript: "",
   },
 ];
 
@@ -725,7 +609,7 @@ const writings: Writing[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     file: "/document.docx",
-    paragraphs:
+    paragraph:
       "The quick brown jumps over the lazy dog. This sentence contains all the letters of the English . It is often used for typing practice.",
     questions: [1, 2],
     tips: [
@@ -745,7 +629,7 @@ const writings: Writing[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     file: "/document.docx",
-    paragraphs:
+    paragraph:
       "In the realm of advanced writing, one must consider the nuances of language and the subtleties of tone. It is not merely about conveying information but also about evoking emotion and provoking thought.",
     questions: [3, 4],
     tips: [
@@ -765,7 +649,7 @@ const writings: Writing[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     file: "/document.docx",
-    paragraphs:
+    paragraph:
       "In the realm of advanced writing, one must consider the nuances of language and the subtleties of tone. It is not merely about conveying information but also about evoking emotion and provoking thought.",
     questions: [3, 4],
     tips: [
@@ -785,7 +669,7 @@ const writings: Writing[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     file: "/document.docx",
-    paragraphs:
+    paragraph:
       "In the realm of advanced writing, one must consider the nuances of language and the subtleties of tone. It is not merely about conveying information but also about evoking emotion and provoking thought.",
     questions: [3, 4],
     tips: [
@@ -805,7 +689,7 @@ const writings: Writing[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     file: "/document.docx",
-    paragraphs:
+    paragraph:
       "In the realm of advanced writing, one must consider the nuances of language and the subtleties of tone. It is not merely about conveying information but also about evoking emotion and provoking thought.",
     questions: [3, 4],
     tips: [
@@ -825,7 +709,7 @@ const writings: Writing[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     file: "/document.docx",
-    paragraphs:
+    paragraph:
       "In the realm of advanced writing, one must consider the nuances of language and the subtleties of tone. It is not merely about conveying information but also about evoking emotion and provoking thought.",
     questions: [3, 4],
     tips: [
@@ -845,7 +729,7 @@ const writings: Writing[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     file: "/document.docx",
-    paragraphs:
+    paragraph:
       "In the realm of advanced writing, one must consider the nuances of language and the subtleties of tone. It is not merely about conveying information but also about evoking emotion and provoking thought.",
     questions: [3, 4],
     tips: [
@@ -865,7 +749,7 @@ const writings: Writing[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     file: "/document.docx",
-    paragraphs:
+    paragraph:
       "In the realm of advanced writing, one must consider the nuances of language and the subtleties of tone. It is not merely about conveying information but also about evoking emotion and provoking thought.",
     questions: [3, 4],
     tips: [
@@ -885,7 +769,7 @@ const writings: Writing[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     file: "/document.docx",
-    paragraphs:
+    paragraph:
       "In the realm of advanced writing, one must consider the nuances of language and the subtleties of tone. It is not merely about conveying information but also about evoking emotion and provoking thought.",
     questions: [3, 4],
     tips: [
@@ -905,7 +789,7 @@ const writings: Writing[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     file: "/document.docx",
-    paragraphs:
+    paragraph:
       "In the realm of advanced writing, one must consider the nuances of language and the subtleties of tone. It is not merely about conveying information but also about evoking emotion and provoking thought.",
     questions: [3, 4],
     tips: [

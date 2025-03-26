@@ -16,12 +16,25 @@ export const convertBase64ToArrayBuffer = (base64: string): ArrayBuffer => {
   return arrayBuffer;
 };
 
-export const base64ToBlobUrl = (base64: string): string => {
+/**
+ * Convert a base64 string to a blob url.
+ *
+ * @param base64 The base64 string.
+ * @param type The type of the blob.
+ * @returns The blob url.
+ *
+ * type:
+ * - image: image/png
+ * - docx: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+ * - audio: audio/wav
+ */
+export const base64ToBlobUrl = (base64: string, type: string): string => {
+  if (!base64) return "";
   if (base64.startsWith("blob:")) {
     return base64;
   }
-  const base64Data = base64.split(",")[1];
 
+  const base64Data = base64.split(",")[1];
   const byteCharacters = atob(base64Data);
 
   const byteArray = new Uint8Array(byteCharacters.length);
@@ -29,47 +42,7 @@ export const base64ToBlobUrl = (base64: string): string => {
     byteArray[i] = byteCharacters.charCodeAt(i);
   }
 
-  const blob = new Blob([byteArray], { type: "image/png" });
-
-  return URL.createObjectURL(blob);
-};
-
-export const base64DocxToBlobUrl = (base64: string): string => {
-  if (base64.startsWith("blob:")) {
-    return base64;
-  }
-  const base64Data = base64.split(",")[1];
-
-  const byteCharacters = atob(base64Data);
-
-  const byteArray = new Uint8Array(byteCharacters.length);
-  for (let i = 0; i < byteCharacters.length; i++) {
-    byteArray[i] = byteCharacters.charCodeAt(i);
-  }
-
-  const blob = new Blob([byteArray], {
-    type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  });
-
-  return URL.createObjectURL(blob);
-};
-
-export const base64AudioToBlobUrl = (base64: string): string => {
-  if (base64.startsWith("blob:")) {
-    return base64;
-  }
-  const base64Data = base64.split(",")[1];
-
-  const byteCharacters = atob(base64Data);
-
-  const byteArray = new Uint8Array(byteCharacters.length);
-  for (let i = 0; i < byteCharacters.length; i++) {
-    byteArray[i] = byteCharacters.charCodeAt(i);
-  }
-
-  const blob = new Blob([byteArray], {
-    type: "audio/mpeg",
-  });
+  const blob = new Blob([byteArray], { type });
 
   return URL.createObjectURL(blob);
 };

@@ -85,7 +85,9 @@ export default function useDetailRoutePage() {
   const handleSaveChanges = async () => {
     if (!editMode) {
       // TODO: Haven't test yet
-      const resData = await routeService.patchRoute(data!.id, data?.routeNodes);
+      const resData = await routeService.patchRoute(data!.id, {
+        routeNodes: data?.routeNodes,
+      });
       setData(resData.data);
       return;
     }
@@ -151,16 +153,9 @@ export default function useDetailRoutePage() {
   const handleAddNode = async () => {
     setOpenAddNodeDialog(false);
     if (!data) return;
-    // if (newNode) {
-    //   const resData = await routeNodeService.createRouteNode(newNode);
-    //   const updatedData: RouteNode[] = [...(data?.routeNodes || [])];
-    //   updatedData.push(resData.data);
-    //   setData({ ...data, routeNodes: updatedData });
-    //   setNewNode(emptyRouteNode);
-    // }
 
     try {
-      // Xử lý bài kiểm tra (TODO)
+      // TODO: Xử lý bài kiểm tra
       const isTestNode = [
         RouteNodeEnum.MIXING_TEST,
         RouteNodeEnum.READING_TEST,
@@ -173,7 +168,7 @@ export default function useDetailRoutePage() {
         console.log("TODO: Add test to database");
         return;
       }
-
+      console.log("New lesson: ", newLesson);
       // Tạo bài học trước
       let lessonRes;
       switch (newNode.type) {
