@@ -61,7 +61,7 @@ const createRoute = async (routeData: Route) => {
   try {
     const data = {
       ...routeData,
-      image: base64ToBlobUrl(routeData.image),
+      image: base64ToBlobUrl(routeData.image, "image/png"),
     };
     console.log(data);
     const response = await apiClient.post("/routes", data);
@@ -84,7 +84,7 @@ const getRouteById = async (routeId: number) => {
 
 const updateRoute = async (routeId: number, routeData: Route) => {
   try {
-    routeData.image = base64ToBlobUrl(routeData.image);
+    routeData.image = base64ToBlobUrl(routeData.image, "image/png");
     const response = await apiClient.put(`/routes/${routeId}`, routeData);
     return response.data;
   } catch (error) {
@@ -96,7 +96,7 @@ const updateRoute = async (routeId: number, routeData: Route) => {
 const patchRoute = async (routeId: number, routeData: any) => {
   try {
     if (routeData.image) {
-      routeData.image = base64ToBlobUrl(routeData.image);
+      routeData.image = base64ToBlobUrl(routeData.image, "image/png");
     }
     const response = await apiClient.patch(`/routes/${routeId}`, routeData);
     console.log(response.data);

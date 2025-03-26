@@ -22,7 +22,7 @@ import {
 import { WEDialog } from "components/display";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { base64DocxToBlobUrl, base64ToBlobUrl } from "utils/convert";
+import { base64ToBlobUrl } from "utils/convert";
 
 interface AddNodeDialogProps {
   open: boolean;
@@ -193,14 +193,23 @@ export default function AddNodeDialog({
   };
 
   const handleImageChange = (base64: string) => {
-    setData({ ...data, image: base64ToBlobUrl(base64) });
-    setNewLesson((prev) => ({ ...prev, image: base64ToBlobUrl(base64) }));
+    setData({ ...data, image: base64ToBlobUrl(base64, "image/png") });
+    setNewLesson((prev) => ({
+      ...prev,
+      image: base64ToBlobUrl(base64, "image/png"),
+    }));
   };
 
   const handleFileChange = (base64: string) => {
     setNewLesson((prev) => {
       if ("file" in prev) {
-        return { ...prev, file: base64DocxToBlobUrl(base64) };
+        return {
+          ...prev,
+          file: base64ToBlobUrl(
+            base64,
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          ),
+        };
       }
       return prev;
     });
