@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Box, Typography, TextField, Button, Grid, Paper } from "@mui/material";
+import { Box, Typography, TextField, Grid, Paper ,useMediaQuery} from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { TestWriting } from "interfaces";
 import NavigationControls from "../common/NavigationControls";
 import TimeRemaining from "../common/TimeRemaining";
+import SubmitTestButton from "../common/SubmitTestButton";
 import TestInstruction from "../common/TestInstruction";
 const StyledPaper = styled(Paper)({
   padding: "2rem",
@@ -21,14 +22,12 @@ export default function WritingTest({ testWritings }: WritingTestProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [essay, setEssay] = useState<string>("");
   const wordCount = essay.trim().split(/\s+/).filter((word) => word !== "").length;
-
+  const isMobile = useMediaQuery((theme: any) => theme.breakpoints.down("sm"));
   const handleEssayChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setEssay(e.target.value);
   };
 
-  const handleSubmit = () => {
-    console.log("Submitted essay:", essay);
-  };
+
 
   const handleNext = () => {
     if (currentIndex < testWritings.length - 1) {
@@ -49,7 +48,17 @@ export default function WritingTest({ testWritings }: WritingTestProps) {
   return (
     <Box sx={{ margin: "5%", p: 3 }}>
       <TestInstruction type="writing" />
-      <TimeRemaining />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: isMobile ? "flex-start" : "flex-end", 
+          marginRight:"2%",
+          px: 2,
+          mt: 2,
+        }}
+      >
+        <TimeRemaining />
+      </Box>
       <NavigationControls currentIndex={currentIndex} totalItems={testWritings.length} onPrevious={handlePrevious} onNext={handleNext} />
       
       <Grid container spacing={2} sx={{ alignItems: "stretch" }}>
@@ -80,20 +89,19 @@ export default function WritingTest({ testWritings }: WritingTestProps) {
             <Typography variant="body2" sx={{ mt: 2, fontStyle: "italic" }}>
               Word Count: {wordCount}
             </Typography>
-            <Button
-              variant="contained"
+            <Box
               sx={{
-                mt: 2,
-                borderRadius: "8px",
-                backgroundColor: "#00796B",
-                color: "white",
-                alignSelf: "flex-end",
-                padding: "10px 20px",
+                display: "flex",
+                justifyContent: "flex-end",
+                px: 2,
               }}
-              onClick={handleSubmit}
             >
-              SUBMIT
-            </Button>
+              <Box sx={{  maxWidth: "40%",}}>
+              <SubmitTestButton />
+              </Box>
+             
+            </Box>
+
           </StyledPaper>
         </Grid>
       </Grid>

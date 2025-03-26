@@ -7,6 +7,7 @@ import CreateIcon from "@mui/icons-material/Create";
 import ForumIcon from "@mui/icons-material/Forum";
 import BookIcon from "@mui/icons-material/Book";
 import SpellcheckIcon from "@mui/icons-material/Spellcheck";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 import { ReactNode } from "react";
 
 export type TestTypeKey =
@@ -16,7 +17,8 @@ export type TestTypeKey =
   | "listenings"
   | "speakings"
   | "writings"
-  | "mixings";
+  | "mixings"
+  | "toeic";
 
 interface TestOverviewSectionProps {
   type: TestTypeKey;
@@ -63,6 +65,11 @@ export default function TestOverviewSection({ type }: TestOverviewSectionProps) 
       icon: <CreateIcon sx={{ fontSize: 32 }} />,
       description: "Write structured and well-argued essays.",
     },
+    toeic: {
+      title: "TOEIC",
+      icon: <AssignmentIcon sx={{ fontSize: 32 }} />,
+      description: "Complete the TOEIC test to assess your English proficiency.",
+    },
   };
 
   const displayTests =
@@ -75,7 +82,7 @@ export default function TestOverviewSection({ type }: TestOverviewSectionProps) 
 
   const subText =
     type === "mixings"
-      ? "This test includes a mixture of vocabulary, grammar, reading, listening, speaking, and writing questions."
+      ? "This test includes a mixture of vocabulary, grammar, reading, listening, speaking, writing, and TOEIC questions."
       : allTests[type]?.description;
 
   return (

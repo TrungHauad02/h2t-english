@@ -14,7 +14,7 @@ const SubmitTestButton: React.FC<SubmitTestButtonProps> = ({ onClick }) => {
       variant="contained"
       onClick={onClick}
       sx={{
-        width: { xs: "40%", sm: "100%" },
+        width: { xs: "50%", sm: "100%" },
         mt: { xs: 1.5, sm: 2 },
         fontSize: { xs: "0.6rem", sm: "1rem" },
         py: { xs: 0.4, sm: 0.6 },

@@ -76,10 +76,10 @@ export default function HistoryQuestion({
 
         <Stack
           sx={{
-            width: "100%",
             my: 1,
             px: { xs: 1, sm: 2 },
             boxSizing: "border-box",
+            
           }}
         >
           <WERadioGroup
@@ -88,9 +88,6 @@ export default function HistoryQuestion({
             disabled={true}
           />
         </Stack>
-     
-
-
       {isShowExplain && (
         <Box sx={{ px: 2, pb: 2 }}>
           <WEExplain text={question.explanation} />

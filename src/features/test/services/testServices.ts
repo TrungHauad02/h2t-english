@@ -9,6 +9,14 @@ import {
   TestWriting,
   Question,
   TestPartTypeEnum,
+  Toeic,
+  ToeicPart1,
+  ToeicPart2,
+  ToeicPart3_4,
+  ToeicPart5,
+  ToeicPart6,
+  ToeicPart7,
+  ToeicPart7Question,
 } from "interfaces";
 
 const getTestById = (testId: number): Test | null => {
@@ -120,6 +128,42 @@ const getDataTestByTypeAndId = (type: string, id: string) => {
 const getTestByIdAndType = (testId: number, testType: string): Test | null => {
   return mockData.tests.find((t) => t.id === testId && t.type === testType) || null;
 };
+const getToeicById = (toeicId: number): Toeic | null => {
+  return mockData.toeic?.id === toeicId ? mockData.toeic : null;
+};
+
+const getToeicPart1ByIds = (ids: number[]): ToeicPart1[] => {
+  return mockData.toeicPart1List.filter((q) => ids.includes(q.id));
+};
+
+const getToeicPart2ByIds = (ids: number[]): ToeicPart2[] => {
+  return mockData.toeicPart2List.filter((q) => ids.includes(q.id));
+};
+
+const getToeicPart3_4ByIds = (ids: number[]): ToeicPart3_4[] => {
+  return mockData.toeicPart3_4List.filter((q) => ids.includes(q.id));
+};
+
+const getToeicPart5ByIds = (ids: number[]): ToeicPart5[] => {
+  return mockData.toeicPart5List.filter((q) => ids.includes(q.id));
+};
+
+const getToeicPart6ByIds = (ids: number[]): ToeicPart6[] => {
+  return mockData.toeicPart6List.filter((q) => ids.includes(q.id));
+};
+const getToeicPart7ByIds = (ids: number[]): ToeicPart7[] => {
+  return mockData.toeicPart7list?.filter((item) => ids.includes(item.id)) || [];
+};
+
+const getToeicPart7QuestionsByIds = (ids: number[]): ToeicPart7Question[] => {
+  return mockData.toeicPart7Questions.filter((q) => ids.includes(q.id));
+};
+const parseIds = (idsString: string): number[] => {
+  return idsString.split(',').map((id) => parseInt(id.trim())).filter(Boolean);
+};
+
+
+
 
 export const testService = {
   getTestById,
@@ -133,4 +177,13 @@ export const testService = {
   getTestWritingsByIds,
   getDataTestByTypeAndId,
   getQuestionsByIdsAndType,
+  getToeicById,
+  getToeicPart1ByIds,
+  getToeicPart2ByIds,
+  getToeicPart3_4ByIds,
+  getToeicPart5ByIds,
+  getToeicPart6ByIds,
+  getToeicPart7ByIds,
+  getToeicPart7QuestionsByIds,
+  parseIds,
 };

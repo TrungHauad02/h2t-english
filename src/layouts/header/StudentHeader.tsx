@@ -33,6 +33,10 @@ const MENU_ITEMS = [
     path: "/competition-test",
     label: "Competition",
   },
+  {
+    path: "/toeic",
+    label: "Toeic",
+  },
 ];
 
 export default function StudentHeader() {

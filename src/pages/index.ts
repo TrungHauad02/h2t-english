@@ -9,6 +9,7 @@ export { default as StudentProfilePage } from "features/profile/page/StudentProf
 // Profile Page
 export { default as ListHistoryTestPage } from "features/historyTest/pages/ListHistoryTestPage";
 export { default as HistoryTestPage } from "features/historyTest/pages/HistoryTestPage";
+export { default as ReviewHistoryTestPage } from "features/historyTest/pages/ReviewHistoryTestPage";
 // Error Page
 export { default as ErrorPage } from "pages/ErrorPage";
 
@@ -26,6 +27,8 @@ export { default as ListTestPage } from "features/listTest/pages/ListTestPage";
 export { default as ListCompetitionTestPage } from "features/listTest/pages/ListCompetitionTestPage";
 export { default as TestPage } from "features/test/pages/TestPage";
 export { default as CompetitionTestPage } from "features/test/pages/CompetitionTestPage";
+export { default as LisToeicPage } from "features/listTest/pages/ListToeicPage";
+export { default as ToeicPage } from "features/test/pages/ToeicPage";
 // Teacher Pages
 export { default as ManageRoutePage } from "features/teacher/manageRoute/pages/ManageRoutePage";
 export { default as InformationPage } from "features/teacher/information/pages/InformationPage";

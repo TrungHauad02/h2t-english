@@ -8,10 +8,12 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import { mockData } from "../services/mockData";
 import { historyTestService } from "../services/historyTestService";
 import { HistoryRecord } from "../type";
+import { useNavigate } from "react-router-dom";
 
 export default function useListHistoryTest() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState(8);
 
@@ -241,6 +243,12 @@ export default function useListHistoryTest() {
     setPage(1); // Reset về trang đầu khi thay đổi số dòng trên mỗi trang
   };   
 
+  const handleClickRow = (testId: number, type: string) => {
+    const lowerType = type.toLowerCase();
+    navigate(`${lowerType}/${testId}`);
+  };
+  
+
   return {
     filteredHistory,
     paginatedHistory,
@@ -261,6 +269,7 @@ export default function useListHistoryTest() {
     rowsPerPage,
     loading,
     setRowsPerPage,
-    handleItemsPerPageChange
+    handleItemsPerPageChange,
+    handleClickRow,
   };
 }

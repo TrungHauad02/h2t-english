@@ -63,6 +63,7 @@ export default function ListHistoryTest() {
           headerBgColor={headerBgColor}
           hoverBgColor={hoverBgColor}
           borderColor={borderColor}
+          handleClickRow = {hooks.handleClickRow}
         />
 
         {/* Pagination */}

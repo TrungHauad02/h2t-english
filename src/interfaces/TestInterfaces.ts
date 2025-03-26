@@ -15,6 +15,13 @@ export enum TestPartTypeEnum {
   SPEAKING = "SPEAKING",
   WRITING = "WRITING",
 }
+export enum AnswerEnum {
+  A = 'A',
+  B = 'B',
+  C = 'C',
+  D = 'D'
+}
+
 
 export interface Test extends BaseEntity {
   title: string;
@@ -67,6 +74,118 @@ export interface Answer extends BaseEntity {
   content: string;
   correct: boolean;
 }
+
+export interface Toeic extends BaseEntity {
+  title: string;
+  duration: number;
+  questionsPart1: string;
+  questionsPart2: string;
+  questionsPart3: string;
+  questionsPart4: string;
+  questionsPart5: string;
+  questionsPart6: string;
+  questionsPart7: string;
+  totalQuestions: 200;
+  scoreLastOfTest: number | null ;
+}
+
+export interface ToeicPart1 extends BaseEntity {
+  image: string;
+  audio: string;
+  correctAnswer: AnswerEnum;
+}
+
+export interface ToeicPart2 extends BaseEntity {
+  audio: string;
+  correctAnswer: AnswerEnum;
+}
+
+export interface ToeicPart3_4 extends BaseEntity {
+  audio: string;
+  image?: string;
+
+  contentQuestion1: string;
+  contentQuestion2: string;
+  contentQuestion3: string;
+
+  answer1Q1: string;
+  answer2Q1: string;
+  answer3Q1: string;
+  answer4Q1: string;
+
+  answer1Q2: string;
+  answer2Q2: string;
+  answer3Q2: string;
+  answer4Q: string;
+
+  answer1Q3: string;
+  answer2Q3: string;
+  answer3Q3: string;
+  answer4Q3: string;
+
+  correctAnswer1: AnswerEnum;
+  correctAnswer2: AnswerEnum;
+  correctAnswer3: AnswerEnum;
+}
+
+export interface ToeicPart5 extends BaseEntity {
+  content: string;
+  answer1: string;
+  answer2: string;
+  answer3: string;
+  answer4: string;
+  correctAnswer: AnswerEnum;
+}
+
+export interface ToeicPart6 extends BaseEntity {
+  file: string;
+
+  contentQuestion1: string;
+  contentQuestion2: string;
+  contentQuestion3: string;
+  contentQuestion4: string;
+
+  answer1Q1: string;
+  answer2Q1: string;
+  answer3Q1: string;
+  answer4Q1: string;
+
+  answer1Q2: string;
+  answer2Q2: string;
+  answer3Q2: string;
+  answer4Q2: string;
+
+  answer1Q3: string;
+  answer2Q3: string;
+  answer3Q3: string;
+  answer4Q3: string;
+
+  answer1Q4: string;
+  answer2Q4: string;
+  answer3Q4: string;
+  answer4Q4: string;
+
+  correctAnswer1: AnswerEnum;
+  correctAnswer2: AnswerEnum;
+  correctAnswer3: AnswerEnum;
+  correctAnswer4: AnswerEnum;
+}
+
+export interface ToeicPart7 extends BaseEntity {
+  file: string;
+  questions: string;
+}
+
+export interface ToeicPart7Question extends BaseEntity {
+  content: string;
+  answer1: string;
+  answer2: string;
+  answer3: string;
+  answer4: string;
+  correctAnswer: AnswerEnum;
+}
+
+
 
 export interface SubmitTest extends BaseEntity {
   user_id: number;
