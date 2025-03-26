@@ -29,6 +29,14 @@ const AppRoutes = () => {
         />
         <Route path="/test/:type" element={<Pages.ListTestPage />} />
         <Route path="/test/:type/:id" element={<Pages.TestPage />} />
+        <Route
+          path="/toeic"
+          element={<Pages.LisToeicPage />}
+        />
+        <Route
+          path="/toeic/:id"
+          element={<Pages.ToeicPage />}
+        />
       </Route>
       <Route path="/admin" element={<Layouts.AdminLayout />}>
         <Route index element={<Pages.ManageUserPage />} />

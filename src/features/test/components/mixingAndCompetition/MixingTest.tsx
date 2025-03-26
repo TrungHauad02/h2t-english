@@ -65,16 +65,7 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
   return (
     <Grid container spacing={2}>
       {isSmallScreen && (
-          <Box
-          sx={{
-            display: "flex",
-            marginRight:"2%",
-            px: 2,
-            mt: 2,
-          }}
-        >
-          <TimeRemaining />
-        </Box>
+       <TimeRemaining />
       )}
 
       <Grid item xs={12} sm={12} md={9} lg={8}>

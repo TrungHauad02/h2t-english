@@ -1,4 +1,4 @@
-import { Test, TestTypeEnum, CompetitionTest } from "interfaces";
+import { Test, TestTypeEnum, CompetitionTest,Toeic } from "interfaces";
 
 const tests: Test[] = Object.values(TestTypeEnum).flatMap((type, typeIndex) =>
   Array.from({ length: 10 }, (_, i) => ({
@@ -82,8 +82,26 @@ const competitionTests: CompetitionTest[] = [
     parts: [1, 2, 3, 4, 5, 6],
   },
 ];
+const toeics: Toeic[] = Array.from({ length: 10 }, (_, i) => ({
+  id: i + 1,
+  title: `TOEIC Practice Test ${i + 1}`,
+  duration: 120,
+  questionsPart1: "Part 1 Questions",
+  questionsPart2: "Part 2 Questions",
+  questionsPart3: "Part 3 Questions",
+  questionsPart4: "Part 4 Questions",
+  questionsPart5: "Part 5 Questions",
+  questionsPart6: "Part 6 Questions",
+  questionsPart7: "Part 7 Questions",
+  totalQuestions: 200,
+  scoreLastOfTest: i % 2 === 0 ? Math.floor(Math.random() * 201) : null,
+  status: true,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+}));
 
 export const mockData = {
   tests,
+  toeics,
   competitionTests,
 };
