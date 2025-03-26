@@ -29,7 +29,7 @@ import {
     const [error, setError] = useState(false);
   
     const isMobile = useMediaQuery((theme: any) =>
-      theme.breakpoints.down("sm")
+      theme.breakpoints.down("md")
     );
   
     useEffect(() => {

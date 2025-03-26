@@ -10,6 +10,7 @@ import {
   SubmitTestAnswer,
   SubmitTestSpeaking,
   SubmitTestWriting,
+  Test,
 } from "interfaces";
 import {
   HistoryListeningTest,
@@ -17,26 +18,40 @@ import {
   HistorySpeakingTest,
   HistoryWritingTest,
   HistoryMixingTest,
+  HistoryCompetitionTest
 } from "../components/historyTest";
 
 export default function HistoryTestPage() {
   const { type, id } = useParams();
-  const testType = type?.toUpperCase() as keyof typeof TestTypeEnum;
   const testId = Number(id);
 
   if (isNaN(testId)) {
     return <Box sx={{ textAlign: "center", mt: 4 }}>Invalid Test ID</Box>;
   }
 
-  const test = testService.getTestByIdAndType(testId, testType);
+  const isCompetition = type?.toLowerCase() === "competition";
+
+  const test = isCompetition
+    ? testService.getCompetitionTestById(testId)
+    : testService.getTestByIdAndType(testId, type?.toUpperCase() as keyof typeof TestTypeEnum);
+
   if (!test) {
     return <Box sx={{ textAlign: "center", mt: 4 }}>Test not found.</Box>;
   }
 
   const testParts = testService.getTestPartsByIds(test.parts);
-  const submitAnswers: SubmitTestAnswer[] = historyTestService.getSubmitAnswersByTestId(testId);
-  const submitSpeakings: SubmitTestSpeaking[] = historyTestService.getSubmitSpeakingByTestId(testId);
-  const submitWritings: SubmitTestWriting[] = historyTestService.getSubmitWritingByTestId(testId);
+
+  const submitAnswers: SubmitTestAnswer[] = isCompetition
+    ? historyTestService.getSubmitCompetitionAnswers(testId)
+    : historyTestService.getSubmitAnswersByTestId(testId);
+
+  const submitSpeakings: SubmitTestSpeaking[] = isCompetition
+    ? historyTestService.getSubmitCompetitionSpeakings(testId)
+    : historyTestService.getSubmitSpeakingByTestId(testId);
+
+  const submitWritings: SubmitTestWriting[] = isCompetition
+    ? historyTestService.getSubmitCompetitionWritings(testId)
+    : historyTestService.getSubmitWritingByTestId(testId);
 
   const testReadings = testService.getTestReadingsByIds(
     testParts.filter((p) => p.type === TestPartTypeEnum.READING).map((p) => p.id)
@@ -61,7 +76,19 @@ export default function HistoryTestPage() {
   };
 
   const renderTest = () => {
-    switch (test.type) {
+    if (isCompetition) {
+      return (
+        <HistoryCompetitionTest
+          mixingTestParts={testParts}
+          submitAnswers={submitAnswers}
+          submitSpeakings={submitSpeakings}
+          submitWritings={submitWritings}
+        />
+      );
+    }
+
+    const regularTest = test as Test;
+    switch (regularTest.type) {
       case TestTypeEnum.MIXING:
         return (
           <HistoryMixingTest

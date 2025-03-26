@@ -22,7 +22,7 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({ score, total }) => {
         p: 3,
         borderRadius: 3,
         ml: "auto", 
-        width: isMobile ? "100%" : "fit-content",
+        width: isMobile ? "50%" : "fit-content",
         minWidth: "180px",
         marginBottom:"2%",
         bgcolor: isDarkMode
@@ -31,12 +31,13 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({ score, total }) => {
         border: `2px solid ${isDarkMode ? color.emerald600 : color.emerald400}`,
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+      <Box sx={{ display: "flex", alignItems: "center", mb: 1, }}>
         <EmojiEventsIcon
           sx={{
             color: isDarkMode ? color.emerald300 : color.emerald600,
             mr: 1,
           }}
+          
         />
         <Typography
           variant="subtitle1"

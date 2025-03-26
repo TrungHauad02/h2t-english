@@ -5,7 +5,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { TestPart } from "interfaces";
 import { testService } from "features/test/services/testServices";
-
+import useColor from "theme/useColor";
 interface SpeakingPartProps {
   testParts: TestPart[];
   startSerial: number;
@@ -21,7 +21,7 @@ export default function SpeakingPart({ testParts, startSerial }: SpeakingPartPro
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunks = useRef<Blob[]>([]);
-
+  const color = useColor();
   useEffect(() => {
     async function fetchQuestions() {
       try {
@@ -163,13 +163,10 @@ export default function SpeakingPart({ testParts, startSerial }: SpeakingPartPro
                 onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
                 disabled={currentIndex === 0}
                 sx={{
-                  backgroundColor: "#1B5E20",
-                  color: "white",
-                  px: { xs: 1.5, sm: 2.5 },
-                  py: { xs: 0.6, sm: 1 },
-                  fontSize: { xs: "0.75rem", sm: "0.9rem" },
-                  fontWeight: "bold",
-                  boxShadow: "2px 2px 5px rgba(0,0,0,0.2)",
+                  bgcolor: color.emerald400,
+                  "&:hover": {
+                    bgcolor: color.emerald500,
+                  },
                 }}
               >
                 Previous
@@ -181,13 +178,10 @@ export default function SpeakingPart({ testParts, startSerial }: SpeakingPartPro
                 onClick={() => setCurrentIndex((prev) => Math.min(prev + 1, totalQuestions - 1))}
                 disabled={currentIndex === totalQuestions - 1}
                 sx={{
-                  backgroundColor: "#1B5E20",
-                  color: "white",
-                  px: { xs: 1.5, sm: 2.5 },
-                  py: { xs: 0.6, sm: 1 },
-                  fontSize: { xs: "0.75rem", sm: "0.9rem" },
-                  fontWeight: "bold",
-                  boxShadow: "2px 2px 5px rgba(0,0,0,0.2)",
+                  bgcolor: color.emerald400,
+                  "&:hover": {
+                    bgcolor: color.emerald500,
+                  },
                 }}
               >
                 Next

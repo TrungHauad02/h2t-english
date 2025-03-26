@@ -10,6 +10,8 @@ const AppRoutes = () => {
         <Route path="/profile" element={<Pages.StudentProfilePage />} />
         <Route path="/history-test" element={<Pages.ListHistoryTestPage />} />
         <Route path="/history-test/:type/:id" element={<Pages.HistoryTestPage />} />
+        <Route path="/history-test/:type/:id/review" element={<Pages.ReviewHistoryTestPage />} />
+        
         <Route path="/login" element={<Pages.LoginPage />} />
         <Route path="/register" element={<Pages.RegisterPage />} />
         <Route path="/forgot-password" element={<Pages.ResetPasswordPage />} />

@@ -55,7 +55,7 @@ const CommentTest: React.FC<CommentTestProps> = ({ text }) => {
       <Box sx={{ pl: 5 }}>
         <Typography
           variant="body1"
-          sx={{ color: isDarkMode ? color.gray200 : color.gray800, whiteSpace: "pre-line" }}
+          sx={{ color: isDarkMode ? color.gray200 : color.gray800, whiteSpace: "pre-line" ,}}
         >
           {text || "No comment provided."}
         </Typography>

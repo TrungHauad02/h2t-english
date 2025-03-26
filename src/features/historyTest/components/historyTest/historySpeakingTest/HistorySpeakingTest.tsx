@@ -5,6 +5,7 @@ import {
   Stack,
   Grid,
   Button,
+  useMediaQuery
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -51,14 +52,14 @@ export default function HistorySpeakingTest({
 
   const currentQuestion = questionsList[currentIndex];
   const currentAnswer = submitSpeakings.find((a) => a.question_id === currentQuestion?.id);
-
+  const isMobile = useMediaQuery((theme: any) => theme.breakpoints.down("sm"));
   return (
     <Box sx={{ margin: "5%", p: 2 }}>
       
       <ScoreDisplay score={42} total={50} />
       <CommentTest text="Please review your answer carefully and consider improving your grammar, structure, or coherence where needed." />
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={9}>
+      <Grid container spacing={2} direction={isMobile ? "column-reverse" : "row"}>
+        <Grid item xs={12} sm={9} >
           <Stack
             direction="column"
             spacing={2}
@@ -189,7 +190,7 @@ export default function HistorySpeakingTest({
         </Grid>
 
         <Grid item xs={12} sm={3}>
-          <TestSpeakingQuestionGrid
+        <TestSpeakingQuestionGrid
             testSpeakings={testSpeakings}
             submitSpeakings={submitSpeakings}
             currentIndex={currentIndex}

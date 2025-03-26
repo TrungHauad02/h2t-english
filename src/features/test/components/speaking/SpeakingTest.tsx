@@ -7,6 +7,7 @@ import { TestSpeaking, Question } from "interfaces";
 import { testService } from "features/test/services/testServices";
 import TestSpeakingQuestionGrid from "./TestSpeakingQuestionGrid"; 
 import TestInstruction from "../common/TestInstruction";
+import TimeRemaining from "../common/TimeRemaining";
 import useColor from "theme/useColor";
 interface SpeakingTestProps {
   testSpeakings: TestSpeaking[];
@@ -55,6 +56,17 @@ export default function SpeakingTest({ testSpeakings }: SpeakingTestProps) {
   return (
     <Box sx={{ margin: "5%", p: 2 }}>
       <TestInstruction type="speaking" />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: isMobile ? "flex-start" : "flex-end", 
+          marginRight:"2%",
+          px: 2,
+          mt: 2,
+        }}
+      >
+        <TimeRemaining />
+      </Box>
       <Grid container spacing={2} direction={isMobile ? "column-reverse" : "row"}>
         <Grid item xs={12} sm={9}>
           <Stack

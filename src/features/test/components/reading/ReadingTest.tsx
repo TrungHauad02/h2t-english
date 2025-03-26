@@ -68,7 +68,18 @@ export default function ReadingTest({ testReadings }: ReadingTestProps) {
   return (
     <Box sx={{ width: "100%", p: { xs: 2, sm: 3 } }}>
       <TestInstruction type="reading" />
-      <TimeRemaining />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: isMobile ? "flex-start" : "flex-end", 
+          marginRight:"2%",
+          px: 2,
+          mt: 2,
+        }}
+      >
+        <TimeRemaining />
+      </Box>
+
       <NavigationControls
         currentIndex={currentIndex}
         totalItems={totalReadings}
@@ -104,11 +115,18 @@ export default function ReadingTest({ testReadings }: ReadingTestProps) {
 
             <Box sx={{ width: isMobile ? "100%" : "50%", p: 2, overflowY: "auto" }}>
               <AnswerQuestionSection questions={currentReading.questions} startSerial={currentReading.startSerial} />
-              <SubmitTestButton />
+             
             </Box>
           </Stack>
         )
       )}
+    <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
+        <Box sx={{ width: { xs: "50%", sm: "20%" },}}>
+          <SubmitTestButton />
+        </Box>
+      </Box>
+
+      
       
     </Box>
   );

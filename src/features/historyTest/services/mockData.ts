@@ -15,6 +15,9 @@ import {
   SubmitTestAnswer,
   SubmitTestSpeaking,
   SubmitTestWriting,
+  SubmitCompetitionAnswer,
+  SubmitCompetitionSpeaking,
+  SubmitCompetitionWriting,
 } from "interfaces";
 
 const test: Test[] = [
@@ -649,6 +652,45 @@ const submitTestWriting: SubmitTestWriting[] = [
     comment: "Good structure and ideas. Some grammar mistakes."
   },
 ];
+const submitCompetitionAnswer: SubmitCompetitionAnswer[] = [
+  {
+    id: 1,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitCompetition_id: 1,
+    question_id: 601,
+    answer_id: 701,
+  },
+];
+
+const submitCompetitionSpeaking: SubmitCompetitionSpeaking[] = [
+  {
+    id: 1,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitCompetition_id: 1,
+    question_id: 801,
+    transcript: "Competition speaking transcript",
+    score: 9,
+  },
+];
+
+const submitCompetitionWriting: SubmitCompetitionWriting[] = [
+  {
+    id: 1,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitCompetition_id: 1,
+    CompetitionWriting_id: 901,
+    content: "Competition writing content",
+    score: 8,
+  },
+];
+
+
 
 
 export const mockData = {
@@ -666,4 +708,7 @@ export const mockData = {
   submitTestAnswer,
   submitTestSpeaking,
   submitTestWriting,
+  submitCompetitionAnswer,
+  submitCompetitionSpeaking,
+  submitCompetitionWriting,
 };

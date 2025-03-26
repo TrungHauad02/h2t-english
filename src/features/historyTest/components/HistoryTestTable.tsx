@@ -14,6 +14,7 @@ interface HistoryTestTableProps {
     headerBgColor: string;
     hoverBgColor: string;
     borderColor: string;
+    handleClickRow: (id: number, type: string) => void;
   }
   
   export default function HistoryTestTable({
@@ -24,6 +25,7 @@ interface HistoryTestTableProps {
     headerBgColor,
     hoverBgColor,
     borderColor,
+    handleClickRow
   }: HistoryTestTableProps) {
     const theme = useTheme();
     const isMdDown = useMediaQuery(theme.breakpoints.down("md"));
@@ -91,7 +93,8 @@ interface HistoryTestTableProps {
                     ) : paginatedHistory.length > 0 ? (
                         paginatedHistory.map((record) => (
                             <Fade in={true} key={`${record.type}-${record.id}`}>
-                                <TableRow sx={{ transition: "background-color 0.2s", cursor: "pointer", "&:hover": { bgcolor: hoverBgColor }, borderBottom: `1px solid ${borderColor}` }}>
+                                <TableRow sx={{ transition: "background-color 0.2s", cursor: "pointer", "&:hover": { bgcolor: hoverBgColor }, borderBottom: `1px solid ${borderColor}` }}
+                                onClick={() => handleClickRow(record.id, record.testType)}>
                                     <TableCell component="th" scope="row" sx={{ color: textColor, fontWeight: "medium" }}>
                                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                                             <Box sx={{ color: getIconColorByType(record.testType || "", isDarkMode, color), display: "flex", alignItems: "center", justifyContent: "center" }}>

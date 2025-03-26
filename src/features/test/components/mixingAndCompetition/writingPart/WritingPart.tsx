@@ -5,7 +5,7 @@ import { TestPart, TestPartTypeEnum, TestWriting } from "interfaces";
 import { testService } from "features/test/services/testServices";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-
+import useColor from "theme/useColor";
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   borderRadius: "1rem",
@@ -57,7 +57,7 @@ export default function WritingPart({ testParts, startSerial }: WritingPartProps
   };
 
   const currentWriting = testWritings[currentIndex];
-
+  const color = useColor();
   return (
     <Box sx={{ margin: { xs: "3%", sm: "5%" }, p: { xs: 1.5, sm: 3 }, display: "flex", flexDirection: "column", alignItems: "center" }}>
       <StyledPaper elevation={3}>
@@ -92,13 +92,11 @@ export default function WritingPart({ testParts, startSerial }: WritingPartProps
           onClick={handlePrevious}
           disabled={currentIndex === 0}
           sx={{
-            backgroundColor: "#1B5E20",
-            color: "white",
-            px: { xs: 2, sm: 3 },
-            py: { xs: 0.8, sm: 1 },
             fontSize: { xs: "0.75rem", sm: "0.9rem" },
-            fontWeight: "bold",
-            minWidth: "120px",
+            bgcolor: color.emerald400,
+            "&:hover": {
+              bgcolor: color.emerald500,
+            },
           }}
         >
           Previous
@@ -110,13 +108,11 @@ export default function WritingPart({ testParts, startSerial }: WritingPartProps
           onClick={handleNext}
           disabled={currentIndex === testWritings.length - 1}
           sx={{
-            backgroundColor: "#1B5E20",
-            color: "white",
-            px: { xs: 2, sm: 3 },
-            py: { xs: 0.8, sm: 1 },
-            fontSize: { xs: "0.75rem", sm: "0.9rem" },
-            fontWeight: "bold",
-            minWidth: "120px",
+            fontSize: { xs: "0.75rem", sm: "0.7rem" },
+            bgcolor: color.emerald400,
+            "&:hover": {
+              bgcolor: color.emerald500,
+            },
           }}
         >
           Next

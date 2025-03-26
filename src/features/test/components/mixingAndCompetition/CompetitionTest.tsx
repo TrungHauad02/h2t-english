@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Grid, useMediaQuery, useTheme } from "@mui/material";
+import { Grid, useMediaQuery, useTheme,Box } from "@mui/material";
 import TestTabs from "./TestTabs";
 import { TestPart, TestPartTypeEnum } from "interfaces";
 import VocabularyAndGrammarPart from "./vocabularyAndGrammarPart/VocabularyAndGrammarPart";
@@ -28,7 +28,7 @@ const tabOrder: TestPartTypeEnum[] = [
 
 const CompetitionTest: React.FC<CompetitionTestProps> = ({ competitionTestParts }) => {
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const [activeTab, setActiveTab] = useState<TestPartTypeEnum>(TestPartTypeEnum.VOCABULARY);
 
@@ -65,13 +65,20 @@ const CompetitionTest: React.FC<CompetitionTestProps> = ({ competitionTestParts 
 
   return (
     <Grid container spacing={2} sx={{ p: 3 }}>
-      {isSmallScreen && (
-        <Grid item xs={12}>
+     {isSmallScreen && (
+          <Box
+          sx={{
+            display: "flex",
+            marginRight:"2%",
+            px: 2,
+            mt: 2,
+          }}
+        >
           <TimeRemaining />
-        </Grid>
+        </Box>
       )}
 
-      <Grid item xs={12} sm={8} md={9} lg={8}>
+      <Grid item xs={12} sm={12} md={9} lg={8}>
         <TestTabs
           activeTab={activeTab.toLowerCase()}
           onTabChange={(newTab) => setActiveTab(newTab.toUpperCase() as TestPartTypeEnum)}
@@ -88,8 +95,12 @@ const CompetitionTest: React.FC<CompetitionTestProps> = ({ competitionTestParts 
         ) : activeTab === TestPartTypeEnum.WRITING ? (
           <WritingPart testParts={competitionTestParts} startSerial={startSerial} />
         ) : null}
-        {isSmallScreen && (
-                <SubmitTestButton/>
+          {isSmallScreen && (
+           <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
+           <Box sx={{ width: { xs: "50%", sm: "20%" },}}>
+             <SubmitTestButton />
+           </Box>
+         </Box>
               )}
       </Grid>
 

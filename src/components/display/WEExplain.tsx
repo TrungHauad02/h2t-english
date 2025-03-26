@@ -16,7 +16,7 @@ export default function WEExplain({ text, sx }: WEExplainProps) {
     p: 3,
     borderRadius: 3,
     borderLeft: `6px solid ${isDarkMode ? color.emerald400 : color.emerald500}`,
-    width: "100%",
+      
     bgcolor: isDarkMode
       ? alpha(color.teal800, 0.5)
       : alpha(color.emerald100, 0.7),

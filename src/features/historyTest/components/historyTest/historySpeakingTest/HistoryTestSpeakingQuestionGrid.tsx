@@ -54,22 +54,20 @@ const TestSpeakingQuestionGrid: React.FC<Props> = ({
         width: "100%",
       }}
     >
-      <Grid container spacing={1} justifyContent="center">
+      <Grid container spacing={1} >
         {questionsList.map((_, index) => (
-          <Grid item key={index} xs={2} >
+          <Grid item key={index} xs={2} sm={4} >
             <Stack
               onClick={() => onSelect(index)}
               sx={{
                 border: "1px solid",
-                p: 0.5,
-                minWidth: 32,
-                minHeight: 32,
+                padding: 0.5,
+                minWidth: 24,
+                minHeight: 24,
                 alignItems: "center",
                 justifyContent: "center",
                 cursor: "pointer",
                 bgcolor: getColor(index),
-                color: "white",
-                fontWeight: "bold",
                 boxShadow:
                   currentIndex === index
                     ? `0 0 0 2px ${color.emerald300}`

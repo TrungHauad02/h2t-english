@@ -16,7 +16,6 @@ import HistorySpeaking from "./HistorySpeakingPart";
 import HistoryWriting from "./HistoryWritingPart";
 import { testService } from "features/test/services/testServices";
 import TestQuestionGrid from "./TestQuestionGrid";
-import CommentTest from "../common/CommentTest";
 import ScoreDisplay from "../common/ScoreDisplay";
 
 interface HistoryMixingTestProps {
@@ -42,7 +41,7 @@ const HistoryMixingTest: React.FC<HistoryMixingTestProps> = ({
   submitWritings,
 }) => {
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const [activeTab, setActiveTab] = useState<TestPartTypeEnum>(TestPartTypeEnum.VOCABULARY);
 
@@ -107,7 +106,7 @@ const HistoryMixingTest: React.FC<HistoryMixingTestProps> = ({
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} sm={8} md={9} lg={8}>
+      <Grid item xs={12} sm={12} md={9} lg={8}>
 
       {isSmallScreen && (
         <ScoreDisplay score={42} total={50} />
@@ -115,9 +114,6 @@ const HistoryMixingTest: React.FC<HistoryMixingTestProps> = ({
         <TestTabs
           activeTab={activeTab.toLowerCase()}
           onTabChange={(newTab) => setActiveTab(newTab.toUpperCase() as TestPartTypeEnum)}
-        />
-           <CommentTest 
-        text = {"Please review your answer carefully and consider improving your grammar, structure, or coherence where needed."}
         />
 
         {activeTab === TestPartTypeEnum.VOCABULARY || activeTab === TestPartTypeEnum.GRAMMAR ? (

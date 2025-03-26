@@ -9,6 +9,7 @@ export { default as StudentProfilePage } from "features/profile/page/StudentProf
 // Profile Page
 export { default as ListHistoryTestPage } from "features/historyTest/pages/ListHistoryTestPage";
 export { default as HistoryTestPage } from "features/historyTest/pages/HistoryTestPage";
+export { default as ReviewHistoryTestPage } from "features/historyTest/pages/ReviewHistoryTestPage";
 // Error Page
 export { default as ErrorPage } from "pages/ErrorPage";
 

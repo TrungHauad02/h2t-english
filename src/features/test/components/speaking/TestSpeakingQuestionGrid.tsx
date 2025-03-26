@@ -57,7 +57,7 @@ const TestSpeakingQuestionGrid: React.FC<Props> = ({
     >
       <Grid container spacing={1}>
         {questionsList.map((question, index) => (
-          <Grid item key={question.id} xs={2}>
+          <Grid item key={question.id} xs={2} sm={4}>
             <Stack
               onClick={() => onSelect(index)}
               sx={{
@@ -70,9 +70,7 @@ const TestSpeakingQuestionGrid: React.FC<Props> = ({
                 cursor: "pointer",
                 bgcolor: isAnswered(question.id)
                   ? color.emerald500
-                  : color.red500,
-                color: "white",
-                fontWeight: "bold",
+                  : "white",
                 boxShadow:
                   currentIndex === index
                     ? `0 0 0 2px ${color.emerald300}`
