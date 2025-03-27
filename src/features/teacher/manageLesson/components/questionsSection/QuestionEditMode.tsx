@@ -4,6 +4,8 @@ import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { AnswersSection, QuestionDetailsSection } from "./editMode";
 import { WESaveChangeButtons } from "components/input";
+import { useState } from "react";
+import { WEConfirmDelete } from "components/display";
 
 interface QuestionEditModeProps {
   editData: LessonQuestion;
@@ -21,9 +23,26 @@ export function QuestionEditMode({
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const accentColor = isDarkMode ? color.teal300 : color.teal600;
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleQuestionChange = (field: keyof LessonQuestion, value: any) => {
     setEditData({ ...editData, [field]: value });
+  };
+
+  const handleOpenDeleteDialog = (index: number) => {
+    const id = editData.answers[index].id;
+    if (id === -1) {
+      handleDelete();
+      return;
+    }
+    setDeleteId(id);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
   };
 
   const handleAnswerChange = (
@@ -38,7 +57,7 @@ export function QuestionEditMode({
 
   const addNewAnswer = () => {
     const newAnswer: LessonAnswer = {
-      id: Date.now(),
+      id: -1,
       content: "",
       correct: false,
       questionId: editData.id,
@@ -47,11 +66,17 @@ export function QuestionEditMode({
     setEditData({ ...editData, answers: [...editData.answers, newAnswer] });
   };
 
-  const removeAnswer = (index: number) => {
+  const handleDelete = () => {
     // TODO: Remove in db
     const newAnswers = [...editData.answers];
-    newAnswers.splice(index, 1);
+    newAnswers.splice(
+      newAnswers.findIndex((a) => a.id === deleteId),
+      1
+    );
     setEditData({ ...editData, answers: newAnswers });
+    setOpenDeleteDialog(false);
+    setDeleteId(null);
+    setIsDeleting(false);
   };
 
   return (
@@ -67,13 +92,21 @@ export function QuestionEditMode({
         editData={editData}
         handleAnswerChange={handleAnswerChange}
         handleAddAnswer={addNewAnswer}
-        handleRemoveAnswer={removeAnswer}
+        handleRemoveAnswer={handleOpenDeleteDialog}
         accentColor={accentColor}
       />
 
       <WESaveChangeButtons
         handleSave={handleSave}
         handleCancel={handleCancel}
+      />
+
+      <WEConfirmDelete
+        open={openDeleteDialog}
+        onCancel={handleCloseDeleteDialog}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
+        resourceName={editData.answers.find((a) => a.id === deleteId)?.content}
       />
     </Box>
   );
