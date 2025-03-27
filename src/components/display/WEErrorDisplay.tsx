@@ -2,28 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useMediaQuery, Theme } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../redux/type";
+import { removeError, clearAllErrors } from "../../redux/slices/errorSlice";
 import {
-  removeError,
-  clearAllErrors,
-  ErrorItem,
-} from "../../redux/slices/errorSlice";
-import {
-  ErrorButton,
-  ErrorList,
   ErrorDetails,
-  ErrorNotification,
+  ErrorFab,
+  ErrorItem,
+  ErrorList,
+  ErrorSnackbar,
+  WEErrorDisplayProps,
 } from "./error";
-
-interface WEErrorDisplayProps {
-  position?: {
-    vertical: "top" | "bottom";
-    horizontal: "left" | "right";
-  };
-  // Auto hide errors after a timeout (in ms), 0 means never auto hide
-  autoHideTimeout?: number;
-  // Maximum number of errors to show in the list
-  maxErrors?: number;
-}
 
 export default function WEErrorDisplay({
   position = { vertical: "bottom", horizontal: "right" },
@@ -36,11 +23,12 @@ export default function WEErrorDisplay({
   const dispatch = useDispatch();
 
   // Get errors from Redux store
-  const errors = useSelector((state: RootState) =>
-    state.error.errors.slice(0, maxErrors)
+  const errors = useSelector((state: RootState) => state.error.errors).slice(
+    0,
+    maxErrors
   );
 
-  // Component state
+  // Local state
   const [isOpen, setIsOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedError, setSelectedError] = useState<ErrorItem | null>(null);
@@ -73,7 +61,10 @@ export default function WEErrorDisplay({
     }
   }, [showSnackbar, autoHideTimeout]);
 
-  // Handlers
+  // Event handlers
+  const handleToggleList = () => setIsOpen(!isOpen);
+  const handleCloseList = () => setIsOpen(false);
+
   const handleDismissError = (errorId: string) => {
     dispatch(removeError(errorId));
   };
@@ -92,14 +83,6 @@ export default function WEErrorDisplay({
     setDetailsDialogOpen(false);
   };
 
-  const handleTogglePanel = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const handleClosePanel = () => {
-    setIsOpen(false);
-  };
-
   const handleCloseSnackbar = () => {
     setShowSnackbar(false);
   };
@@ -112,23 +95,23 @@ export default function WEErrorDisplay({
   return (
     <>
       {/* Floating action button with error count */}
-      <ErrorButton
+      <ErrorFab
         count={errors.length}
         position={position}
+        onClick={handleToggleList}
         isMobile={isMobile}
-        onClick={handleTogglePanel}
       />
 
       {/* Collapsible error list */}
       <ErrorList
-        errors={errors}
         isOpen={isOpen}
+        errors={errors}
         position={position}
         isMobile={isMobile}
+        onClose={handleCloseList}
         onClearAll={handleClearAllErrors}
-        onClose={handleClosePanel}
         onDismissError={handleDismissError}
-        onSelectError={handleShowDetails}
+        onShowDetails={handleShowDetails}
       />
 
       {/* Error details dialog */}
@@ -139,12 +122,12 @@ export default function WEErrorDisplay({
       />
 
       {/* Snackbar for latest error */}
-      <ErrorNotification
+      <ErrorSnackbar
         error={latestError}
         isOpen={showSnackbar}
-        autoHideTimeout={autoHideTimeout}
-        position={position}
         onClose={handleCloseSnackbar}
+        position={position}
+        autoHideTimeout={autoHideTimeout}
       />
     </>
   );

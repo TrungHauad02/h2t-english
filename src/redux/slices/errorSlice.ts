@@ -1,17 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ErrorItem, ErrorSeverity } from "components/display/error/types";
 
-// Define the error interface with proper types
-export type ErrorSeverity = "error" | "warning" | "info";
-
-export interface ErrorItem {
-  id: string;
+// Interface for error payload when adding a new error
+export interface ErrorPayload {
   message: string;
-  timestamp: Date;
   severity: ErrorSeverity;
   details?: string;
 }
-
-export type NewErrorPayload = Omit<ErrorItem, "id" | "timestamp">;
 
 interface ErrorState {
   errors: ErrorItem[];
@@ -25,7 +20,11 @@ export const errorSlice = createSlice({
   name: "error",
   initialState,
   reducers: {
-    addError: (state, action: PayloadAction<NewErrorPayload>) => {
+    /**
+     * Add a new error to the store
+     * Automatically generates ID and timestamp
+     */
+    addError: (state, action: PayloadAction<ErrorPayload>) => {
       const newError: ErrorItem = {
         ...action.payload,
         id: Math.random().toString(36).substring(2, 9),
@@ -33,11 +32,19 @@ export const errorSlice = createSlice({
       };
       state.errors = [newError, ...state.errors];
     },
+
+    /**
+     * Remove a specific error by ID
+     */
     removeError: (state, action: PayloadAction<string>) => {
       state.errors = state.errors.filter(
         (error) => error.id !== action.payload
       );
     },
+
+    /**
+     * Clear all errors from the store
+     */
     clearAllErrors: (state) => {
       state.errors = [];
     },

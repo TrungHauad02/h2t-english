@@ -1,34 +1,42 @@
 import React from "react";
-import { List, ListItem, ListItemText, Paper, Collapse } from "@mui/material";
-import { useDarkMode } from "hooks/useDarkMode";
-import useColor from "theme/useColor";
-import { ErrorItem as ErrorItemType } from "../../../redux/slices/errorSlice";
-import ErrorPanelHeader from "./ErrorPanelHeader";
+import {
+  Collapse,
+  Paper,
+  Box,
+  Typography,
+  IconButton,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
+import { ErrorItem as ErrorItemType, ErrorPosition } from "./types";
 import ErrorItem from "./ErrorItem";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
 
 interface ErrorListProps {
-  errors: ErrorItemType[];
   isOpen: boolean;
-  position: {
-    vertical: "top" | "bottom";
-    horizontal: "left" | "right";
-  };
+  errors: ErrorItemType[];
+  position: ErrorPosition;
   isMobile: boolean;
-  onClearAll: () => void;
   onClose: () => void;
+  onClearAll: () => void;
   onDismissError: (id: string) => void;
-  onSelectError: (error: ErrorItemType) => void;
+  onShowDetails: (error: ErrorItemType) => void;
 }
 
 export default function ErrorList({
-  errors,
   isOpen,
+  errors,
   position,
   isMobile,
-  onClearAll,
   onClose,
+  onClearAll,
   onDismissError,
-  onSelectError,
+  onShowDetails,
 }: ErrorListProps) {
   const colors = useColor();
   const { isDarkMode } = useDarkMode();
@@ -59,10 +67,18 @@ export default function ErrorList({
           flexDirection: "column",
         }}
       >
-        <ErrorPanelHeader
-          errorCount={errors.length}
-          onClearAll={onClearAll}
+        <ErrorListHeader
+          errorsCount={errors.length}
+          isDarkMode={isDarkMode}
+          colors={colors}
           onClose={onClose}
+          onClearAll={onClearAll}
+        />
+
+        <Divider
+          sx={{
+            backgroundColor: isDarkMode ? colors.gray700 : colors.gray300,
+          }}
         />
 
         <List
@@ -86,14 +102,72 @@ export default function ErrorList({
                 key={error.id}
                 error={error}
                 index={index}
-                isLastItem={index === errors.length - 1}
+                totalErrors={errors.length}
                 onDismiss={onDismissError}
-                onClick={onSelectError}
+                onShowDetails={onShowDetails}
+                isDarkMode={isDarkMode}
+                colors={colors}
               />
             ))
           )}
         </List>
       </Paper>
     </Collapse>
+  );
+}
+
+interface ErrorListHeaderProps {
+  errorsCount: number;
+  isDarkMode: boolean;
+  colors: any;
+  onClose: () => void;
+  onClearAll: () => void;
+}
+
+function ErrorListHeader({
+  errorsCount,
+  isDarkMode,
+  colors,
+  onClose,
+  onClearAll,
+}: ErrorListHeaderProps) {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        p: 2,
+        backgroundColor: isDarkMode ? colors.gray800 : colors.gray100,
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{ color: isDarkMode ? colors.gray200 : colors.gray800 }}
+      >
+        {errorsCount === 0 ? "No Errors" : `Errors (${errorsCount})`}
+      </Typography>
+      <Box>
+        {errorsCount > 0 && (
+          <IconButton
+            size="small"
+            onClick={onClearAll}
+            sx={{
+              mr: 1,
+              color: isDarkMode ? colors.gray400 : colors.gray600,
+            }}
+          >
+            <DeleteSweepIcon />
+          </IconButton>
+        )}
+        <IconButton
+          size="small"
+          onClick={onClose}
+          sx={{ color: isDarkMode ? colors.gray400 : colors.gray600 }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </Box>
+    </Box>
   );
 }

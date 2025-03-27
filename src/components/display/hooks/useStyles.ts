@@ -19,8 +19,8 @@ export const useStyles = (isDarkMode: boolean, colors: any) => {
       padding: "20px",
       borderRadius: "8px",
       animation: `${zoomIn} 0.5s ease-out`,
-      minWidth: "400px",
-      maxWidth: "600px",
+      minWidth: { xs: "50%", md: "400px" },
+      maxWidth: { xs: "85%", md: "600px", lg: "800px" },
       margin: "auto",
     },
     titleStyle: {
