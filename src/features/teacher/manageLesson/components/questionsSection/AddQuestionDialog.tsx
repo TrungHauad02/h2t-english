@@ -9,6 +9,7 @@ import { topicService } from "../../services/topicService";
 import { validateQuestion } from "./validateQuestion";
 import { useErrors } from "hooks/useErrors";
 import { extractErrorMessages } from "utils/extractErrorMessages";
+import { toast } from "react-toastify";
 
 interface AddQuestionDialogProps {
   type: QuestionSupportType;
@@ -98,12 +99,15 @@ export default function AddQuestionDialog({
           await topicService.patchTopic(lessonId, {
             questions: [...questions, resData.data.id],
           });
+
           break;
         // TODO: Handle other types
         default:
           break;
       }
-      // TODO: Display success
+
+      //  Display success
+      toast.success("Question updated successfully");
     } catch (error) {
       // Display error using our error component
       showError({

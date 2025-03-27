@@ -6,12 +6,16 @@ import VocabularyEditForm from "./VocabularyEditForm";
 import WEDialog from "components/display/dialog/WEDialog";
 import { useParams } from "react-router-dom";
 import { vocabService } from "features/teacher/manageLesson/services/vocabService";
+import { useErrors } from "hooks/useErrors";
+import { extractErrorMessages } from "utils/extractErrorMessages";
+import { toast } from "react-toastify";
 
 interface ListVocabularyProps {
   data: Vocabulary[];
   fetchData: () => void;
   isAddDialogOpen: boolean;
   setIsAddDialogOpen: (isOpen: boolean) => void;
+  isEditMode: boolean;
 }
 
 export default function ListVocabulary({
@@ -19,6 +23,7 @@ export default function ListVocabulary({
   fetchData,
   isAddDialogOpen,
   setIsAddDialogOpen,
+  isEditMode,
 }: ListVocabularyProps) {
   const { id } = useParams();
   const emptyVocab: Vocabulary = {
@@ -36,6 +41,7 @@ export default function ListVocabulary({
   const [editData, setEditData] = useState<Vocabulary | null>(null);
   const [newVocabularyData, setNewVocabularyData] =
     useState<Vocabulary>(emptyVocab);
+  const { showError } = useErrors();
 
   const handleEdit = (vocabularyId: number) => {
     const vocabulary = data.find((v) => v.id === vocabularyId);
@@ -57,9 +63,20 @@ export default function ListVocabulary({
 
   const handleSave = async () => {
     if (editData) {
-      // TODO: Save to db
-      await vocabService.updateVocab(editData.id, editData);
-      fetchData();
+      // Save to db
+      try {
+        await vocabService.updateVocab(editData.id, editData);
+        fetchData();
+        toast.success("Vocab updated successfully");
+      } catch (error) {
+        // Display error
+        showError({
+          message: "Error updating vocab",
+          severity: "error",
+          details: extractErrorMessages(error),
+        });
+        console.error("Error updating vocab");
+      }
       setDialogOpen(false);
       setEditData(null);
     }
@@ -74,8 +91,14 @@ export default function ListVocabulary({
       // Load paginated data
       fetchData();
       // TODO: Display success
+      toast.success("Vocab created successfully");
     } catch (error) {
-      // TODO: Display error
+      // Display error
+      showError({
+        message: "Error creating vocab",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
       console.error("Error creating vocab");
     }
 
@@ -91,6 +114,8 @@ export default function ListVocabulary({
             <VocabularyViewMode
               vocabulary={vocabulary}
               handleEdit={handleEdit}
+              isEditMode={isEditMode}
+              fetchData={fetchData}
             />
           </Grid>
         ))}

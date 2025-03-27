@@ -19,16 +19,25 @@ export default function VocabularyImageSection({
   const { isDarkMode } = useDarkMode();
 
   return (
-    <Box sx={{ position: "relative" }}>
-      <img
-        src={image}
-        alt={word}
-        style={{
+    <Box sx={{ position: "relative", height: "180px" }}>
+      <Box
+        sx={{
           width: "100%",
-          height: 180,
-          objectFit: "cover",
+          height: "180px",
+          backgroundColor: isDarkMode ? color.gray800 : color.gray200,
+          overflow: "hidden",
         }}
-      />
+      >
+        <img
+          src={image}
+          alt={word}
+          style={{
+            width: "100%",
+            height: "180px",
+            objectFit: "cover",
+          }}
+        />
+      </Box>
       <Box
         sx={{
           position: "absolute",
