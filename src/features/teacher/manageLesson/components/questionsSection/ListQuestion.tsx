@@ -12,6 +12,7 @@ import { extractErrorMessages } from "utils/extractErrorMessages";
 import { WEConfirmDelete } from "components/display";
 import { useParams } from "react-router-dom";
 import { topicService } from "../../services/topicService";
+import { toast } from "react-toastify";
 
 interface ListQuestionProps {
   questions: number[];
@@ -66,6 +67,7 @@ export default function ListQuestion({
         // Save question, answer info
         await aqService.updateQuestion(editData.id, editData);
         fetchData();
+        toast.success("Question updated successfully");
 
         // Clear edit state
         setEditMode(null);

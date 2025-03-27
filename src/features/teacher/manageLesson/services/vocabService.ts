@@ -40,8 +40,19 @@ const updateVocab = async (id: number, data: Vocabulary) => {
   }
 };
 
+const deleteVocab = async (id: number) => {
+  try {
+    const response = await apiClient.delete(`/vocabularies/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting vocab:", error);
+    throw error;
+  }
+};
+
 export const vocabService = {
   getVocabByTopicId,
   createVocab,
   updateVocab,
+  deleteVocab,
 };

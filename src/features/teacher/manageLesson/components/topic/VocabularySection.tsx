@@ -1,22 +1,26 @@
-import { Box, Paper } from "@mui/material";
+import { Box, Button, Paper } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import { ListVocabulary, VocabularyHeader } from "./vocabulary";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import { ListVocabulary } from "./vocabulary";
+import AddIcon from "@mui/icons-material/Add";
 import { Vocabulary } from "interfaces";
 import { useEffect, useState } from "react";
 import { vocabService } from "../../services/vocabService";
 import { useParams } from "react-router-dom";
 import { WEPaginationSelect } from "components/pagination";
+import SectionHeader from "../SectionHeader";
 
 export default function VocabularySection() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const { id } = useParams();
   const [data, setData] = useState<Vocabulary[]>([]);
-  const [page, setPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(8);
-  const totalItems = data.length;
+  const [page, setPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(8);
+  const [totalItems, setTotalItems] = useState<number>(0);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState<boolean>(false);
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
 
   const fetchData = async () => {
     try {
@@ -27,6 +31,7 @@ export default function VocabularySection() {
           parseInt(id)
         );
         setData(resData.data.content);
+        setTotalItems(resData.data.totalElements);
       }
     } catch (error) {
       console.error("Error fetching topics");
@@ -49,6 +54,18 @@ export default function VocabularySection() {
     setIsAddDialogOpen(true);
   };
 
+  const handleEditClick = () => {
+    setIsEditMode(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditMode(false);
+  };
+
+  const handleSaveChanges = () => {
+    setIsEditMode(false);
+  };
+
   return (
     <Box
       component={Paper}
@@ -60,15 +77,36 @@ export default function VocabularySection() {
         my: 4,
       }}
     >
-      <VocabularyHeader
-        numberOfVocab={data.length}
-        onAddClick={handleAddClick}
+      <SectionHeader
+        title={`Vocabulary (${data.length})`}
+        icon={<MenuBookIcon />}
+        isEditMode={isEditMode}
+        handleEditMode={handleEditClick}
+        handleCancelEdit={handleCancelEdit}
+        handleSaveChanges={handleSaveChanges}
       />
+      <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={handleAddClick}
+          sx={{
+            bgcolor: isDarkMode ? color.emerald400 : color.emerald600,
+            color: "white",
+            "&:hover": {
+              bgcolor: isDarkMode ? color.emerald500 : color.emerald700,
+            },
+          }}
+        >
+          Add Vocabulary
+        </Button>
+      </Box>
       <ListVocabulary
         data={data}
         fetchData={fetchData}
         isAddDialogOpen={isAddDialogOpen}
         setIsAddDialogOpen={setIsAddDialogOpen}
+        isEditMode={isEditMode}
       />
       <WEPaginationSelect
         page={page}

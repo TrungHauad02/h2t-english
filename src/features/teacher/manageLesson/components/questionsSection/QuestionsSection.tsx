@@ -12,6 +12,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { useParams } from "react-router-dom";
 import SectionHeader from "../SectionHeader";
 import { topicService } from "../../services/topicService";
+import { toast } from "react-toastify";
 
 interface QuestionsSectionProps {
   questions: number[];
@@ -73,6 +74,7 @@ export default function QuestionsSection({
         default:
           break;
       }
+      toast.success("Questions updated successfully");
     } catch (error) {
       // TODO: Display error
     }
