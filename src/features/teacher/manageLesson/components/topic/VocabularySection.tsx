@@ -18,21 +18,22 @@ export default function VocabularySection() {
   const totalItems = data.length;
   const [isAddDialogOpen, setIsAddDialogOpen] = useState<boolean>(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (id) {
-          const resData = await vocabService.getVocabByTopicId(
-            page,
-            itemsPerPage,
-            parseInt(id)
-          );
-          setData(resData.data.content);
-        }
-      } catch (error) {
-        console.error("Error fetching topics");
+  const fetchData = async () => {
+    try {
+      if (id) {
+        const resData = await vocabService.getVocabByTopicId(
+          page,
+          itemsPerPage,
+          parseInt(id)
+        );
+        setData(resData.data.content);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching topics");
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, [id, page, itemsPerPage]);
 
@@ -65,7 +66,7 @@ export default function VocabularySection() {
       />
       <ListVocabulary
         data={data}
-        setData={setData}
+        fetchData={fetchData}
         isAddDialogOpen={isAddDialogOpen}
         setIsAddDialogOpen={setIsAddDialogOpen}
       />

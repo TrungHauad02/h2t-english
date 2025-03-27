@@ -4,23 +4,24 @@ import { Vocabulary, WordType } from "interfaces";
 import VocabularyViewMode from "./VocabularyViewMode";
 import VocabularyEditForm from "./VocabularyEditForm";
 import WEDialog from "components/display/dialog/WEDialog";
+import { useParams } from "react-router-dom";
+import { vocabService } from "features/teacher/manageLesson/services/vocabService";
 
 interface ListVocabularyProps {
   data: Vocabulary[];
-  setData: (data: Vocabulary[]) => void;
+  fetchData: () => void;
   isAddDialogOpen: boolean;
   setIsAddDialogOpen: (isOpen: boolean) => void;
 }
 
 export default function ListVocabulary({
   data,
-  setData,
+  fetchData,
   isAddDialogOpen,
   setIsAddDialogOpen,
 }: ListVocabularyProps) {
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const [editData, setEditData] = useState<Vocabulary | null>(null);
-  const [newVocabularyData, setNewVocabularyData] = useState<Vocabulary>({
+  const { id } = useParams();
+  const emptyVocab: Vocabulary = {
     id: 0,
     word: "",
     phonetic: "",
@@ -29,8 +30,12 @@ export default function ListVocabulary({
     wordType: WordType.NOUN,
     image: "",
     status: true,
-    topicId: 0,
-  });
+    topicId: id ? parseInt(id) : 0,
+  };
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [editData, setEditData] = useState<Vocabulary | null>(null);
+  const [newVocabularyData, setNewVocabularyData] =
+    useState<Vocabulary>(emptyVocab);
 
   const handleEdit = (vocabularyId: number) => {
     const vocabulary = data.find((v) => v.id === vocabularyId);
@@ -47,53 +52,35 @@ export default function ListVocabulary({
 
   const handleAddCancel = () => {
     setIsAddDialogOpen(false);
-    setNewVocabularyData({
-      id: 0,
-      word: "",
-      phonetic: "",
-      meaning: "",
-      example: "",
-      wordType: WordType.NOUN,
-      image: "",
-      status: true,
-      topicId: 0,
-    });
+    setNewVocabularyData(emptyVocab);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (editData) {
-      const newData = data.map((v) => (v.id === editData.id ? editData : v));
-      setData(newData);
+      // TODO: Save to db
+      await vocabService.updateVocab(editData.id, editData);
+      fetchData();
       setDialogOpen(false);
       setEditData(null);
     }
   };
 
-  const handleAddSave = () => {
-    const newId = data.length > 0 ? Math.max(...data.map((v) => v.id)) + 1 : 1;
+  const handleAddSave = async () => {
+    // Save to db
+    if (!id) return;
 
-    const topicId = data.length > 0 ? data[0].topicId : 0;
-
-    const newVocabulary = {
-      ...newVocabularyData,
-      id: newId,
-      topicId: topicId,
-    };
-
-    setData([...data, newVocabulary]);
+    try {
+      await vocabService.createVocab(newVocabularyData);
+      // Load paginated data
+      fetchData();
+      // TODO: Display success
+    } catch (error) {
+      // TODO: Display error
+      console.error("Error creating vocab");
+    }
 
     setIsAddDialogOpen(false);
-    setNewVocabularyData({
-      id: 0,
-      word: "",
-      phonetic: "",
-      meaning: "",
-      example: "",
-      wordType: WordType.NOUN,
-      image: "",
-      status: true,
-      topicId: 0,
-    });
+    setNewVocabularyData(emptyVocab);
   };
 
   return (
