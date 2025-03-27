@@ -6,6 +6,9 @@ import { AnswersSection, QuestionDetailsSection } from "./editMode";
 import { WEDialog } from "components/display";
 import { aqService } from "../../services/aqService";
 import { topicService } from "../../services/topicService";
+import { validateQuestion } from "./validateQuestion";
+import { useErrors } from "hooks/useErrors";
+import { extractErrorMessages } from "utils/extractErrorMessages";
 
 interface AddQuestionDialogProps {
   type: QuestionSupportType;
@@ -26,6 +29,7 @@ export default function AddQuestionDialog({
 }: AddQuestionDialogProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const { showError } = useErrors();
   const accentColor = isDarkMode ? color.teal300 : color.teal600;
 
   const emptyQuestion: LessonQuestion = {
@@ -83,6 +87,10 @@ export default function AddQuestionDialog({
 
   const handleSave = async () => {
     // Save question
+    // Validate before saving
+    if (!validateQuestion(newQuestion, showError)) {
+      return; // Stop save process if validation fails
+    }
     try {
       const resData = await aqService.createQuestion(newQuestion);
       switch (type) {
@@ -97,7 +105,12 @@ export default function AddQuestionDialog({
       }
       // TODO: Display success
     } catch (error) {
-      // TODO: Display error
+      // Display error using our error component
+      showError({
+        message: "Error creating question",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
       console.error("Error creating question:", error);
     }
     fetchData();

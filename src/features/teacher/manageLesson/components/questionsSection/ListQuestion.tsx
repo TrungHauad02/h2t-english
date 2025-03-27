@@ -7,6 +7,8 @@ import { QuestionEditMode } from "./QuestionEditMode";
 import { QuestionViewMode } from "./QuestionViewMode";
 import { aqService } from "../../services/aqService";
 import { useErrors } from "hooks/useErrors";
+import { validateQuestion } from "./validateQuestion";
+import { extractErrorMessages } from "utils/extractErrorMessages";
 
 interface ListQuestionProps {
   isEditMode: boolean;
@@ -29,28 +31,6 @@ export default function ListQuestion({
   const [editData, setEditData] = useState<LessonQuestion | null>(null);
   const { showError } = useErrors();
 
-  // Validate the question before saving
-  const validateQuestion = (question: LessonQuestion): boolean => {
-    // Check if there's exactly one correct answer
-    const correctAnswersCount = question.answers.filter(
-      (answer) => answer.correct === true
-    ).length;
-
-    if (correctAnswersCount !== 1) {
-      showError({
-        message: "Question must have exactly 1 correct answer",
-        severity: "error",
-        details: `Found ${correctAnswersCount} correct answers. Please mark exactly one answer as correct for question: "${question.content.substring(
-          0,
-          50
-        )}${question.content.length > 50 ? "..." : ""}"`,
-      });
-      return false;
-    }
-
-    return true;
-  };
-
   const handleEdit = (questionId: number) => {
     const question = data.find((q) => q.id === questionId);
     if (question) {
@@ -67,7 +47,7 @@ export default function ListQuestion({
   const handleSave = async () => {
     if (editData) {
       // Validate before saving
-      if (!validateQuestion(editData)) {
+      if (!validateQuestion(editData, showError)) {
         return; // Stop save process if validation fails
       }
 
@@ -84,7 +64,7 @@ export default function ListQuestion({
         showError({
           message: "Error updating question",
           severity: "error",
-          details: error instanceof Error ? error.message : String(error),
+          details: extractErrorMessages(error),
         });
         console.error("Error updating question:", error);
       }
