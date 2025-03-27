@@ -100,7 +100,10 @@ export default function ListeningDetailPage() {
         </div>
 
         <div id="questions-section">
-          <QuestionsSection questions={hooks.data.questions} />
+          <QuestionsSection
+            type="listenings"
+            questions={hooks.data.questions}
+          />
         </div>
 
         <div id="preparation-section">

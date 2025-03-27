@@ -13,21 +13,38 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useDarkMode } from "hooks/useDarkMode";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 interface QuestionViewModeProps {
+  index: number;
   question: LessonQuestion;
   handleEdit: (questionId: number) => void;
+  isEditMode: boolean;
+  onMoveUp: (index: number) => void;
+  onMoveDown: (index: number) => void;
+  total: number;
 }
 
 export function QuestionViewMode({
+  index,
   question,
   handleEdit,
+  isEditMode,
+  onMoveUp,
+  onMoveDown,
+  total,
 }: QuestionViewModeProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
   const accentColor = isDarkMode ? color.teal300 : color.teal600;
   const secondaryTextColor = isDarkMode ? color.gray300 : color.gray600;
+  const disabledColor = isDarkMode ? color.gray500 : color.gray400;
+
+  // Kiểm tra vị trí rìa
+  const isFirst = index === 0;
+  const isLast = index === total - 1;
 
   return (
     <Box>
@@ -49,7 +66,7 @@ export function QuestionViewMode({
             }}
           >
             <Chip
-              label={`Question ${question.serial}`}
+              label={`Question ${index + 1}`}
               sx={{
                 bgcolor: isDarkMode ? color.teal700 : color.teal100,
                 color: isDarkMode ? color.white : color.teal800,
@@ -99,33 +116,81 @@ export function QuestionViewMode({
             </Typography>
           )}
         </Box>
-        <Stack direction={"row"} spacing={2}>
-          <IconButton
-            onClick={() => handleEdit(question.id)}
-            sx={{
-              color: isDarkMode ? color.red400 : color.red600,
-              mt: 1,
-              bgcolor: isDarkMode ? color.gray600 : color.gray100,
-              "&:hover": {
-                bgcolor: isDarkMode ? color.gray500 : color.gray300,
-              },
-            }}
-          >
-            <DeleteIcon />
-          </IconButton>
-          <IconButton
-            onClick={() => handleEdit(question.id)}
-            sx={{
-              color: accentColor,
-              bgcolor: isDarkMode ? color.gray600 : color.gray100,
-              "&:hover": {
-                bgcolor: isDarkMode ? color.gray500 : color.gray300,
-              },
-            }}
-          >
-            <EditIcon />
-          </IconButton>
-        </Stack>
+        {isEditMode && (
+          <Stack direction={"row"} spacing={2}>
+            <IconButton
+              onClick={() => onMoveUp(index)}
+              disabled={isFirst}
+              sx={{
+                color: isFirst
+                  ? disabledColor
+                  : isDarkMode
+                  ? color.teal300
+                  : color.teal600,
+                mt: 1,
+                bgcolor: isDarkMode ? color.gray600 : color.gray100,
+                "&:hover": {
+                  bgcolor: isFirst
+                    ? "inherit"
+                    : isDarkMode
+                    ? color.gray500
+                    : color.gray300,
+                },
+                opacity: isFirst ? 0.5 : 1,
+              }}
+            >
+              <ArrowUpwardIcon />
+            </IconButton>
+            <IconButton
+              onClick={() => onMoveDown(index)}
+              disabled={isLast}
+              sx={{
+                color: isLast
+                  ? disabledColor
+                  : isDarkMode
+                  ? color.teal300
+                  : color.teal600,
+                mt: 1,
+                bgcolor: isDarkMode ? color.gray600 : color.gray100,
+                "&:hover": {
+                  bgcolor: isLast
+                    ? "inherit"
+                    : isDarkMode
+                    ? color.gray500
+                    : color.gray300,
+                },
+                opacity: isLast ? 0.5 : 1,
+              }}
+            >
+              <ArrowDownwardIcon />
+            </IconButton>
+            <IconButton
+              onClick={() => handleEdit(question.id)}
+              sx={{
+                color: isDarkMode ? color.red400 : color.red600,
+                mt: 1,
+                bgcolor: isDarkMode ? color.gray600 : color.gray100,
+                "&:hover": {
+                  bgcolor: isDarkMode ? color.gray500 : color.gray300,
+                },
+              }}
+            >
+              <DeleteIcon />
+            </IconButton>
+            <IconButton
+              onClick={() => handleEdit(question.id)}
+              sx={{
+                color: accentColor,
+                bgcolor: isDarkMode ? color.gray600 : color.gray100,
+                "&:hover": {
+                  bgcolor: isDarkMode ? color.gray500 : color.gray300,
+                },
+              }}
+            >
+              <EditIcon />
+            </IconButton>
+          </Stack>
+        )}
       </Box>
 
       <Divider

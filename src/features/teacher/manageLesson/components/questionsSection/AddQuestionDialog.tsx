@@ -1,34 +1,39 @@
 import { useState } from "react";
-import { LessonQuestion, LessonAnswer } from "interfaces";
+import { LessonQuestion, LessonAnswer, QuestionSupportType } from "interfaces";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { AnswersSection, QuestionDetailsSection } from "./editMode";
 import { WEDialog } from "components/display";
+import { aqService } from "../../services/aqService";
+import { topicService } from "../../services/topicService";
 
 interface AddQuestionDialogProps {
+  type: QuestionSupportType;
+  questions: number[];
   open: boolean;
   onClose: () => void;
   lessonId: number;
-  onQuestionAdded: (newQuestion: LessonQuestion) => void;
+  fetchData: () => void;
 }
 
 export default function AddQuestionDialog({
+  type,
+  questions, // Use to update questions field
   open,
   onClose,
   lessonId,
-  onQuestionAdded,
+  fetchData,
 }: AddQuestionDialogProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const accentColor = isDarkMode ? color.teal300 : color.teal600;
 
-  const [newQuestion, setNewQuestion] = useState<LessonQuestion>({
+  const emptyQuestion: LessonQuestion = {
     id: Date.now(),
     content: "",
-    serial: 0,
     explanation: "",
     lessonId: lessonId,
-    status: true,
+    status: false,
     answers: [
       {
         id: Date.now(),
@@ -38,7 +43,9 @@ export default function AddQuestionDialog({
         status: true,
       },
     ],
-  });
+  };
+
+  const [newQuestion, setNewQuestion] = useState<LessonQuestion>(emptyQuestion);
 
   const handleQuestionChange = (field: keyof LessonQuestion, value: any) => {
     setNewQuestion({ ...newQuestion, [field]: value });
@@ -74,9 +81,26 @@ export default function AddQuestionDialog({
     setNewQuestion({ ...newQuestion, answers: newAnswers });
   };
 
-  const handleSave = () => {
-    // TODO: Save question
-    onQuestionAdded(newQuestion);
+  const handleSave = async () => {
+    // Save question
+    try {
+      const resData = await aqService.createQuestion(newQuestion);
+      switch (type) {
+        case "topics":
+          await topicService.patchTopic(lessonId, {
+            questions: [...questions, resData.data.id],
+          });
+          break;
+        // TODO: Handle other types
+        default:
+          break;
+      }
+      // TODO: Display success
+    } catch (error) {
+      // TODO: Display error
+      console.error("Error creating question:", error);
+    }
+    fetchData();
     resetForm();
     onClose();
   };
@@ -87,23 +111,7 @@ export default function AddQuestionDialog({
   };
 
   const resetForm = () => {
-    setNewQuestion({
-      id: Date.now(),
-      content: "",
-      serial: 0,
-      explanation: "",
-      lessonId: lessonId,
-      status: true,
-      answers: [
-        {
-          id: Date.now(),
-          content: "",
-          correct: false,
-          questionId: Date.now(),
-          status: true,
-        },
-      ],
-    });
+    setNewQuestion(emptyQuestion);
   };
 
   return (

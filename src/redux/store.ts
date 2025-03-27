@@ -5,6 +5,7 @@ export const store = configureStore({
   reducer: {
     theme: reducers.themeReducer,
     aq: reducers.aqReducer,
+    error: reducers.errorReducer,
   },
 });
 

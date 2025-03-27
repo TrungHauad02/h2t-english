@@ -86,8 +86,12 @@ export default function AnswerQuestion() {
       {/* Questions List */}
       <ListComponent
         data={hooks.listAQ}
-        renderItem={(item) => (
-          <WEQuestion question={item} isShowExplain={hooks.isShowExplain} />
+        renderItem={(item, index) => (
+          <WEQuestion
+            question={item}
+            isShowExplain={hooks.isShowExplain}
+            index={index ? index : 0}
+          />
         )}
       />
 

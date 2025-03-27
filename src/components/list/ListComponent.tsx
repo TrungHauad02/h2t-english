@@ -3,7 +3,7 @@ import { SxProps, Theme } from "@mui/material/styles";
 
 interface ListComponentProps<T> {
   data: T[];
-  renderItem: (item: T) => React.ReactNode;
+  renderItem: (item: T, index?: number) => React.ReactNode;
   tag?: React.ElementType;
   className?: string;
   style?: React.CSSProperties;

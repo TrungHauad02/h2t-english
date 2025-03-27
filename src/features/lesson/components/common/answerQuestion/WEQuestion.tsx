@@ -8,11 +8,13 @@ import useColor from "theme/useColor";
 interface WEQuestionProps {
   question: LessonQuestion;
   isShowExplain?: boolean;
+  index: number;
 }
 
 export default function WEQuestion({
   question,
   isShowExplain = false,
+  index,
 }: WEQuestionProps) {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
@@ -69,7 +71,7 @@ export default function WEQuestion({
             flexShrink: 0,
           }}
         >
-          {question.serial}
+          {index + 1}
         </Box>
 
         <Typography

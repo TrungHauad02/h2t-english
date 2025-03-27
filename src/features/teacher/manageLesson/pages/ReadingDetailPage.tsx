@@ -85,7 +85,7 @@ export default function ReadingDetailPage() {
           />
         </div>
         <div id="questions-section">
-          <QuestionsSection questions={hooks.data.questions} />
+          <QuestionsSection type="readings" questions={hooks.data.questions} />
         </div>
 
         <div id="preparation-section">

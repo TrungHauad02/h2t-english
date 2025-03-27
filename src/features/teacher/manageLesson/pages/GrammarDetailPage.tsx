@@ -80,7 +80,7 @@ export default function GrammarDetailPage() {
           />
         </div>
         <div id="questions-section">
-          <QuestionsSection questions={hooks.data.questions} />
+          <QuestionsSection type="grammars" questions={hooks.data.questions} />
         </div>
       </Stack>
       <PublishDialogs
