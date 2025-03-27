@@ -19,11 +19,22 @@ export default function VocabularySection() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    const vocabularyData = vocabService.getVocabByTopicId(
-      id ? parseInt(id) : 0
-    );
-    setData(vocabularyData);
-  }, [id]);
+    const fetchData = async () => {
+      try {
+        if (id) {
+          const resData = await vocabService.getVocabByTopicId(
+            page,
+            itemsPerPage,
+            parseInt(id)
+          );
+          setData(resData.data.content);
+        }
+      } catch (error) {
+        console.error("Error fetching topics");
+      }
+    };
+    fetchData();
+  }, [id, page, itemsPerPage]);
 
   const onPageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);

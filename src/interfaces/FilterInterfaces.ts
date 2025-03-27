@@ -1,3 +1,5 @@
+import { WordType } from "./LessonInterfaces";
+
 export interface BaseFilter {
   status?: boolean | null;
   sortBy?: "createdAt" | "updatedAt" | "-createdAt" | "-updatedAt";
@@ -9,4 +11,9 @@ export interface BaseFilter {
 
 export interface RouteFilter extends BaseFilter {
   title?: string;
+}
+
+export interface VocabularyFilter extends BaseFilter {
+  word?: string;
+  wordType?: WordType;
 }

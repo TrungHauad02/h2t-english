@@ -104,6 +104,7 @@ export default function useDetailRoutePage() {
 
   const handlePublish = async () => {
     if (data) {
+      // TODO: Check valid route before publish
       const responseData = await routeService.patchRoute(data.id, {
         status: true,
       });

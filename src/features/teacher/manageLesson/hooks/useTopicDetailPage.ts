@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Topic } from "interfaces";
-import { listLessonService } from "../services/listLessonService";
+import { topicService } from "../services/topicService";
+import { routeService } from "features/teacher/manageRoute/services/routeService";
 
 export default function useTopicDetailPage() {
   const { id, routeId } = useParams();
@@ -14,17 +15,34 @@ export default function useTopicDetailPage() {
     useState<boolean>(false);
 
   useEffect(() => {
-    if (id && routeId) {
-      setLoading(true);
-      setTimeout(() => {
-        const topic = listLessonService.getTopicById(parseInt(id));
-        if (topic) {
-          setData(topic);
-          setEditData({ ...topic });
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        if (id && routeId) {
+          //  Check owner id using routeId
+          const resRouteData = await routeService.getRouteById(
+            parseInt(routeId)
+          );
+          if (resRouteData.data) {
+            if (resRouteData.data.ownerId !== 1) {
+              // TODO: Check with real teacher ID
+              // TODO: Display error
+              return;
+            }
+          }
+          const resData = await topicService.getTopicById(parseInt(id));
+          if (resData.data) {
+            setData(resData.data);
+            setEditData({ ...resData.data });
+          }
         }
+      } catch (error) {
+        console.error("Error fetching topic");
+      } finally {
         setLoading(false);
-      }, 500);
-    }
+      }
+    };
+    fetchData();
   }, [id, routeId]);
 
   const handleEditMode = () => {
@@ -34,11 +52,18 @@ export default function useTopicDetailPage() {
     }
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     if (editData) {
       setData(editData);
       setIsEditMode(false);
-      // TODO: Update in db
+      // Update in db
+      try {
+        const resData = await topicService.updateTopic(editData.id, editData);
+        setData(resData.data);
+      } catch (error) {
+        console.error("Error updating topic");
+        // TODO: Display error
+      }
     }
   };
 
@@ -51,22 +76,25 @@ export default function useTopicDetailPage() {
     }
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     if (data) {
-      const updatedData = { ...data, status: true };
-      setData(updatedData);
-      // TODO: Update in db
-      if (editData) setEditData(updatedData);
+      // TODO: Check valid lesson before publish
+      const resData = await topicService.patchTopic(data.id, {
+        status: true,
+      });
+      setData(resData.data);
+      if (editData) setEditData(resData.data);
       setOpenPublishDialog(false);
     }
   };
 
-  const handleUnpublish = () => {
+  const handleUnpublish = async () => {
     if (data) {
-      const updatedData = { ...data, status: false };
-      setData(updatedData);
-      // TODO: Update in db
-      if (editData) setEditData(updatedData);
+      const resData = await topicService.patchTopic(data.id, {
+        status: false,
+      });
+      setData(resData.data);
+      if (editData) setEditData(resData.data);
       setOpenUnpublishDialog(false);
     }
   };
