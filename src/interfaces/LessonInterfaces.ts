@@ -82,10 +82,10 @@ export interface Writing extends Lesson {
 }
 
 export enum WordType {
-  NOUN = "noun",
-  VERB = "verb",
-  ADJECTIVE = "adjective",
-  ADVERB = "adverb",
+  NOUN = "NOUN",
+  VERB = "VERB",
+  ADJECTIVE = "ADJECTIVE",
+  ADVERB = "ADVERB",
 }
 
 export interface Vocabulary extends BaseEntity {
