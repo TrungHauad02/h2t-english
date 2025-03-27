@@ -19,21 +19,23 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 interface QuestionViewModeProps {
   index: number;
   question: LessonQuestion;
-  handleEdit: (questionId: number) => void;
   isEditMode: boolean;
+  total: number;
+  handleEdit: (questionId: number) => void;
   onMoveUp: (index: number) => void;
   onMoveDown: (index: number) => void;
-  total: number;
+  handleDeleteDialog: (id: number) => void;
 }
 
 export function QuestionViewMode({
   index,
   question,
-  handleEdit,
   isEditMode,
+  total,
+  handleEdit,
   onMoveUp,
   onMoveDown,
-  total,
+  handleDeleteDialog,
 }: QuestionViewModeProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -165,7 +167,7 @@ export function QuestionViewMode({
               <ArrowDownwardIcon />
             </IconButton>
             <IconButton
-              onClick={() => handleEdit(question.id)}
+              onClick={() => handleDeleteDialog(question.id)}
               sx={{
                 color: isDarkMode ? color.red400 : color.red600,
                 mt: 1,

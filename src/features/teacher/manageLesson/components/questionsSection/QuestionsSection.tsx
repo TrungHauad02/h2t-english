@@ -144,6 +144,8 @@ export default function QuestionsSection({
           fetchData={fetchData}
           onMoveUp={onMoveUp}
           onMoveDown={onMoveDown}
+          type={type}
+          questions={questions}
         />
       ) : (
         <NoQuestionSection secondaryTextColor={secondaryTextColor} />
