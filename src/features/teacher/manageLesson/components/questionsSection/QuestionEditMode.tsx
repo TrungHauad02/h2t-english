@@ -48,6 +48,7 @@ export function QuestionEditMode({
   };
 
   const removeAnswer = (index: number) => {
+    // TODO: Remove in db
     const newAnswers = [...editData.answers];
     newAnswers.splice(index, 1);
     setEditData({ ...editData, answers: newAnswers });

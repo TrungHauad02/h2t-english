@@ -56,10 +56,21 @@ const patchQuestion = async (id: number, data: any) => {
   }
 };
 
+const deleteQuestion = async (id: number) => {
+  try {
+    const response = await apiClient.delete(`/lesson-questions/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting question:", error);
+    throw error;
+  }
+};
+
 export const aqService = {
   getQuestionByLessonId,
   getQuestionByIds,
   createQuestion,
   updateQuestion,
   patchQuestion,
+  deleteQuestion,
 };
