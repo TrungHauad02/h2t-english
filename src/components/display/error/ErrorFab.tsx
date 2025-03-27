@@ -1,25 +1,23 @@
 import React from "react";
 import { Box, Badge, Zoom, Fab } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import { useDarkMode } from "hooks/useDarkMode";
+import { ErrorPosition } from "./types";
 import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
 
-interface ErrorButtonProps {
+interface ErrorFabProps {
   count: number;
-  position: {
-    vertical: "top" | "bottom";
-    horizontal: "left" | "right";
-  };
-  isMobile: boolean;
+  position: ErrorPosition;
   onClick: () => void;
+  isMobile: boolean;
 }
 
-export default function ErrorButton({
+export default function ErrorFab({
   count,
   position,
-  isMobile,
   onClick,
-}: ErrorButtonProps) {
+  isMobile,
+}: ErrorFabProps) {
   const colors = useColor();
   const { isDarkMode } = useDarkMode();
 

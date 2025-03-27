@@ -1,75 +1,35 @@
 import React from "react";
-import {
-  ListItem,
-  ListItemText,
-  IconButton,
-  Box,
-  Typography,
-  Divider,
+import { 
+  ListItem, 
+  ListItemText, 
+  IconButton, 
+  Box, 
+  Typography, 
+  Divider 
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import ReportProblemIcon from "@mui/icons-material/ReportProblem";
-import BugReportIcon from "@mui/icons-material/BugReport";
-import { useDarkMode } from "hooks/useDarkMode";
-import useColor from "theme/useColor";
-import { ErrorItem as ErrorItemType } from "../../../redux/slices/errorSlice";
+import { ErrorItem as ErrorItemType } from "./types";
+import { getSeverityIcon, getSeverityColor, formatTimeString } from "./errorUtils";
 
 interface ErrorItemProps {
   error: ErrorItemType;
   index: number;
-  isLastItem: boolean;
+  totalErrors: number;
   onDismiss: (id: string) => void;
-  onClick: (error: ErrorItemType) => void;
+  onShowDetails: (error: ErrorItemType) => void;
+  isDarkMode: boolean;
+  colors: any;
 }
 
 export default function ErrorItem({
   error,
   index,
-  isLastItem,
+  totalErrors,
   onDismiss,
-  onClick,
+  onShowDetails,
+  isDarkMode,
+  colors,
 }: ErrorItemProps) {
-  const colors = useColor();
-  const { isDarkMode } = useDarkMode();
-
-  // Get color based on error severity
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case "error":
-        return isDarkMode ? colors.errorDarkMode : colors.error;
-      case "warning":
-        return isDarkMode ? colors.warningDarkMode : colors.warning;
-      case "info":
-        return isDarkMode ? colors.infoDarkMode : colors.info;
-      default:
-        return isDarkMode ? colors.errorDarkMode : colors.error;
-    }
-  };
-
-  // Get icon based on error severity
-  const getSeverityIcon = (severity: string) => {
-    switch (severity) {
-      case "error":
-        return <ErrorOutlineIcon />;
-      case "warning":
-        return <ReportProblemIcon />;
-      case "info":
-        return <BugReportIcon />;
-      default:
-        return <ErrorOutlineIcon />;
-    }
-  };
-
-  // Format timestamp
-  const formatTime = (date: Date) => {
-    return new Date(date).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
-  };
-
   return (
     <React.Fragment>
       <ListItem
@@ -89,21 +49,29 @@ export default function ErrorItem({
         sx={{
           cursor: "pointer",
           "&:hover": {
-            backgroundColor: isDarkMode ? colors.gray800 : colors.gray100,
+            backgroundColor: isDarkMode
+              ? colors.gray800
+              : colors.gray100,
           },
-          borderLeft: `4px solid ${getSeverityColor(error.severity)}`,
+          borderLeft: `4px solid ${getSeverityColor(
+            error.severity,
+            isDarkMode,
+            colors
+          )}`,
         }}
-        onClick={() => onClick(error)}
+        onClick={() => onShowDetails(error)}
       >
         <ListItemText
           primary={
-            <Box sx={{ display: "flex", alignItems: "center", pr: 4 }}>
+            <Box
+              sx={{ display: "flex", alignItems: "center", pr: 4 }}
+            >
               <Box
                 component="span"
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  color: getSeverityColor(error.severity),
+                  color: getSeverityColor(error.severity, isDarkMode, colors),
                   mr: 1,
                 }}
               >
@@ -113,7 +81,9 @@ export default function ErrorItem({
                 variant="body1"
                 sx={{
                   fontWeight: 500,
-                  color: isDarkMode ? colors.gray200 : colors.gray800,
+                  color: isDarkMode
+                    ? colors.gray200
+                    : colors.gray800,
                   wordBreak: "break-word",
                 }}
               >
@@ -130,16 +100,18 @@ export default function ErrorItem({
                 mt: 0.5,
               }}
             >
-              {formatTime(error.timestamp)}
+              {formatTimeString(error.timestamp)}
             </Typography>
           }
         />
       </ListItem>
-      {!isLastItem && (
+      {index < totalErrors - 1 && (
         <Divider
           component="li"
           sx={{
-            backgroundColor: isDarkMode ? colors.gray800 : colors.gray200,
+            backgroundColor: isDarkMode
+              ? colors.gray800
+              : colors.gray200,
           }}
         />
       )}

@@ -1,45 +1,29 @@
 import React from "react";
 import { Snackbar, Alert } from "@mui/material";
-import { useDarkMode } from "hooks/useDarkMode";
+import { ErrorItem, ErrorPosition } from "./types";
+import { getSeverityColor } from "./errorUtils";
 import useColor from "theme/useColor";
-import { ErrorItem } from "../../../redux/slices/errorSlice";
+import { useDarkMode } from "hooks/useDarkMode";
 
-interface ErrorNotificationProps {
+interface ErrorSnackbarProps {
   error: ErrorItem | null;
   isOpen: boolean;
-  autoHideTimeout: number;
-  position: {
-    vertical: "top" | "bottom";
-    horizontal: "left" | "right";
-  };
   onClose: () => void;
+  position: ErrorPosition;
+  autoHideTimeout: number;
 }
 
-export default function ErrorNotification({
+export default function ErrorSnackbar({
   error,
   isOpen,
-  autoHideTimeout,
-  position,
   onClose,
-}: ErrorNotificationProps) {
+  position,
+  autoHideTimeout,
+}: ErrorSnackbarProps) {
   const colors = useColor();
   const { isDarkMode } = useDarkMode();
 
   if (!error) return null;
-
-  // Get color based on error severity
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case "error":
-        return isDarkMode ? colors.errorDarkMode : colors.error;
-      case "warning":
-        return isDarkMode ? colors.warningDarkMode : colors.warning;
-      case "info":
-        return isDarkMode ? colors.infoDarkMode : colors.info;
-      default:
-        return isDarkMode ? colors.errorDarkMode : colors.error;
-    }
-  };
 
   return (
     <Snackbar
@@ -61,7 +45,7 @@ export default function ErrorNotification({
         sx={{
           width: "100%",
           boxShadow: 3,
-          backgroundColor: getSeverityColor(error.severity),
+          backgroundColor: getSeverityColor(error.severity, isDarkMode, colors),
         }}
         onClose={onClose}
       >
