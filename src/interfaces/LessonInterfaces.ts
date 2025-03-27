@@ -100,7 +100,6 @@ export interface Vocabulary extends BaseEntity {
 
 export interface LessonQuestion extends BaseEntity {
   content: string;
-  serial: number;
   explanation: string;
   lessonId: number;
   answers: LessonAnswer[];

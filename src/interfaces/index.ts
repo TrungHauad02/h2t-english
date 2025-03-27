@@ -7,3 +7,9 @@ export enum StatusEnum {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
 }
+
+export type QuestionSupportType =
+  | "topics"
+  | "grammars"
+  | "listenings"
+  | "readings";

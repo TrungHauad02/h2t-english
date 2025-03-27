@@ -76,7 +76,7 @@ export default function TopicDetailPage() {
           <VocabularySection />
         </div>
         <div id="questions-section">
-          <QuestionsSection questions={hooks.data.questions} />
+          <QuestionsSection type="topics" questions={hooks.data.questions} />
         </div>
       </Stack>
       <PublishDialogs
