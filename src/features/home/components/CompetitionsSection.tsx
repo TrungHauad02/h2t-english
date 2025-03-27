@@ -2,8 +2,7 @@ import { Box, Container, Grid } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { competitions } from "../services/mockData";
-import CompetitionCard from "./competition/CompetitionCard";
-import CompetitionTitle from "./competition/CompetitionTitle";
+import { CompetitionCard, CompetitionTitle } from "./competition";
 
 export default function CompetitionsSection() {
   const { isDarkMode } = useDarkMode();

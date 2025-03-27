@@ -1,10 +1,7 @@
 import { Box, Container, Paper, Table, TableBody, TableContainer } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import LeaderboardItem from "./leaderboard/LeaderboardItem";
-import useLeaderboard from "./leaderboard/useLeaderboard";
-import LeaderboardTitle from "./leaderboard/LeaderboardTitle";
-import LeaderboardTable from "./leaderboard/LeaderboardTable";
+import { LeaderboardItem, useLeaderboard, LeaderboardTitle, LeaderboardTable } from "./leaderboard"
 
 export default function LeaderboardSection() {
   const { isDarkMode } = useDarkMode();

@@ -1,11 +1,7 @@
 import { Box, Container, Grid, Fade } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import LessonCard from "./lesson/LessonCard";
-import useLessonsSection from "./lesson/useLessonSection";
-import LessonTitle from "./lesson/LessonTitle";
-import LessonButtonView from "./lesson/LessonButtonView";
-import LessonFilter from "./lesson/LessonFilter";
+import { LessonCard, useLessonsSection, LessonTitle, LessonButtonView, LessonFilter } from "./lesson";
 
 export default function LessonsSection() {
   const { isDarkMode } = useDarkMode();

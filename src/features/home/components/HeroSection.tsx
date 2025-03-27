@@ -1,21 +1,7 @@
-import {
-  Box,
-  Container,
-  Grid,
-  Paper,
-  Divider,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, Container, Grid, Paper, Divider, useMediaQuery, useTheme } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import {
-  HeroSectionButtons,
-  HeroSectionImage,
-  HeroSectionInfo,
-  HeroSectionTitle,
-  useHeroSection,
-} from "./hero";
+import { HeroSectionButtons, HeroSectionImage, HeroSectionInfo, HeroSectionTitle, useHeroSection } from "./hero";
 
 export default function HeroSection() {
   const { isDarkMode } = useDarkMode();

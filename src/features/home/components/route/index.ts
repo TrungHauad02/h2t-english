@@ -11,3 +11,4 @@ export { default as useRouteSection  } from "./useRouteSection";
 export { default as RouteTitle } from "./RouteTitle";
 export { default as RouteTabe } from "./RouteTab";
 export { default as RouteView } from "./RouteView";
+export { default as RouteTab } from "./RouteTab";
