@@ -58,18 +58,19 @@ export default function useDetailRoutePage() {
     Topic | Grammar | Reading | Speaking | Listening | Writing | Test
   >(emptyTopic);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (id) {
-        setLoading(true);
-        const responseData = await routeService.getRouteById(parseInt(id));
-        if (responseData) {
-          setData(responseData.data);
-          setEditedData({ ...responseData.data });
-        }
-        setLoading(false);
+  const fetchData = async () => {
+    if (id) {
+      setLoading(true);
+      const responseData = await routeService.getRouteById(parseInt(id));
+      if (responseData) {
+        setData(responseData.data);
+        setEditedData({ ...responseData.data });
       }
-    };
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, [id]);
 
@@ -248,5 +249,6 @@ export default function useDetailRoutePage() {
     setEditedData,
     handleOpenAddNodeDialog,
     handleAddNode,
+    fetchData,
   };
 }
