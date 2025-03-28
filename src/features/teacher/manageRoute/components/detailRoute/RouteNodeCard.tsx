@@ -178,7 +178,7 @@ export default function RouteNodeCard({
         prefix = "";
         break;
     }
-    navigate(`${prefix}/${node.id}`);
+    navigate(`${prefix}/${node.nodeId}`);
   };
 
   return (
