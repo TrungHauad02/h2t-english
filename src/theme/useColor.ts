@@ -80,6 +80,7 @@ export default function useColor() {
     errorDarkMode: "#ef4444",
     successDarkMode: "#22c55e",
 
+    red50: "#ffebee",
     red100: "#fee2e2",
     red200: "#fecaca",
     red300: "#fca5a5",
