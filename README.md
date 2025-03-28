@@ -25,6 +25,10 @@ H2T English is a comprehensive English learning platform designed to help studen
 - [🌟 H2T English 🌟](#-h2t-english-)
   - [📖 Table of Contents](#-table-of-contents)
   - [🚀 Features](#-features)
+    - [🗺️ Interactive Learning Routes](#️-interactive-learning-routes)
+    - [📚 Comprehensive Lesson Types](#-comprehensive-lesson-types)
+    - [📊 Testing and Assessment](#-testing-and-assessment)
+    - [⚙️ Powerful Tools](#️-powerful-tools)
   - [💻 Technology Stack](#-technology-stack)
     - [Core Technologies](#core-technologies)
     - [Additional Libraries](#additional-libraries)
@@ -36,6 +40,9 @@ H2T English is a comprehensive English learning platform designed to help studen
     - [🧩 Component Organization](#-component-organization)
     - [📊 State Management](#-state-management)
     - [🛣️ Routing](#️-routing)
+      - [👨‍🎓 Student/Public Routes](#-studentpublic-routes)
+      - [👩‍🏫 Teacher Routes](#-teacher-routes)
+      - [👨‍💼 Admin Routes](#-admin-routes)
   - [👥 User Roles](#-user-roles)
   - [🧪 Testing](#-testing)
   - [🚢 Deployment](#-deployment)
@@ -46,13 +53,36 @@ H2T English is a comprehensive English learning platform designed to help studen
 
 ## 🚀 Features
 
-| 🗺️ Interactive Learning Routes                                                                                                     | 📚 Comprehensive Lesson Types                                                                                                                                                                                           |
-| ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Structured learning paths with sequential lessons organized by topic, guiding students through a comprehensive English curriculum. | <ul><li>📝 **Vocabulary** building</li><li>🔤 **Grammar** lessons</li><li>📖 **Reading** comprehension</li><li>🎧 **Listening** exercises</li><li>🗣️ **Speaking** practice</li><li>✍️ **Writing** development</li></ul> |
+### 🗺️ Interactive Learning Routes
 
-| 📊 Testing and Assessment                                                                                                                                                    | ⚙️ Powerful Tools                                                                                                                                                                                                                                            |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| <ul><li>🔄 **Mixed format** tests</li><li>🎯 **Skill-specific** assessments</li><li>🏆 **Competition tests** with leaderboards</li><li>📝 **TOEIC** practice exams</li></ul> | <ul><li>📊 **User Dashboard**: Track progress and performance</li><li>👩‍🏫 **Teacher Tools**: Content creation and management</li><li>👨‍💼 **Admin Management**: User administration</li><li>🌓 **Dark Mode Support**: Comfortable learning experience</li></ul> |
+- **Structured Pathways**: Carefully designed learning sequences that build skills progressively
+- **Topic-Based Organization**: Content organized by themes and difficulty levels
+- **Adaptive Learning**: Personalized recommendations based on performance
+- **Progress Tracking**: Visual indicators of completion and achievement
+- **Skill Integration**: Routes that combine multiple language skills for holistic learning
+
+### 📚 Comprehensive Lesson Types
+
+- 📝 **Vocabulary**: Interactive word-building exercises with contextual learning
+- 🔤 **Grammar**: Clear explanations with practice activities at various levels
+- 📖 **Reading**: Diverse texts with comprehension activities and discussion prompts
+- 🎧 **Listening**: Audio content with exercises to develop auditory comprehension
+- 🗣️ **Speaking**: Pronunciation guides and conversational practice opportunities
+- ✍️ **Writing**: Guided composition tasks with feedback mechanisms
+
+### 📊 Testing and Assessment
+
+- 🔄 **Mixed Format Tests**: Comprehensive evaluations combining multiple question types
+- 🎯 **Skill-Specific Assessments**: Focused evaluations for individual language skills
+- 🏆 **Competition Tests**: Timed challenges with leaderboards for motivation
+- 📝 **TOEIC Practice Exams**: Standardized test preparation with detailed feedback
+
+### ⚙️ Powerful Tools
+
+- 📊 **User Dashboard**: Intuitive interface for tracking progress and performance
+- 👩‍🏫 **Teacher Tools**: Comprehensive content creation and management system
+- 👨‍💼 **Admin Management**: Robust user administration capabilities
+- 🌓 **Dark Mode Support**: Eye-friendly interface option for comfortable learning
 
 ## 💻 Technology Stack
 
@@ -172,13 +202,53 @@ The application will be available at http://localhost:3000
 
 ### 🛣️ Routing
 
-Application Routing Structure is centralized in `src/routes/AppRoutes.tsx`
+<div align="center">
+  <img src="https://cdn-icons-png.flaticon.com/512/5741/5741333.png" width="80" alt="Routing">
+  <h3>Application Routing Structure</h3>
+</div>
 
-| 👨‍🎓 Student/Public Routes                                                                                                                                                         | 👩‍🏫 Teacher Routes                                                                                                                                                                                          | 👨‍💼 Admin Routes                                                                                                                                                                                      |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ul><li>**Home** - /</li><li>**Learning Content** - /lessons</li><li>**Tests & Assessments** - /tests</li><li>**Routes** - /routes</li><li>**User Profile** - /profile</li></ul> | <ul><li>**Content Management** - /teacher/content</li><li>**Route Administration** - /teacher/routes</li><li>**Test Creation** - /teacher/tests</li><li>**Student Progress** - /teacher/students</li></ul> | <ul><li>**User Management** - /admin/users</li><li>**System Configuration** - /admin/config</li><li>**Content Oversight** - /admin/content</li><li>**Administrative Tools** - /admin/tools</li></ul> |
+All application routes are centralized in `src/routes/AppRoutes.tsx`, which provides:
 
-Protected routes use React Router with authentication guards
+- Centralized route configuration
+- Protected route guards based on authentication status and user roles
+- Nested route support with layout components
+- Lazy loading for improved performance
+
+#### 👨‍🎓 Student/Public Routes
+
+| Route                   | Path     | Description                                                 |
+| ----------------------- | -------- | ----------------------------------------------------------- |
+| **Home**                | /        | Landing page with featured content and learning suggestions |
+| **Learning Content**    | /lessons | Browse and access all available lesson materials            |
+| **Tests & Assessments** | /tests   | Access various test types and assessment tools              |
+| **Learning Routes**     | /routes  | View and select structured learning pathways                |
+| **User Profile**        | /profile | Personal information and learning statistics                |
+| **Test History**        | /history | Record of completed tests with performance metrics          |
+
+#### 👩‍🏫 Teacher Routes
+
+| Route                    | Path               | Description                                |
+| ------------------------ | ------------------ | ------------------------------------------ |
+| **Content Management**   | /teacher/content   | Create and manage lesson materials         |
+| **Route Administration** | /teacher/routes    | Design and configure learning pathways     |
+| **Test Creation**        | /teacher/tests     | Develop various assessment types           |
+| **Student Progress**     | /teacher/students  | Monitor student performance and activities |
+| **Analytics Dashboard**  | /teacher/analytics | View statistics and learning patterns      |
+
+#### 👨‍💼 Admin Routes
+
+| Route                    | Path           | Description                              |
+| ------------------------ | -------------- | ---------------------------------------- |
+| **User Management**      | /admin/users   | Create, edit, and manage user accounts   |
+| **System Configuration** | /admin/config  | Platform settings and customization      |
+| **Content Oversight**    | /admin/content | Review and approve educational content   |
+| **Administrative Tools** | /admin/tools   | Special functions for system maintenance |
+| **Role Management**      | /admin/roles   | Define and assign user permission levels |
+
+- **Authentication Guards**: Prevent access to protected routes for unauthenticated users
+- **Role-Based Authorization**: Restrict access based on user role (student, teacher, admin)
+- **Intelligent Redirection**: Redirect to appropriate login or access denied pages
+- **Persistent Sessions**: Maintain user sessions with secure token storage
 
 ## 👥 User Roles
 
