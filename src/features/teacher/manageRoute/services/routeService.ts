@@ -107,10 +107,21 @@ const patchRoute = async (routeId: number, routeData: any) => {
   }
 };
 
+const deleteRoute = async (routeId: number) => {
+  try {
+    const response = await apiClient.delete(`/routes/${routeId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting route:", error);
+    throw error;
+  }
+};
+
 export const routeService = {
   getRoutesByTeacherId,
   createRoute,
   getRouteById,
   updateRoute,
   patchRoute,
+  deleteRoute,
 };

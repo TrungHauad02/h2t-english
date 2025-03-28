@@ -38,15 +38,24 @@ export default function ReadingImageCard({ data }: ReadingImageCardProps) {
       }}
     >
       <Box sx={{ position: "relative" }}>
-        <img
-          src={data.image}
-          alt={data.title}
-          style={{
+        <Box
+          sx={{
             width: "100%",
-            height: 220,
-            objectFit: "cover",
+            height: "220px",
+            backgroundColor: isDarkMode ? color.gray800 : color.gray200,
+            overflow: "hidden",
           }}
-        />
+        >
+          <img
+            src={data.image}
+            alt={data.title}
+            style={{
+              width: "100%",
+              height: "220px",
+              objectFit: "cover",
+            }}
+          />
+        </Box>
         <Box
           sx={{
             position: "absolute",

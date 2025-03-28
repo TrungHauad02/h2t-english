@@ -59,11 +59,11 @@ export default function NodesList({
     } catch (error) {
       // Display error
       showError({
-        message: "Error deleting vocab",
+        message: "Error deleting route node",
         severity: "error",
         details: extractErrorMessages(error),
       });
-      console.error("Error deleting vocab");
+      console.error("Error deleting route node");
     } finally {
       setIsDeleting(false);
       handleCloseDeleteDialog();

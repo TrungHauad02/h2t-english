@@ -13,23 +13,27 @@ export default function useManageRoutePage() {
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
   const [totalPages, setTotalPages] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      const responseData = await routeService.getRoutesByTeacherId(
+        page,
+        itemsPerPage,
+        1, // TODO: Teacher ID
+        filter
+      );
+      const routeData: Route[] = responseData.data.content;
+      setTotalPages(responseData.data.totalPages);
+      setListRoutes(routeData);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching routes:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const responseData = await routeService.getRoutesByTeacherId(
-          page,
-          itemsPerPage,
-          1, // TODO: Teacher ID
-          filter
-        );
-        const routeData: Route[] = responseData.data.content;
-        setTotalPages(responseData.data.totalPages);
-        setListRoutes(routeData);
-      } catch (error) {
-        console.error("Error fetching routes:", error);
-      }
-    };
     fetchData();
   }, [itemsPerPage, page]);
 
@@ -65,17 +69,19 @@ export default function useManageRoutePage() {
   };
 
   return {
+    isLoading,
     filter,
-    updateFilter,
     listRoutes,
-    setListRoutes,
+    itemsPerPage,
+    totalPages,
     page,
     setPage,
-    itemsPerPage,
     setItemsPerPage,
     handleSearch,
     handleChangePage,
     handleLessonsPerPageChange,
-    totalPages,
+    fetchData,
+    updateFilter,
+    setListRoutes,
   };
 }
