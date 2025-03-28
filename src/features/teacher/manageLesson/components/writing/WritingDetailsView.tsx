@@ -1,7 +1,6 @@
 import { Box, Grid, Paper, Stack } from "@mui/material";
 import {
   WritingDescriptionSection,
-  WritingImageCard,
   WritingStatusSection,
   WritingTitleSection,
   WritingTopicSection,
@@ -9,6 +8,7 @@ import {
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { Writing } from "interfaces";
+import LessonImageCard from "../LessonImageCard";
 
 export default function WritingDetailsView({ data }: { data: Writing }) {
   const color = useColor();
@@ -27,7 +27,7 @@ export default function WritingDetailsView({ data }: { data: Writing }) {
       <Grid container spacing={3}>
         {/* Left column */}
         <Grid item xs={12} md={4}>
-          <WritingImageCard data={data} />
+          <LessonImageCard data={data} />
         </Grid>
 
         {/* Right column */}

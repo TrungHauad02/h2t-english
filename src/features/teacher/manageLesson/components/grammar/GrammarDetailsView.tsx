@@ -6,10 +6,10 @@ import {
   GrammarDefinitionSection,
   GrammarDescriptionSection,
   GrammarExampleSection,
-  GrammarImageCard,
   GrammarStatusSection,
   GrammarTitleSection,
 } from "./detailsView";
+import LessonImageCard from "../LessonImageCard";
 
 interface GrammarDetailsViewProps {
   data: Grammar;
@@ -33,7 +33,7 @@ export default function GrammarDetailsView({ data }: GrammarDetailsViewProps) {
       <Grid container spacing={3}>
         {/* Left column */}
         <Grid item xs={12} md={4}>
-          <GrammarImageCard data={data} />
+          <LessonImageCard data={data} />
         </Grid>
 
         {/* Right column */}

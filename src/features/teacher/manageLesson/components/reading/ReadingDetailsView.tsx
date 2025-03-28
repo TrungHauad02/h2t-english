@@ -4,10 +4,10 @@ import { Reading } from "interfaces";
 import useColor from "theme/useColor";
 import {
   ReadingDescriptionSection,
-  ReadingImageCard,
   ReadingStatusSection,
   ReadingTitleSection,
 } from "./detailsView";
+import LessonImageCard from "../LessonImageCard";
 
 interface ReadingDetailsViewProps {
   data: Reading;
@@ -30,7 +30,7 @@ export default function ReadingDetailsView({ data }: ReadingDetailsViewProps) {
       <Grid container spacing={3}>
         {/* Left column */}
         <Grid item xs={12} md={4}>
-          <ReadingImageCard data={data} />
+          <LessonImageCard data={data} />
         </Grid>
 
         {/* Right column */}
