@@ -11,6 +11,17 @@ const createRouteNode = async (routeNode: RouteNode) => {
   }
 };
 
+const deleteRouteNode = async (routeNodeId: number) => {
+  try {
+    const response = await apiClient.delete(`/routeNodes/${routeNodeId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting route node:", error);
+    throw error;
+  }
+};
+
 export const routeNodeService = {
   createRouteNode,
+  deleteRouteNode,
 };

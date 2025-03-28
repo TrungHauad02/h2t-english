@@ -3,12 +3,12 @@ import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { Speaking } from "interfaces";
 import {
-  SpeakingImageCard,
   SpeakingStatusSection,
   SpeakingTitleSection,
   SpeakingDescriptionSection,
   SpeakingTopicSection,
 } from "./detailsView";
+import LessonImageCard from "../LessonImageCard";
 
 interface SpeakingDetailsViewProps {
   data: Speaking;
@@ -34,7 +34,7 @@ export default function SpeakingDetailsView({
       <Grid container spacing={3}>
         {/* Left column */}
         <Grid item xs={12} md={4}>
-          <SpeakingImageCard data={data} />
+          <LessonImageCard data={data} hideQuestions={true} />
         </Grid>
 
         {/* Right column */}

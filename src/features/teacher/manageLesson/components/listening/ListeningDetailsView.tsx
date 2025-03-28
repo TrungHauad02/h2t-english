@@ -4,10 +4,10 @@ import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import {
   ListeningDescriptionSection,
-  ListeningImageCard,
   ListeningStatusSection,
   ListeningTitleSection,
 } from "./detailsView";
+import LessonImageCard from "../LessonImageCard";
 
 interface ListeningDetailsViewProps {
   data: Listening;
@@ -32,7 +32,7 @@ export default function ListeningDetailsView({
       <Grid container spacing={3}>
         {/* Left column */}
         <Grid item xs={12} md={4}>
-          <ListeningImageCard data={data} />
+          <LessonImageCard data={data} />
         </Grid>
 
         {/* Right column */}

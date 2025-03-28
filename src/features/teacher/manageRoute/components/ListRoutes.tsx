@@ -1,32 +1,61 @@
-import {
-  Stack,
-  Card,
-  CardContent,
-  Typography,
-  Grid,
-  Button,
-  CardMedia,
-  Chip,
-} from "@mui/material";
+import { Stack, Typography, Grid } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
+import { useErrors } from "hooks/useErrors";
 import { Route } from "interfaces";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useColor from "theme/useColor";
+import { routeService } from "../services/routeService";
+import { extractErrorMessages } from "utils/extractErrorMessages";
+import { WEConfirmDelete } from "components/display";
+import RouteItem from "./RouteItem";
 
 interface ListRoutesProps {
   list: Route[];
+  fetchData: () => void;
 }
 
-export default function ListRoutes({ list }: ListRoutesProps) {
+export default function ListRoutes({ list, fetchData }: ListRoutesProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
 
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const { showError } = useErrors();
+
   const textColor = isDarkMode ? color.white : color.black;
-  const subTextColor = isDarkMode ? color.gray300 : color.gray700;
-  const backgroundColor = isDarkMode ? color.gray800 : color.white;
-  const buttonColor = isDarkMode ? color.teal400 : color.teal500;
-  const buttonTextColor = isDarkMode ? color.white : color.black;
+
+  const handleOpenDeleteDialog = (id: number) => {
+    setDeleteId(id);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setDeleteId(null);
+    setOpenDeleteDialog(false);
+  };
+
+  const handleDelete = async () => {
+    // Remove in db
+    try {
+      setIsDeleting(true);
+      await routeService.deleteRoute(deleteId!);
+      fetchData();
+    } catch (error) {
+      // Display error
+      showError({
+        message: "Error deleting route",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+      console.error("Error deleting route");
+    } finally {
+      setIsDeleting(false);
+      handleCloseDeleteDialog();
+    }
+  };
 
   const onViewDetail = (routeId: number) => {
     navigate(`/teacher/routes/${routeId}`);
@@ -40,84 +69,22 @@ export default function ListRoutes({ list }: ListRoutesProps) {
       <Grid container spacing={2}>
         {list.map((route) => (
           <Grid item xs={12} md={6} lg={4} key={route.id}>
-            <Card sx={{ maxWidth: 345, backgroundColor }}>
-              <CardMedia
-                component="img"
-                height="140"
-                image={route.image}
-                alt={route.title}
-              />
-              <CardContent>
-                <Stack
-                  direction={"row"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Stack>
-                    <Typography
-                      variant="h6"
-                      component="div"
-                      gutterBottom
-                      sx={{ color: textColor }}
-                    >
-                      {route.title}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ color: subTextColor }}
-                      noWrap
-                    >
-                      {route.description}
-                    </Typography>
-                  </Stack>
-                  <Chip
-                    label={route.status ? "Published" : "Unpublished"}
-                    sx={{
-                      bgcolor: route.status
-                        ? buttonColor
-                        : isDarkMode
-                        ? color.gray500
-                        : color.gray300,
-                    }}
-                  />
-                </Stack>
-                <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    sx={{
-                      borderColor: buttonColor,
-                      color: buttonTextColor,
-                      "&:hover": {
-                        borderColor: buttonColor,
-                        backgroundColor: buttonColor,
-                      },
-                    }}
-                    onClick={() => onViewDetail(route.id)}
-                  >
-                    View detail
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    sx={{
-                      borderColor: color.delete,
-                      color: buttonTextColor,
-                      "&:hover": {
-                        borderColor: color.delete,
-                        backgroundColor: color.delete,
-                      },
-                    }}
-                  >
-                    Delete
-                  </Button>
-                </Stack>
-              </CardContent>
-            </Card>
+            <RouteItem
+              route={route}
+              onViewDetail={onViewDetail}
+              handleOpenDeleteDialog={handleOpenDeleteDialog}
+            />
           </Grid>
         ))}
       </Grid>
+
+      <WEConfirmDelete
+        open={openDeleteDialog}
+        onCancel={handleCloseDeleteDialog}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
+        resourceName={list.find((n) => n.id === deleteId)?.title}
+      />
     </Stack>
   );
 }

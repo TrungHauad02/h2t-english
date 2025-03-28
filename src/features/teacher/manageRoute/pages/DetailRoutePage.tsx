@@ -86,6 +86,7 @@ export default function DetailRoutePage() {
             onMoveDown={hooks.onMoveDown}
             onSaveChange={hooks.handleSaveChanges}
             onOpenAddNodeDialog={hooks.handleOpenAddNodeDialog}
+            fetchData={hooks.fetchData}
           />
         </>
       )}

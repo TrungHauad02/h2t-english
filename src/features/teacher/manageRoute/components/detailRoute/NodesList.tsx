@@ -6,6 +6,10 @@ import { useDarkMode } from "hooks/useDarkMode";
 import EditIcon from "@mui/icons-material/Edit";
 import { useState } from "react";
 import { SaveIcon } from "lucide-react";
+import { useErrors } from "hooks/useErrors";
+import { WEConfirmDelete } from "components/display";
+import { extractErrorMessages } from "utils/extractErrorMessages";
+import { routeNodeService } from "../../services/routeNodeService";
 
 interface NodesListProps {
   nodes: RouteNode[];
@@ -13,6 +17,7 @@ interface NodesListProps {
   onMoveDown: (index: number) => void;
   onSaveChange: () => void;
   onOpenAddNodeDialog: () => void;
+  fetchData: () => void;
 }
 
 export default function NodesList({
@@ -21,13 +26,49 @@ export default function NodesList({
   onMoveDown,
   onSaveChange,
   onOpenAddNodeDialog,
+  fetchData,
 }: NodesListProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
   const [isEditMode, setIsEditMode] = useState(false);
 
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const { showError } = useErrors();
+
   const sortedNodes = nodes.sort((a, b) => a.serial - b.serial);
+
+  const handleOpenDeleteDialog = (id: number) => {
+    setDeleteId(id);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setDeleteId(null);
+    setOpenDeleteDialog(false);
+  };
+
+  const handleDelete = async () => {
+    // Remove in db
+    try {
+      setIsDeleting(true);
+      await routeNodeService.deleteRouteNode(deleteId!);
+      fetchData();
+    } catch (error) {
+      // Display error
+      showError({
+        message: "Error deleting route node",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+      console.error("Error deleting route node");
+    } finally {
+      setIsDeleting(false);
+      handleCloseDeleteDialog();
+    }
+  };
 
   const onChangeEditMode = () => {
     if (isEditMode) {
@@ -89,10 +130,19 @@ export default function NodesList({
               onMoveUp={() => {
                 if (isEditMode) onMoveUp(index);
               }}
+              onDelete={() => handleOpenDeleteDialog(node.id)}
             />
           </Grid>
         ))}
       </Grid>
+
+      <WEConfirmDelete
+        open={openDeleteDialog}
+        onCancel={handleCloseDeleteDialog}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
+        resourceName={nodes.find((n) => n.id === deleteId)?.title}
+      />
     </>
   );
 }

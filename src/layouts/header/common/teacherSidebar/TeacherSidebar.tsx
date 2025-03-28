@@ -5,11 +5,20 @@ import {
   Typography,
   IconButton,
   Divider,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  alpha,
+  Tooltip,
 } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import CloseIcon from "@mui/icons-material/Close";
-import { NavLink } from "react-router-dom";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import RouteIcon from "@mui/icons-material/Route";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { NavLink, useLocation } from "react-router-dom";
 
 export default function TeacherSidebar({
   drawerWidth,
@@ -24,12 +33,29 @@ export default function TeacherSidebar({
 }) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const location = useLocation();
 
   const sidebarItems = [
-    { label: "Manage Routes", path: "/teacher/routes" },
-    { label: "Information", path: "/teacher/information" },
-    { label: "Logout", path: "/logout" },
+    {
+      label: "Dashboard",
+      path: "/teacher/dashboard",
+      icon: <DashboardIcon fontSize="small" />,
+    },
+    {
+      label: "Manage Routes",
+      path: "/teacher/routes",
+      icon: <RouteIcon fontSize="small" />,
+    },
+    {
+      label: "Logout",
+      path: "/logout",
+      icon: <LogoutIcon fontSize="small" />,
+    },
   ];
+
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
 
   return (
     <Box
@@ -52,11 +78,13 @@ export default function TeacherSidebar({
           "& .MuiDrawer-paper": {
             boxSizing: "border-box",
             width: drawerWidth,
-            bgcolor: isDarkMode ? color.gray900 : color.gray100,
+            bgcolor: isDarkMode ? color.gray900 : color.white,
             color: isDarkMode ? color.white : color.black,
             borderRight: isDarkMode
               ? `1px solid ${color.gray800}`
               : `1px solid ${color.gray200}`,
+            boxShadow: isDarkMode ? "none" : "4px 0 10px rgba(0,0,0,0.05)",
+            transition: "all 0.3s ease",
           },
         }}
       >
@@ -70,20 +98,38 @@ export default function TeacherSidebar({
             borderBottom: isDarkMode
               ? `1px solid ${color.gray800}`
               : `1px solid ${color.gray200}`,
+            height: 64,
           }}
         >
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ fontWeight: 600 }}
-          >
-            H2T English
-          </Typography>
+          <Stack direction="row" spacing={1.5} alignItems="center">
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{
+                fontWeight: 700,
+                background: isDarkMode
+                  ? `linear-gradient(135deg, ${color.teal300}, ${color.emerald400})`
+                  : `linear-gradient(135deg, ${color.teal600}, ${color.emerald600})`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                letterSpacing: "0.5px",
+              }}
+            >
+              H2T English
+            </Typography>
+          </Stack>
           {isMobile && (
             <IconButton
               onClick={handleDrawerToggle}
-              sx={{ color: isDarkMode ? color.white : color.black }}
+              sx={{
+                color: isDarkMode ? color.teal300 : color.teal600,
+                "&:hover": {
+                  bgcolor: isDarkMode
+                    ? alpha(color.teal600, 0.1)
+                    : alpha(color.teal200, 0.4),
+                },
+              }}
             >
               <CloseIcon />
             </IconButton>
@@ -91,46 +137,127 @@ export default function TeacherSidebar({
         </Box>
 
         {/* Sidebar Content */}
-        <Box sx={{ overflow: "auto", p: 2 }}>
-          <Stack direction="column" spacing={1}>
+        <Box
+          sx={{
+            overflow: "auto",
+            p: 2,
+            height: "calc(100% - 64px)",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Typography
+            variant="overline"
+            sx={{
+              color: isDarkMode ? color.gray400 : color.gray500,
+              fontWeight: 600,
+              letterSpacing: "1px",
+              px: 1,
+              mb: 1,
+            }}
+          >
+            MENU
+          </Typography>
+
+          <List sx={{ px: 0 }}>
             {sidebarItems.map((item, index) => (
               <Box key={index}>
-                <NavLink
-                  to={item.path}
-                  style={({ isActive }) => ({
-                    textDecoration: "none",
-                    color: isDarkMode ? color.white : color.black,
-                    backgroundColor: isActive
-                      ? isDarkMode
-                        ? color.teal800
-                        : color.teal400
-                      : "transparent",
-                    borderRadius: "8px",
-                    padding: "8px 12px",
-                    display: "block",
-                    transition: "background-color 0.3s ease",
-                    "&:hover": {
-                      backgroundColor: isDarkMode
-                        ? color.teal700
-                        : color.teal100,
-                    },
-                  })}
-                >
-                  <Typography variant="body2" noWrap component="div">
-                    {item.label}
-                  </Typography>
-                </NavLink>
+                {
+                  // Regular item
+                  <NavLink to={item.path} style={{ textDecoration: "none" }}>
+                    <Tooltip
+                      title={item.label}
+                      placement="right"
+                      enterDelay={500}
+                    >
+                      <ListItem
+                        component="div"
+                        sx={{
+                          cursor: "pointer",
+                          borderRadius: "10px",
+                          mb: 0.5,
+                          bgcolor: isActive(item.path)
+                            ? isDarkMode
+                              ? alpha(color.teal700, 0.3)
+                              : alpha(color.teal200, 0.4)
+                            : "transparent",
+                          color: isActive(item.path)
+                            ? isDarkMode
+                              ? color.teal200
+                              : color.teal700
+                            : isDarkMode
+                            ? color.gray300
+                            : color.gray700,
+                          "&:hover": {
+                            bgcolor: isDarkMode
+                              ? alpha(color.teal700, 0.2)
+                              : alpha(color.teal100, 0.5),
+                          },
+                          transition: "all 0.2s ease",
+                          py: 1,
+                        }}
+                      >
+                        <ListItemIcon
+                          sx={{
+                            minWidth: 40,
+                            color: isActive(item.path)
+                              ? isDarkMode
+                                ? color.teal200
+                                : color.teal700
+                              : isDarkMode
+                              ? color.gray400
+                              : color.gray600,
+                          }}
+                        >
+                          {item.icon}
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={item.label}
+                          primaryTypographyProps={{
+                            fontSize: 14,
+                            fontWeight: isActive(item.path) ? 600 : 500,
+                          }}
+                        />
+                      </ListItem>
+                    </Tooltip>
+                  </NavLink>
+                }
+
                 {index < sidebarItems.length - 1 && (
                   <Divider
                     sx={{
                       borderColor: isDarkMode ? color.gray800 : color.gray200,
-                      my: 1,
+                      my: 1.5,
                     }}
                   />
                 )}
               </Box>
             ))}
-          </Stack>
+          </List>
+
+          <Box sx={{ flexGrow: 1 }} />
+
+          {/* Version info at bottom */}
+          <Box
+            sx={{
+              p: 2,
+              textAlign: "center",
+              mt: "auto",
+              borderTop: isDarkMode
+                ? `1px solid ${color.gray800}`
+                : `1px solid ${color.gray200}`,
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{
+                color: isDarkMode ? color.gray500 : color.gray600,
+                fontSize: "0.7rem",
+              }}
+            >
+              H2T English Portal v1.2.0
+            </Typography>
+          </Box>
         </Box>
       </Drawer>
     </Box>
