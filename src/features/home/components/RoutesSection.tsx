@@ -3,11 +3,7 @@ import { learningRoutes } from "../services/mockData";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import FadeIn from "./route/FadeInRoute";
-import RouteCard from "./route/RouteCard";
-import useRouteSection from "./route/useRouteSection";
-import RouteTitle from "./route/RouteTitle";
-import RouteTab from "./route/RouteTab";
-import RouteView from "./route/RouteView";
+import { RouteCard, useRouteSection, RouteTitle, RouteView, RouteTab } from "./route";
 
 export default function RoutesSection() {
   const { isDarkMode } = useDarkMode();

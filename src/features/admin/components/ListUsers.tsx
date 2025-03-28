@@ -7,7 +7,7 @@ import { useDarkMode } from "hooks/useDarkMode";
 import { User, RolesEnum } from "interfaces";
 import { WEPaginationSelect } from "components/pagination";
 import useListUsers from "../hooks/useListUsers";
-import { WEDialog } from "components/display";
+import { WEDialog, WEConfirmDelete } from "components/display";
 
 interface ListUserProps {
     users: User[];
@@ -68,7 +68,7 @@ export default function ListUser({ users }: ListUserProps) {
                                     </TableCell>
 
                                     <TableCell sx={{ textAlign: "center" }}>
-                                    {(user.roleEnum === RolesEnum.TEACHER || user.roleEnum === RolesEnum.TEACHER_ADVANCE) && (
+                                        {(user.roleEnum === RolesEnum.TEACHER || user.roleEnum === RolesEnum.TEACHER_ADVANCE) && (
                                             <IconButton size="small" onClick={() => hooks.handleEdit(user.name)}>
                                                 <Edit />
                                             </IconButton>
@@ -96,23 +96,23 @@ export default function ListUser({ users }: ListUserProps) {
                                                     {user.email}
                                                 </Typography>
                                                 {(user.roleEnum === RolesEnum.TEACHER || user.roleEnum === RolesEnum.TEACHER_ADVANCE) && (
-                                                <>
-                                                <Typography>
-                                                    <Phone sx={{ marginRight: 1 }} />
-                                                    <strong>Phone: </strong>
-                                                    {user.phoneNumber}
-                                                </Typography>
-                                                <Typography>
-                                                    <CalendarToday sx={{ marginRight: 1 }} />
-                                                    <strong>Date of Birth: </strong>
-                                                    {user.dateOfBirth.toLocaleDateString()}
-                                                </Typography>
-                                                <Typography>
-                                                        <School sx={{ marginRight: 1 }} />
-                                                        <strong>Level: </strong>
-                                                        {user.levelEnum}
-                                                    </Typography>
-                                                  </>
+                                                    <>
+                                                        <Typography>
+                                                            <Phone sx={{ marginRight: 1 }} />
+                                                            <strong>Phone: </strong>
+                                                            {user.phoneNumber}
+                                                        </Typography>
+                                                        <Typography>
+                                                            <CalendarToday sx={{ marginRight: 1 }} />
+                                                            <strong>Date of Birth: </strong>
+                                                            {user.dateOfBirth.toLocaleDateString()}
+                                                        </Typography>
+                                                        <Typography>
+                                                            <School sx={{ marginRight: 1 }} />
+                                                            <strong>Level: </strong>
+                                                            {user.levelEnum}
+                                                        </Typography>
+                                                    </>
                                                 )}
                                             </Box>
                                         </Collapse>
@@ -130,14 +130,12 @@ export default function ListUser({ users }: ListUserProps) {
                 onPageChange={hooks.handleChangePage}
                 onItemsPerPageChange={hooks.handleUsersPerPageChange}
             />
-            <WEDialog
+            <WEConfirmDelete
                 open={hooks.isRemoveDialogOpen}
-                title="Confirm Delete"
+                resourceName={hooks.selectedUser?.name || "this user"}
                 onCancel={hooks.cancelRemove}
-                onOk={hooks.confirmRemove}
-            >
-                Are you sure you want to remove {hooks.selectedUser?.name}?
-            </WEDialog>
+                onConfirm={hooks.confirmRemove}
+            />
             <WEDialog
                 open={hooks.isChangeStatusDialogOpen}
                 title="Confirm Status Change"

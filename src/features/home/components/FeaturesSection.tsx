@@ -5,9 +5,7 @@ import Grid from "@mui/material/Grid";
 import Fade from "@mui/material/Fade";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import FeatureCard from "./feature/FeatureCard";
-import FeatureTitle from "./feature/FeatureTitle";
-import FeatureBackground from "./feature/FeatureBackground";
+import { FeatureCard, FeatureTitle, FeatureBackground } from "./feature";
 import { features } from "./feature/featuresData";
 
 export default function FeaturesSection() {

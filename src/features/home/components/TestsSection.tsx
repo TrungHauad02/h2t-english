@@ -2,8 +2,7 @@ import { Box, Container, Grid } from "@mui/material";
 import { featuredTests } from "../services/mockData";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import TestCard from "./test/TestCard";
-import TestTitle from "./test/TestTitle";
+import { TestTitle, TestCard } from "./test";
 
 export default function TestsSection() {
   const { isDarkMode } = useDarkMode();
