@@ -297,7 +297,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 - [Redux Toolkit](https://redux-toolkit.js.org/)
 - All other libraries used in this project
 
-## 👨‍🎓 Team and Requirements
+## 👨‍🎓 Team
 
 <div align="center">
   <img src="https://cdn-icons-png.flaticon.com/512/3898/3898082.png" width="100" alt="Team">
