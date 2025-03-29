@@ -10,6 +10,7 @@ import {
   GrammarDetailsView,
   GrammarDocumentSection,
   GrammarEditForm,
+  GrammarTipsSection,
 } from "../components/grammar";
 import {
   NotFoundLesson,
@@ -70,6 +71,13 @@ export default function GrammarDetailPage() {
           ) : (
             <GrammarDetailsView data={hooks.data} />
           )}
+        </div>
+        <div id="grammar-tips">
+          <GrammarTipsSection
+            editData={hooks.editData}
+            handleInputChange={hooks.handleInputChange}
+            onSave={hooks.handleSaveChanges}
+          />
         </div>
         <div id="grammar-document">
           <GrammarDocumentSection
