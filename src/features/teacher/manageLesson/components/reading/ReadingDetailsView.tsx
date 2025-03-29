@@ -2,9 +2,8 @@ import { Box, Grid, Paper, Stack } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import { Reading } from "interfaces";
 import useColor from "theme/useColor";
-import { ReadingDescriptionSection } from "./detailsView";
 import LessonImageCard from "../common/LessonImageCard";
-import { StatusSection, TitleSection } from "../common";
+import { ContentSection, StatusSection, TitleSection } from "../common";
 
 interface ReadingDetailsViewProps {
   data: Reading;
@@ -34,7 +33,7 @@ export default function ReadingDetailsView({ data }: ReadingDetailsViewProps) {
         <Grid item xs={12} md={8}>
           <Stack spacing={3}>
             <TitleSection title={data.title} />
-            <ReadingDescriptionSection data={data} />
+            <ContentSection title="Description" content={data.description} />
             <StatusSection status={data.status} />
           </Stack>
         </Grid>

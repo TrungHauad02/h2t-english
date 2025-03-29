@@ -2,14 +2,9 @@ import { Box, Grid, Paper, Stack } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import { Grammar } from "interfaces";
 import useColor from "theme/useColor";
-import {
-  GrammarDefinitionSection,
-  GrammarDescriptionSection,
-  GrammarExampleSection,
-} from "./detailsView";
 import LessonImageCard from "../common/LessonImageCard";
 import TitleSection from "../common/TitleSection";
-import { StatusSection } from "../common";
+import { ContentSection, StatusSection } from "../common";
 
 interface GrammarDetailsViewProps {
   data: Grammar;
@@ -40,9 +35,9 @@ export default function GrammarDetailsView({ data }: GrammarDetailsViewProps) {
         <Grid item xs={12} md={8}>
           <Stack spacing={3}>
             <TitleSection title={data.title} />
-            <GrammarDescriptionSection data={data} />
-            <GrammarDefinitionSection data={data} />
-            <GrammarExampleSection data={data} />
+            <ContentSection title="Description" content={data.description} />
+            <ContentSection title="Definition" content={data.definition} />
+            <ContentSection title="Example" content={data.example} />
             <StatusSection status={data.status} />
           </Stack>
         </Grid>
