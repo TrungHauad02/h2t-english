@@ -5,7 +5,7 @@ import useColor from "theme/useColor";
 import { WEDocumentInput } from "components/input";
 import DescriptionIcon from "@mui/icons-material/Description";
 import WEDocumentViewer from "components/display/document/WEDocumentViewer";
-import SectionHeader from "../SectionHeader";
+import SectionHeader from "../common/SectionHeader";
 
 interface GrammarDocumentSectionProps {
   documentUrl: string;

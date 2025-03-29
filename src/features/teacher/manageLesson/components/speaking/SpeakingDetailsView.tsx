@@ -2,13 +2,8 @@ import { Box, Grid, Paper, Stack } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { Speaking } from "interfaces";
-import {
-  SpeakingStatusSection,
-  SpeakingTitleSection,
-  SpeakingDescriptionSection,
-  SpeakingTopicSection,
-} from "./detailsView";
-import LessonImageCard from "../LessonImageCard";
+import LessonImageCard from "../common/LessonImageCard";
+import { ContentSection, StatusSection, TitleSection } from "../common";
 
 interface SpeakingDetailsViewProps {
   data: Speaking;
@@ -40,10 +35,10 @@ export default function SpeakingDetailsView({
         {/* Right column */}
         <Grid item xs={12} md={8}>
           <Stack spacing={3}>
-            <SpeakingTitleSection data={data} />
-            <SpeakingDescriptionSection data={data} />
-            <SpeakingTopicSection data={data} />
-            <SpeakingStatusSection data={data} />
+            <TitleSection title={data.title} />
+            <ContentSection title="Description" content={data.description} />
+            <ContentSection title="Topic" content={data.topic} />
+            <StatusSection status={data.status} />
           </Stack>
         </Grid>
       </Grid>

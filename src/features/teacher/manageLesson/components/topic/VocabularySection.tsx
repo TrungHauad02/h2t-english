@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { vocabService } from "../../services/vocabService";
 import { useParams } from "react-router-dom";
 import { WEPaginationSelect } from "components/pagination";
-import SectionHeader from "../SectionHeader";
+import SectionHeader from "../common/SectionHeader";
 
 export default function VocabularySection() {
   const color = useColor();

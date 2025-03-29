@@ -10,7 +10,7 @@ import AddQuestionDialog from "./AddQuestionDialog";
 import QuizIcon from "@mui/icons-material/Quiz";
 import AddIcon from "@mui/icons-material/Add";
 import { useParams } from "react-router-dom";
-import SectionHeader from "../SectionHeader";
+import SectionHeader from "../common/SectionHeader";
 import { topicService } from "../../services/topicService";
 import { toast } from "react-toastify";
 
