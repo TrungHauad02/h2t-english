@@ -33,7 +33,6 @@ export default function ContentSection({
   const textColor = isDarkMode ? color.gray100 : color.gray800;
   const cardBgColor = isDarkMode ? color.gray800 : color.white;
   const dividerColor = isDarkMode ? color.gray600 : color.gray200;
-  const highlightColor = isDarkMode ? color.teal900 : color.teal100;
 
   return (
     <Zoom in={true} style={{ transitionDelay: "100ms" }}>
@@ -74,20 +73,6 @@ export default function ContentSection({
           },
         }}
       >
-        {/* Hiệu ứng background accent */}
-        <Box
-          sx={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background: `radial-gradient(circle at top right, ${highlightColor}, transparent 40%)`,
-            opacity: 0.6,
-            zIndex: 0,
-          }}
-        />
-
         {/* Header Section */}
         <Box
           sx={{
