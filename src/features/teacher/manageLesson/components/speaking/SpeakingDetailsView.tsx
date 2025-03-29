@@ -4,11 +4,11 @@ import useColor from "theme/useColor";
 import { Speaking } from "interfaces";
 import {
   SpeakingStatusSection,
-  SpeakingTitleSection,
   SpeakingDescriptionSection,
   SpeakingTopicSection,
 } from "./detailsView";
-import LessonImageCard from "../LessonImageCard";
+import LessonImageCard from "../common/LessonImageCard";
+import { TitleSection } from "../common";
 
 interface SpeakingDetailsViewProps {
   data: Speaking;
@@ -40,7 +40,7 @@ export default function SpeakingDetailsView({
         {/* Right column */}
         <Grid item xs={12} md={8}>
           <Stack spacing={3}>
-            <SpeakingTitleSection data={data} />
+            <TitleSection title={data.title} />
             <SpeakingDescriptionSection data={data} />
             <SpeakingTopicSection data={data} />
             <SpeakingStatusSection data={data} />

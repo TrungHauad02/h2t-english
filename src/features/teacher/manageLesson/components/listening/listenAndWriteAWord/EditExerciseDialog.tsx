@@ -2,7 +2,7 @@ import React from "react";
 import { Stack, FormGroup, FormControlLabel, Switch, Box } from "@mui/material";
 import { WEAudioInput, WETextField } from "components/input";
 import { WEDialog } from "components/display";
-import StyledCard from "../../StyledCard";
+import StyledCard from "../../common/StyledCard";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 

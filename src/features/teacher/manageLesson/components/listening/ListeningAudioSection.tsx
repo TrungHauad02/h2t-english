@@ -5,7 +5,7 @@ import useColor from "theme/useColor";
 import AudioFileIcon from "@mui/icons-material/AudioFile";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import { WEAudioInput } from "components/input";
-import SectionHeader from "../SectionHeader";
+import SectionHeader from "../common/SectionHeader";
 
 interface ListeningAudioSectionProps {
   audio: string;

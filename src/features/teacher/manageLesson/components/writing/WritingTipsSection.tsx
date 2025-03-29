@@ -16,7 +16,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { FiberManualRecord as BulletIcon } from "@mui/icons-material";
 import { Writing } from "interfaces";
 import { useState } from "react";
-import SectionHeader from "../SectionHeader";
+import SectionHeader from "../common/SectionHeader";
 
 interface WritingTipsSectionProps {
   editData: Writing | null;

@@ -9,7 +9,7 @@ import {
   useWritingParagraphSection,
 } from "./paragraph";
 import DescriptionIcon from "@mui/icons-material/Description";
-import SectionHeader from "../SectionHeader";
+import SectionHeader from "../common/SectionHeader";
 
 interface WritingParagraphSectionProps {
   editData: Writing | null;

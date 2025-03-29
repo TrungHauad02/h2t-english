@@ -1,12 +1,14 @@
 import { Box, Typography } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import { Topic } from "interfaces";
 
-export default function TopicTitleSection({ data }: { data: Topic }) {
+interface TitleSectionProps {
+  title: string;
+}
+
+export default function TitleSection({ title }: TitleSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-
   const cardBgColor = isDarkMode ? color.gray700 : color.white;
 
   return (
@@ -28,7 +30,7 @@ export default function TopicTitleSection({ data }: { data: Topic }) {
           color: isDarkMode ? color.teal200 : color.teal700,
         }}
       >
-        {data.title}
+        {title}
       </Typography>
     </Box>
   );

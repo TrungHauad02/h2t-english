@@ -2,7 +2,7 @@ import { Box, Divider, Paper } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import QuizIcon from "@mui/icons-material/Quiz";
-import SectionHeader from "./SectionHeader";
+import SectionHeader from "./common/SectionHeader";
 import { useEffect, useState } from "react";
 import {
   ClassifySection,

@@ -3,7 +3,7 @@ import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import ChatIcon from "@mui/icons-material/Chat";
 import AddIcon from "@mui/icons-material/Add";
-import SectionHeader from "../SectionHeader";
+import SectionHeader from "../common/SectionHeader";
 import {
   ConversationDialog,
   ConversationItem,
