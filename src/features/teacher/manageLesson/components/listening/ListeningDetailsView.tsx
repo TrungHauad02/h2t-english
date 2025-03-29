@@ -2,12 +2,10 @@ import { Box, Grid, Paper, Stack } from "@mui/material";
 import { Listening } from "interfaces";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import {
-  ListeningDescriptionSection,
-  ListeningStatusSection,
-} from "./detailsView";
+import { ListeningDescriptionSection } from "./detailsView";
 import LessonImageCard from "../common/LessonImageCard";
 import TitleSection from "../common/TitleSection";
+import { StatusSection } from "../common";
 
 interface ListeningDetailsViewProps {
   data: Listening;
@@ -40,7 +38,7 @@ export default function ListeningDetailsView({
           <Stack spacing={3}>
             <TitleSection title={data.title} />
             <ListeningDescriptionSection data={data} />
-            <ListeningStatusSection data={data} />
+            <StatusSection status={data.status} />
           </Stack>
         </Grid>
       </Grid>

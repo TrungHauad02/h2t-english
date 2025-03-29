@@ -3,12 +3,11 @@ import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { Speaking } from "interfaces";
 import {
-  SpeakingStatusSection,
   SpeakingDescriptionSection,
   SpeakingTopicSection,
 } from "./detailsView";
 import LessonImageCard from "../common/LessonImageCard";
-import { TitleSection } from "../common";
+import { StatusSection, TitleSection } from "../common";
 
 interface SpeakingDetailsViewProps {
   data: Speaking;
@@ -43,7 +42,7 @@ export default function SpeakingDetailsView({
             <TitleSection title={data.title} />
             <SpeakingDescriptionSection data={data} />
             <SpeakingTopicSection data={data} />
-            <SpeakingStatusSection data={data} />
+            <StatusSection status={data.status} />
           </Stack>
         </Grid>
       </Grid>

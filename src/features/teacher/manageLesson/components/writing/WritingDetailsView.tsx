@@ -1,14 +1,10 @@
 import { Box, Grid, Paper, Stack } from "@mui/material";
-import {
-  WritingDescriptionSection,
-  WritingStatusSection,
-  WritingTopicSection,
-} from "./detailsView";
+import { WritingDescriptionSection, WritingTopicSection } from "./detailsView";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { Writing } from "interfaces";
 import LessonImageCard from "../common/LessonImageCard";
-import { TitleSection } from "../common";
+import { StatusSection, TitleSection } from "../common";
 
 export default function WritingDetailsView({ data }: { data: Writing }) {
   const color = useColor();
@@ -36,7 +32,7 @@ export default function WritingDetailsView({ data }: { data: Writing }) {
             <TitleSection title={data.title} />
             <WritingDescriptionSection data={data} />
             <WritingTopicSection data={data} />
-            <WritingStatusSection data={data} />
+            <StatusSection status={data.status} />
           </Stack>
         </Grid>
       </Grid>

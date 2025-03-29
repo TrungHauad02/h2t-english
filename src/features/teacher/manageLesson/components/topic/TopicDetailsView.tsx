@@ -1,10 +1,10 @@
 import { Box, Grid, Paper, Stack } from "@mui/material";
 import { Topic } from "interfaces";
-import { TopicDescriptionSection, TopicStatusSection } from "./detailsView";
+import { TopicDescriptionSection } from "./detailsView";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import LessonImageCard from "../common/LessonImageCard";
-import { TitleSection } from "../common";
+import { StatusSection, TitleSection } from "../common";
 
 export default function TopicDetailsView({ data }: { data: Topic }) {
   const color = useColor();
@@ -31,7 +31,7 @@ export default function TopicDetailsView({ data }: { data: Topic }) {
           <Stack spacing={3}>
             <TitleSection title={data.title} />
             <TopicDescriptionSection data={data} />
-            <TopicStatusSection data={data} />
+            <StatusSection status={data.status} />
           </Stack>
         </Grid>
       </Grid>

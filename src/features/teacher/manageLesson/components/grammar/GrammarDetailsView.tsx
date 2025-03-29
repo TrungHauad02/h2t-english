@@ -6,10 +6,10 @@ import {
   GrammarDefinitionSection,
   GrammarDescriptionSection,
   GrammarExampleSection,
-  GrammarStatusSection,
 } from "./detailsView";
 import LessonImageCard from "../common/LessonImageCard";
 import TitleSection from "../common/TitleSection";
+import { StatusSection } from "../common";
 
 interface GrammarDetailsViewProps {
   data: Grammar;
@@ -43,7 +43,7 @@ export default function GrammarDetailsView({ data }: GrammarDetailsViewProps) {
             <GrammarDescriptionSection data={data} />
             <GrammarDefinitionSection data={data} />
             <GrammarExampleSection data={data} />
-            <GrammarStatusSection data={data} />
+            <StatusSection status={data.status} />
           </Stack>
         </Grid>
       </Grid>

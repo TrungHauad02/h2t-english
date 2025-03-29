@@ -3,18 +3,20 @@ import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import { Reading } from "interfaces";
 
-interface ReadingStatusSectionProps {
-  data: Reading;
+interface StatusSectionProps {
+  status: boolean;
+  activeLabel?: string;
+  inactiveLabel?: string;
 }
 
-export default function ReadingStatusSection({
-  data,
-}: ReadingStatusSectionProps) {
+export default function StatusSection({
+  status,
+  activeLabel = "Active",
+  inactiveLabel = "Inactive",
+}: StatusSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-
   const accentColor = isDarkMode ? color.teal300 : color.teal600;
 
   return (
@@ -42,13 +44,12 @@ export default function ReadingStatusSection({
       >
         <VerifiedIcon sx={{ color: accentColor }} /> Status
       </Typography>
-
       <Chip
-        icon={data.status ? <VerifiedIcon /> : <WarningAmberIcon />}
-        label={data.status ? "Active" : "Inactive"}
-        color={data.status ? "success" : "error"}
+        icon={status ? <VerifiedIcon /> : <WarningAmberIcon />}
+        label={status ? activeLabel : inactiveLabel}
+        color={status ? "success" : "error"}
         sx={{
-          bgcolor: data.status
+          bgcolor: status
             ? isDarkMode
               ? color.emerald700
               : color.emerald600
