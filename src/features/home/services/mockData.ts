@@ -470,41 +470,22 @@ export const mockTeacher: User = {
 };
 
 export const competitionResults = [
-  {
-    id: 1,
-    user_id: 1,
-    competition_id: 1,
-    score: 92,
-    status: true,
-  },
-  {
-    id: 2,
-    user_id: 3,
-    competition_id: 1,
-    score: 88,
-    status: true,
-  },
-  {
-    id: 3,
-    user_id: 2,
-    competition_id: 1,
-    score: 85,
-    status: true,
-  },
-  {
-    id: 4,
-    user_id: 5,
-    competition_id: 1,
-    score: 82,
-    status: true,
-  },
-  {
-    id: 5,
-    user_id: 4,
-    competition_id: 1,
-    score: 79,
-    status: true,
-  },
+  { id: 1, user_id: 1, competition_id: 1, score: 92, status: true },
+  { id: 2, user_id: 3, competition_id: 1, score: 88, status: true },
+  { id: 3, user_id: 2, competition_id: 1, score: 85, status: true },
+  { id: 4, user_id: 1, competition_id: 1, score: 82, status: true },
+  { id: 5, user_id: 3, competition_id: 1, score: 79, status: true },
+  { id: 6, user_id: 2, competition_id: 3, score: 95, status: true },
+  { id: 7, user_id: 2, competition_id: 3, score: 90, status: true },
+  { id: 8, user_id: 1, competition_id: 3, score: 87, status: true },
+  { id: 9, user_id: 1, competition_id: 1, score: 92, status: true },
+  { id: 10, user_id: 3, competition_id: 1, score: 88, status: true },
+  { id: 11, user_id: 2, competition_id: 1, score: 85, status: true },
+  { id: 12, user_id: 1, competition_id: 1, score: 82, status: true },
+  { id: 13, user_id: 1, competition_id: 1, score: 79, status: true },
+  { id: 14, user_id: 2, competition_id: 3, score: 95, status: true },
+  { id: 15, user_id: 3, competition_id: 3, score: 90, status: true },
+  { id: 16, user_id: 1, competition_id: 3, score: 99, status: true },
 ];
 
 // Mock statistics about the platform
