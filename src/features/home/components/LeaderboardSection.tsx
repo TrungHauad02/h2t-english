@@ -7,6 +7,7 @@ export default function LeaderboardSection() {
   const { isDarkMode } = useDarkMode();
   const colors = useColor();
   const hooks = useLeaderboard();
+  const topResults = hooks.topResults();
 
   return (
     <Box
@@ -48,14 +49,14 @@ export default function LeaderboardSection() {
           <Table>
             <LeaderboardTable />
             <TableBody>
-              {hooks.topResults().length === 0 ? (
+              {topResults.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={3} align="center">
                     No results available
                   </TableCell>
                 </TableRow>
               ) : (
-                hooks.topResults().map((result, index) => (
+                topResults.map((result, index) => (
                   <LeaderboardItem key={result.id} rank={index + 1} userId={result.user_id} score={result.score || 0} />
                 ))
               )}
