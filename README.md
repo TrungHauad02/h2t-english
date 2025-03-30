@@ -314,11 +314,11 @@ Distributed under the MIT License. See `LICENSE` for more information.
         <a href="https://github.com/TrungHauad02">GitHub</a>
       </td>
       <td align="center">
-        <img src="https://avatars.githubusercontent.com/u/95125368" width="100" alt="Developer Avatar">
+        <img src="https://avatars.githubusercontent.com/u/123963752?s=400&u=c2e995d2acff0cb120417bf042d6c1205bd4bbb4&v=4" width="100" alt="Developer Avatar">
         <br>
         <b>Thái Thanh Hưng</b>
         <br>
-        <a href="https://github.com/username2">GitHub</a>
+        <a href="https://github.com/ThanhHung0203">GitHub</a>
       </td>
       <td align="center">
         <img src="https://avatars.githubusercontent.com/u/96189553" width="100" alt="Developer Avatar">
