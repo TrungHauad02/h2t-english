@@ -1,29 +1,29 @@
 import React from "react";
-import { CardContent, Grid, Stack, Typography, Divider } from "@mui/material";
+import { CardContent, Grid, Stack, Typography, Divider, Select, MenuItem, SelectChangeEvent } from "@mui/material";
 import { WESelectImage, WETextField } from "components/input";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import useStudentProfile from "../hooks/useStudentProfile";
-import { User } from "interfaces";
+import { LevelsEnum, User } from "interfaces";
+import useTeacherInformation from "../hooks/useTeacherInformation";
 
 interface EditModeContentProps {
     formData: User | null;
-    handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    handleChange: (event: React.ChangeEvent<HTMLInputElement> | SelectChangeEvent<string>) => void;
     handleAvatarChange: (url: string) => void;
     handleDateChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const EditModeContent = ({    
+const EditModeContent = ({
     formData,
     handleChange,
     handleAvatarChange,
-    handleDateChange} : EditModeContentProps) => {
-        
+    handleDateChange }: EditModeContentProps) => {
+
     const color = useColor();
     const { isDarkMode } = useDarkMode();
     const textColor = isDarkMode ? color.gray200 : color.gray900;
     const borderColor = isDarkMode ? color.gray700 : color.gray300;
-    const hooks = useStudentProfile();
+    const hooks = useTeacherInformation();
 
     return (
         <CardContent sx={{ maxwidth: { md: "1400px" }, overflow: "hidden", p: 4 }}>
@@ -35,7 +35,7 @@ const EditModeContent = ({
                             variant="body2"
                             sx={{ color: isDarkMode ? color.gray300 : color.gray600, textAlign: "center" }}
                         >
-                            Click to change profile picture
+                            Click to change Information picture
                         </Typography>
                     </Stack>
                 </Grid>
@@ -109,6 +109,29 @@ const EditModeContent = ({
                                     "& .MuiInputBase-input": { color: textColor },
                                 }}
                             />
+
+                            <Divider sx={{ borderColor }} />
+
+                            <Typography variant="subtitle1" sx={{ color: isDarkMode ? color.teal300 : color.teal700, fontWeight: "bold" }}>
+                                Level
+                            </Typography>
+
+                            <Select
+                                name="level"
+                                value={formData?.levelEnum || ""}
+                                onChange={handleChange}
+                                sx={{
+                                    "& .MuiOutlinedInput-root fieldset": { borderColor },
+                                    "& .MuiInputLabel-root": { color: isDarkMode ? color.gray400 : color.gray600 },
+                                    "& .MuiInputBase-input": { color: textColor },
+                                }}
+                            >
+                                {Object.values(LevelsEnum).map((level) => (
+                                    <MenuItem key={level} value={level}>
+                                        {level.charAt(0) + level.slice(1).toLowerCase()} {/* Format text */}
+                                    </MenuItem>
+                                ))}
+                            </Select>
 
                         </Stack>
                     </Stack>

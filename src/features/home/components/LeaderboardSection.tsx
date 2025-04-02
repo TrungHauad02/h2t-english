@@ -1,4 +1,4 @@
-import { Box, Container, Paper, Table, TableBody, TableContainer } from "@mui/material";
+import { Box, Container, Paper, Table, TableBody, TableCell, TableContainer, TableRow } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { LeaderboardItem, useLeaderboard, LeaderboardTitle, LeaderboardTable } from "./leaderboard"
@@ -7,6 +7,7 @@ export default function LeaderboardSection() {
   const { isDarkMode } = useDarkMode();
   const colors = useColor();
   const hooks = useLeaderboard();
+  const topResults = hooks.topResults();
 
   return (
     <Box
@@ -34,9 +35,7 @@ export default function LeaderboardSection() {
       />
 
       <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
-        <LeaderboardTitle
-          mostRecentCompetition={hooks.mostRecentCompetition}
-        />
+        <LeaderboardTitle mostRecentCompetition={hooks.mostRecentCompetition()} />
         <TableContainer
           component={Paper}
           elevation={isDarkMode ? 2 : 1}
@@ -50,14 +49,17 @@ export default function LeaderboardSection() {
           <Table>
             <LeaderboardTable />
             <TableBody>
-              {hooks.topResults.map((result, index) => (
-                <LeaderboardItem
-                  key={result.id}
-                  rank={index + 1}
-                  userId={result.user_id}
-                  score={result.score || 0}
-                />
-              ))}
+              {topResults.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={3} align="center">
+                    No results available
+                  </TableCell>
+                </TableRow>
+              ) : (
+                topResults.map((result, index) => (
+                  <LeaderboardItem key={result.id} rank={index + 1} userId={result.user_id} score={result.score || 0} />
+                ))
+              )}
             </TableBody>
           </Table>
         </TableContainer>

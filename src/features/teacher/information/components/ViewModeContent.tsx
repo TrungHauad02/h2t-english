@@ -2,6 +2,7 @@ import { Avatar, Box, CardContent, FormControl, Grid, InputAdornment, OutlinedIn
 import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
 import CakeIcon from "@mui/icons-material/Cake";
+import SettingIcon from "@mui/icons-material/Settings";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import UpdateIcon from "@mui/icons-material/Update";
 import { formatDate } from "utils/format";
@@ -22,7 +23,7 @@ export const ViewModeContent = ({ data }: ViewModeContentProps) => {
     const secondaryTextColor = isDarkMode ? color.gray300 : color.gray600;
 
     return (
-        <CardContent sx={{ pb: 4, pt: 10, position: "relative", maxwidth: { md: "1400px" } }}>
+        <CardContent sx={{ pb: 4, pt: 8, position: "relative", maxwidth: { md: "1400px" } }}>
             <Box
                 sx={{
                     position: "absolute",
@@ -91,6 +92,29 @@ export const ViewModeContent = ({ data }: ViewModeContentProps) => {
                                         startAdornment={
                                             <InputAdornment position="start">
                                                 <PhoneIcon sx={{ color: accentColor }} />
+                                            </InputAdornment>
+                                        }
+                                        sx={{
+                                            bgcolor: isDarkMode ? color.gray800 : color.gray100,
+                                            "& .MuiOutlinedInput-notchedOutline": { borderColor: "transparent" },
+                                            "& .MuiInputBase-input": { color: textColor, cursor: "default" },
+                                        }}
+                                    />
+                                </FormControl>
+                            </Stack>
+                            <Typography variant="h5" sx={{ color: secondaryTextColor, mt: 2, mb: 1 }}>
+                                Level
+                            </Typography>
+                            <Stack spacing={2}>
+                                <FormControl fullWidth variant="outlined">
+                                    <OutlinedInput
+                                        id="email-input"
+                                        value={data?.levelEnum}
+                                        disabled
+                                        readOnly
+                                        startAdornment={
+                                            <InputAdornment position="start">
+                                                <SettingIcon sx={{ color: accentColor }} />
                                             </InputAdornment>
                                         }
                                         sx={{

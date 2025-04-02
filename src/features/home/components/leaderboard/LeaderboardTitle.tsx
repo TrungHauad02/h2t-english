@@ -5,10 +5,10 @@ import useColor from "theme/useColor";
 import { CompetitionTest } from "interfaces";
 
 interface LeaderboardTitleProps {
-    mostRecentCompetition: CompetitionTest; 
+    mostRecentCompetition: CompetitionTest | null;
 }
 
-export default function LeaderboardTitle({mostRecentCompetition}:LeaderboardTitleProps) {
+export default function LeaderboardTitle({ mostRecentCompetition }: LeaderboardTitleProps) {
     const { isDarkMode } = useDarkMode();
     const colors = useColor();
     return (
@@ -42,9 +42,11 @@ export default function LeaderboardTitle({mostRecentCompetition}:LeaderboardTitl
                     }}
                 >
                     Top performers from our most recent competition:{" "}
-                    <span style={{ fontWeight: "bold" }}>
-                        {mostRecentCompetition.title}
-                    </span>
+                    {mostRecentCompetition ? (
+                        <span style={{ fontWeight: "bold" }}>{mostRecentCompetition.title}</span>
+                    ) : (
+                        "No competition available"
+                    )}
                 </Typography>
             </Box>
         </Box>
