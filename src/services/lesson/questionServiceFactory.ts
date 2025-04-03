@@ -1,6 +1,8 @@
 import { QuestionSupportType } from "interfaces";
 import { topicService } from "./topicService";
 import { grammarService } from "./grammarService";
+import { listeningService } from "./listeningService";
+import { readingService } from "./readingService";
 
 // Interface for question update service
 interface QuestionUpdateService {
@@ -24,22 +26,17 @@ const grammarQuestionService: QuestionUpdateService = {
 // Listening questions service (placeholder for future implementation)
 const listeningQuestionService: QuestionUpdateService = {
   updateQuestions: (listeningId: number, questions: number[]) => {
-    // TODO: Implement listening service
-    console.warn("Listening questions update not implemented yet");
-    return Promise.resolve();
+    return listeningService.patchListening(listeningId, { questions });
   },
 };
 
 // Reading questions service (placeholder for future implementation)
 const readingQuestionService: QuestionUpdateService = {
   updateQuestions: (readingId: number, questions: number[]) => {
-    // TODO: Implement reading service
-    console.warn("Reading questions update not implemented yet");
-    return Promise.resolve();
+    return readingService.patchReading(readingId, { questions });
   },
 };
 
-// Factory function to get the appropriate service based on question type
 export const questionServiceFactory = (
   type: QuestionSupportType
 ): QuestionUpdateService => {
