@@ -9,7 +9,7 @@ import { SaveIcon } from "lucide-react";
 import { useErrors } from "hooks/useErrors";
 import { WEConfirmDelete } from "components/display";
 import { extractErrorMessages } from "utils/extractErrorMessages";
-import { routeNodeService } from "../../services/routeNodeService";
+import { routeNodeService } from "../../../../../services/route/routeNodeService";
 
 interface NodesListProps {
   nodes: RouteNode[];

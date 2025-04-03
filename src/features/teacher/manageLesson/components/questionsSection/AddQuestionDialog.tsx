@@ -4,12 +4,11 @@ import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { AnswersSection, QuestionDetailsSection } from "./editMode";
 import { WEDialog } from "components/display";
-import { aqService } from "../../services/aqService";
+import { aqService, questionServiceFactory } from "services";
 import { validateQuestion } from "./validateQuestion";
 import { useErrors } from "hooks/useErrors";
 import { extractErrorMessages } from "utils/extractErrorMessages";
 import { toast } from "react-toastify";
-import { questionServiceFactory } from "../../services/questionServiceFactory";
 
 interface AddQuestionDialogProps {
   type: QuestionSupportType;

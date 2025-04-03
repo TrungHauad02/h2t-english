@@ -6,7 +6,7 @@ import { ListVocabulary } from "./vocabulary";
 import AddIcon from "@mui/icons-material/Add";
 import { Vocabulary } from "interfaces";
 import { useEffect, useState } from "react";
-import { vocabService } from "../../services/vocabService";
+import { vocabService } from "../../../../../services/lesson/vocabService";
 import { useParams } from "react-router-dom";
 import { WEPaginationSelect } from "components/pagination";
 import SectionHeader from "../common/SectionHeader";

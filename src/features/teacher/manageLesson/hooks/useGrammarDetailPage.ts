@@ -1,8 +1,7 @@
 import { Grammar } from "interfaces";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { routeService } from "features/teacher/manageRoute/services/routeService";
-import { grammarService } from "../services/grammarService";
+import { routeService, grammarService } from "services";
 import { useErrors } from "hooks/useErrors";
 import { extractErrorMessages } from "utils/extractErrorMessages";
 

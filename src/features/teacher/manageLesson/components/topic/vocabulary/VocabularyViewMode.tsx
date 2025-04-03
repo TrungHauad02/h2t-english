@@ -9,7 +9,7 @@ import VocabularyContentSection from "./VocabularyContentSection";
 import { useState } from "react";
 import { WEConfirmDelete } from "components/display";
 import { useErrors } from "hooks/useErrors";
-import { vocabService } from "features/teacher/manageLesson/services/vocabService";
+import { vocabService } from "services/lesson/vocabService";
 import { toast } from "react-toastify";
 import { extractErrorMessages } from "utils/extractErrorMessages";
 

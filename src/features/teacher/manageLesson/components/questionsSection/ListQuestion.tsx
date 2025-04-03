@@ -5,14 +5,13 @@ import { LessonQuestion, QuestionSupportType } from "interfaces";
 import useColor from "theme/useColor";
 import { QuestionEditMode } from "./QuestionEditMode";
 import { QuestionViewMode } from "./QuestionViewMode";
-import { aqService } from "../../services/aqService";
+import { aqService, questionServiceFactory } from "services";
 import { useErrors } from "hooks/useErrors";
 import { validateQuestion } from "./validateQuestion";
 import { extractErrorMessages } from "utils/extractErrorMessages";
 import { WEConfirmDelete } from "components/display";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { questionServiceFactory } from "../../services/questionServiceFactory";
 
 interface ListQuestionProps {
   questions: number[];

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { routeService } from "../services/routeService";
+import { routeService, routeNodeService, createLessonFactory } from "services";
 import {
   Grammar,
   Listening,
@@ -13,8 +13,6 @@ import {
   Topic,
   Writing,
 } from "interfaces";
-import { routeNodeService } from "../services/routeNodeService";
-import { lessonService } from "../services/lessonService";
 
 export default function useDetailRoutePage() {
   const { id } = useParams();
@@ -172,31 +170,8 @@ export default function useDetailRoutePage() {
       }
       console.log("New lesson: ", newLesson);
       // Tạo bài học trước
-      let lessonRes;
-      switch (newNode.type) {
-        case RouteNodeEnum.VOCABULARY:
-          lessonRes = await lessonService.createTopic(newLesson as Topic);
-          break;
-        case RouteNodeEnum.GRAMMAR:
-          lessonRes = await lessonService.createGrammar(newLesson as Grammar);
-          break;
-        case RouteNodeEnum.READING:
-          lessonRes = await lessonService.createReading(newLesson as Reading);
-          break;
-        case RouteNodeEnum.LISTENING:
-          lessonRes = await lessonService.createListening(
-            newLesson as Listening
-          );
-          break;
-        case RouteNodeEnum.SPEAKING:
-          lessonRes = await lessonService.createSpeaking(newLesson as Speaking);
-          break;
-        case RouteNodeEnum.WRITING:
-          lessonRes = await lessonService.createWriting(newLesson as Writing);
-          break;
-        default:
-          throw new Error("Invalid node type");
-      }
+      const lessonService = createLessonFactory(newNode.type);
+      const lessonRes = await lessonService.createLesson(newLesson);
 
       // Cập nhật nodeId từ bài học vừa tạo
       const updatedNode = {

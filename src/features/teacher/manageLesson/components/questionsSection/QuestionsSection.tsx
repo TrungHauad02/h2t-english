@@ -5,14 +5,13 @@ import NoQuestionSection from "./NoQuestionSection";
 import ListQuestion from "./ListQuestion";
 import { useEffect, useState } from "react";
 import { LessonQuestion, QuestionSupportType } from "interfaces";
-import { aqService } from "../../services/aqService";
+import { aqService, questionServiceFactory } from "services";
 import AddQuestionDialog from "./AddQuestionDialog";
 import QuizIcon from "@mui/icons-material/Quiz";
 import AddIcon from "@mui/icons-material/Add";
 import { useParams } from "react-router-dom";
 import SectionHeader from "../common/SectionHeader";
 import { toast } from "react-toastify";
-import { questionServiceFactory } from "../../services/questionServiceFactory";
 import { useErrors } from "hooks/useErrors";
 import { extractErrorMessages } from "utils/extractErrorMessages";
 
