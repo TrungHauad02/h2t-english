@@ -12,6 +12,16 @@ const getGrammarById = async (id: number) => {
   }
 };
 
+const createGrammar = async (data: Grammar) => {
+  try {
+    const response = await apiClient.post("/grammars", data);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating grammar:", error);
+    throw error;
+  }
+};
+
 const updateGrammar = async (id: number, data: Grammar) => {
   try {
     // TODO: Luu image vao firebase
@@ -38,6 +48,7 @@ const patchGrammar = async (id: number, data: any) => {
 
 export const grammarService = {
   getGrammarById,
+  createGrammar,
   updateGrammar,
   patchGrammar,
 };

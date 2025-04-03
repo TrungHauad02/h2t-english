@@ -5,7 +5,7 @@ import VocabularyViewMode from "./VocabularyViewMode";
 import VocabularyEditForm from "./VocabularyEditForm";
 import WEDialog from "components/display/dialog/WEDialog";
 import { useParams } from "react-router-dom";
-import { vocabService } from "features/teacher/manageLesson/services/vocabService";
+import { vocabService } from "services/lesson/vocabService";
 import { useErrors } from "hooks/useErrors";
 import { extractErrorMessages } from "utils/extractErrorMessages";
 import { toast } from "react-toastify";

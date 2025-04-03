@@ -1,6 +1,6 @@
 import { Route, RouteFilter } from "interfaces";
 import { useEffect, useState } from "react";
-import { routeService } from "../services/routeService";
+import { routeService } from "services";
 
 export default function useManageRoutePage() {
   const [filter, setFilter] = useState<RouteFilter>({

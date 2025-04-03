@@ -4,7 +4,7 @@ import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { useState } from "react";
 import { Route, RouteFilter } from "interfaces";
-import { routeService } from "../services/routeService";
+import { routeService } from "../../../../services/route/routeService";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "./SearchBar";
 import CreateRouteDialog from "./CreateRouteDialog";

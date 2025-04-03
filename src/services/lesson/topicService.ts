@@ -12,6 +12,16 @@ const getTopicById = async (id: number) => {
   }
 };
 
+const createTopic = async (data: Topic) => {
+  try {
+    const response = await apiClient.post("/topics", data);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating topic:", error);
+    throw error;
+  }
+};
+
 const updateTopic = async (id: number, data: Topic) => {
   try {
     // TODO: Luu image vao firebase
@@ -38,6 +48,7 @@ const patchTopic = async (id: number, data: any) => {
 
 export const topicService = {
   getTopicById,
+  createTopic,
   updateTopic,
   patchTopic,
 };

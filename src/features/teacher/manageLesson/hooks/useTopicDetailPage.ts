@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Topic } from "interfaces";
-import { topicService } from "../services/topicService";
-import { routeService } from "features/teacher/manageRoute/services/routeService";
+import { topicService, routeService } from "services";
 
 export default function useTopicDetailPage() {
   const { id, routeId } = useParams();
