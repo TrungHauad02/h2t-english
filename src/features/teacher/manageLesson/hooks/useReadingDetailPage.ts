@@ -1,7 +1,9 @@
 import { Reading } from "interfaces";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { listLessonService } from "../services/listLessonService";
+import { readingService, routeService } from "services";
+import { extractErrorMessages } from "utils/extractErrorMessages";
+import { useErrors } from "hooks/useErrors";
 
 export default function useReadingDetailPage() {
   const { id, routeId } = useParams();
@@ -12,19 +14,41 @@ export default function useReadingDetailPage() {
   const [openPublishDialog, setOpenPublishDialog] = useState<boolean>(false);
   const [openUnpublishDialog, setOpenUnpublishDialog] =
     useState<boolean>(false);
+  const { showError } = useErrors();
 
   useEffect(() => {
-    if (id && routeId) {
-      setLoading(true);
-      setTimeout(() => {
-        const reading = listLessonService.getReadingById(parseInt(id));
-        if (reading) {
-          setData(reading);
-          setEditData({ ...reading });
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        if (id && routeId) {
+          //  Check owner id using routeId
+          const resRouteData = await routeService.getRouteById(
+            parseInt(routeId)
+          );
+          if (resRouteData.data) {
+            if (resRouteData.data.ownerId !== 1) {
+              // TODO: Check with real teacher ID
+              // TODO: Display error
+              return;
+            }
+          }
+          const resData = await readingService.findById(parseInt(id));
+          if (resData.data) {
+            setData(resData.data);
+            setEditData({ ...resData.data });
+          }
+          setLoading(false);
         }
-        setLoading(false);
-      }, 500);
-    }
+      } catch (error) {
+        // Display error
+        showError({
+          message: "Error fetching grammar",
+          severity: "error",
+          details: extractErrorMessages(error),
+        });
+      }
+    };
+    fetchData();
   }, [id, routeId]);
 
   const handleEditMode = () => {
@@ -34,11 +58,25 @@ export default function useReadingDetailPage() {
     }
   };
 
-  const handleSaveChanges = () => {
-    if (editData) {
-      setData(editData);
+  const handleSaveChanges = async () => {
+    try {
+      if (editData) {
+        const resData = await readingService.updateReading(
+          editData.id,
+          editData
+        );
+        setData(resData.data);
+      }
+    } catch (error) {
+      console.error("Error updating reading");
+      // Display error
+      showError({
+        message: "Error updating reading",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    } finally {
       setIsEditMode(false);
-      // TODO: Update in db
     }
   };
 
@@ -51,23 +89,52 @@ export default function useReadingDetailPage() {
     }
   };
 
-  const handleUnpublish = () => {
-    if (data) {
-      const updatedData = { ...data, status: false };
-      setData(updatedData);
-      // TODO: Update in db
-      if (editData) setEditData(updatedData);
-      setOpenUnpublishDialog(false);
+  const handleDocumentChange = (base64: string) => {
+    if (editData) {
+      handleInputChange("file", base64);
     }
   };
 
-  const handlePublish = () => {
-    if (data) {
-      const updatedData = { ...data, status: true };
-      setData(updatedData);
-      // TODO: Update in db
-      if (editData) setEditData(updatedData);
-      setOpenPublishDialog(false);
+  const handlePublish = async () => {
+    try {
+      if (data) {
+        // TODO: Check valid lesson before publish
+        const resData = await readingService.patchReading(data.id, {
+          status: true,
+        });
+        setData(resData.data);
+        if (editData) setEditData(resData.data);
+        setOpenPublishDialog(false);
+      }
+    } catch (error) {
+      console.error("Error publishing reading");
+      // Display error
+      showError({
+        message: "Error publishing reading",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    }
+  };
+
+  const handleUnpublish = async () => {
+    try {
+      if (data) {
+        const resData = await readingService.patchReading(data.id, {
+          status: false,
+        });
+        setData(resData.data);
+        if (editData) setEditData(resData.data);
+        setOpenUnpublishDialog(false);
+      }
+    } catch (error) {
+      console.error("Error unPublishing reading");
+      // Display error
+      showError({
+        message: "Error unPublishing reading",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
     }
   };
 
@@ -95,5 +162,6 @@ export default function useReadingDetailPage() {
     handleUnpublish,
     handlePublishClick,
     handleUnpublishClick,
+    handleDocumentChange,
   };
 }
