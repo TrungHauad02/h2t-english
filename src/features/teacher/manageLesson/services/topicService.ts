@@ -36,19 +36,8 @@ const patchTopic = async (id: number, data: any) => {
   }
 };
 
-const deleteTopic = async (id: number) => {
-  try {
-    const response = await apiClient.delete(`/topics/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error deleting topic:", error);
-    throw error;
-  }
-};
-
 export const topicService = {
   getTopicById,
   updateTopic,
   patchTopic,
-  deleteTopic,
 };

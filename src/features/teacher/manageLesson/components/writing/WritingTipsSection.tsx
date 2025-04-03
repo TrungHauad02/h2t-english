@@ -77,8 +77,8 @@ export default function WritingTipsSection({
         icon={<LightbulbIcon />}
         isEditMode={isEditMode}
         handleSaveChanges={handleSave}
-        handleEditMode={() => setIsEditMode(false)}
-        handleCancelEdit={() => setIsEditMode(true)}
+        handleEditMode={() => setIsEditMode(true)}
+        handleCancelEdit={() => setIsEditMode(false)}
       />
 
       <List

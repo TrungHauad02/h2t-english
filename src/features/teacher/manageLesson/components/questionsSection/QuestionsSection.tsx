@@ -11,8 +11,10 @@ import QuizIcon from "@mui/icons-material/Quiz";
 import AddIcon from "@mui/icons-material/Add";
 import { useParams } from "react-router-dom";
 import SectionHeader from "../common/SectionHeader";
-import { topicService } from "../../services/topicService";
 import { toast } from "react-toastify";
+import { questionServiceFactory } from "../../services/questionServiceFactory";
+import { useErrors } from "hooks/useErrors";
+import { extractErrorMessages } from "utils/extractErrorMessages";
 
 interface QuestionsSectionProps {
   questions: number[];
@@ -31,6 +33,9 @@ export default function QuestionsSection({
   const [data, setData] = useState<LessonQuestion[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const { showError } = useErrors();
+
+  const questionService = questionServiceFactory(type);
 
   const fetchData = async () => {
     try {
@@ -61,22 +66,18 @@ export default function QuestionsSection({
   const handleSaveChanges = async () => {
     // Save serial change
     try {
-      const newQuestions = data.map((question) => {
-        return question.id;
-      });
-      switch (type) {
-        case "topics":
-          await topicService.patchTopic(id ? parseInt(id) : 0, {
-            questions: newQuestions,
-          });
-          break;
-        // TODO: Handle other types
-        default:
-          break;
-      }
+      const newQuestions = data.map((question) => question.id);
+      const lessonId = id ? parseInt(id) : 0;
+
+      await questionService.updateQuestions(lessonId, newQuestions);
       toast.success("Questions updated successfully");
     } catch (error) {
       // TODO: Display error
+      showError({
+        message: "Error updating questions",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
     }
     setIsEditMode(false);
     fetchData();
