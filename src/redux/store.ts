@@ -6,6 +6,7 @@ export const store = configureStore({
     theme: reducers.themeReducer,
     aq: reducers.aqReducer,
     error: reducers.errorReducer,
+    layout: reducers.layoutReducer,
   },
 });
 

@@ -31,7 +31,7 @@ const ToeicPage = () => {
   }
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '100vw' }}>
       <ToeicTest toeic={toeic} />
     </Box>
   );
