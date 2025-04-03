@@ -36,7 +36,7 @@ const patchListening = async (id: number, data: any) => {
     const response = await apiClient.patch(`/listenings/${id}`, data);
     return response.data;
   } catch (error) {
-    console.error("Error updating listening:", error);
+    console.error("Error patching listening:", error);
     throw error;
   }
 };
