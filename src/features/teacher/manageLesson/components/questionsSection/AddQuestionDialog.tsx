@@ -5,11 +5,11 @@ import { useDarkMode } from "hooks/useDarkMode";
 import { AnswersSection, QuestionDetailsSection } from "./editMode";
 import { WEDialog } from "components/display";
 import { aqService } from "../../services/aqService";
-import { topicService } from "../../services/topicService";
 import { validateQuestion } from "./validateQuestion";
 import { useErrors } from "hooks/useErrors";
 import { extractErrorMessages } from "utils/extractErrorMessages";
 import { toast } from "react-toastify";
+import { questionServiceFactory } from "../../services/questionServiceFactory";
 
 interface AddQuestionDialogProps {
   type: QuestionSupportType;
@@ -32,6 +32,8 @@ export default function AddQuestionDialog({
   const { isDarkMode } = useDarkMode();
   const { showError } = useErrors();
   const accentColor = isDarkMode ? color.teal300 : color.teal600;
+
+  const questionService = questionServiceFactory(type);
 
   const emptyQuestion: LessonQuestion = {
     id: Date.now(),
@@ -94,17 +96,9 @@ export default function AddQuestionDialog({
     }
     try {
       const resData = await aqService.createQuestion(newQuestion);
-      switch (type) {
-        case "topics":
-          await topicService.patchTopic(lessonId, {
-            questions: [...questions, resData.data.id],
-          });
 
-          break;
-        // TODO: Handle other types
-        default:
-          break;
-      }
+      const newQuestions = [...questions, resData.data.id];
+      await questionService.updateQuestions(lessonId, newQuestions);
 
       //  Display success
       toast.success("Question updated successfully");

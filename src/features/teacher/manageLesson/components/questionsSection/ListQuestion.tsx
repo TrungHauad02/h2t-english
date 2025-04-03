@@ -11,8 +11,8 @@ import { validateQuestion } from "./validateQuestion";
 import { extractErrorMessages } from "utils/extractErrorMessages";
 import { WEConfirmDelete } from "components/display";
 import { useParams } from "react-router-dom";
-import { topicService } from "../../services/topicService";
 import { toast } from "react-toastify";
+import { questionServiceFactory } from "../../services/questionServiceFactory";
 
 interface ListQuestionProps {
   questions: number[];
@@ -42,6 +42,7 @@ export default function ListQuestion({
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const { showError } = useErrors();
+  const questionService = questionServiceFactory(type);
 
   const handleEdit = (questionId: number) => {
     const question = data.find((q) => q.id === questionId);
@@ -94,22 +95,24 @@ export default function ListQuestion({
   };
 
   const handleDelete = async () => {
+    if (!deleteId) return;
+
     try {
       setIsDeleting(true);
-      console.log("Delete id:", deleteId);
-      await aqService.deleteQuestion(deleteId!);
-      switch (type) {
-        case "topics":
-          await topicService.patchTopic(id ? parseInt(id) : 0, {
-            questions: questions.filter((id) => id !== deleteId),
-          });
-          break;
-        // TODO: Handle other types
-        default:
-          break;
-      }
+
+      // Delete the question
+      await aqService.deleteQuestion(deleteId);
+
+      // Update the lesson's question list
+      const lessonId = id ? parseInt(id) : 0;
+      const updatedQuestions = questions.filter((id) => id !== deleteId);
+
+      // Use the factory service to update questions
+      await questionService.updateQuestions(lessonId, updatedQuestions);
+
       setDeleteId(null);
       fetchData();
+      toast.success("Question deleted successfully");
     } catch (error) {
       showError({
         message: "Error deleting question",
