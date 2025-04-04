@@ -2,7 +2,7 @@ import { Grammar } from "interfaces";
 import apiClient from "services/apiClient";
 import { base64ToBlobUrl } from "utils/convert";
 
-const getGrammarById = async (id: number) => {
+const findById = async (id: number) => {
   try {
     const response = await apiClient.get(`/grammars/${id}`);
     return response.data;
@@ -12,7 +12,7 @@ const getGrammarById = async (id: number) => {
   }
 };
 
-const createGrammar = async (data: Grammar) => {
+const create = async (data: Grammar) => {
   try {
     const response = await apiClient.post("/grammars", data);
     return response.data;
@@ -22,7 +22,7 @@ const createGrammar = async (data: Grammar) => {
   }
 };
 
-const updateGrammar = async (id: number, data: Grammar) => {
+const update = async (id: number, data: Grammar) => {
   try {
     // TODO: Luu image vao firebase
     data.image = base64ToBlobUrl(data.image, "image/png");
@@ -34,7 +34,7 @@ const updateGrammar = async (id: number, data: Grammar) => {
   }
 };
 
-const patchGrammar = async (id: number, data: any) => {
+const patch = async (id: number, data: any) => {
   try {
     // TODO: Luu image vao firebase
     if (data.image) data.image = base64ToBlobUrl(data.image, "image/png");
@@ -47,8 +47,8 @@ const patchGrammar = async (id: number, data: any) => {
 };
 
 export const grammarService = {
-  getGrammarById,
-  createGrammar,
-  updateGrammar,
-  patchGrammar,
+  findById,
+  create,
+  update,
+  patch,
 };

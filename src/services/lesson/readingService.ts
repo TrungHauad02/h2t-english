@@ -11,7 +11,7 @@ const findById = async (id: number) => {
   }
 };
 
-const createReading = async (data: Reading) => {
+const create = async (data: Reading) => {
   try {
     const response = await apiClient.post("/readings", data);
     return response.data;
@@ -21,7 +21,7 @@ const createReading = async (data: Reading) => {
   }
 };
 
-const updateReading = async (id: number, data: Reading) => {
+const update = async (id: number, data: Reading) => {
   try {
     const response = await apiClient.put(`/readings/${id}`, data);
     return response.data;
@@ -31,7 +31,7 @@ const updateReading = async (id: number, data: Reading) => {
   }
 };
 
-const patchReading = async (id: number, data: any) => {
+const patch = async (id: number, data: any) => {
   try {
     const response = await apiClient.patch(`/readings/${id}`, data);
     return response.data;
@@ -43,7 +43,7 @@ const patchReading = async (id: number, data: any) => {
 
 export const readingService = {
   findById,
-  createReading,
-  updateReading,
-  patchReading,
+  create,
+  update,
+  patch,
 };

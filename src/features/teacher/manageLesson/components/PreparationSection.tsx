@@ -1,4 +1,4 @@
-import { Box, Divider, Paper } from "@mui/material";
+import { Box, Divider, Paper, CircularProgress } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import QuizIcon from "@mui/icons-material/Quiz";
@@ -8,31 +8,74 @@ import {
   ClassifySection,
   MatchWordWithSentenceSection,
   WordsMakeSentencesSection,
+  PreparationDetailsView,
+  PreparationEditForm,
 } from "./preparation";
 import { Preparation, PreparationType } from "interfaces";
-import PreparationDetailsView from "./preparation/PreparationDetailsView";
-import PreparationEditForm from "./preparation/PreparationEditForm";
+import {
+  listeningService,
+  preparationService,
+  readingService,
+  speakingService,
+  writingService,
+} from "services";
+import { toast } from "react-toastify";
+import { useParams } from "react-router-dom";
+import { useErrors } from "hooks/useErrors";
+import { extractErrorMessages } from "utils/extractErrorMessages";
 
-export default function PreparationSection() {
+interface PreparationSectionProps {
+  preparationId: number | null;
+  type: "readings" | "speakings" | "listenings" | "writings";
+}
+
+export default function PreparationSection({
+  preparationId,
+  type,
+}: PreparationSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const { id } = useParams();
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [data, setData] = useState<Preparation | null>(null);
   const [editData, setEditData] = useState<Preparation | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const { showError } = useErrors();
 
   useEffect(() => {
-    // TODO: Fetch data (example initialization)
-    const initialData = {
-      id: 1,
-      status: true,
-      title: "Preparation 1",
-      tip: "This is tip for studying",
-      type: PreparationType.MATCH_WORD_WITH_SENTENCES,
-      questions: [1, 2, 3],
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        if (preparationId) {
+          const resData = await preparationService.findById(preparationId);
+          if (resData.data) {
+            setData(resData.data);
+            setEditData({ ...resData.data });
+          }
+        } else {
+          // Create initial data for new preparation
+          const initialData: Preparation = {
+            id: 0,
+            title: "",
+            tip: "",
+            questions: [],
+            type: PreparationType.MATCH_WORD_WITH_SENTENCES,
+            status: false,
+          };
+          setData(initialData);
+          setEditData({ ...initialData });
+          setIsEditMode(true); // Automatically enter edit mode for new preparation
+        }
+      } catch (error) {
+        toast.error("Error fetching preparation data");
+      } finally {
+        setIsLoading(false);
+      }
     };
-    setData(initialData);
-    setEditData(initialData);
-  }, []);
+
+    fetchData();
+  }, [preparationId]);
 
   const handleInputChange = (field: keyof Preparation, value: any) => {
     if (editData) {
@@ -43,10 +86,62 @@ export default function PreparationSection() {
     }
   };
 
-  const handleSaveChanges = () => {
-    // TODO: Save data to backend
-    setData(editData);
-    setIsEditMode(false);
+  const handleSaveChanges = async () => {
+    if (!editData) return;
+
+    try {
+      setIsSaving(true);
+      let response;
+
+      if (preparationId) {
+        // Update existing preparation
+        response = await preparationService.update(preparationId, editData);
+      } else {
+        // Create new preparation
+        response = await preparationService.create(editData);
+        switch (type) {
+          case "readings":
+            await readingService.patch(parseInt(id || ""), {
+              preparationId: response.data.id,
+            });
+            break;
+          case "speakings":
+            await speakingService.patch(parseInt(id || ""), {
+              preparationId: response.data.id,
+            });
+            break;
+          case "listenings":
+            await listeningService.patch(parseInt(id || ""), {
+              preparationId: response.data.id,
+            });
+            break;
+          case "writings":
+            await writingService.patch(parseInt(id || ""), {
+              preparationId: response.data.id,
+            });
+            break;
+        }
+      }
+
+      if (response.data) {
+        setData(response.data);
+        setEditData(response.data);
+        setIsEditMode(false);
+        toast.success(
+          preparationId
+            ? "Preparation updated successfully"
+            : "Preparation created successfully"
+        );
+      }
+    } catch (error) {
+      showError({
+        message: "Error saving changes",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleEditMode = () => {
@@ -55,14 +150,20 @@ export default function PreparationSection() {
   };
 
   const handleCancelEdit = () => {
+    if (!preparationId && data?.id === 0) {
+      setIsEditMode(true);
+      toast.warning("Please save changes before leaving");
+      return;
+    }
     setEditData(data);
     setIsEditMode(false);
   };
 
   const renderPreparation = () => {
     const currentData = isEditMode ? editData : data;
+    if (!currentData) return null;
 
-    switch (currentData?.type) {
+    switch (currentData.type) {
       case PreparationType.MATCH_WORD_WITH_SENTENCES:
         return (
           <MatchWordWithSentenceSection questions={currentData.questions} />
@@ -75,6 +176,34 @@ export default function PreparationSection() {
         return <></>;
     }
   };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <Box
+        component={Paper}
+        elevation={3}
+        sx={{
+          p: 3,
+          borderRadius: "1rem",
+          backgroundColor: isDarkMode ? color.gray800 : color.gray50,
+          mt: 4,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "200px",
+        }}
+      >
+        <CircularProgress
+          size={60}
+          thickness={4}
+          sx={{
+            color: isDarkMode ? color.teal300 : color.teal600,
+          }}
+        />
+      </Box>
+    );
+  }
 
   if (!data) {
     return <></>;
@@ -89,11 +218,38 @@ export default function PreparationSection() {
         borderRadius: "1rem",
         backgroundColor: isDarkMode ? color.gray800 : color.gray50,
         mt: 4,
+        position: "relative",
       }}
     >
+      {isSaving && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.4)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+            borderRadius: "1rem",
+          }}
+        >
+          <CircularProgress
+            size={60}
+            thickness={4}
+            sx={{
+              color: isDarkMode ? color.teal300 : color.teal600,
+            }}
+          />
+        </Box>
+      )}
+
       <SectionHeader
         icon={<QuizIcon />}
-        title="Preparation Section"
+        title={preparationId ? "Preparation Section" : "New Preparation"}
         isEditMode={isEditMode}
         handleSaveChanges={handleSaveChanges}
         handleEditMode={handleEditMode}
@@ -108,6 +264,7 @@ export default function PreparationSection() {
       ) : (
         <PreparationDetailsView data={data} />
       )}
+
       <Divider />
       {renderPreparation()}
     </Box>

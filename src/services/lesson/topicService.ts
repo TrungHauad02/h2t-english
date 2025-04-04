@@ -2,7 +2,7 @@ import { Topic } from "interfaces";
 import apiClient from "services/apiClient";
 import { base64ToBlobUrl } from "utils/convert";
 
-const getTopicById = async (id: number) => {
+const findById = async (id: number) => {
   try {
     const response = await apiClient.get(`/topics/${id}`);
     return response.data;
@@ -12,7 +12,7 @@ const getTopicById = async (id: number) => {
   }
 };
 
-const createTopic = async (data: Topic) => {
+const create = async (data: Topic) => {
   try {
     const response = await apiClient.post("/topics", data);
     return response.data;
@@ -22,7 +22,7 @@ const createTopic = async (data: Topic) => {
   }
 };
 
-const updateTopic = async (id: number, data: Topic) => {
+const update = async (id: number, data: Topic) => {
   try {
     // TODO: Luu image vao firebase
     data.image = base64ToBlobUrl(data.image, "image/png");
@@ -34,7 +34,7 @@ const updateTopic = async (id: number, data: Topic) => {
   }
 };
 
-const patchTopic = async (id: number, data: any) => {
+const patch = async (id: number, data: any) => {
   try {
     // TODO: Luu image vao firebase
     if (data.image) data.image = base64ToBlobUrl(data.image, "image/png");
@@ -47,8 +47,8 @@ const patchTopic = async (id: number, data: any) => {
 };
 
 export const topicService = {
-  getTopicById,
-  createTopic,
-  updateTopic,
-  patchTopic,
+  findById,
+  create,
+  update,
+  patch,
 };

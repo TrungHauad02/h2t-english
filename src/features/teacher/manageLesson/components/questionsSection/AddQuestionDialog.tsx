@@ -94,7 +94,7 @@ export default function AddQuestionDialog({
       return; // Stop save process if validation fails
     }
     try {
-      const resData = await aqService.createQuestion(newQuestion);
+      const resData = await aqService.create(newQuestion);
 
       const newQuestions = [...questions, resData.data.id];
       await questionService.updateQuestions(lessonId, newQuestions);

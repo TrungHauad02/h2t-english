@@ -11,7 +11,7 @@ const findById = async (id: number) => {
   }
 };
 
-const createSpeaking = async (data: Speaking) => {
+const create = async (data: Speaking) => {
   try {
     const response = await apiClient.post("/speakings", data);
     return response.data;
@@ -21,7 +21,7 @@ const createSpeaking = async (data: Speaking) => {
   }
 };
 
-const updateSpeaking = async (id: number, data: Speaking) => {
+const update = async (id: number, data: Speaking) => {
   try {
     const response = await apiClient.put(`/speakings/${id}`, data);
     return response.data;
@@ -31,7 +31,7 @@ const updateSpeaking = async (id: number, data: Speaking) => {
   }
 };
 
-const patchSpeaking = async (id: number, data: any) => {
+const patch = async (id: number, data: any) => {
   try {
     const response = await apiClient.patch(`/speakings/${id}`, data);
     return response.data;
@@ -43,7 +43,7 @@ const patchSpeaking = async (id: number, data: any) => {
 
 export const speakingService = {
   findById,
-  createSpeaking,
-  updateSpeaking,
-  patchSpeaking,
+  create,
+  update,
+  patch,
 };

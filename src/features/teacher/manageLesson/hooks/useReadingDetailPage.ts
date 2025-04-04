@@ -61,10 +61,7 @@ export default function useReadingDetailPage() {
   const handleSaveChanges = async () => {
     try {
       if (editData) {
-        const resData = await readingService.updateReading(
-          editData.id,
-          editData
-        );
+        const resData = await readingService.update(editData.id, editData);
         setData(resData.data);
       }
     } catch (error) {
@@ -99,7 +96,7 @@ export default function useReadingDetailPage() {
     try {
       if (data) {
         // TODO: Check valid lesson before publish
-        const resData = await readingService.patchReading(data.id, {
+        const resData = await readingService.patch(data.id, {
           status: true,
         });
         setData(resData.data);
@@ -120,7 +117,7 @@ export default function useReadingDetailPage() {
   const handleUnpublish = async () => {
     try {
       if (data) {
-        const resData = await readingService.patchReading(data.id, {
+        const resData = await readingService.patch(data.id, {
           status: false,
         });
         setData(resData.data);

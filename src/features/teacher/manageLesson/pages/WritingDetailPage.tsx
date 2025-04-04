@@ -110,7 +110,10 @@ export default function WritingDetailPage() {
         </div>
 
         <div id="preparation-section">
-          <PreparationSection />
+          <PreparationSection
+            preparationId={hooks.data.preparationId}
+            type="writings"
+          />
         </div>
       </Stack>
       <PublishDialogs

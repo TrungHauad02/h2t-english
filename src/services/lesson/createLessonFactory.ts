@@ -23,42 +23,42 @@ export interface LessonCreationService<T> {
 // Topic creation service
 const topicCreationService: LessonCreationService<Topic> = {
   createLesson: (topic: Topic) => {
-    return topicService.createTopic(topic);
+    return topicService.create(topic);
   },
 };
 
 // Grammar creation service
 const grammarCreationService: LessonCreationService<Grammar> = {
   createLesson: (grammar: Grammar) => {
-    return grammarService.createGrammar(grammar);
+    return grammarService.create(grammar);
   },
 };
 
 // Reading creation service
 const readingCreationService: LessonCreationService<Reading> = {
   createLesson: (reading: Reading) => {
-    return readingService.createReading(reading);
+    return readingService.create(reading);
   },
 };
 
 // Listening creation service
 const listeningCreationService: LessonCreationService<Listening> = {
   createLesson: (listening: Listening) => {
-    return listeningService.createListening(listening);
+    return listeningService.create(listening);
   },
 };
 
 // Speaking creation service
 const speakingCreationService: LessonCreationService<Speaking> = {
   createLesson: (speaking: Speaking) => {
-    return speakingService.createSpeaking(speaking);
+    return speakingService.create(speaking);
   },
 };
 
 // Writing creation service
 const writingCreationService: LessonCreationService<Writing> = {
   createLesson: (writing: Writing) => {
-    return writingService.createWriting(writing);
+    return writingService.create(writing);
   },
 };
 

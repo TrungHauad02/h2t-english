@@ -12,28 +12,28 @@ interface QuestionUpdateService {
 // Topic questions service
 const topicQuestionService: QuestionUpdateService = {
   updateQuestions: (topicId: number, questions: number[]) => {
-    return topicService.patchTopic(topicId, { questions });
+    return topicService.patch(topicId, { questions });
   },
 };
 
 // Grammar questions service
 const grammarQuestionService: QuestionUpdateService = {
   updateQuestions: (grammarId: number, questions: number[]) => {
-    return grammarService.patchGrammar(grammarId, { questions });
+    return grammarService.patch(grammarId, { questions });
   },
 };
 
 // Listening questions service (placeholder for future implementation)
 const listeningQuestionService: QuestionUpdateService = {
   updateQuestions: (listeningId: number, questions: number[]) => {
-    return listeningService.patchListening(listeningId, { questions });
+    return listeningService.patch(listeningId, { questions });
   },
 };
 
 // Reading questions service (placeholder for future implementation)
 const readingQuestionService: QuestionUpdateService = {
   updateQuestions: (readingId: number, questions: number[]) => {
-    return readingService.patchReading(readingId, { questions });
+    return readingService.patch(readingId, { questions });
   },
 };
 

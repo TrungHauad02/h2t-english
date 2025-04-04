@@ -46,7 +46,7 @@ export default function VocabularyViewMode({
     // Remove in db
     try {
       setIsDeleting(true);
-      await vocabService.deleteVocab(vocabulary.id);
+      await vocabService.remove(vocabulary.id);
       fetchData();
       toast.success("Vocab deleted successfully");
     } catch (error) {

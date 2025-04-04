@@ -25,7 +25,7 @@ export default function VocabularySection() {
   const fetchData = async () => {
     try {
       if (id) {
-        const resData = await vocabService.getVocabByTopicId(
+        const resData = await vocabService.findVocabByTopicId(
           page,
           itemsPerPage,
           parseInt(id)

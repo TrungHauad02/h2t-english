@@ -32,7 +32,7 @@ export default function useGrammarDetailPage() {
               return;
             }
           }
-          const resData = await grammarService.getGrammarById(parseInt(id));
+          const resData = await grammarService.findById(parseInt(id));
           if (resData.data) {
             setData(resData.data);
             setEditData({ ...resData.data });
@@ -61,10 +61,7 @@ export default function useGrammarDetailPage() {
   const handleSaveChanges = async () => {
     try {
       if (editData) {
-        const resData = await grammarService.updateGrammar(
-          editData.id,
-          editData
-        );
+        const resData = await grammarService.update(editData.id, editData);
         setData(resData.data);
       }
     } catch (error) {
@@ -99,7 +96,7 @@ export default function useGrammarDetailPage() {
     try {
       if (data) {
         // TODO: Check valid lesson before publish
-        const resData = await grammarService.patchGrammar(data.id, {
+        const resData = await grammarService.patch(data.id, {
           status: true,
         });
         setData(resData.data);
@@ -120,7 +117,7 @@ export default function useGrammarDetailPage() {
   const handleUnpublish = async () => {
     try {
       if (data) {
-        const resData = await grammarService.patchGrammar(data.id, {
+        const resData = await grammarService.patch(data.id, {
           status: false,
         });
         setData(resData.data);
