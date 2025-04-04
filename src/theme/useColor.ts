@@ -69,6 +69,18 @@ export default function useColor() {
     btnShowExplainBg: "#10b981",
     btnShowExplainHoverBg: "#059669",
 
+    // Blue color palette of toeic
+    blue50: "#eff6ff",
+    blue100: "#dbeafe",
+    blue200: "#bfdbfe",
+    blue300: "#93c5fd",
+    blue400: "#60a5fa",
+    blue500: "#3b82f6",
+    blue600: "#2563eb",
+    blue700: "#1d4ed8",
+    blue800: "#1e40af",
+    blue900: "#1e3a8a",
+
     // Other color palette
     warning: "#fbbf24",
     info: "#2563eb",

@@ -18,6 +18,14 @@ import {
   SubmitCompetitionAnswer,
   SubmitCompetitionSpeaking,
   SubmitCompetitionWriting,
+  SubmitToeicPart1,
+  SubmitToeicPart2,
+  SubmitToeicPart3_4,
+  SubmitToeicPart5,
+  SubmitToeicPart6,
+  SubmitToeicPart7,
+  AnswerEnum,
+
 } from "interfaces";
 
 const test: Test[] = [
@@ -691,6 +699,197 @@ const submitCompetitionWriting: SubmitCompetitionWriting[] = [
 ];
 
 
+export const submitToeicPart1: SubmitToeicPart1[] = [
+  {
+    id: 1,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicPart1Id: 1,
+    answer: AnswerEnum.A,
+  },
+  {
+    id: 2,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicPart1Id: 2,
+    answer: AnswerEnum.A,
+  },
+  {
+    id: 3,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicPart1Id: 3,
+    answer: AnswerEnum.A,
+  },
+  {
+    id: 4,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicPart1Id: 4,
+    answer: AnswerEnum.A,
+  },
+  {
+    id: 5,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicPart1Id: 5,
+    answer: AnswerEnum.C,
+  },
+  {
+    id: 6,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicPart1Id: 6,
+    answer: AnswerEnum.B,
+  },
+];
+
+export const submitToeicPart2: SubmitToeicPart2[] = [
+  {
+    id: 1,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicPart2Id: 1,
+    answer: AnswerEnum.B,
+  },
+  {
+    id: 2,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicPart2Id: 2,
+    answer: AnswerEnum.B,
+  },
+];
+
+export const submitToeicPart3_4: SubmitToeicPart3_4[] = [
+  {
+    id: 1,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicPart3_4Id: 1,
+    answerQ1: AnswerEnum.A,
+    answerQ2: AnswerEnum.C,
+    answerQ3: AnswerEnum.D,
+  },
+  {
+    id: 2,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicPart3_4Id: 2,
+    answerQ1: AnswerEnum.A,
+    answerQ2: AnswerEnum.C,
+    answerQ3: AnswerEnum.D,
+  },
+];
+
+export const submitToeicPart5: SubmitToeicPart5[] = [
+  {
+    id: 1,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicPart5Id: 1,
+    answer: AnswerEnum.C,
+  },
+  {
+    id: 2,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicPart5Id: 2,
+    answer: AnswerEnum.C,
+  },
+  {
+    id: 3,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicPart5Id: 3,
+    answer: AnswerEnum.C,
+  },
+  {
+    id: 4,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicPart5Id: 4,
+    answer: AnswerEnum.C,
+  },
+];
+
+export const submitToeicPart6: SubmitToeicPart6[] = [
+  {
+    id: 1,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicPart6Id: 1,
+    answerQ1: AnswerEnum.A,
+    answerQ2: AnswerEnum.B,
+    answerQ3: AnswerEnum.C,
+    answerQ4: AnswerEnum.D,
+  },
+  {
+    id: 2,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicPart6Id: 2,
+    answerQ1: AnswerEnum.A,
+    answerQ2: AnswerEnum.B,
+    answerQ3: AnswerEnum.C,
+    answerQ4: AnswerEnum.D,
+  },
+];
+
+export const submitToeicPart7: SubmitToeicPart7[] = [
+  {
+    id: 1,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicPart7QuestionId: 1,
+    answer: AnswerEnum.B,
+  },
+  {
+    id: 2,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicPart7QuestionId: 2,
+    answer: AnswerEnum.B,
+  },
+];
+
+
 
 
 export const mockData = {
@@ -711,4 +910,10 @@ export const mockData = {
   submitCompetitionAnswer,
   submitCompetitionSpeaking,
   submitCompetitionWriting,
+  submitToeicPart1,
+  submitToeicPart2,
+  submitToeicPart3_4,
+  submitToeicPart5,
+  submitToeicPart6,
+  submitToeicPart7,
 };
