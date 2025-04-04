@@ -11,15 +11,23 @@ import EditModeButtons from "./EditModeButtons";
 
 interface MatchWordWithSentenceSectionProps {
   questions: number[];
+  preparationId: number;
+  fetchPreparationData: () => void;
 }
 
 export default function MatchWordWithSentenceSection({
   questions,
+  preparationId,
+  fetchPreparationData,
 }: MatchWordWithSentenceSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
-  const hooks = useMatchWordWithSentenceSection(questions);
+  const hooks = useMatchWordWithSentenceSection(
+    questions,
+    preparationId,
+    fetchPreparationData
+  );
 
   return (
     <Box
@@ -84,10 +92,10 @@ export default function MatchWordWithSentenceSection({
         isDialogOpen={hooks.isDialogOpen}
         editItem={hooks.editItem}
         tempItem={hooks.tempItem}
-        setTempItem={hooks.setTempItem}
         handleCloseDialog={hooks.handleCloseDialog}
         handleSaveItem={hooks.handleSaveItem}
         handleInputChange={hooks.handleInputChange}
+        handleToggleStatus={hooks.handleToggleStatus}
       />
     </Box>
   );

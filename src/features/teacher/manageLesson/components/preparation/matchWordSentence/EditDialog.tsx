@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, FormControlLabel, Switch } from "@mui/material";
 import { WEDialog } from "components/display";
 import { WETextField } from "components/input";
 import { useDarkMode } from "hooks/useDarkMode";
@@ -8,23 +8,24 @@ interface EditDialogProps {
   isDialogOpen: boolean;
   editItem: any;
   tempItem: any;
-  setTempItem: (item: any) => void;
   handleCloseDialog: () => void;
   handleSaveItem: () => void;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleToggleStatus: (value: boolean) => void;
 }
 
 export default function EditDialog({
   isDialogOpen,
   editItem,
   tempItem,
-  setTempItem,
   handleCloseDialog,
   handleSaveItem,
   handleInputChange,
+  handleToggleStatus,
 }: EditDialogProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+
   return (
     <WEDialog
       open={isDialogOpen}
@@ -69,6 +70,34 @@ export default function EditDialog({
               fontSize: "1rem",
               marginBottom: "1rem",
             },
+          }}
+        />
+        <FormControlLabel
+          control={
+            <Switch
+              checked={tempItem.status === true}
+              onChange={(e) => handleToggleStatus(e.target.checked)}
+              sx={{
+                "& .MuiSwitch-switchBase.Mui-checked": {
+                  color: isDarkMode ? color.emerald400 : color.emerald500,
+                  "&:hover": {
+                    backgroundColor: isDarkMode
+                      ? `${color.emerald400}33`
+                      : `${color.emerald500}33`,
+                  },
+                },
+                "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                  backgroundColor: isDarkMode
+                    ? color.emerald400
+                    : color.emerald500,
+                },
+              }}
+            />
+          }
+          label="Active"
+          sx={{
+            color: isDarkMode ? color.gray100 : color.gray900,
+            mt: 1,
           }}
         />
       </Box>

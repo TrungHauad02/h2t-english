@@ -1,66 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { PreparationMatchWordSentences } from "interfaces";
+import { preparationMatchWordSentencesService } from "services/preparation/preparationMatchWordSentences";
+import { useErrors } from "hooks/useErrors";
+import { extractErrorMessages } from "utils/extractErrorMessages";
+import { preparationService } from "services";
 
-const mockData: PreparationMatchWordSentences[] = [
-  {
-    id: 1,
-    status: true,
-    word: "apple",
-    sentence: "I like to eat an apple a day.",
-  },
-  {
-    id: 2,
-    status: true,
-    word: "banana",
-    sentence: "I like to eat a banana a day.",
-  },
-  {
-    id: 3,
-    status: true,
-    word: "cherry",
-    sentence: "I like to eat a cherry a day.",
-  },
-  {
-    id: 4,
-    status: true,
-    word: "date",
-    sentence: "I like to eat a date a day.",
-  },
-  {
-    id: 5,
-    status: true,
-    word: "elderberry",
-    sentence: "I like to eat an elderberry a day.",
-  },
-  {
-    id: 6,
-    status: true,
-    word: "fig",
-    sentence: "I like to eat a fig a day.",
-  },
-  {
-    id: 7,
-    status: true,
-    word: "grape",
-    sentence: "I like to eat a grape a day.",
-  },
-  {
-    id: 8,
-    status: true,
-    word: "honeydew",
-    sentence: "I like to eat a honeydew a day.",
-  },
-  {
-    id: 9,
-    status: true,
-    word: "kiwi",
-    sentence: "I like to eat a kiwi a day.",
-  },
-];
+interface ServiceResponse {
+  status: string;
+  data: PreparationMatchWordSentences;
+  message: string;
+}
 
-export default function useMatchWordWithSentenceSection(questions: number[]) {
+export default function useMatchWordWithSentenceSection(
+  questions: number[],
+  preparationId: number,
+  fetchPreparationData: () => void
+) {
   const [data, setData] = useState<PreparationMatchWordSentences[]>([]);
-
+  const [loading, setLoading] = useState<boolean>(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editItem, setEditItem] =
     useState<PreparationMatchWordSentences | null>(null);
@@ -73,9 +30,58 @@ export default function useMatchWordWithSentenceSection(questions: number[]) {
     status: true,
   });
 
+  const { showError } = useErrors();
+
   useEffect(() => {
-    setData(mockData);
-  }, []);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const promises = questions.map((questionId) =>
+          preparationMatchWordSentencesService.findById(questionId)
+        );
+
+        const responses = (await Promise.all(promises)) as ServiceResponse[];
+
+        // Lọc các response thành công và trích xuất data
+        const validData = responses
+          .filter((response) => response.status === "SUCCESS" && response.data)
+          .map((response) => response.data);
+
+        setData(validData);
+      } catch (error) {
+        console.error("Error fetching match word sentences:", error);
+        showError({
+          message: "Error fetching match word sentences",
+          severity: "error",
+          details: extractErrorMessages(error),
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (questions.length > 0) {
+      fetchData();
+    }
+  }, [questions]);
+
+  // Hàm cập nhật trường questions của preparation
+  const updatePreparationQuestions = async (newQuestionIds: number[]) => {
+    try {
+      await preparationService.patch(preparationId, {
+        questions: newQuestionIds,
+      });
+      fetchPreparationData();
+    } catch (error) {
+      console.error("Error updating preparation questions:", error);
+      showError({
+        message: "Error updating preparation references",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+      throw error; // Ném lỗi để xử lý ở hàm gọi
+    }
+  };
 
   const handleToggleEditMode = () => {
     setIsEditMode(!isEditMode);
@@ -118,50 +124,164 @@ export default function useMatchWordWithSentenceSection(questions: number[]) {
     });
   };
 
-  const handleSaveItem = () => {
+  const handleToggleStatus = (value: boolean) => {
+    setTempItem({
+      ...tempItem,
+      status: value,
+    });
+  };
+
+  const handleSaveItem = async () => {
     if (!tempItem.word || !tempItem.sentence) return;
 
-    if (editItem) {
-      const updatedData = data.map((item) =>
-        item.id === editItem.id
-          ? { ...item, word: tempItem.word!, sentence: tempItem.sentence! }
-          : item
-      );
-      setData(updatedData);
-    } else {
-      const newItem: PreparationMatchWordSentences = {
-        id: Math.max(...data.map((item) => item.id), 0) + 1,
-        word: tempItem.word!,
-        sentence: tempItem.sentence!,
-        status: true,
-      };
-      setData([...data, newItem]);
+    setLoading(true);
+    try {
+      if (editItem) {
+        // Cập nhật item đã tồn tại
+        const updatedItem = {
+          ...editItem,
+          word: tempItem.word!,
+          sentence: tempItem.sentence!,
+          status: tempItem.status ?? true,
+        };
+
+        const response = await preparationMatchWordSentencesService.update(
+          editItem.id,
+          updatedItem
+        );
+
+        if (response.status === "SUCCESS") {
+          const updatedData = data.map((item) =>
+            item.id === editItem.id ? response.data : item
+          );
+          setData(updatedData);
+        }
+      } else {
+        // Tạo item mới
+        const newItem: PreparationMatchWordSentences = {
+          id: 0, // ID sẽ được tạo bởi server
+          word: tempItem.word!,
+          sentence: tempItem.sentence!,
+          status: tempItem.status ?? true,
+        };
+
+        const response = await preparationMatchWordSentencesService.create(
+          newItem
+        );
+
+        if (response.status === "SUCCESS") {
+          const newData = [...data, response.data];
+          setData(newData);
+
+          // Cập nhật trường questions của preparation
+          const newQuestionIds = [...questions, response.data.id];
+          await updatePreparationQuestions(newQuestionIds);
+        }
+      }
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Error saving item:", error);
+      showError({
+        message: editItem ? "Error updating item" : "Error creating item",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    } finally {
+      setLoading(false);
     }
-
-    handleCloseDialog();
   };
 
-  const handleDelete = (id: number) => {
-    const updatedData = data.filter((item) => item.id !== id);
-    setData(updatedData);
+  const handleDelete = async (id: number) => {
+    setLoading(true);
+    try {
+      const response = await preparationMatchWordSentencesService.remove(id);
+
+      if (response.status === "SUCCESS") {
+        const updatedData = data.filter((item) => item.id !== id);
+        setData(updatedData);
+
+        // Cập nhật trường questions của preparation
+        const updatedQuestionIds = questions.filter(
+          (questionId) => questionId !== id
+        );
+        await updatePreparationQuestions(updatedQuestionIds);
+      }
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      showError({
+        message: "Error deleting item",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSaveChanges = () => {
-    // TODO: Save changes
-    setIsEditMode(false);
+  const handleSaveChanges = async () => {
+    setLoading(true);
+    try {
+      // Lưu tất cả các thay đổi
+      const updatePromises = data.map((item) =>
+        preparationMatchWordSentencesService.update(item.id, item)
+      );
+
+      await Promise.all(updatePromises);
+      setIsEditMode(false);
+    } catch (error) {
+      console.error("Error saving changes:", error);
+      showError({
+        message: "Error saving changes",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancelChanges = () => {
+    // Fetch lại data từ server để bỏ các thay đổi cục bộ
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const promises = questions.map((questionId) =>
+          preparationMatchWordSentencesService.findById(questionId)
+        );
+
+        const responses = (await Promise.all(promises)) as ServiceResponse[];
+
+        const validData = responses
+          .filter((response) => response.status === "SUCCESS" && response.data)
+          .map((response) => response.data);
+
+        setData(validData);
+      } catch (error) {
+        console.error("Error fetching match word sentences:", error);
+        showError({
+          message: "Error refreshing data",
+          severity: "error",
+          details: extractErrorMessages(error),
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (questions.length > 0) {
+      fetchData();
+    }
+
     setIsEditMode(false);
   };
 
   return {
     data,
+    loading,
     isEditMode,
     isDialogOpen,
     tempItem,
     editItem,
-    setTempItem,
     handleToggleEditMode,
     handleOpenDialog,
     handleCloseDialog,
@@ -170,5 +290,6 @@ export default function useMatchWordWithSentenceSection(questions: number[]) {
     handleSaveChanges,
     handleCancelChanges,
     handleInputChange,
+    handleToggleStatus,
   };
 }
