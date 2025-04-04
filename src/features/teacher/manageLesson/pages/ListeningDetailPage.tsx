@@ -86,7 +86,7 @@ export default function ListeningDetailPage() {
         </div>
 
         <div id="listen-and-write-a-word">
-          <ListenAndWriteAWordSection />
+          <ListenAndWriteAWordSection questions={hooks.data.questions} />
         </div>
 
         <div id="listening-audio">

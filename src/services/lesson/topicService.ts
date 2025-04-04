@@ -34,7 +34,7 @@ const update = async (id: number, data: Topic) => {
   }
 };
 
-const patch = async (id: number, data: any) => {
+const patch = async (id: number, data: Partial<Topic>) => {
   try {
     // TODO: Luu image vao firebase
     if (data.image) data.image = base64ToBlobUrl(data.image, "image/png");

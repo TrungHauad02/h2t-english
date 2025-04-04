@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Stack } from "@mui/material";
+import { Button, Stack, CircularProgress } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
@@ -14,6 +14,7 @@ interface ExerciseActionButtonsProps {
   onCancel: () => void;
   onAdd?: () => void;
   showAddButton?: boolean;
+  isLoading?: boolean;
 }
 
 export default function ExerciseActionButtons({
@@ -23,6 +24,7 @@ export default function ExerciseActionButtons({
   onCancel,
   onAdd,
   showAddButton = false,
+  isLoading = false,
 }: ExerciseActionButtonsProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -37,8 +39,9 @@ export default function ExerciseActionButtons({
         {showAddButton && (
           <Button
             variant="contained"
-            startIcon={<AddIcon />}
+            startIcon={isLoading ? <CircularProgress size={16} /> : <AddIcon />}
             onClick={onAdd}
+            disabled={isLoading}
             sx={{
               bgcolor: isDarkMode ? color.emerald400 : color.emerald600,
               color: "white",
@@ -53,8 +56,9 @@ export default function ExerciseActionButtons({
         )}
         <Button
           variant="contained"
-          startIcon={<SaveIcon />}
+          startIcon={isLoading ? <CircularProgress size={16} /> : <SaveIcon />}
           onClick={onSave}
+          disabled={isLoading}
           sx={{
             bgcolor: isDarkMode ? color.emerald400 : color.emerald600,
             color: "white",
@@ -70,6 +74,7 @@ export default function ExerciseActionButtons({
           variant="outlined"
           startIcon={<CloseIcon />}
           onClick={onCancel}
+          disabled={isLoading}
           sx={{
             borderColor: isDarkMode ? color.red400 : color.red600,
             color: isDarkMode ? color.red400 : color.red600,
@@ -90,6 +95,7 @@ export default function ExerciseActionButtons({
       variant="contained"
       startIcon={<EditIcon />}
       onClick={onEdit}
+      disabled={isLoading}
       sx={{
         bgcolor: isDarkMode ? color.emerald400 : color.emerald600,
         color: "white",
