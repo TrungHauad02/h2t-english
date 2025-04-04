@@ -31,7 +31,7 @@ const update = async (id: number, data: Listening) => {
   }
 };
 
-const patch = async (id: number, data: any) => {
+const patch = async (id: number, data: Partial<Listening>) => {
   try {
     const response = await apiClient.patch(`/listenings/${id}`, data);
     return response.data;

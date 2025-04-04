@@ -18,10 +18,11 @@ interface EditExerciseDialogProps {
     sentence: string;
     missingIndex: number;
     correctAnswer: string;
-    status: boolean; // Thêm status vào selectedItem
+    status: boolean;
   };
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onAudioChange: (base64: string) => void;
+  isLoading?: boolean;
 }
 
 export default function EditExerciseDialog({
@@ -32,6 +33,7 @@ export default function EditExerciseDialog({
   selectedItem,
   onInputChange,
   onAudioChange,
+  isLoading = false,
 }: EditExerciseDialogProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -73,6 +75,7 @@ export default function EditExerciseDialog({
                 <Switch
                   checked={selectedItem.status}
                   onChange={handleStatusChange}
+                  disabled={isLoading}
                   sx={{
                     "& .MuiSwitch-switchBase.Mui-checked": {
                       color: accentColor,
@@ -111,6 +114,7 @@ export default function EditExerciseDialog({
             placeholder="Write sentence without the missing word"
             required
             sx={{ maxWidth: "100%" }}
+            disabled={isLoading}
           />
         </StyledCard>
 
@@ -124,6 +128,7 @@ export default function EditExerciseDialog({
             placeholder="Position where the missing word should be inserted (starting from 0)"
             required
             sx={{ maxWidth: "100%" }}
+            disabled={isLoading}
           />
         </StyledCard>
 
@@ -137,6 +142,7 @@ export default function EditExerciseDialog({
             placeholder="The word that should be inserted at the missing index"
             required
             sx={{ maxWidth: "100%" }}
+            disabled={isLoading}
           />
         </StyledCard>
 

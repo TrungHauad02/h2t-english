@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Box, Paper, Typography } from "@mui/material";
+import { Box, Paper, Typography, CircularProgress, Alert } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { ListenAndWriteAWord } from "interfaces";
@@ -13,7 +13,11 @@ import {
 } from "./listenAndWriteAWord";
 import QuizIcon from "@mui/icons-material/Quiz";
 
-export default function ListenAndWriteAWordSection() {
+export default function ListenAndWriteAWordSection({
+  questions,
+}: {
+  questions: number[];
+}) {
   const { id } = useParams();
   const listeningId = parseInt(id ? id : "0");
   const { isDarkMode } = useDarkMode();
@@ -22,7 +26,22 @@ export default function ListenAndWriteAWordSection() {
   const [openDialog, setOpenDialog] = useState(false);
   const [isNewItem, setIsNewItem] = useState(false);
 
-  const hooks = useListenAndWriteExercises(listeningId);
+  const {
+    data,
+    isLoading,
+    error,
+    selectedItem,
+    setSelectedItem,
+    handleSaveItem,
+    handleDeleteItem,
+    handleInputChange,
+    handleAudioChange,
+    resetSelectedItem,
+    loadData,
+    handleMoveUp,
+    handleMoveDown,
+    saveAllChanges,
+  } = useListenAndWriteExercises(listeningId);
 
   const cardBgColor = isDarkMode ? color.gray800 : color.gray50;
   const textColor = isDarkMode ? color.gray100 : color.gray900;
@@ -30,19 +49,21 @@ export default function ListenAndWriteAWordSection() {
 
   const handleEditMode = () => setIsEditMode(true);
 
-  const handleSaveMode = () => {
-    // TODO: Save all changes to database
-    setIsEditMode(false);
+  const handleSaveMode = async () => {
+    const success = await saveAllChanges();
+    if (success) {
+      setIsEditMode(false);
+    }
   };
 
   const handleCancelEdit = () => {
-    hooks.loadData();
+    loadData();
     setIsEditMode(false);
   };
 
   const handleOpenDialog = (item?: ListenAndWriteAWord) => {
     if (item) {
-      hooks.setSelectedItem({
+      setSelectedItem({
         id: item.id,
         audio: item.audio,
         serial: item.serial,
@@ -54,11 +75,11 @@ export default function ListenAndWriteAWordSection() {
       setIsNewItem(false);
     } else {
       // For new item
-      hooks.setSelectedItem({
+      setSelectedItem({
         audio: "",
         serial:
-          hooks.data.length > 0
-            ? Math.max(...hooks.data.map((item) => item.serial)) + 1
+          data.length > 0
+            ? Math.max(...data.map((item) => item.serial)) + 1
             : 1,
         sentence: "",
         missingIndex: 0,
@@ -72,21 +93,35 @@ export default function ListenAndWriteAWordSection() {
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
-    hooks.resetSelectedItem();
+    resetSelectedItem();
   };
 
   const handleSave = () => {
-    hooks.handleSaveItem(isNewItem, listeningId);
+    handleSaveItem(isNewItem, listeningId);
     handleCloseDialog();
   };
 
-  const onMoveUp = (id: number) => {
-    hooks.handleMoveUp(id);
-  };
-
-  const onMoveDown = (id: number) => {
-    hooks.handleMoveDown(id);
-  };
+  if (isLoading && data.length === 0) {
+    return (
+      <Box
+        component={Paper}
+        elevation={3}
+        sx={{
+          p: 3,
+          borderRadius: "1rem",
+          backgroundColor: cardBgColor,
+          mt: 4,
+          border: `1px solid ${borderColor}`,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "200px",
+        }}
+      >
+        <CircularProgress color="primary" />
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -128,17 +163,30 @@ export default function ListenAndWriteAWordSection() {
           onSave={handleSaveMode}
           onCancel={handleCancelEdit}
           showAddButton={isEditMode}
+          isLoading={isLoading}
         />
       </Box>
 
-      {hooks.data.length > 0 ? (
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
+
+      {isLoading && data.length > 0 && (
+        <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+          <CircularProgress size={24} />
+        </Box>
+      )}
+
+      {data.length > 0 ? (
         <ExerciseList
-          data={hooks.data}
+          data={data}
           isEditMode={isEditMode}
           onEdit={handleOpenDialog}
-          onDelete={hooks.handleDeleteItem}
-          onMoveUp={onMoveUp}
-          onMoveDown={onMoveDown}
+          onDelete={handleDeleteItem}
+          onMoveUp={handleMoveUp}
+          onMoveDown={handleMoveDown}
         />
       ) : (
         <NoExercisesMessage isEditMode={isEditMode} />
@@ -149,9 +197,10 @@ export default function ListenAndWriteAWordSection() {
         onClose={handleCloseDialog}
         onSave={handleSave}
         isNewItem={isNewItem}
-        selectedItem={hooks.selectedItem}
-        onInputChange={hooks.handleInputChange}
-        onAudioChange={hooks.handleAudioChange}
+        selectedItem={selectedItem}
+        onInputChange={handleInputChange}
+        onAudioChange={handleAudioChange}
+        isLoading={isLoading}
       />
     </Box>
   );
