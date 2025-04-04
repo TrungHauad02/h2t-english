@@ -10,7 +10,8 @@ const VolumeTestStep = () => (
       borderRadius: 1,
       overflow: 'hidden',
       bgcolor: 'white',
-      boxShadow: 2
+      boxShadow: 2,
+      
     }}
   >
     <Box sx={{ bgcolor: '#1565c0', px: 3, py: 2 }}>

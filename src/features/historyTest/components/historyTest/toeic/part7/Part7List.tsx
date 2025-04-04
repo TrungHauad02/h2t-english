@@ -1,23 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { Box, CircularProgress } from '@mui/material';
-import { testService } from '../../../services/testServices';
-import { ToeicPart7, ToeicPart7Question, AnswerEnum } from 'interfaces/TestInterfaces';
+import {
+  ToeicPart7,
+  ToeicPart7Question,
+  AnswerEnum,
+  SubmitToeicPart7,
+} from 'interfaces/TestInterfaces';
+import { testService } from '../../../../../test/services/testServices';
 import Part7Item from './Part7Item';
 
 type Props = {
   questionsPart7: number[];
   startIndex: number;
+  submitToeicPart7: SubmitToeicPart7[];
   currentIndex: number;
   setCurrentIndex: (val: number) => void;
-  onFinish: () => void;
 };
 
 const Part7List: React.FC<Props> = ({
   questionsPart7,
   startIndex,
+  submitToeicPart7,
   currentIndex,
   setCurrentIndex,
-  onFinish,
 }) => {
   const [data, setData] = useState<{ passage: ToeicPart7; questions: ToeicPart7Question[] }[]>([]);
   const [userAnswers, setUserAnswers] = useState<Record<number, AnswerEnum>>({});
@@ -25,18 +30,25 @@ const Part7List: React.FC<Props> = ({
   useEffect(() => {
     const fetchData = async () => {
       const part7s = await testService.getToeicPart7ByIds(questionsPart7);
+
       const result = await Promise.all(
-        part7s.map(async (p7: ToeicPart7) => {
+        part7s.map(async (p7) => {
           const questions = await testService.getToeicPart7QuestionsByIds(p7.questions);
           return { passage: p7, questions };
         })
       );
       setData(result);
-    };
-    fetchData();
-  }, [questionsPart7]);
 
-  if (data.length === 0) {
+      const answers: Record<number, AnswerEnum> = {};
+      submitToeicPart7.forEach((item) => {
+        answers[item.toeicPart7QuestionId] = item.answer;
+      });
+      setUserAnswers(answers);
+    };
+
+    fetchData();
+  }, [questionsPart7, submitToeicPart7]);
+  if (data.length === 0 || !data[currentIndex]) {
     return (
       <Box display="flex" justifyContent="center" mt={10}>
         <CircularProgress />
@@ -52,12 +64,10 @@ const Part7List: React.FC<Props> = ({
   return (
     <Box sx={{ gap: 4, px: 2, py: 4 }}>
       <Part7Item
-        key={currentGroup.passage.id}
         passage={currentGroup.passage}
         questions={currentGroup.questions}
         questionNumberStart={questionNumberStart}
         selectedAnswers={userAnswers}
-        onChange={(id, val) => setUserAnswers((prev) => ({ ...prev, [id]: val }))}
       />
     </Box>
   );

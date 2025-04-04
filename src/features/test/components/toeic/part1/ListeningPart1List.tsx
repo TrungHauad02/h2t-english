@@ -5,7 +5,7 @@ import ListeningPart1QuestionItem from './ListeningPart1QuestionItem';
 import { testService } from '../../../services/testServices';
 
 type Props = {
-  questionsPart1: string;
+  questionsPart1: number[];
   startIndex: number;
   onFinish: () => void;
 };
@@ -17,8 +17,7 @@ const ListeningPart1List: React.FC<Props> = ({ questionsPart1, startIndex, onFin
 
   useEffect(() => {
     const fetchQuestions = async () => {
-      const ids = testService.parseIds(questionsPart1);
-      const data = await testService.getToeicPart1ByIds(ids);
+      const data = await testService.getToeicPart1ByIds(questionsPart1);
       setQuestions(data);
     };
     fetchQuestions();

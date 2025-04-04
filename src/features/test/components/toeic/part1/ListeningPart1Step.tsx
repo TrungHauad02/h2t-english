@@ -13,7 +13,7 @@ const ListeningPart1Step = () => {
     <Paper
       elevation={3}
       sx={{
-        maxHeight:"60vh",
+        maxHeight:"70vh",
         marginTop:'1rem',
         border: '2px solid #1565c0',
         borderRadius: 1,

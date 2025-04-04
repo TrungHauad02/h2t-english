@@ -1,23 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { Box, CircularProgress } from '@mui/material';
-import { ToeicPart6, AnswerEnum } from 'interfaces/TestInterfaces';
-import { testService } from '../../../services/testServices';
+import {
+  ToeicPart6,
+  AnswerEnum,
+  SubmitToeicPart6,
+} from 'interfaces/TestInterfaces';
+import { testService } from '../../../../../test/services/testServices';
 import Part6Item from './Part6Item';
 
 type Props = {
   questionsPart6: number[];
   startIndex: number;
+  submitToeicPart6: SubmitToeicPart6[];
   currentIndex: number;
   setCurrentIndex: (val: number) => void;
-  onFinish: () => void;
 };
 
 const Part6List: React.FC<Props> = ({
   questionsPart6,
   startIndex,
+  submitToeicPart6,
   currentIndex,
-  setCurrentIndex,
-  onFinish,
 }) => {
   const [questions, setQuestions] = useState<ToeicPart6[]>([]);
   const [userAnswers, setUserAnswers] = useState<Record<string, AnswerEnum>>({});
@@ -26,9 +29,19 @@ const Part6List: React.FC<Props> = ({
     const fetchData = async () => {
       const data = await testService.getToeicPart6ByIds(questionsPart6);
       setQuestions(data);
+
+      const initialAnswers: Record<string, AnswerEnum> = {};
+      submitToeicPart6.forEach((item) => {
+        initialAnswers[`${item.toeicPart6Id}-1`] = item.answerQ1;
+        initialAnswers[`${item.toeicPart6Id}-2`] = item.answerQ2;
+        initialAnswers[`${item.toeicPart6Id}-3`] = item.answerQ3;
+        initialAnswers[`${item.toeicPart6Id}-4`] = item.answerQ4;
+      });
+      setUserAnswers(initialAnswers);
     };
+
     fetchData();
-  }, [questionsPart6]);
+  }, [questionsPart6, submitToeicPart6]);
 
   if (questions.length === 0) {
     return (
@@ -47,9 +60,6 @@ const Part6List: React.FC<Props> = ({
         questionNumberStart={startIndex + currentIndex * 4}
         question={currentQuestion}
         selectedAnswers={userAnswers}
-        onChange={(key, val) =>
-          setUserAnswers((prev) => ({ ...prev, [key]: val }))
-        }
       />
     </Box>
   );
