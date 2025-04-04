@@ -91,7 +91,7 @@ export default function ListeningDetailPage() {
 
         <div id="listening-audio">
           <ListeningAudioSection
-            audio={hooks.data.audio}
+            audio={hooks.editData ? hooks.editData.audio : hooks.data.audio}
             onAudioChange={(base64: string) =>
               hooks.handleInputChange("audio", base64)
             }
