@@ -1,35 +1,43 @@
 import React, { useEffect, useState } from 'react';
 import { Box, CircularProgress } from '@mui/material';
-import { ToeicPart2, AnswerEnum } from 'interfaces/TestInterfaces';
-import { testService } from '../../../services/testServices';
+import {
+  ToeicPart2,
+  AnswerEnum,
+  SubmitToeicPart2,
+} from 'interfaces/TestInterfaces';
+import { testService } from '../../../../../test/services/testServices';
 import ListeningPart2QuestionItem from './ListeningPart2QuestionItem';
 
 type Props = {
   questionsPart2: number[];
-  onFinish: () => void;
   startIndex: number;
+  submitToeicPart2: SubmitToeicPart2[];
+  currentIndex: number;
+  setCurrentIndex: (val: number) => void;
 };
 
-const ListeningPart2List: React.FC<Props> = ({ questionsPart2, onFinish, startIndex }) => {
+const ListeningPart2List: React.FC<Props> = ({
+  questionsPart2,
+  startIndex,
+  submitToeicPart2,
+  currentIndex,
+}) => {
   const [questions, setQuestions] = useState<ToeicPart2[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<number, AnswerEnum>>({});
 
   useEffect(() => {
     const fetchData = async () => {
       const data = await testService.getToeicPart2ByIds(questionsPart2);
       setQuestions(data);
+
+      const initialAnswers: Record<number, AnswerEnum> = {};
+      submitToeicPart2.forEach((item) => {
+        initialAnswers[item.toeicPart2Id] = item.answer;
+      });
+      setUserAnswers(initialAnswers);
     };
     fetchData();
-  }, [questionsPart2]);
-
-  const handleAudioEnded = () => {
-    if (currentIndex < questions.length - 1) {
-      setCurrentIndex((prev) => prev + 1);
-    } else {
-      onFinish();
-    }
-  };
+  }, [questionsPart2, submitToeicPart2]);
 
   if (questions.length === 0) {
     return (
@@ -42,17 +50,13 @@ const ListeningPart2List: React.FC<Props> = ({ questionsPart2, onFinish, startIn
   const currentQuestion = questions[currentIndex];
 
   return (
-    <Box
-    sx={{marginTop:"1rem"}}
-    >
+    <Box sx={{ mt: 2 }}>
       <ListeningPart2QuestionItem
         questionNumber={startIndex + currentIndex}
         audioSrc={currentQuestion.audio}
+        script={currentQuestion.transcript}
         selectedAnswer={userAnswers[currentQuestion.id]}
-        onChange={(val) =>
-          setUserAnswers((prev) => ({ ...prev, [currentQuestion.id]: val }))
-        }
-        onAudioEnded={handleAudioEnded}
+        correctAnswer={currentQuestion.correctAnswer}
       />
     </Box>
   );

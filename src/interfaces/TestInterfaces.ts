@@ -78,13 +78,13 @@ export interface Answer extends BaseEntity {
 export interface Toeic extends BaseEntity {
   title: string;
   duration: number;
-  questionsPart1: string;
-  questionsPart2: string;
-  questionsPart3: string;
-  questionsPart4: string;
-  questionsPart5: string;
-  questionsPart6: string;
-  questionsPart7: string;
+  questionsPart1: number[];
+  questionsPart2: number[];
+  questionsPart3: number[];
+  questionsPart4: number[];
+  questionsPart5: number[];
+  questionsPart6: number[];
+  questionsPart7: number[];  
   totalQuestions: 200;
   scoreLastOfTest: number | null ;
 }
@@ -93,16 +93,20 @@ export interface ToeicPart1 extends BaseEntity {
   image: string;
   audio: string;
   correctAnswer: AnswerEnum;
+  transcript: string;
 }
 
 export interface ToeicPart2 extends BaseEntity {
   audio: string;
   correctAnswer: AnswerEnum;
+  transcript: string;
 }
 
 export interface ToeicPart3_4 extends BaseEntity {
   audio: string;
   image?: string;
+
+  transcript: string;
 
   contentQuestion1: string;
   contentQuestion2: string;
@@ -135,6 +139,7 @@ export interface ToeicPart5 extends BaseEntity {
   answer3: string;
   answer4: string;
   correctAnswer: AnswerEnum;
+  explanation: string;
 }
 
 export interface ToeicPart6 extends BaseEntity {
@@ -144,6 +149,11 @@ export interface ToeicPart6 extends BaseEntity {
   contentQuestion2: string;
   contentQuestion3: string;
   contentQuestion4: string;
+
+  explanationQuestion1: string;
+  explanationQuestion2: string;
+  explanationQuestion3: string;
+  explanationQuestion4: string;
 
   answer1Q1: string;
   answer2Q1: string;
@@ -173,7 +183,7 @@ export interface ToeicPart6 extends BaseEntity {
 
 export interface ToeicPart7 extends BaseEntity {
   file: string;
-  questions: string;
+  questions: number[];
 }
 
 export interface ToeicPart7Question extends BaseEntity {
@@ -182,6 +192,7 @@ export interface ToeicPart7Question extends BaseEntity {
   answer2: string;
   answer3: string;
   answer4: string;
+  explanation: string;
   correctAnswer: AnswerEnum;
 }
 
@@ -248,4 +259,45 @@ export interface SubmitTestWriting extends BaseEntity {
   content: string;
   score: number;
   comment: string;
+}
+
+export interface SubmitToeicPart1 extends BaseEntity {
+  submitToeicId: number;
+  toeicPart1Id: number;
+  answer: AnswerEnum;
+}
+
+export interface SubmitToeicPart2 extends BaseEntity {
+  submitToeicId: number;
+  toeicPart2Id: number;
+  answer: AnswerEnum;
+}
+
+export interface SubmitToeicPart3_4 extends BaseEntity {
+  submitToeicId: number;
+  toeicPart3_4Id: number;
+  answerQ1: AnswerEnum;
+  answerQ2: AnswerEnum;
+  answerQ3: AnswerEnum;
+}
+
+export interface SubmitToeicPart5 extends BaseEntity {
+  submitToeicId: number;
+  toeicPart5Id: number;
+  answer: AnswerEnum;
+}
+
+export interface SubmitToeicPart6 extends BaseEntity {
+  submitToeicId: number;
+  toeicPart6Id: number;
+  answerQ1: AnswerEnum;
+  answerQ2: AnswerEnum;
+  answerQ3: AnswerEnum;
+  answerQ4: AnswerEnum;
+}
+
+export interface SubmitToeicPart7 extends BaseEntity {
+  submitToeicId: number;
+  toeicPart7QuestionId: number;
+  answer: AnswerEnum;
 }

@@ -7,7 +7,8 @@ import {
   Radio,
 } from '@mui/material';
 import { ToeicPart6, AnswerEnum } from 'interfaces/TestInterfaces';
-import WEDocumentViewer from "components/display/document/WEDocumentViewer";
+import WEDocumentViewer from 'components/display/document/WEDocumentViewer';
+
 type Props = {
   questionNumberStart: number;
   question: ToeicPart6;
@@ -24,7 +25,7 @@ const Part6Item: React.FC<Props> = ({
   return (
     <Box
       sx={{
-        width:"90vw",
+        width: '90vw',
         maxHeight: '60vh',
         border: '2px solid #03a9f4',
         borderRadius: 1,
@@ -32,14 +33,15 @@ const Part6Item: React.FC<Props> = ({
       }}
     >
       <Box sx={{ bgcolor: '#03a9f4', color: 'white', px: 2, py: 1 }}>
-        <Typography fontWeight="bold">Questions {questionNumberStart}–{questionNumberStart + 3}</Typography>
+        <Typography fontWeight="bold">
+          Questions {questionNumberStart}–{questionNumberStart + 3}
+        </Typography>
       </Box>
-      <Box sx={{ display: 'flex', gap: 3, px: 3, py: 2, }}>
+      <Box sx={{ display: 'flex', gap: 3, px: 3, py: 2 }}>
         <Box flex={1}>
-        <WEDocumentViewer fileUrl={question.file} lineHeight="2" sx={{ my: 2 }} />
+          <WEDocumentViewer fileUrl={question.file} lineHeight="2" sx={{ my: 2 }} />
         </Box>
-        <Box flex={1} sx={{overflowY: 'auto',
-        maxHeight: '50vh' }} >
+        <Box flex={1} sx={{ overflowY: 'auto', maxHeight: '50vh' }}>
           {[1, 2, 3, 4].map((num) => {
             const questionKey = `${question.id}-Q${num}`;
             const content = question[`contentQuestion${num}` as keyof ToeicPart6];

@@ -267,13 +267,13 @@ export const toeicMock: Toeic = {
   id: 1,
   title: "Mock TOEIC Test",
   duration: 120,
-  questionsPart1: "1,2",
-  questionsPart2: "3,4",
-  questionsPart3: "5",
-  questionsPart4: "6",
-  questionsPart5: "7",
-  questionsPart6: "8",
-  questionsPart7: "9",
+  questionsPart1: [1,2,3,4,5,6],
+  questionsPart2: [1,2],
+  questionsPart3:[1,2],
+  questionsPart4: [1,2],
+  questionsPart5:[1,2,3,4],
+  questionsPart6: [1,2],
+  questionsPart7: [1,2],
   scoreLastOfTest: 0,
   totalQuestions:200,
   createdAt: new Date(),
@@ -288,6 +288,7 @@ export const toeicPart1List: ToeicPart1[] = [
     correctAnswer: AnswerEnum.A,
     createdAt: new Date(),
     updatedAt: new Date(),
+    transcript : "122222",
     status: true
   },
   {
@@ -297,30 +298,74 @@ export const toeicPart1List: ToeicPart1[] = [
     correctAnswer: AnswerEnum.C,
     createdAt: new Date(),
     updatedAt: new Date(),
+    transcript : "122222",
     status: true
-  }
-];
-export const toeicPart2List: ToeicPart2[] = [
+  },
   {
     id: 3,
-    audio: "/audio/p2_q1.mp3",
-    correctAnswer: AnswerEnum.B,
+    image: "/direction_part_1.png",
+    audio: "/basic_listening1.mp3",
+    correctAnswer: AnswerEnum.C,
     createdAt: new Date(),
     updatedAt: new Date(),
+    transcript : "122222",
     status: true
   },
   {
     id: 4,
+    image: "/direction_part_1.png",
+    audio: "/basic_listening1.mp3",
+    correctAnswer: AnswerEnum.C,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    transcript : "122222",
+    status: true
+  },
+  {
+    id: 5,
+    image: "/direction_part_1.png",
+    audio: "/basic_listening1.mp3",
+    correctAnswer: AnswerEnum.C,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    transcript : "122222",
+    status: true
+  },
+  {
+    id: 6,
+    image: "/direction_part_1.png",
+    audio: "/basic_listening1.mp3",
+    correctAnswer: AnswerEnum.C,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    transcript : "122222",
+    status: true
+  },
+  
+];
+export const toeicPart2List: ToeicPart2[] = [
+  {
+    id: 1,
+    audio: "/audio/p2_q1.mp3",
+    correctAnswer: AnswerEnum.B,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    transcript : "122222",
+    status: true
+  },
+  {
+    id: 2,
     audio: "/audio/p2_q2.mp3",
     correctAnswer: AnswerEnum.D,
     createdAt: new Date(),
     updatedAt: new Date(),
+    transcript : "122222",
     status: true
   }
 ];
 export const toeicPart3_4List: ToeicPart3_4[] = [
   {
-    id: 5,
+    id: 1,
     audio: "/audio/p3_set1.mp3",
     image: "/images/p3_set1.png",
     contentQuestion1: "What is the man doing?",
@@ -343,12 +388,40 @@ export const toeicPart3_4List: ToeicPart3_4[] = [
     correctAnswer3: AnswerEnum.D,
     createdAt: new Date(),
     updatedAt: new Date(),
+    transcript : "122222",
     status: true
-  }
+  },
+  {
+    id: 2,
+    audio: "/audio/p3_set1.mp3",
+    image: "/images/p3_set1.png",
+    contentQuestion1: "What is the man doing?",
+    contentQuestion2: "Where are they?",
+    contentQuestion3: "What will happen next?",
+    answer1Q1: "Reading",
+    answer2Q1: "Sleeping",
+    answer3Q1: "Writing",
+    answer4Q1: "Cooking",
+    answer1Q2: "In a restaurant",
+    answer2Q2: "In an office",
+    answer3Q2: "At home",
+    answer4Q: "In a classroom",
+    answer1Q3: "He will leave",
+    answer2Q3: "She will call",
+    answer3Q3: "They will meet",
+    answer4Q3: "The meeting ends",
+    correctAnswer1: AnswerEnum.C,
+    correctAnswer2: AnswerEnum.B,
+    correctAnswer3: AnswerEnum.D,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    transcript : "122222",
+    status: true
+  },
 ];
 export const toeicPart5List: ToeicPart5[] = [
   {
-    id: 7,
+    id: 1,
     content: "She ___ to the store every Sunday.",
     answer1: "go",
     answer2: "goes",
@@ -357,17 +430,61 @@ export const toeicPart5List: ToeicPart5[] = [
     correctAnswer: AnswerEnum.B,
     createdAt: new Date(),
     updatedAt: new Date(),
+    explanation : "122222",
+    status: true
+  },
+  {
+    id: 2,
+    content: "She ___ to the store every Sunday.",
+    answer1: "go",
+    answer2: "goes",
+    answer3: "going",
+    answer4: "gone",
+    correctAnswer: AnswerEnum.B,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    explanation : "122222",
+    status: true
+  },
+  {
+    id: 3,
+    content: "She ___ to the store every Sunday.",
+    answer1: "go",
+    answer2: "goes",
+    answer3: "going",
+    answer4: "gone",
+    correctAnswer: AnswerEnum.B,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    explanation : "122222",
+    status: true
+  },  
+  {
+    id: 4,
+    content: "She ___ to the store every Sunday.",
+    answer1: "go",
+    answer2: "goes",
+    answer3: "going",
+    answer4: "gone",
+    correctAnswer: AnswerEnum.B,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    explanation : "122222",
     status: true
   }
 ];
 export const toeicPart6List: ToeicPart6[] = [
   {
-    id: 8,
+    id: 1,
     file: "/document.docx",
     contentQuestion1: "What is the purpose of the memo?",
     contentQuestion2: "Who is the memo for?",
     contentQuestion3: "When is the event?",
     contentQuestion4: "What should employees bring?",
+    explanationQuestion1 : "122222",
+    explanationQuestion2 : "122222",
+    explanationQuestion3 : "122222",
+    explanationQuestion4 : "122222",
     answer1Q1: "Reminder",
     answer2Q1: "Invitation",
     answer3Q1: "Warning",
@@ -391,50 +508,87 @@ export const toeicPart6List: ToeicPart6[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     status: true
-  }
+  },
+  {
+    id: 2,
+    file: "/document.docx",
+    contentQuestion1: "What is the purpose of the memo?",
+    contentQuestion2: "Who is the memo for?",
+    contentQuestion3: "When is the event?",
+    contentQuestion4: "What should employees bring?",
+    explanationQuestion1 : "122222",
+    explanationQuestion2 : "122222",
+    explanationQuestion3 : "122222",
+    explanationQuestion4 : "122222",
+    answer1Q1: "Reminder",
+    answer2Q1: "Invitation",
+    answer3Q1: "Warning",
+    answer4Q1: "Instruction",
+    answer1Q2: "Managers",
+    answer2Q2: "Staff",
+    answer3Q2: "Clients",
+    answer4Q2: "Suppliers",
+    answer1Q3: "Tomorrow",
+    answer2Q3: "Next week",
+    answer3Q3: "Yesterday",
+    answer4Q3: "Today",
+    answer1Q4: "ID badge",
+    answer2Q4: "Pen",
+    answer3Q4: "Notebook",
+    answer4Q4: "Nothing",
+    correctAnswer1: AnswerEnum.A,
+    correctAnswer2: AnswerEnum.B,
+    correctAnswer3: AnswerEnum.B,
+    correctAnswer4: AnswerEnum.A,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    status: true
+  },
 ];
 export const toeicPart7list: ToeicPart7[] = [
   {
-    id: 9,
+    id: 1,
     file: "/document.docx",
-    questions: "10,11",
+    questions: [1,2],
     createdAt: new Date(),
     updatedAt: new Date(),
     status: true
   },
   {
-    id: 10,
+    id: 2,
     file: "/document.docx",
-    questions: "12,13",
+    questions: [1,2],
     createdAt: new Date(),
     updatedAt: new Date(),
     status: true
   },
-  // Thêm các đoạn khác nếu cần
+
 ];
 
 
 export const toeicPart7Questions: ToeicPart7Question[] = [
   {
-    id: 10,
+    id: 1,
     content: "What is the topic of the passage?",
     answer1: "A letter",
     answer2: "A memo",
     answer3: "An email",
     answer4: "A news article",
+    explanation : "122222",
     correctAnswer: AnswerEnum.C,
     createdAt: new Date(),
     updatedAt: new Date(),
     status: true
   },
   {
-    id: 11,
+    id: 2,
     content: "Who is the author?",
     answer1: "The boss",
     answer2: "The client",
     answer3: "The supplier",
     answer4: "The employee",
     correctAnswer: AnswerEnum.D,
+    explanation : "122222",
     createdAt: new Date(),
     updatedAt: new Date(),
     status: true
