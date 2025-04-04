@@ -1,64 +1,91 @@
+import { useState, useEffect } from "react";
 import { PreparationClassify } from "interfaces";
-import { useEffect, useState } from "react";
+import { preparationClassifyService } from "services/preparation/preparationClassifyService";
+import { useErrors } from "hooks/useErrors";
+import { extractErrorMessages } from "utils/extractErrorMessages";
+import { preparationService } from "services";
 
-const mockData: PreparationClassify[] = [
-  {
-    id: 1,
-    groupName: "Fruits",
-    members: [
-      "Apple",
-      "Banana",
-      "Orange",
-      "Grapes",
-      "Strawberry",
-      "Pineapple",
-      "Watermelon",
-      "Mango",
-      "Kiwi",
-    ],
-    status: true,
-  },
-  {
-    id: 2,
-    groupName: "Vegetables",
-    members: [
-      "Carrot",
-      "Broccoli",
-      "Spinach",
-      "Tomato",
-      "Cucumber",
-      "Bell Pepper",
-      "Potato",
-      "Onion",
-      "Lettuce",
-      "Zucchini",
-    ],
-    status: true,
-  },
-];
+interface ServiceResponse {
+  status: string;
+  data: PreparationClassify;
+  message: string;
+}
 
-export default function useClassifySection(questionIds: number[]) {
+export default function useClassifySection(
+  questionIds: number[],
+  preparationId: number,
+  fetchPreparationData: () => void
+) {
   const [data, setData] = useState<PreparationClassify[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [editItem, setEditItem] = useState<PreparationClassify | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [tempItem, setTempItem] = useState<PreparationClassify>({
     id: 0,
     groupName: "",
     members: [],
     status: true,
   });
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const { showError } = useErrors();
 
   useEffect(() => {
-    setData(mockData);
-  }, []);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const promises = questionIds.map((questionId) =>
+          preparationClassifyService.findById(questionId)
+        );
+
+        const responses = (await Promise.all(promises)) as ServiceResponse[];
+
+        // Lọc các response thành công và trích xuất data
+        const validData = responses
+          .filter((response) => response.status === "SUCCESS" && response.data)
+          .map((response) => response.data);
+
+        setData(validData);
+      } catch (error) {
+        console.error("Error fetching classification data:", error);
+        showError({
+          message: "Error fetching classification data",
+          severity: "error",
+          details: extractErrorMessages(error),
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (questionIds.length > 0) {
+      fetchData();
+    }
+  }, [questionIds]);
+
+  // Hàm cập nhật trường questions của preparation
+  const updatePreparationQuestions = async (newQuestionIds: number[]) => {
+    try {
+      await preparationService.patch(preparationId, {
+        questions: newQuestionIds,
+      });
+      fetchPreparationData();
+    } catch (error) {
+      console.error("Error updating preparation questions:", error);
+      showError({
+        message: "Error updating preparation questions",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+      throw error; // Ném lỗi để xử lý ở hàm gọi
+    }
+  };
 
   const handleToggleEditMode = () => {
     setIsEditMode(!isEditMode);
   };
 
   const handleOpenDialog = (item?: PreparationClassify) => {
-    setIsDialogOpen(true);
     if (item) {
       setEditItem(item);
       setTempItem({
@@ -76,6 +103,7 @@ export default function useClassifySection(questionIds: number[]) {
         status: true,
       });
     }
+    setIsDialogOpen(true);
   };
 
   const handleCloseDialog = () => {
@@ -97,50 +125,152 @@ export default function useClassifySection(questionIds: number[]) {
     });
   };
 
-  const handleSaveItem = () => {
-    if (!tempItem.groupName || !tempItem.members) return;
+  const handleSaveItem = async () => {
+    if (!tempItem.groupName || !tempItem.members.length) return;
 
-    if (editItem) {
-      const updatedData = data.map((item) =>
-        item.id === editItem.id
-          ? {
-              ...item,
-              groupName: tempItem.groupName,
-              members: tempItem.members,
-              status: tempItem.status,
-            }
-          : item
-      );
-      setData(updatedData);
-    } else {
-      const newItem: PreparationClassify = {
-        id: Math.max(...data.map((item) => item.id), 0) + 1,
-        groupName: tempItem.groupName,
-        members: tempItem.members,
-        status: tempItem.status,
-      };
-      setData([...data, newItem]);
+    setLoading(true);
+    try {
+      if (editItem) {
+        // Cập nhật item đã tồn tại
+        const updatedItem = {
+          ...editItem,
+          groupName: tempItem.groupName,
+          members: tempItem.members,
+          status: tempItem.status,
+        };
+
+        const response = await preparationClassifyService.update(
+          editItem.id,
+          updatedItem
+        );
+
+        if (response.status === "SUCCESS") {
+          const updatedData = data.map((item) =>
+            item.id === editItem.id ? response.data : item
+          );
+          setData(updatedData);
+        }
+      } else {
+        // Tạo item mới
+        const newItem: PreparationClassify = {
+          id: 0, // ID sẽ được tạo bởi server
+          groupName: tempItem.groupName,
+          members: tempItem.members,
+          status: tempItem.status,
+        };
+
+        const response = await preparationClassifyService.create(newItem);
+
+        if (response.status === "SUCCESS") {
+          const newData = [...data, response.data];
+          setData(newData);
+
+          // Cập nhật trường questions của preparation
+          const newQuestionIds = [...questionIds, response.data.id];
+          await updatePreparationQuestions(newQuestionIds);
+        }
+      }
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Error saving item:", error);
+      showError({
+        message: editItem ? "Error updating item" : "Error creating item",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    } finally {
+      setLoading(false);
+      handleCloseDialog();
     }
-
-    handleCloseDialog();
   };
 
-  const handleDelete = (id: number) => {
-    const updatedData = data.filter((item) => item.id !== id);
-    setData(updatedData);
+  const handleDelete = async (id: number) => {
+    setLoading(true);
+    try {
+      const response = await preparationClassifyService.remove(id);
+
+      if (response.status === "SUCCESS") {
+        const updatedData = data.filter((item) => item.id !== id);
+        setData(updatedData);
+
+        // Cập nhật trường questions của preparation
+        const updatedQuestionIds = questionIds.filter(
+          (questionId) => questionId !== id
+        );
+        await updatePreparationQuestions(updatedQuestionIds);
+      }
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      showError({
+        message: "Error deleting item",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSaveChanges = () => {
-    // TODO: Save changes
-    setIsEditMode(false);
+  const handleSaveChanges = async () => {
+    setLoading(true);
+    try {
+      // Lưu tất cả các thay đổi
+      const updatePromises = data.map((item) =>
+        preparationClassifyService.update(item.id, item)
+      );
+
+      await Promise.all(updatePromises);
+      setIsEditMode(false);
+    } catch (error) {
+      console.error("Error saving changes:", error);
+      showError({
+        message: "Error saving changes",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancelChanges = () => {
+    // Fetch lại data từ server để bỏ các thay đổi cục bộ
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const promises = questionIds.map((questionId) =>
+          preparationClassifyService.findById(questionId)
+        );
+
+        const responses = (await Promise.all(promises)) as ServiceResponse[];
+
+        const validData = responses
+          .filter((response) => response.status === "SUCCESS" && response.data)
+          .map((response) => response.data);
+
+        setData(validData);
+      } catch (error) {
+        console.error("Error fetching classification data:", error);
+        showError({
+          message: "Error refreshing data",
+          severity: "error",
+          details: extractErrorMessages(error),
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (questionIds.length > 0) {
+      fetchData();
+    }
+
     setIsEditMode(false);
   };
 
   return {
     data,
+    loading,
     isEditMode,
     isDialogOpen,
     tempItem,

@@ -117,17 +117,10 @@ export default function useMatchWordWithSentenceSection(
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, type, checked, value } = e.target;
     setTempItem({
       ...tempItem,
-      [name]: value,
-    });
-  };
-
-  const handleToggleStatus = (value: boolean) => {
-    setTempItem({
-      ...tempItem,
-      status: value,
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
@@ -290,6 +283,5 @@ export default function useMatchWordWithSentenceSection(
     handleSaveChanges,
     handleCancelChanges,
     handleInputChange,
-    handleToggleStatus,
   };
 }

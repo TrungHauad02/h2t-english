@@ -11,12 +11,22 @@ import {
 
 interface ClassifySectionProps {
   questions: number[];
+  preparationId: number;
+  fetchPreparationData: () => void;
 }
 
-export default function ClassifySection({ questions }: ClassifySectionProps) {
+export default function ClassifySection({
+  questions,
+  preparationId,
+  fetchPreparationData,
+}: ClassifySectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const hooks = useClassifySection(questions);
+  const hooks = useClassifySection(
+    questions,
+    preparationId,
+    fetchPreparationData
+  );
 
   return (
     <Box

@@ -1,5 +1,5 @@
+import { Box, IconButton, Tooltip, useMediaQuery, Theme } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
-import { Box, IconButton, Tooltip } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 
@@ -14,44 +14,53 @@ export default function ActionButtons({
 }: ActionButtonsProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const isMobile = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down("sm")
+  );
+
+  const buttonSize = isMobile ? "small" : "medium";
+  const iconSize = isMobile ? "small" : "medium";
 
   return (
     <Box
       sx={{
-        position: "absolute",
-        top: 10,
-        right: 8,
         display: "flex",
-        gap: 1,
-        zIndex: 2,
+        gap: 0.5,
       }}
     >
-      <Tooltip title="Edit">
+      <Tooltip title="Edit" arrow>
         <IconButton
-          size="small"
+          size={buttonSize}
           onClick={onEdit}
           sx={{
-            color: isDarkMode ? color.emerald400 : color.emerald600,
+            color: isDarkMode ? color.edit : color.edit,
+            backgroundColor: isDarkMode ? color.gray800 : color.white,
+            border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
             "&:hover": {
-              backgroundColor: isDarkMode ? color.gray900 : color.gray200,
+              backgroundColor: isDarkMode ? color.gray700 : color.gray100,
             },
+            padding: isMobile ? "4px" : "6px",
           }}
         >
-          <Edit fontSize="small" />
+          <Edit fontSize={iconSize} />
         </IconButton>
       </Tooltip>
-      <Tooltip title="Delete">
+
+      <Tooltip title="Delete" arrow>
         <IconButton
-          size="small"
+          size={buttonSize}
           onClick={onDelete}
           sx={{
-            color: color.delete,
+            color: isDarkMode ? color.delete : color.delete,
+            backgroundColor: isDarkMode ? color.gray800 : color.white,
+            border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
             "&:hover": {
-              backgroundColor: isDarkMode ? color.gray900 : color.gray200,
+              backgroundColor: isDarkMode ? color.gray700 : color.gray100,
             },
+            padding: isMobile ? "4px" : "6px",
           }}
         >
-          <Delete fontSize="small" />
+          <Delete fontSize={iconSize} />
         </IconButton>
       </Tooltip>
     </Box>

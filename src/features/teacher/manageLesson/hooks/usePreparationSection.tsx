@@ -146,22 +146,28 @@ export default function usePreparationSection(
   };
 
   const renderPreparation = () => {
-    const currentData = isEditMode ? editData : data;
-    if (!currentData) return null;
+    if (isEditMode) return;
+    if (!data) return null;
 
-    switch (currentData.type) {
+    switch (data.type) {
       case PreparationType.MATCH_WORD_WITH_SENTENCES:
         return (
           <MatchWordWithSentenceSection
-            questions={currentData.questions}
-            preparationId={currentData.id}
+            questions={data.questions}
+            preparationId={data.id}
             fetchPreparationData={fetchData}
           />
         );
       case PreparationType.CLASSIFY:
-        return <ClassifySection questions={currentData.questions} />;
+        return (
+          <ClassifySection
+            questions={data.questions}
+            preparationId={data.id}
+            fetchPreparationData={fetchData}
+          />
+        );
       case PreparationType.WORDS_MAKE_SENTENCES:
-        return <WordsMakeSentencesSection questions={currentData.questions} />;
+        return <WordsMakeSentencesSection questions={data.questions} />;
       default:
         return <></>;
     }
