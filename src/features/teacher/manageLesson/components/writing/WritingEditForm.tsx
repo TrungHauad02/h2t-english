@@ -7,6 +7,7 @@ import {
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { Writing } from "interfaces";
+import { base64ToBlobUrl } from "utils/convert";
 
 interface WritingEditFormProps {
   editData: Writing | null;
@@ -51,9 +52,11 @@ export default function WritingEditForm({
             }}
           >
             <WESelectImage
-              label="Attach File"
-              value={editData?.file || ""}
-              onChange={(base64) => handleInputChange("file", base64)}
+              label="Attach Image"
+              value={editData?.image || ""}
+              onChange={(base64) =>
+                handleInputChange("image", base64ToBlobUrl(base64, "image/png"))
+              }
             />
           </Box>
           <WESaveChangeButtons handleSave={onSave} handleCancel={onCancel} />

@@ -23,38 +23,7 @@ export default function useWritingParagraphSection({
     answers: [],
   });
 
-  useEffect(() => {
-    if (editData) {
-      setParagraph(editData.paragraph || "");
-      const fetchedAnswers = editData.questions.map((questionId) => {
-        const answerData = {
-          id: questionId,
-          status: true,
-          missingIndex: 0,
-          correctAnswer: "",
-          writingId: editData.id,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        } as WritingAnswer;
-
-        if (questionId === 1) {
-          answerData.missingIndex = 3;
-          answerData.correctAnswer = "fox";
-        } else if (questionId === 2) {
-          answerData.missingIndex = 17;
-          answerData.correctAnswer = "alphabet";
-        }
-
-        return answerData;
-      });
-
-      setAnswers(fetchedAnswers);
-      setOriginalData({
-        paragraph: editData.paragraph || "",
-        answers: [...fetchedAnswers],
-      });
-    }
-  }, [editData]);
+  useEffect(() => {}, [editData]);
 
   const handleEditMode = () => {
     setIsEditMode(true);
