@@ -29,37 +29,37 @@ export default function usePreparationSection(
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const { showError } = useErrors();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        if (preparationId) {
-          const resData = await preparationService.findById(preparationId);
-          if (resData.data) {
-            setData(resData.data);
-            setEditData({ ...resData.data });
-          }
-        } else {
-          // Create initial data for new preparation
-          const initialData: Preparation = {
-            id: 0,
-            title: "",
-            tip: "",
-            questions: [],
-            type: PreparationType.MATCH_WORD_WITH_SENTENCES,
-            status: false,
-          };
-          setData(initialData);
-          setEditData({ ...initialData });
-          setIsEditMode(true); // Automatically enter edit mode for new preparation
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      if (preparationId) {
+        const resData = await preparationService.findById(preparationId);
+        if (resData.data) {
+          setData(resData.data);
+          setEditData({ ...resData.data });
         }
-      } catch (error) {
-        toast.error("Error fetching preparation data");
-      } finally {
-        setIsLoading(false);
+      } else {
+        // Create initial data for new preparation
+        const initialData: Preparation = {
+          id: 0,
+          title: "",
+          tip: "",
+          questions: [],
+          type: PreparationType.MATCH_WORD_WITH_SENTENCES,
+          status: false,
+        };
+        setData(initialData);
+        setEditData({ ...initialData });
+        setIsEditMode(true); // Automatically enter edit mode for new preparation
       }
-    };
+    } catch (error) {
+      toast.error("Error fetching preparation data");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, [preparationId]);
 
@@ -152,7 +152,11 @@ export default function usePreparationSection(
     switch (currentData.type) {
       case PreparationType.MATCH_WORD_WITH_SENTENCES:
         return (
-          <MatchWordWithSentenceSection questions={currentData.questions} />
+          <MatchWordWithSentenceSection
+            questions={currentData.questions}
+            preparationId={currentData.id}
+            fetchPreparationData={fetchData}
+          />
         );
       case PreparationType.CLASSIFY:
         return <ClassifySection questions={currentData.questions} />;
