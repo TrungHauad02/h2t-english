@@ -11,7 +11,6 @@ interface EditDialogProps {
   handleCloseDialog: () => void;
   handleSaveItem: () => void;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleToggleStatus: (value: boolean) => void;
 }
 
 export default function EditDialog({
@@ -21,7 +20,6 @@ export default function EditDialog({
   handleCloseDialog,
   handleSaveItem,
   handleInputChange,
-  handleToggleStatus,
 }: EditDialogProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -75,30 +73,21 @@ export default function EditDialog({
         <FormControlLabel
           control={
             <Switch
-              checked={tempItem.status === true}
-              onChange={(e) => handleToggleStatus(e.target.checked)}
+              name="status"
+              value={tempItem.status}
+              checked={tempItem.status}
+              onChange={handleInputChange}
               sx={{
                 "& .MuiSwitch-switchBase.Mui-checked": {
-                  color: isDarkMode ? color.emerald400 : color.emerald500,
-                  "&:hover": {
-                    backgroundColor: isDarkMode
-                      ? `${color.emerald400}33`
-                      : `${color.emerald500}33`,
-                  },
+                  color: isDarkMode ? color.teal300 : color.teal600,
                 },
                 "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                  backgroundColor: isDarkMode
-                    ? color.emerald400
-                    : color.emerald500,
+                  backgroundColor: isDarkMode ? color.teal300 : color.teal600,
                 },
               }}
             />
           }
           label="Active"
-          sx={{
-            color: isDarkMode ? color.gray100 : color.gray900,
-            mt: 1,
-          }}
         />
       </Box>
     </WEDialog>

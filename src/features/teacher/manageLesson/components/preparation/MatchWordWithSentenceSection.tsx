@@ -95,7 +95,6 @@ export default function MatchWordWithSentenceSection({
         handleCloseDialog={hooks.handleCloseDialog}
         handleSaveItem={hooks.handleSaveItem}
         handleInputChange={hooks.handleInputChange}
-        handleToggleStatus={hooks.handleToggleStatus}
       />
     </Box>
   );
