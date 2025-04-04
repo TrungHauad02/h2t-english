@@ -4,8 +4,9 @@ import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import AudioFileIcon from "@mui/icons-material/AudioFile";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import { WEAudioInput } from "components/input";
+import WEAudioInputVer2 from "components/input/WEAudioInputVer2";
 import SectionHeader from "../common/SectionHeader";
+import { base64ToBlobUrl } from "utils/convert";
 
 interface ListeningAudioSectionProps {
   audio: string;
@@ -38,7 +39,7 @@ export default function ListeningAudioSection({
   };
 
   const handleSaveChanges = () => {
-    onAudioChange(tempAudio);
+    onAudioChange(base64ToBlobUrl(tempAudio, "audio/wav"));
     onSave();
     setIsEditMode(false);
   };
@@ -72,11 +73,10 @@ export default function ListeningAudioSection({
 
       <Stack spacing={2}>
         {isEditMode ? (
-          <WEAudioInput
+          <WEAudioInputVer2
             value={tempAudio}
             onChange={handleAudioChange}
             label="Listening Audio"
-            errorMessage="Cannot load audio. Please try a different file."
           />
         ) : audio ? (
           <Box

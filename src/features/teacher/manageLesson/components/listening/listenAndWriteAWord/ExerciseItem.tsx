@@ -1,222 +1,372 @@
+import { useState } from "react";
 import {
-  Paper,
   Box,
+  Stack,
   Typography,
   IconButton,
-  Chip,
+  Collapse,
   Tooltip,
-  Grid,
-  Stack,
-  useTheme,
+  Chip,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
-import ArrowUpward from "@mui/icons-material/ArrowUpward";
-import ArrowDownward from "@mui/icons-material/ArrowDownward";
-import SentenceDisplay from "./SentenceDisplay";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
+import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import { ListenAndWriteAWord } from "interfaces";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import { ListenAndWriteAWord } from "interfaces";
+import { base64ToBlobUrl } from "utils/convert";
+import SentencePreview from "./SentencePreview";
+import { WEConfirmDelete } from "components/display";
 
 interface ExerciseItemProps {
-  item: ListenAndWriteAWord;
+  exercise: ListenAndWriteAWord;
   isEditMode: boolean;
-  onEdit: (item: ListenAndWriteAWord) => void;
-  onDelete: (id: number) => void;
-  onMoveUp: () => void;
-  onMoveDown: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
+  isFirst?: boolean;
+  isLast?: boolean;
 }
 
 export default function ExerciseItem({
-  item,
+  exercise,
   isEditMode,
   onEdit,
   onDelete,
   onMoveUp,
   onMoveDown,
+  isFirst = false,
+  isLast = false,
 }: ExerciseItemProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const theme = useTheme();
 
-  const textColor = isDarkMode ? color.gray100 : color.gray900;
-  const accentColor = isDarkMode ? color.teal300 : color.teal600;
-  const cardBgColor = isDarkMode ? color.gray800 : color.white;
-  const borderColor = isDarkMode ? color.gray700 : color.gray200;
+  const [expanded, setExpanded] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(
+    null
+  );
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const toggleExpand = () => {
+    setExpanded(!expanded);
+  };
+
+  const handlePlay = () => {
+    if (!audioElement && exercise.audio) {
+      const audioUrl = base64ToBlobUrl(exercise.audio, "audio/wav");
+      const audio = new Audio(audioUrl);
+
+      audio.onended = () => {
+        setIsPlaying(false);
+      };
+
+      audio.play();
+      setIsPlaying(true);
+      setAudioElement(audio);
+    } else if (audioElement) {
+      if (isPlaying) {
+        audioElement.pause();
+        setIsPlaying(false);
+      } else {
+        audioElement.currentTime = 0;
+        audioElement.play();
+        setIsPlaying(true);
+      }
+    }
+  };
+
+  const handleDeleteClick = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = () => {
+    onDelete();
+    setOpenDeleteDialog(false);
+  };
 
   return (
-    <Paper
-      variant="outlined"
-      sx={{
-        p: 3,
-        borderRadius: 3,
-        backgroundColor: cardBgColor,
-        borderColor: borderColor,
-        position: "relative",
-        boxShadow: isDarkMode
-          ? "0px 4px 12px rgba(0, 0, 0, 0.4)"
-          : "0px 4px 12px rgba(0, 0, 0, 0.1)",
-      }}
-    >
-      <Stack spacing={2}>
-        <Stack direction={"row"} justifyContent={"space-between"}>
-          <Stack spacing={2}>
-            <Box
+    <Box>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        sx={{
+          p: 2,
+          backgroundColor: isDarkMode ? color.gray800 : color.white,
+          position: "relative",
+          "&:hover": {
+            backgroundColor: isDarkMode ? color.gray700 : color.gray100,
+          },
+          transition: "background-color 0.2s ease",
+        }}
+      >
+        <Stack
+          direction="row"
+          alignItems="center"
+          spacing={2}
+          sx={{ width: "100%" }}
+        >
+          <Chip
+            label={`#${exercise.serial}`}
+            size="small"
+            sx={{
+              backgroundColor: isDarkMode ? color.teal700 : color.teal100,
+              color: isDarkMode ? color.white : color.teal900,
+              fontWeight: 600,
+              width: 45,
+            }}
+          />
+
+          <IconButton
+            onClick={handlePlay}
+            sx={{
+              color: isPlaying
+                ? isDarkMode
+                  ? color.teal400
+                  : color.teal600
+                : isDarkMode
+                ? color.gray400
+                : color.gray600,
+              "&:hover": {
+                backgroundColor: isDarkMode ? color.gray600 : color.gray200,
+              },
+            }}
+          >
+            {isPlaying ? <PauseCircleOutlineIcon /> : <PlayCircleOutlineIcon />}
+          </IconButton>
+
+          <Box sx={{ flexGrow: 1, overflow: "hidden" }}>
+            <Typography
+              noWrap
               sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 2,
-                mb: 1,
+                color: isDarkMode ? color.white : color.gray900,
+                fontWeight: 500,
               }}
             >
-              <Chip
-                label={`Question ${item.serial}`}
-                sx={{
-                  bgcolor: isDarkMode ? color.teal700 : color.teal100,
-                  color: isDarkMode ? color.white : color.teal800,
-                  fontWeight: "bold",
-                  borderRadius: 1.5,
-                }}
+              <SentencePreview
+                sentence={exercise.sentence}
+                missingIndex={exercise.missingIndex}
+                correctAnswer={exercise.correctAnswer}
+                truncate={true}
               />
-              <Chip
-                icon={item.status ? <CheckCircleIcon /> : <CancelIcon />}
-                label={item.status ? "Active" : "Inactive"}
-                color={item.status ? "success" : "error"}
-                size="small"
-                sx={{
-                  bgcolor: item.status
-                    ? isDarkMode
-                      ? color.emerald700
-                      : color.emerald600
-                    : isDarkMode
-                    ? color.red700
-                    : color.red600,
-                  color: color.white,
-                  "& .MuiChip-icon": {
-                    color: color.white,
-                  },
-                }}
-              />
-            </Box>
+            </Typography>
+          </Box>
+        </Stack>
 
-            <Box>
-              <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
-                Original Sentence
-              </Typography>
-              <SentenceDisplay
-                sentence={item.sentence}
-                missingIndex={item.missingIndex}
-                correctAnswer={item.correctAnswer}
-                showBlank={true}
-                highlightBgColor={
-                  theme.palette.mode === "dark" ? color.gray700 : color.gray100
-                }
-              />
-            </Box>
-
-            <Box>
-              <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
-                Complete Sentence
-              </Typography>
-              <SentenceDisplay
-                sentence={item.sentence}
-                missingIndex={item.missingIndex}
-                correctAnswer={item.correctAnswer}
-                highlightBgColor={
-                  theme.palette.mode === "dark" ? color.gray700 : color.gray100
-                }
-              />
-            </Box>
-          </Stack>
+        <Stack direction="row" alignItems="center" spacing={1}>
           {isEditMode && (
-            <Stack
-              direction={{ xs: "column", md: "row" }}
-              spacing={1}
-              alignItems={"flex-start"}
-            >
-              <Tooltip title="Move Up">
-                <IconButton
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onMoveUp();
-                  }}
-                >
-                  <ArrowUpward
-                    fontSize="small"
+            <>
+              <Tooltip title={isFirst ? "Cannot move up" : "Move up"}>
+                <span>
+                  <IconButton
+                    onClick={onMoveUp}
+                    size="small"
+                    disabled={isFirst}
                     sx={{
-                      color: accentColor,
-                      transition: "color 0.2s ease",
+                      color: isFirst
+                        ? isDarkMode
+                          ? color.gray600
+                          : color.gray400
+                        : isDarkMode
+                        ? color.gray400
+                        : color.gray600,
+                      "&:hover": {
+                        backgroundColor: isDarkMode
+                          ? color.gray600
+                          : color.gray200,
+                        color: isDarkMode ? color.teal400 : color.teal600,
+                      },
                     }}
-                  />
-                </IconButton>
+                  >
+                    <ArrowUpwardIcon fontSize="small" />
+                  </IconButton>
+                </span>
               </Tooltip>
-              <Tooltip title="Move Down">
-                <IconButton
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onMoveDown();
-                  }}
-                >
-                  <ArrowDownward
-                    fontSize="small"
+
+              <Tooltip title={isLast ? "Cannot move down" : "Move down"}>
+                <span>
+                  <IconButton
+                    onClick={onMoveDown}
+                    size="small"
+                    disabled={isLast}
                     sx={{
-                      color: accentColor,
-                      transition: "color 0.2s ease",
+                      color: isLast
+                        ? isDarkMode
+                          ? color.gray600
+                          : color.gray400
+                        : isDarkMode
+                        ? color.gray400
+                        : color.gray600,
+                      "&:hover": {
+                        backgroundColor: isDarkMode
+                          ? color.gray600
+                          : color.gray200,
+                        color: isDarkMode ? color.teal400 : color.teal600,
+                      },
                     }}
-                  />
-                </IconButton>
+                  >
+                    <ArrowDownwardIcon fontSize="small" />
+                  </IconButton>
+                </span>
               </Tooltip>
-              <Tooltip title="Edit">
+
+              <Tooltip title="Edit Exercise">
                 <IconButton
-                  onClick={() => onEdit(item)}
+                  onClick={onEdit}
+                  size="small"
                   sx={{
-                    color: accentColor,
-                    "&:hover": { color: theme.palette.primary.main },
+                    color: isDarkMode ? color.gray400 : color.gray600,
+                    "&:hover": {
+                      backgroundColor: isDarkMode
+                        ? color.gray600
+                        : color.gray200,
+                      color: isDarkMode ? color.teal400 : color.teal600,
+                    },
                   }}
                 >
                   <EditIcon fontSize="small" />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Delete">
+
+              <Tooltip title="Delete Exercise">
                 <IconButton
-                  onClick={() => onDelete(item.id)}
+                  onClick={handleDeleteClick}
+                  size="small"
                   sx={{
-                    color: isDarkMode ? color.red400 : color.red600,
-                    "&:hover": { color: theme.palette.error.main },
+                    color: isDarkMode ? color.gray400 : color.gray600,
+                    "&:hover": {
+                      backgroundColor: isDarkMode ? color.red700 : color.red100,
+                      color: isDarkMode ? color.white : color.red600,
+                    },
                   }}
                 >
                   <DeleteIcon fontSize="small" />
                 </IconButton>
               </Tooltip>
-            </Stack>
+            </>
           )}
-        </Stack>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <Typography variant="body2" color={textColor} gutterBottom>
-              Missing Word:
-            </Typography>
-            <Chip
-              label={item.correctAnswer}
+
+          <Tooltip title={expanded ? "Collapse" : "Expand"}>
+            <IconButton
+              onClick={toggleExpand}
+              size="small"
               sx={{
-                bgcolor: color.emerald100,
-                color: theme.palette.getContrastText(color.emerald100),
-                fontWeight: 500,
+                transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
+                transition: "transform 0.2s ease",
+                color: isDarkMode ? color.gray400 : color.gray600,
+                "&:hover": {
+                  backgroundColor: isDarkMode ? color.gray600 : color.gray200,
+                },
               }}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="body2" color={textColor} gutterBottom>
-              Audio:
-            </Typography>
-            <Box display="flex" alignItems="center" gap={1}>
-              <audio controls src={item.audio} style={{ width: "100%" }} />
-            </Box>
-          </Grid>
-        </Grid>
+            >
+              {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </IconButton>
+          </Tooltip>
+        </Stack>
       </Stack>
-    </Paper>
+
+      <Collapse in={expanded}>
+        <Box
+          sx={{
+            p: 3,
+            backgroundColor: isDarkMode ? color.gray700 : color.gray100,
+            borderTop: `1px solid ${
+              isDarkMode ? color.gray600 : color.gray300
+            }`,
+          }}
+        >
+          <Typography
+            variant="subtitle2"
+            sx={{
+              mb: 1,
+              color: isDarkMode ? color.gray300 : color.gray700,
+            }}
+          >
+            Complete Sentence:
+          </Typography>
+
+          <Box
+            sx={{
+              p: 2,
+              mb: 2,
+              borderRadius: "8px",
+              backgroundColor: isDarkMode ? color.gray800 : color.white,
+              border: `1px solid ${isDarkMode ? color.gray600 : color.gray300}`,
+            }}
+          >
+            <SentencePreview
+              sentence={exercise.sentence}
+              missingIndex={exercise.missingIndex}
+              correctAnswer={exercise.correctAnswer}
+              highlight={true}
+            />
+          </Box>
+
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={2}
+            sx={{ mb: 1 }}
+          >
+            <Box>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: isDarkMode ? color.gray300 : color.gray700,
+                  mb: 0.5,
+                }}
+              >
+                Word to Insert:
+              </Typography>
+              <Chip
+                label={exercise.correctAnswer}
+                sx={{
+                  backgroundColor: isDarkMode
+                    ? color.emerald700
+                    : color.emerald100,
+                  color: isDarkMode ? color.white : color.emerald900,
+                  fontWeight: 500,
+                }}
+              />
+            </Box>
+
+            <Box>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: isDarkMode ? color.gray300 : color.gray700,
+                  mb: 0.5,
+                }}
+              >
+                Insertion Position:
+              </Typography>
+              <Chip
+                label={exercise.missingIndex}
+                sx={{
+                  backgroundColor: isDarkMode ? color.teal700 : color.teal100,
+                  color: isDarkMode ? color.white : color.teal900,
+                  fontWeight: 500,
+                }}
+              />
+            </Box>
+          </Stack>
+        </Box>
+      </Collapse>
+
+      <WEConfirmDelete
+        open={openDeleteDialog}
+        onCancel={() => setOpenDeleteDialog(false)}
+        onConfirm={handleConfirmDelete}
+        resourceName={`Exercise #${exercise.serial}`}
+        title="Delete Exercise"
+        description="Are you sure you want to delete this exercise? This action cannot be undone."
+      />
+    </Box>
   );
 }

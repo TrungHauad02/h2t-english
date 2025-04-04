@@ -1,206 +1,366 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
-import { Box, Paper, Typography, CircularProgress, Alert } from "@mui/material";
-import { useDarkMode } from "hooks/useDarkMode";
+import { useEffect, useState } from "react";
+import { Box, Typography, Button, Stack, Paper, Divider } from "@mui/material";
 import useColor from "theme/useColor";
-import { ListenAndWriteAWord } from "interfaces";
+import { useDarkMode } from "hooks/useDarkMode";
+import { useErrors } from "hooks/useErrors";
+import { extractErrorMessages } from "utils/extractErrorMessages";
+import { ListenAndWriteAWord, ServiceResponse } from "interfaces";
+import { listeningExercisesService } from "services/lesson/listeningExercisesService";
 import {
-  EditExerciseDialog,
-  ExerciseActionButtons,
+  EmptyState,
   ExerciseList,
-  NoExercisesMessage,
-  useListenAndWriteExercises,
+  SectionHeader,
+  ExerciseDialog,
 } from "./listenAndWriteAWord";
-import QuizIcon from "@mui/icons-material/Quiz";
+import { WEConfirmDelete } from "components/display";
+import { useParams } from "react-router-dom";
 
-export default function ListenAndWriteAWordSection({
-  questions,
-}: {
-  questions: number[];
-}) {
-  const { id } = useParams();
-  const listeningId = parseInt(id ? id : "0");
-  const { isDarkMode } = useDarkMode();
+export default function ListenAndWriteAWordSection() {
   const color = useColor();
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [isNewItem, setIsNewItem] = useState(false);
+  const { isDarkMode } = useDarkMode();
+  const { showError } = useErrors();
+  const { id } = useParams();
 
-  const {
-    data,
-    isLoading,
-    error,
-    selectedItem,
-    setSelectedItem,
-    handleSaveItem,
-    handleDeleteItem,
-    handleInputChange,
-    handleAudioChange,
-    resetSelectedItem,
-    loadData,
-    handleMoveUp,
-    handleMoveDown,
-    saveAllChanges,
-  } = useListenAndWriteExercises(listeningId);
+  const [exercises, setExercises] = useState<ListenAndWriteAWord[]>([]);
+  const [originalExercises, setOriginalExercises] = useState<
+    ListenAndWriteAWord[]
+  >([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [currentExercise, setCurrentExercise] =
+    useState<ListenAndWriteAWord | null>(null);
+  const [exerciseToDelete, setExerciseToDelete] = useState<number | null>(null);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [hasSerialChanges, setHasSerialChanges] = useState<boolean>(false);
 
-  const cardBgColor = isDarkMode ? color.gray800 : color.gray50;
-  const textColor = isDarkMode ? color.gray100 : color.gray900;
-  const borderColor = isDarkMode ? color.gray700 : color.gray200;
+  useEffect(() => {
+    const fetchExercises = async () => {
+      try {
+        setLoading(true);
+        const resData = await listeningExercisesService.findByListeningId(
+          parseInt(id || "")
+        );
 
-  const handleEditMode = () => setIsEditMode(true);
+        if (resData.status === "SUCCESS") {
+          setExercises(resData.data);
+          setOriginalExercises(JSON.parse(JSON.stringify(resData.data)));
+        }
+      } catch (error) {
+        showError({
+          message: "Error fetching listening exercises",
+          severity: "error",
+          details: extractErrorMessages(error),
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchExercises();
+  }, [id]);
 
-  const handleSaveMode = async () => {
-    const success = await saveAllChanges();
-    if (success) {
-      setIsEditMode(false);
+  // Check if serials have changed compared to original
+  useEffect(() => {
+    if (originalExercises.length === 0) return;
+
+    const hasChanges = exercises.some((ex) => {
+      const original = originalExercises.find((o) => o.id === ex.id);
+      return original && original.serial !== ex.serial;
+    });
+
+    setHasSerialChanges(hasChanges);
+  }, [exercises, originalExercises]);
+
+  const handleToggleEditMode = () => {
+    if (isEditMode && hasSerialChanges) {
+      // If exiting edit mode with unsaved changes, reset to original
+      setExercises(JSON.parse(JSON.stringify(originalExercises)));
+      setHasSerialChanges(false);
     }
+    setIsEditMode(!isEditMode);
   };
 
-  const handleCancelEdit = () => {
-    loadData();
-    setIsEditMode(false);
+  const handleAddExercise = () => {
+    // Create a new empty exercise with default values and next serial number
+    const newSerial =
+      exercises.length > 0
+        ? Math.max(...exercises.map((ex) => ex.serial)) + 1
+        : 1;
+
+    setCurrentExercise({
+      id: 0,
+      status: true,
+      serial: newSerial,
+      audio: "",
+      sentence: "",
+      missingIndex: 0,
+      correctAnswer: "",
+      listeningId: parseInt(id || ""),
+    });
+    setOpenDialog(true);
   };
 
-  const handleOpenDialog = (item?: ListenAndWriteAWord) => {
-    if (item) {
-      setSelectedItem({
-        id: item.id,
-        audio: item.audio,
-        serial: item.serial,
-        sentence: item.sentence,
-        missingIndex: item.missingIndex,
-        correctAnswer: item.correctAnswer,
-        status: item.status,
-      });
-      setIsNewItem(false);
-    } else {
-      // For new item
-      setSelectedItem({
-        audio: "",
-        serial:
-          data.length > 0
-            ? Math.max(...data.map((item) => item.serial)) + 1
-            : 1,
-        sentence: "",
-        missingIndex: 0,
-        correctAnswer: "",
-        status: true,
-      });
-      setIsNewItem(true);
-    }
+  const handleEditExercise = (exercise: ListenAndWriteAWord) => {
+    setCurrentExercise(exercise);
     setOpenDialog(true);
   };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
-    resetSelectedItem();
+    setCurrentExercise(null);
   };
 
-  const handleSave = () => {
-    handleSaveItem(isNewItem, listeningId);
-    handleCloseDialog();
+  const handleDeleteClick = (id: number) => {
+    setExerciseToDelete(id);
+    setOpenDeleteDialog(true);
   };
 
-  if (isLoading && data.length === 0) {
-    return (
-      <Box
-        component={Paper}
-        elevation={3}
-        sx={{
-          p: 3,
-          borderRadius: "1rem",
-          backgroundColor: cardBgColor,
-          mt: 4,
-          border: `1px solid ${borderColor}`,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "200px",
-        }}
-      >
-        <CircularProgress color="primary" />
-      </Box>
-    );
-  }
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+    setExerciseToDelete(null);
+  };
+
+  const handleMoveUp = (index: number) => {
+    if (index <= 0) return;
+
+    const sortedExercises = [...exercises].sort((a, b) => a.serial - b.serial);
+    const currentItem = sortedExercises[index];
+    const prevItem = sortedExercises[index - 1];
+
+    // Swap serial numbers
+    const updatedExercises = exercises.map((ex) => {
+      if (ex.id === currentItem.id) {
+        return { ...ex, serial: prevItem.serial };
+      }
+      if (ex.id === prevItem.id) {
+        return { ...ex, serial: currentItem.serial };
+      }
+      return ex;
+    });
+
+    setExercises(updatedExercises);
+  };
+
+  const handleMoveDown = (index: number) => {
+    const sortedExercises = [...exercises].sort((a, b) => a.serial - b.serial);
+    if (index >= sortedExercises.length - 1) return;
+
+    const currentItem = sortedExercises[index];
+    const nextItem = sortedExercises[index + 1];
+
+    // Swap serial numbers
+    const updatedExercises = exercises.map((ex) => {
+      if (ex.id === currentItem.id) {
+        return { ...ex, serial: nextItem.serial };
+      }
+      if (ex.id === nextItem.id) {
+        return { ...ex, serial: currentItem.serial };
+      }
+      return ex;
+    });
+
+    setExercises(updatedExercises);
+  };
+
+  const handleSaveSerialChanges = async () => {
+    if (!hasSerialChanges) return;
+
+    try {
+      setIsSaving(true);
+
+      // Find exercises with changed serials
+      const changedExercises = exercises.filter((ex) => {
+        const original = originalExercises.find((o) => o.id === ex.id);
+        return original && original.serial !== ex.serial;
+      });
+
+      // Create patch requests for each changed exercise
+      const updatePromises = changedExercises.map((exercise) => {
+        return listeningExercisesService.patch(exercise.id, {
+          serial: exercise.serial,
+        });
+      });
+
+      const results = await Promise.all(updatePromises);
+
+      // Check if all updates were successful
+      const allSuccessful = results.every((res) => res.status === "SUCCESS");
+
+      if (allSuccessful) {
+        // Update original exercises to match current state
+        setOriginalExercises(JSON.parse(JSON.stringify(exercises)));
+        setHasSerialChanges(false);
+      } else {
+        throw new Error("Some updates failed");
+      }
+    } catch (error) {
+      showError({
+        message: "Error updating exercise order",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+      // Reset to original state on error
+      setExercises(JSON.parse(JSON.stringify(originalExercises)));
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveExercise = async (exercise: ListenAndWriteAWord) => {
+    try {
+      let response: ServiceResponse<ListenAndWriteAWord>;
+
+      if (exercise.id === 0) {
+        // Create new exercise
+        response = await listeningExercisesService.create(exercise);
+        if (response.status === "SUCCESS" && response.data) {
+          const updatedExercises = [...exercises, response.data];
+          setExercises(updatedExercises);
+          setOriginalExercises(JSON.parse(JSON.stringify(updatedExercises)));
+        } else {
+          throw new Error(response.message || "Failed to create exercise");
+        }
+      } else {
+        // Update existing exercise
+        response = await listeningExercisesService.update(
+          exercise.id,
+          exercise
+        );
+        if (response.status === "SUCCESS" && response.data) {
+          const updatedExercises = exercises.map((ex) =>
+            ex.id === response.data.id ? response.data : ex
+          );
+          setExercises(updatedExercises);
+          setOriginalExercises(JSON.parse(JSON.stringify(updatedExercises)));
+        } else {
+          throw new Error(response.message || "Failed to update exercise");
+        }
+      }
+
+      // Close dialog and refresh list
+      setOpenDialog(false);
+      setCurrentExercise(null);
+    } catch (error) {
+      showError({
+        message: "Error saving listening exercise",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    }
+  };
+
+  const handleDeleteExercise = async () => {
+    if (exerciseToDelete === null) return;
+
+    try {
+      const response = await listeningExercisesService.remove(exerciseToDelete);
+      if (response.status === "SUCCESS") {
+        const updatedExercises = exercises.filter(
+          (ex) => ex.id !== exerciseToDelete
+        );
+        setExercises(updatedExercises);
+        setOriginalExercises(JSON.parse(JSON.stringify(updatedExercises)));
+        handleCloseDeleteDialog();
+      } else {
+        throw new Error(response.message || "Failed to delete exercise");
+      }
+    } catch (error) {
+      showError({
+        message: "Error deleting listening exercise",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    }
+  };
 
   return (
     <Box
       component={Paper}
       elevation={3}
       sx={{
-        p: 3,
-        borderRadius: "1rem",
-        backgroundColor: cardBgColor,
         mt: 4,
-        border: `1px solid ${borderColor}`,
+        mb: 4,
+        p: 3,
+        borderRadius: "16px",
+        backgroundColor: isDarkMode ? color.gray800 : color.white,
+        transition: "background-color 0.3s ease",
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <QuizIcon
-            sx={{
-              mr: 1.5,
-              color: isDarkMode ? color.teal300 : color.teal600,
-              fontSize: 28,
-            }}
-          />
-          <Typography variant="h5" fontWeight="medium" color={textColor}>
-            Listen and Write a Word Exercises
-          </Typography>
+      <SectionHeader
+        title="Listen And Write A Word Exercises"
+        subtitle="Practice listening by filling in missing words from sentences"
+        icon="🔤"
+        isEditMode={isEditMode}
+        onToggleEditMode={handleToggleEditMode}
+        onSave={handleSaveSerialChanges}
+        isSaving={isSaving}
+        hasChanges={hasSerialChanges}
+      />
+
+      <Divider sx={{ my: 2 }} />
+
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
+          <Typography>Loading exercises...</Typography>
         </Box>
-
-        <ExerciseActionButtons
-          isEditMode={isEditMode}
-          onEdit={handleEditMode}
-          onAdd={() => handleOpenDialog()}
-          onSave={handleSaveMode}
-          onCancel={handleCancelEdit}
-          showAddButton={isEditMode}
-          isLoading={isLoading}
-        />
-      </Box>
-
-      {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
-          {error}
-        </Alert>
-      )}
-
-      {isLoading && data.length > 0 && (
-        <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-          <CircularProgress size={24} />
-        </Box>
-      )}
-
-      {data.length > 0 ? (
-        <ExerciseList
-          data={data}
-          isEditMode={isEditMode}
-          onEdit={handleOpenDialog}
-          onDelete={handleDeleteItem}
-          onMoveUp={handleMoveUp}
-          onMoveDown={handleMoveDown}
-        />
+      ) : exercises.length === 0 ? (
+        <EmptyState onAddClick={handleAddExercise} isEditMode={isEditMode} />
       ) : (
-        <NoExercisesMessage isEditMode={isEditMode} />
+        <Box sx={{ mt: 3 }}>
+          <ExerciseList
+            exercises={exercises}
+            isEditMode={isEditMode}
+            onEdit={handleEditExercise}
+            onDelete={handleDeleteClick}
+            onMoveUp={handleMoveUp}
+            onMoveDown={handleMoveDown}
+          />
+
+          {isEditMode && (
+            <Stack
+              direction="row"
+              spacing={2}
+              justifyContent="center"
+              sx={{ mt: 3 }}
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleAddExercise}
+                sx={{
+                  borderRadius: "8px",
+                  backgroundColor: color.teal600,
+                  "&:hover": {
+                    backgroundColor: color.teal700,
+                  },
+                }}
+              >
+                Add New Exercise
+              </Button>
+            </Stack>
+          )}
+        </Box>
       )}
 
-      <EditExerciseDialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-        onSave={handleSave}
-        isNewItem={isNewItem}
-        selectedItem={selectedItem}
-        onInputChange={handleInputChange}
-        onAudioChange={handleAudioChange}
-        isLoading={isLoading}
+      {openDialog && currentExercise && (
+        <ExerciseDialog
+          open={openDialog}
+          exercise={currentExercise}
+          onClose={handleCloseDialog}
+          onSave={handleSaveExercise}
+        />
+      )}
+
+      <WEConfirmDelete
+        open={openDeleteDialog}
+        onCancel={handleCloseDeleteDialog}
+        onConfirm={handleDeleteExercise}
+        resourceName={`Exercise #${
+          exercises.find((ex) => ex.id === exerciseToDelete)?.serial || ""
+        }`}
+        title="Delete Exercise"
+        description="Are you sure you want to delete this exercise? This action cannot be undone."
       />
     </Box>
   );
