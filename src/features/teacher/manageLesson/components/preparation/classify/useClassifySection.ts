@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { PreparationClassify } from "interfaces";
-import { preparationClassifyService } from "services/preparation/preparationClassifyService";
+import { preparationClassifyService } from "services";
 import { useErrors } from "hooks/useErrors";
 import { extractErrorMessages } from "utils/extractErrorMessages";
 import { preparationService } from "services";
