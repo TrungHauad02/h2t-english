@@ -65,7 +65,7 @@ export default function ListVocabulary({
     if (editData) {
       // Save to db
       try {
-        await vocabService.updateVocab(editData.id, editData);
+        await vocabService.update(editData.id, editData);
         fetchData();
         toast.success("Vocab updated successfully");
       } catch (error) {
@@ -87,7 +87,7 @@ export default function ListVocabulary({
     if (!id) return;
 
     try {
-      await vocabService.createVocab(newVocabularyData);
+      await vocabService.create(newVocabularyData);
       // Load paginated data
       fetchData();
       // TODO: Display success

@@ -65,7 +65,7 @@ export default function ListQuestion({
 
       try {
         // Save question, answer info
-        await aqService.updateQuestion(editData.id, editData);
+        await aqService.update(editData.id, editData);
         fetchData();
         toast.success("Question updated successfully");
 
@@ -100,7 +100,7 @@ export default function ListQuestion({
       setIsDeleting(true);
 
       // Delete the question
-      await aqService.deleteQuestion(deleteId);
+      await aqService.remove(deleteId);
 
       // Update the lesson's question list
       const lessonId = id ? parseInt(id) : 0;

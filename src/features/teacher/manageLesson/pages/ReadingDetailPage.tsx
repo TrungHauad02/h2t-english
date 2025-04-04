@@ -89,7 +89,10 @@ export default function ReadingDetailPage() {
         </div>
 
         <div id="preparation-section">
-          <PreparationSection />
+          <PreparationSection
+            preparationId={hooks.data.preparationId}
+            type="readings"
+          />
         </div>
       </Stack>
       <PublishDialogs

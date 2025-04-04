@@ -169,6 +169,7 @@ function createInitialLesson(
       return {
         ...baseLesson,
         file: "",
+        preparationId: null,
       } as Reading;
 
     case RouteNodeEnum.LISTENING:
@@ -176,6 +177,7 @@ function createInitialLesson(
         ...baseLesson,
         audio: "",
         transcript: "",
+        preparationId: null,
       } as Listening;
 
     case RouteNodeEnum.WRITING:
@@ -185,6 +187,7 @@ function createInitialLesson(
         file: "",
         tips: [],
         paragraph: "",
+        preparationId: null,
       } as Writing;
 
     case RouteNodeEnum.SPEAKING:
@@ -192,6 +195,7 @@ function createInitialLesson(
         ...baseLesson,
         topic: "",
         duration: 0,
+        preparationId: null,
       } as Speaking;
 
     case RouteNodeEnum.MIXING_TEST:

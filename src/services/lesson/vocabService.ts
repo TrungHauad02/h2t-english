@@ -1,7 +1,7 @@
 import { Vocabulary, VocabularyFilter } from "interfaces";
 import apiClient from "services/apiClient";
 
-const getVocabByTopicId = async (
+const findVocabByTopicId = async (
   page: number,
   itemsPerPage: number,
   topicId: number,
@@ -20,7 +20,7 @@ const getVocabByTopicId = async (
   }
 };
 
-const createVocab = async (data: Vocabulary) => {
+const create = async (data: Vocabulary) => {
   try {
     const response = await apiClient.post("/vocabularies", data);
     return response.data;
@@ -30,7 +30,7 @@ const createVocab = async (data: Vocabulary) => {
   }
 };
 
-const updateVocab = async (id: number, data: Vocabulary) => {
+const update = async (id: number, data: Vocabulary) => {
   try {
     const response = await apiClient.put(`/vocabularies/${id}`, data);
     return response.data;
@@ -40,7 +40,7 @@ const updateVocab = async (id: number, data: Vocabulary) => {
   }
 };
 
-const deleteVocab = async (id: number) => {
+const remove = async (id: number) => {
   try {
     const response = await apiClient.delete(`/vocabularies/${id}`);
     return response.data;
@@ -51,8 +51,8 @@ const deleteVocab = async (id: number) => {
 };
 
 export const vocabService = {
-  getVocabByTopicId,
-  createVocab,
-  updateVocab,
-  deleteVocab,
+  findVocabByTopicId,
+  create,
+  update,
+  remove,
 };

@@ -76,7 +76,10 @@ export default function SpeakingDetailPage() {
         </div>
 
         <div id="preparation-section">
-          <PreparationSection />
+          <PreparationSection
+            preparationId={hooks.data.preparationId}
+            type="speakings"
+          />
         </div>
       </Stack>
       <PublishDialogs

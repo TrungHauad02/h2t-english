@@ -11,7 +11,7 @@ const findById = async (id: number) => {
   }
 };
 
-const createListening = async (data: Listening) => {
+const create = async (data: Listening) => {
   try {
     const response = await apiClient.post("/listenings", data);
     return response.data;
@@ -21,7 +21,7 @@ const createListening = async (data: Listening) => {
   }
 };
 
-const updateListening = async (id: number, data: Listening) => {
+const update = async (id: number, data: Listening) => {
   try {
     const response = await apiClient.put(`/listenings/${id}`, data);
     return response.data;
@@ -31,7 +31,7 @@ const updateListening = async (id: number, data: Listening) => {
   }
 };
 
-const patchListening = async (id: number, data: any) => {
+const patch = async (id: number, data: any) => {
   try {
     const response = await apiClient.patch(`/listenings/${id}`, data);
     return response.data;
@@ -43,7 +43,7 @@ const patchListening = async (id: number, data: any) => {
 
 export const listeningService = {
   findById,
-  createListening,
-  updateListening,
-  patchListening,
+  create,
+  update,
+  patch,
 };

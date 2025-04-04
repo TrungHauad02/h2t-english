@@ -1,10 +1,7 @@
 import { LessonQuestion, QuestionSupportType } from "interfaces";
 import apiClient from "services/apiClient";
 
-const getQuestionByLessonId = async (
-  lessonId: number,
-  type: QuestionSupportType
-) => {
+const findByLessonId = async (lessonId: number, type: QuestionSupportType) => {
   try {
     const response = await apiClient.get(
       `/${type}/questions?lessonId=${lessonId}`
@@ -16,17 +13,7 @@ const getQuestionByLessonId = async (
   }
 };
 
-const getQuestionByIds = async (ids: number[]) => {
-  try {
-    const response = await apiClient.get(`/lesson-questions`);
-    return response.data;
-  } catch (error) {
-    console.error("Error getting question by lesson id:", error);
-    throw error;
-  }
-};
-
-const createQuestion = async (data: LessonQuestion) => {
+const create = async (data: LessonQuestion) => {
   try {
     const response = await apiClient.post(`/lesson-questions`, data);
     return response.data;
@@ -36,7 +23,7 @@ const createQuestion = async (data: LessonQuestion) => {
   }
 };
 
-const updateQuestion = async (id: number, data: LessonQuestion) => {
+const update = async (id: number, data: LessonQuestion) => {
   try {
     const response = await apiClient.put(`/lesson-questions/${id}`, data);
     return response.data;
@@ -46,7 +33,7 @@ const updateQuestion = async (id: number, data: LessonQuestion) => {
   }
 };
 
-const patchQuestion = async (id: number, data: any) => {
+const patch = async (id: number, data: any) => {
   try {
     const response = await apiClient.patch(`/lesson-questions/${id}`, data);
     return response.data;
@@ -56,7 +43,7 @@ const patchQuestion = async (id: number, data: any) => {
   }
 };
 
-const deleteQuestion = async (id: number) => {
+const remove = async (id: number) => {
   try {
     const response = await apiClient.delete(`/lesson-questions/${id}`);
     return response.data;
@@ -67,10 +54,9 @@ const deleteQuestion = async (id: number) => {
 };
 
 export const aqService = {
-  getQuestionByLessonId,
-  getQuestionByIds,
-  createQuestion,
-  updateQuestion,
-  patchQuestion,
-  deleteQuestion,
+  findByLessonId,
+  create,
+  update,
+  patch,
+  remove,
 };

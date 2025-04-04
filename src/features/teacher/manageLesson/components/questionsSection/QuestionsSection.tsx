@@ -39,10 +39,7 @@ export default function QuestionsSection({
   const fetchData = async () => {
     try {
       if (id) {
-        const resData = await aqService.getQuestionByLessonId(
-          parseInt(id),
-          type
-        );
+        const resData = await aqService.findByLessonId(parseInt(id), type);
         console.log(resData);
         setData(resData.data);
       }

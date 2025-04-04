@@ -60,17 +60,20 @@ export interface Grammar extends Lesson {
 export interface Reading extends Lesson {
   file: string;
   questions: number[];
+  preparationId: number | null;
 }
 
 export interface Speaking extends Lesson {
   topic: string;
   duration: number;
+  preparationId: number | null;
 }
 
 export interface Listening extends Lesson {
   audio: string;
   transcript: string;
   questions: number[];
+  preparationId: number | null;
 }
 
 export interface Writing extends Lesson {
@@ -79,6 +82,7 @@ export interface Writing extends Lesson {
   tips: string[];
   paragraph: string;
   questions: number[];
+  preparationId: number | null;
 }
 
 export enum WordType {

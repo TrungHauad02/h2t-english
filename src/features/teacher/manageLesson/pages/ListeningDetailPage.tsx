@@ -107,7 +107,10 @@ export default function ListeningDetailPage() {
         </div>
 
         <div id="preparation-section">
-          <PreparationSection />
+          <PreparationSection
+            preparationId={hooks.data.preparationId}
+            type="listenings"
+          />
         </div>
       </Stack>
       <PublishDialogs

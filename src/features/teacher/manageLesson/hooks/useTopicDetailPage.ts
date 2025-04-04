@@ -29,7 +29,7 @@ export default function useTopicDetailPage() {
               return;
             }
           }
-          const resData = await topicService.getTopicById(parseInt(id));
+          const resData = await topicService.findById(parseInt(id));
           if (resData.data) {
             setData(resData.data);
             setEditData({ ...resData.data });
@@ -57,7 +57,7 @@ export default function useTopicDetailPage() {
       setIsEditMode(false);
       // Update in db
       try {
-        const resData = await topicService.updateTopic(editData.id, editData);
+        const resData = await topicService.update(editData.id, editData);
         setData(resData.data);
       } catch (error) {
         console.error("Error updating topic");
@@ -78,7 +78,7 @@ export default function useTopicDetailPage() {
   const handlePublish = async () => {
     if (data) {
       // TODO: Check valid lesson before publish
-      const resData = await topicService.patchTopic(data.id, {
+      const resData = await topicService.patch(data.id, {
         status: true,
       });
       setData(resData.data);
@@ -89,7 +89,7 @@ export default function useTopicDetailPage() {
 
   const handleUnpublish = async () => {
     if (data) {
-      const resData = await topicService.patchTopic(data.id, {
+      const resData = await topicService.patch(data.id, {
         status: false,
       });
       setData(resData.data);
