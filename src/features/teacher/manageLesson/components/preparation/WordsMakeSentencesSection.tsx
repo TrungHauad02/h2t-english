@@ -11,14 +11,22 @@ import EditModeButtons from "./EditModeButtons";
 
 interface WordsMakeSentencesSectionProps {
   questions: number[];
+  preparationId: number;
+  fetchPreparationData: () => void;
 }
 
 export default function WordsMakeSentencesSection({
   questions,
+  preparationId,
+  fetchPreparationData,
 }: WordsMakeSentencesSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const hooks = useWordsMakeSentencesSection(questions);
+  const hooks = useWordsMakeSentencesSection(
+    questions,
+    preparationId,
+    fetchPreparationData
+  );
 
   return (
     <Box

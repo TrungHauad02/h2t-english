@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { PreparationMatchWordSentences } from "interfaces";
-import { preparationMatchWordSentencesService } from "services/preparation/preparationMatchWordSentences";
+import { preparationMatchWordSentencesService } from "services";
 import { useErrors } from "hooks/useErrors";
 import { extractErrorMessages } from "utils/extractErrorMessages";
 import { preparationService } from "services";

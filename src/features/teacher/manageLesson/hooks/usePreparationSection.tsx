@@ -167,7 +167,13 @@ export default function usePreparationSection(
           />
         );
       case PreparationType.WORDS_MAKE_SENTENCES:
-        return <WordsMakeSentencesSection questions={data.questions} />;
+        return (
+          <WordsMakeSentencesSection
+            questions={data.questions}
+            preparationId={data.id}
+            fetchPreparationData={fetchData}
+          />
+        );
       default:
         return <></>;
     }
