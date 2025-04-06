@@ -1,9 +1,9 @@
 import { RouteNode } from "interfaces";
 import apiClient from "services/apiClient";
 
-const createRouteNode = async (routeNode: RouteNode) => {
+const create = async (data: RouteNode) => {
   try {
-    const response = await apiClient.post("/routeNodes", routeNode);
+    const response = await apiClient.post("/routeNodes", data);
     return response.data;
   } catch (error) {
     console.error("Error creating route node:", error);
@@ -11,9 +11,29 @@ const createRouteNode = async (routeNode: RouteNode) => {
   }
 };
 
-const deleteRouteNode = async (routeNodeId: number) => {
+const update = async (id: number, data: RouteNode) => {
   try {
-    const response = await apiClient.delete(`/routeNodes/${routeNodeId}`);
+    const response = await apiClient.put(`/routeNodes/${id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating route node:", error);
+    throw error;
+  }
+};
+
+const patch = async (id: number, data: Partial<RouteNode>) => {
+  try {
+    const response = await apiClient.patch(`/routeNodes/${id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating route node:", error);
+    throw error;
+  }
+};
+
+const remove = async (id: number) => {
+  try {
+    const response = await apiClient.delete(`/routeNodes/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error deleting route node:", error);
@@ -22,6 +42,8 @@ const deleteRouteNode = async (routeNodeId: number) => {
 };
 
 export const routeNodeService = {
-  createRouteNode,
-  deleteRouteNode,
+  create,
+  remove,
+  update,
+  patch,
 };

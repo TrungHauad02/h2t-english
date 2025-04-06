@@ -180,7 +180,7 @@ export default function useDetailRoutePage() {
       };
 
       // Tạo RouteNode
-      const routeNodeRes = await routeNodeService.createRouteNode(updatedNode);
+      const routeNodeRes = await routeNodeService.create(updatedNode);
 
       // Cập nhật state
       const updatedData = [...data.routeNodes, routeNodeRes.data];

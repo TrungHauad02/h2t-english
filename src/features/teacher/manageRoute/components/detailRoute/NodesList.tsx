@@ -51,10 +51,32 @@ export default function NodesList({
   };
 
   const handleDelete = async () => {
-    // Remove in db
     try {
       setIsDeleting(true);
-      await routeNodeService.deleteRouteNode(deleteId!);
+
+      // Remove node from database
+      await routeNodeService.remove(deleteId!);
+
+      // Get current nodes after deletion
+      const currentNodes = nodes.filter((node) => node.id !== deleteId);
+
+      // Sort nodes by their current serial
+      const sortedNodes = [...currentNodes].sort((a, b) => a.serial - b.serial);
+
+      // Update serial numbers to be sequential starting from 1
+      const updatePromises = sortedNodes.map(async (node, index) => {
+        const newSerial = index + 1;
+
+        // Only update if serial number has changed
+        if (node.serial !== newSerial) {
+          await routeNodeService.patch(node.id, {
+            serial: newSerial,
+          });
+        }
+      });
+
+      await Promise.all(updatePromises);
+
       fetchData();
     } catch (error) {
       // Display error
@@ -63,7 +85,7 @@ export default function NodesList({
         severity: "error",
         details: extractErrorMessages(error),
       });
-      console.error("Error deleting route node");
+      console.error("Error deleting route node:", error);
     } finally {
       setIsDeleting(false);
       handleCloseDeleteDialog();
