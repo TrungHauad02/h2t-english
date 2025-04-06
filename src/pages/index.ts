@@ -11,6 +11,9 @@ export { default as ListHistoryTestPage } from "features/historyTest/pages/ListH
 export { default as HistoryTestPage } from "features/historyTest/pages/HistoryTestPage";
 export { default as ReviewHistoryTestPage } from "features/historyTest/pages/ReviewHistoryTestPage";
 export { default as HistoryToeicPage } from "features/historyTest/pages/HistoryToeicPage";
+
+// Error Log Page
+export { default as ErrorLogPage } from "features/errorlog/pages/ErrorLogPage"
 // Error Page
 export { default as ErrorPage } from "pages/ErrorPage";
 

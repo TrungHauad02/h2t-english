@@ -47,6 +47,7 @@ const AppRoutes = () => {
           path="manage-teacher/teacher-advance"
           element={<Pages.ManageTeacherAdvancePage />}
         />
+        <Route path="error-log" element={<Pages.ErrorLogPage />}/>
       </Route>
       <Route path="/teacher" element={<Layouts.TeacherLayout />}>
         <Route index element={<Pages.ManageRoutePage />} />

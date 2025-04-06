@@ -3,6 +3,13 @@ export * from "./LessonInterfaces";
 export * from "./TestInterfaces";
 export * from "./FilterInterfaces";
 
+export default interface BaseEntity {
+  id: number;
+  status: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 export enum StatusEnum {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
@@ -24,4 +31,16 @@ export interface Voice {
   voice: string;
   name: string;
   fileData: string;
+}
+
+export enum SeverityEnum{
+  LOW,
+  MEDIUM,
+  HIGH
+}
+
+export interface ErrorLog extends BaseEntity {
+  message: string;
+  errorCode: string;
+  severity: SeverityEnum;
 }

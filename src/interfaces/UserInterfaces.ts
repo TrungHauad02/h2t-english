@@ -1,4 +1,4 @@
-import BaseEntity from "./LessonInterfaces";
+import BaseEntity from "./";
 
 export const enum RolesEnum {
   TEACHER = "TEACHER",
