@@ -109,11 +109,7 @@ export default function WritingDetailPage() {
           />
         </div>
         <div id="writing-paragraph">
-          <WritingParagraphSection
-            editData={hooks.editData}
-            handleInputChange={hooks.handleInputChange}
-            onSave={hooks.handleSaveChanges}
-          />
+          <WritingParagraphSection editData={hooks.editData} />
         </div>
 
         <div id="preparation-section">

@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import { Writing, WritingAnswer } from "interfaces";
+import { writingAnswerService, writingService } from "services";
+import { extractErrorMessages } from "utils/extractErrorMessages";
+import { useErrors } from "hooks/useErrors";
 
 interface UseWritingParagraphSectionProps {
   editData: Writing | null;
-  handleInputChange: (field: keyof Writing, value: any) => void;
-  onSave: () => void;
 }
 
 export default function useWritingParagraphSection({
   editData,
-  handleInputChange,
-  onSave,
 }: UseWritingParagraphSectionProps) {
+  const { showError } = useErrors();
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [paragraph, setParagraph] = useState<string>("");
   const [answers, setAnswers] = useState<WritingAnswer[]>([]);
@@ -23,26 +23,85 @@ export default function useWritingParagraphSection({
     answers: [],
   });
 
-  useEffect(() => {}, [editData]);
+  const fetchAnswers = async () => {
+    if (editData) {
+      try {
+        if (editData.id) {
+          const response = await writingAnswerService.findByWritingId(
+            editData.id
+          );
+          setAnswers(response.data);
+          setOriginalData({
+            paragraph: editData.paragraph || "",
+            answers: [...response.data],
+          });
+        }
+      } catch (error) {
+        showError({
+          message: "Error fetching writing answers",
+          severity: "error",
+          details: extractErrorMessages(error),
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (editData) setParagraph(editData.paragraph || "");
+    fetchAnswers();
+  }, [editData]);
 
   const handleEditMode = () => {
     setIsEditMode(true);
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     if (editData) {
-      handleInputChange("paragraph", paragraph);
-      const questionIds = answers.map((answer) => answer.id);
-      handleInputChange("questions", questionIds);
+      const resData = await writingService.patch(editData.id, {
+        paragraph,
+      });
+      setParagraph(resData.data.paragraph);
+
+      // Save each answer to API
+      try {
+        // For existing answers, update them
+        for (const answer of answers) {
+          if (answer.id > 0) {
+            await writingAnswerService.update(answer.id, answer);
+          } else {
+            // For new answers, create them
+            await writingAnswerService.create(answer);
+          }
+        }
+
+        // Handle deleted answers (answers in originalData but not in current answers)
+        const currentAnswerIds = answers.map((a) => a.id);
+        const originalAnswerIds = originalData.answers.map((a) => a.id);
+        const deletedAnswerIds = originalAnswerIds.filter(
+          (id) => !currentAnswerIds.includes(id)
+        );
+
+        for (const id of deletedAnswerIds) {
+          if (id > 0) {
+            await writingAnswerService.remove(id);
+          }
+        }
+
+        setOriginalData({
+          paragraph,
+          answers: [...answers],
+        });
+
+        fetchAnswers();
+        setIsEditMode(false);
+      } catch (error) {
+        showError({
+          message: "Error saving writing answers",
+          severity: "error",
+          details: extractErrorMessages(error),
+        });
+      }
     }
-
-    setOriginalData({
-      paragraph,
-      answers: [...answers],
-    });
-
-    onSave();
-    setIsEditMode(false);
   };
 
   const handleCancelEdit = () => {
@@ -56,13 +115,11 @@ export default function useWritingParagraphSection({
     // Tính toán chỉ số missingIndex cho câu trả lời mới
     let newMissingIndex = words.length;
     const newAnswer: WritingAnswer = {
-      id: Date.now(),
+      id: 0,
       status: true,
       missingIndex: newMissingIndex,
       correctAnswer: "",
       writingId: editData?.id || 0,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     };
 
     // Đảm bảo không có chỉ số trùng lặp
