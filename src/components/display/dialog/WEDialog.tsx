@@ -21,6 +21,7 @@ interface WEDialogProps {
   onCancel: () => void;
   onOk: () => void;
   sx?: SxProps<Theme>;
+  disableButtons?: boolean;
 }
 
 const Transition = React.forwardRef<
@@ -37,6 +38,7 @@ export default function WEDialog({
   onCancel,
   onOk,
   sx,
+  disableButtons = false,
 }: WEDialogProps) {
   const colors = useColor();
   const { isDarkMode } = useDarkMode();
@@ -80,6 +82,7 @@ export default function WEDialog({
               backgroundColor: isDarkMode ? colors.teal200 : colors.teal600,
             },
           }}
+          disabled={disableButtons}
         >
           OK
         </Button>

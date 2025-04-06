@@ -3,8 +3,12 @@ import { SpeakingConversation, Voice } from "interfaces";
 import { useErrors } from "hooks/useErrors";
 import { ttsService } from "services/lesson/ttsService";
 import { extractErrorMessages } from "utils/extractErrorMessages";
+import { conversationService } from "services/lesson/conversationService";
+import { useParams } from "react-router-dom";
 
 export default function useConversationSection() {
+  const { id } = useParams();
+  const speakingId: number = Number(id);
   const [conversations, setConversations] = useState<SpeakingConversation[]>(
     []
   );
@@ -21,6 +25,7 @@ export default function useConversationSection() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentPlayingId, setCurrentPlayingId] = useState<number | null>(null);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { showError } = useErrors();
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -38,7 +43,36 @@ export default function useConversationSection() {
         });
       }
     };
+
+    const fetchConversations = async () => {
+      if (!speakingId) return;
+
+      setIsLoading(true);
+      try {
+        const response = await conversationService.findBySpeakingId(speakingId);
+        if (response.status === "SUCCESS") {
+          setConversations(response.data);
+        } else {
+          showError({
+            message: "Failed to fetch conversations",
+            severity: "error",
+            details: response.message,
+          });
+        }
+      } catch (error) {
+        showError({
+          message: "Error fetching conversations",
+          severity: "error",
+          details: extractErrorMessages(error),
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchVoices();
+    fetchConversations();
+
     // Initialize audio element
     audioRef.current = new Audio();
     audioRef.current.onended = () => {
@@ -52,7 +86,7 @@ export default function useConversationSection() {
         audioRef.current = null;
       }
     };
-  }, []);
+  }, [speakingId]);
 
   const handleInputChange = (field: keyof SpeakingConversation, value: any) => {
     setEditData({
@@ -80,45 +114,132 @@ export default function useConversationSection() {
     setIsDialogOpen(true);
   };
 
-  const handleSaveConversation = () => {
-    if (editData.id) {
-      // Update existing conversation
-      const updatedConversations = conversations.map((c) =>
-        c.id === editData.id ? editData : c
-      );
-      setConversations(updatedConversations);
-    } else {
-      // Add new conversation
-      const newConversation = {
-        ...editData,
-        id: Math.max(...conversations.map((c) => c.id), 0) + 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      setConversations([...conversations, newConversation]);
+  const handleSaveConversation = async () => {
+    try {
+      if (editData.id) {
+        // Update existing conversation
+        const response = await conversationService.update(
+          editData.id,
+          editData
+        );
+        if (response.status === "SUCCESS") {
+          const updatedConversations = conversations.map((c) =>
+            c.id === editData.id ? response.data : c
+          );
+          setConversations(updatedConversations);
+        }
+      } else {
+        // Add new conversation with speakingId if provided
+        if (speakingId) {
+          const newConversationData = {
+            ...editData,
+            speakingId,
+          };
+          const response = await conversationService.create(
+            newConversationData as SpeakingConversation
+          );
+          if (response.status === "SUCCESS") {
+            setConversations([...conversations, response.data]);
+          }
+        }
+      }
+      setIsDialogOpen(false);
+    } catch (error) {
+      showError({
+        message: "Error saving conversation",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
     }
-    setIsDialogOpen(false);
   };
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
   };
 
-  const handleDeleteConversation = (id: number) => {
-    const updatedConversations = conversations.filter((c) => c.id !== id);
-    setConversations(updatedConversations);
+  const handleDeleteConversation = async (id: number) => {
+    try {
+      const response = await conversationService.remove(id);
+      if (response.status === "SUCCESS") {
+        // Filter out the deleted conversation
+        const updatedConversations = conversations.filter((c) => c.id !== id);
+
+        // Sort conversations by their current serial numbers
+        const sortedConversations = [...updatedConversations].sort(
+          (a, b) => a.serial - b.serial
+        );
+
+        // Update serials to be sequential starting from 1
+        const updatePromises = sortedConversations.map(
+          async (conversation, index) => {
+            const newSerial = index + 1;
+
+            // Only update if serial number changed
+            if (conversation.serial !== newSerial) {
+              await conversationService.patch(conversation.id, {
+                serial: newSerial,
+              });
+              // Update the serial in our local state
+              conversation.serial = newSerial;
+            }
+
+            return conversation;
+          }
+        );
+
+        // Wait for all updates to complete
+        await Promise.all(updatePromises);
+
+        // Update state with renumbered conversations
+        setConversations(sortedConversations);
+      }
+    } catch (error) {
+      showError({
+        message: "Error deleting conversation",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    }
   };
 
   const handleEditMode = () => {
     setIsEditMode(true);
   };
 
-  const handleSaveChanges = () => {
-    // TODO: Save all changes to backend
-    setIsEditMode(false);
+  const handleSaveChanges = async () => {
+    try {
+      // Save all changes to backend by updating each conversation
+      for (const conversation of conversations) {
+        await conversationService.update(conversation.id, conversation);
+      }
+      setIsEditMode(false);
+    } catch (error) {
+      showError({
+        message: "Error saving changes",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    }
   };
 
   const handleCancelEdit = () => {
+    // Reload conversations from server to discard changes
+    if (speakingId) {
+      conversationService
+        .findBySpeakingId(speakingId)
+        .then((response) => {
+          if (response.status === "SUCCESS") {
+            setConversations(response.data);
+          }
+        })
+        .catch((error) => {
+          showError({
+            message: "Error refreshing data",
+            severity: "error",
+            details: extractErrorMessages(error),
+          });
+        });
+    }
     setIsEditMode(false);
   };
 
@@ -146,48 +267,96 @@ export default function useConversationSection() {
     }
   };
 
-  const handleGenerateAudio = (text: string, voice: string) => {
+  const handleGenerateAudio = async (text: string, voice: string) => {
     setIsGeneratingAudio(true);
 
-    // Mock API call to generate audio
-    setTimeout(() => {
-      // In a real app, we would make an API call to /convert endpoint
+    try {
+      const resData = await ttsService.textToSpeech(text, voice);
+      const audioBlob = new Blob([resData], { type: "audio/mpeg" });
+      const audioUrl = URL.createObjectURL(audioBlob);
       setEditData({
         ...editData,
-        audioUrl: "/basic_listening.mp3", // Mock response
+        audioUrl: audioUrl,
       });
+    } catch (error) {
+      showError({
+        message: "Error generating audio",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    } finally {
       setIsGeneratingAudio(false);
-    }, 2000);
-  };
-
-  // Add new move up/down functionality
-  const onMoveUp = (index: number) => {
-    if (index > 0) {
-      const updatedConversations = [...conversations];
-      const temp = updatedConversations[index];
-      updatedConversations[index] = updatedConversations[index - 1];
-      updatedConversations[index - 1] = temp;
-
-      // Update serial numbers
-      updatedConversations[index].serial = index + 1;
-      updatedConversations[index - 1].serial = index;
-
-      setConversations(updatedConversations);
     }
   };
 
-  const onMoveDown = (index: number) => {
+  // Add new move up/down functionality
+  const onMoveUp = async (index: number) => {
+    if (index > 0) {
+      try {
+        const updatedConversations = [...conversations];
+        const currentConversation = updatedConversations[index];
+        const upperConversation = updatedConversations[index - 1];
+
+        // Swap serial numbers
+        const tempSerial = currentConversation.serial;
+        currentConversation.serial = upperConversation.serial;
+        upperConversation.serial = tempSerial;
+
+        // Update in backend
+        await conversationService.patch(currentConversation.id, {
+          serial: currentConversation.serial,
+        });
+        await conversationService.patch(upperConversation.id, {
+          serial: upperConversation.serial,
+        });
+
+        // Swap positions in array
+        updatedConversations[index] = upperConversation;
+        updatedConversations[index - 1] = currentConversation;
+
+        setConversations(updatedConversations);
+      } catch (error) {
+        showError({
+          message: "Error moving conversation",
+          severity: "error",
+          details: extractErrorMessages(error),
+        });
+      }
+    }
+  };
+
+  const onMoveDown = async (index: number) => {
     if (index < conversations.length - 1) {
-      const updatedConversations = [...conversations];
-      const temp = updatedConversations[index];
-      updatedConversations[index] = updatedConversations[index + 1];
-      updatedConversations[index + 1] = temp;
+      try {
+        const updatedConversations = [...conversations];
+        const currentConversation = updatedConversations[index];
+        const lowerConversation = updatedConversations[index + 1];
 
-      // Update serial numbers
-      updatedConversations[index].serial = index + 1;
-      updatedConversations[index + 1].serial = index + 2;
+        // Swap serial numbers
+        const tempSerial = currentConversation.serial;
+        currentConversation.serial = lowerConversation.serial;
+        lowerConversation.serial = tempSerial;
 
-      setConversations(updatedConversations);
+        // Update in backend
+        await conversationService.patch(currentConversation.id, {
+          serial: currentConversation.serial,
+        });
+        await conversationService.patch(lowerConversation.id, {
+          serial: lowerConversation.serial,
+        });
+
+        // Swap positions in array
+        updatedConversations[index] = lowerConversation;
+        updatedConversations[index + 1] = currentConversation;
+
+        setConversations(updatedConversations);
+      } catch (error) {
+        showError({
+          message: "Error moving conversation",
+          severity: "error",
+          details: extractErrorMessages(error),
+        });
+      }
     }
   };
 
@@ -200,6 +369,7 @@ export default function useConversationSection() {
     isPlaying,
     currentPlayingId,
     isGeneratingAudio,
+    isLoading,
     audioRef,
     handleInputChange,
     handleAddNewConversation,

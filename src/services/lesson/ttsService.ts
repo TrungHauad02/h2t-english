@@ -12,10 +12,16 @@ const getAvailableVoices = async () => {
 
 const textToSpeech = async (text: string, voice: string) => {
   try {
-    const response = await apiClient.post("/text-to-speech", {
-      text,
-      voice,
-    });
+    const response = await apiClient.post(
+      "/text-to-speech",
+      {
+        text,
+        voice,
+      },
+      {
+        responseType: "blob",
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error converting text to speech:", error);

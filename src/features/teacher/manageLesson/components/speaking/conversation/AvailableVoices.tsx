@@ -249,7 +249,7 @@ export default function AvailableVoices({ voices }: AvailableVoicesProps) {
                       gap: 1,
                     }}
                   >
-                    {voice.voice}
+                    {voice.name}
                     {voiceErrors[voice.voice] && (
                       <Tooltip title="Unsupported format">
                         <ErrorOutlineIcon

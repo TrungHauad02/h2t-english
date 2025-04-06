@@ -22,5 +22,6 @@ export interface ServiceResponse<T> {
 
 export interface Voice {
   voice: string;
+  name: string;
   fileData: string;
 }

@@ -1,20 +1,11 @@
-import {
-  Box,
-  Typography,
-  Grid,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  CircularProgress,
-} from "@mui/material";
+import { Grid, Button, CircularProgress } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { SpeakingConversation, Voice } from "interfaces";
 import { WEDialog } from "components/display";
-import { WETextField } from "components/input";
+import { AudioPreviewPlayer, ConversationForm, VoiceSelector } from "./dialog";
 
 interface ConversationDialogProps {
   open: boolean;
@@ -43,134 +34,146 @@ export default function ConversationDialog({
     voices.length > 0 ? voices[0].voice : ""
   );
 
+  // Audio playback state
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [audioError, setAudioError] = useState<boolean>(false);
+  const [isAudioLoading, setIsAudioLoading] = useState<boolean>(false);
+
+  // Reset audio state when dialog closes
+  useEffect(() => {
+    if (!open && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+  }, [open]);
+
+  // Clean up audio URL when component unmounts
+  useEffect(() => {
+    return () => {
+      if (audioRef.current && audioRef.current.src) {
+        URL.revokeObjectURL(audioRef.current.src);
+      }
+    };
+  }, []);
+
+  // Handle audio playback
+  const handlePlayAudio = () => {
+    if (!editData.audioUrl) return;
+
+    if (isPlaying && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+      return;
+    }
+
+    try {
+      setIsAudioLoading(true);
+
+      if (!audioRef.current) {
+        const audio = new Audio(editData.audioUrl);
+
+        audio.onerror = () => {
+          console.error("Error playing audio");
+          setAudioError(true);
+          setIsPlaying(false);
+          setIsAudioLoading(false);
+        };
+
+        audio.onended = () => {
+          setIsPlaying(false);
+          setIsAudioLoading(false);
+        };
+
+        audio.oncanplaythrough = () => {
+          setAudioError(false);
+          setIsAudioLoading(false);
+        };
+
+        audioRef.current = audio;
+      }
+
+      const playPromise = audioRef.current.play();
+
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true);
+            setIsAudioLoading(false);
+          })
+          .catch((error) => {
+            console.error("Could not play audio:", error);
+            setAudioError(true);
+            setIsAudioLoading(false);
+          });
+      }
+    } catch (error) {
+      console.error("Error setting up audio:", error);
+      setAudioError(true);
+      setIsAudioLoading(false);
+    }
+  };
+
   return (
     <WEDialog
       open={open}
       onCancel={onClose}
       onOk={onSave}
+      disableButtons={editData.audioUrl ? false : true}
       title={editData.id ? "Edit Conversation" : "Add New Conversation"}
       sx={{
-        width: { xs: "95%", sm: "80%" },
+        width: { xs: "95%", sm: "80%", md: "70%" },
+        maxWidth: "900px",
+        "& .MuiDialog-paper": {
+          borderRadius: "1rem",
+          backgroundColor: isDarkMode ? color.gray800 : color.white,
+          boxShadow: isDarkMode
+            ? "0 10px 25px -5px rgba(0, 0, 0, 0.8)"
+            : "0 10px 25px -5px rgba(0, 0, 0, 0.1)",
+        },
       }}
     >
-      <Grid container spacing={2}>
-        <Grid item xs={8}>
-          <WETextField
-            required
-            label="Conversation Name"
-            type="text"
-            value={editData.name}
-            onChange={(e) => handleInputChange("name", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={4}>
-          <WETextField
-            required
-            disabled
-            label="Serial Number"
-            type="number"
-            value={editData.serial}
-            onChange={(e) =>
-              handleInputChange("serial", parseInt(e.target.value))
-            }
-          />
-        </Grid>
+      <Grid container spacing={3}>
+        {/* Conversation Form */}
         <Grid item xs={12}>
-          <WETextField
-            required
-            label="Conversation Content"
-            type="text"
-            value={editData.content}
-            onChange={(e) => handleInputChange("content", e.target.value)}
-            multiline={true}
-            rows={4}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                borderRadius: { xs: "0.75rem", sm: "1rem" },
-                width: "100%",
-                paddingLeft: "1rem",
-                "& .MuiOutlinedInput-notchedOutline": {
-                  border: `1px solid ${color.gray400}`,
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  border: `2px solid ${
-                    isDarkMode ? color.emerald400 : color.emerald500
-                  }`,
-                },
-                fontSize: "1rem",
-                marginBottom: "1rem",
-              },
-            }}
+          <ConversationForm
+            editData={editData}
+            handleInputChange={handleInputChange}
           />
         </Grid>
-        <Grid item xs={8}>
-          <Box
-            sx={{
-              p: 2,
-              borderRadius: "0.5rem",
-              backgroundColor: isDarkMode ? color.gray700 : color.gray100,
-            }}
-          >
-            <Typography
-              variant="subtitle2"
-              sx={{
-                color: isDarkMode ? color.teal300 : color.teal700,
-                mb: 1,
-              }}
-            >
-              Select Voice
-            </Typography>
-            <List dense sx={{ maxHeight: "150px", overflow: "auto" }}>
-              {voices.map((voice, index) => (
-                <ListItem
-                  key={index}
-                  sx={{
-                    borderRadius: "0.25rem",
-                    mb: 0.5,
-                    bgcolor:
-                      selectedVoice === voice.voice
-                        ? isDarkMode
-                          ? color.teal900
-                          : color.teal100
-                        : "transparent",
-                    "&:hover": {
-                      backgroundColor: isDarkMode
-                        ? color.gray800
-                        : color.gray200,
-                    },
-                  }}
-                  onClick={() => setSelectedVoice(voice.voice)}
-                >
-                  <ListItemText
-                    primary={
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: isDarkMode ? color.gray200 : color.gray800,
-                        }}
-                      >
-                        {voice.voice}
-                      </Typography>
-                    }
-                  />
-                  <RecordVoiceOverIcon
-                    sx={{
-                      fontSize: 16,
-                      color: isDarkMode ? color.teal300 : color.teal600,
-                    }}
-                  />
-                </ListItem>
-              ))}
-            </List>
-          </Box>
+
+        {/* Audio Player - Show when audioUrl exists */}
+        {editData.audioUrl && (
+          <Grid item xs={12}>
+            <AudioPreviewPlayer
+              isPlaying={isPlaying}
+              setIsPlaying={setIsPlaying}
+              audioError={audioError}
+              isAudioLoading={isAudioLoading}
+              handlePlayAudio={handlePlayAudio}
+            />
+          </Grid>
+        )}
+
+        {/* Voice Selection and Generate Audio */}
+        <Grid item xs={12} md={8}>
+          <VoiceSelector
+            voices={voices}
+            selectedVoice={selectedVoice}
+            setSelectedVoice={setSelectedVoice}
+          />
         </Grid>
         <Grid
           item
-          xs={4}
+          xs={12}
+          md={4}
           sx={{
             display: "flex",
             flexDirection: "column",
-            justifyContent: "space-between",
+            justifyContent: "center",
+            alignItems: "stretch",
           }}
         >
           <Button
@@ -192,12 +195,23 @@ export default function ConversationDialog({
                 backgroundColor: isDarkMode
                   ? color.btnSubmitHoverBg
                   : color.btnSubmitHoverBg,
+                transform: "translateY(-2px)",
+                boxShadow: isDarkMode
+                  ? "0 4px 12px rgba(16, 185, 129, 0.3)"
+                  : "0 4px 12px rgba(16, 185, 129, 0.2)",
               },
               "&.Mui-disabled": {
                 backgroundColor: isDarkMode ? color.gray700 : color.gray300,
                 color: isDarkMode ? color.gray500 : color.gray500,
               },
-              mb: 1,
+              transition: "all 0.3s ease",
+              height: "48px",
+              borderRadius: "0.75rem",
+              fontWeight: 600,
+              textTransform: "none",
+              boxShadow: isDarkMode
+                ? "0 2px 6px rgba(16, 185, 129, 0.2)"
+                : "0 2px 6px rgba(16, 185, 129, 0.1)",
             }}
           >
             {isGenerating ? "Generating..." : "Generate Audio"}
