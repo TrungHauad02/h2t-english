@@ -163,8 +163,3 @@ export interface WritingAnswer extends BaseEntity {
   correctAnswer: string;
   writingId: number;
 }
-
-export interface Voice {
-  voice: string;
-  file: string;
-}

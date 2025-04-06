@@ -1,5 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { SpeakingConversation, Voice } from "interfaces";
+import { useErrors } from "hooks/useErrors";
+import { ttsService } from "services/lesson/ttsService";
+import { extractErrorMessages } from "utils/extractErrorMessages";
 
 export default function useConversationSection() {
   const [conversations, setConversations] = useState<SpeakingConversation[]>(
@@ -18,62 +21,24 @@ export default function useConversationSection() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentPlayingId, setCurrentPlayingId] = useState<number | null>(null);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState<boolean>(false);
+  const { showError } = useErrors();
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    const initialData: SpeakingConversation[] = [
-      {
-        id: 1,
-        status: true,
-        name: "Character 1",
-        serial: 1,
-        content:
-          "Hello, how are you today? I hope you're having a great day. Let's practice English conversation together.",
-        audioUrl: "/basic_listening.mp3",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: 2,
-        status: true,
-        name: "Character 2",
-        serial: 2,
-        content:
-          "I'm doing well, thank you! Yes, I'd love to practice English with you. What topics are you interested in discussing?",
-        audioUrl: "/basic_listening.mp3",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: 3,
-        status: false,
-        name: "Character 1",
-        serial: 3,
-        content:
-          "I enjoy talking about movies, books, and travel. Have you watched any good movies lately?",
-        audioUrl: "/basic_listening.mp3",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ];
-
-    // Mock data for voices
-    const mockVoices: Voice[] = [
-      { voice: "en-US-Standard-A", file: "/basic_listening.mp3" },
-      { voice: "en-US-Standard-B", file: "/basic_listening.mp3" },
-      { voice: "en-US-Standard-C", file: "/basic_listening.mp3" },
-      { voice: "en-US-Wavenet-D", file: "/basic_listening.mp3" },
-      { voice: "en-US-Wavenet-E", file: "/basic_listening.mp3" },
-      { voice: "en-GB-Standard-A", file: "/basic_listening.mp3" },
-      { voice: "en-GB-Standard-B", file: "/basic_listening.mp3" },
-      { voice: "en-AU-Standard-A", file: "/basic_listening.mp3" },
-      { voice: "en-AU-Standard-B", file: "/basic_listening.mp3" },
-    ];
-
-    setConversations(initialData);
-    setVoices(mockVoices);
-
+    const fetchVoices = async () => {
+      try {
+        const resData = await ttsService.getAvailableVoices();
+        setVoices(resData.data);
+      } catch (error) {
+        showError({
+          message: "Error fetching available voices",
+          severity: "error",
+          details: extractErrorMessages(error),
+        });
+      }
+    };
+    fetchVoices();
     // Initialize audio element
     audioRef.current = new Audio();
     audioRef.current.onended = () => {
