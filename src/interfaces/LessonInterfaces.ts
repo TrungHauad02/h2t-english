@@ -1,9 +1,5 @@
-export default interface BaseEntity {
-  id: number;
-  status: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+import BaseEntity from "interfaces";
+
 
 export interface Lesson extends BaseEntity {
   title: string;
