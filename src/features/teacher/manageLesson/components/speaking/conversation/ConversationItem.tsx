@@ -1,19 +1,27 @@
 import {
   Box,
   Typography,
-  Grid,
   IconButton,
   Tooltip,
   Stack,
+  Paper,
+  Chip,
+  Collapse,
+  Zoom,
 } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import PauseIcon from "@mui/icons-material/Pause";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { ArrowDownward, ArrowUpward } from "@mui/icons-material";
+import {
+  ArrowDownward,
+  ArrowUpward,
+  PersonOutline,
+  VolumeUp,
+} from "@mui/icons-material";
 import { SpeakingConversation } from "interfaces";
+import { useState } from "react";
+import AudioControls from "./item/AudioControls";
 
 interface ConversationItemProps {
   isEditMode: boolean;
@@ -40,149 +48,274 @@ export default function ConversationItem({
 }: ConversationItemProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const [expanded, setExpanded] = useState(true);
+
+  const isCurrentlyPlaying = isPlaying && currentPlayingId === conversation.id;
 
   return (
-    <Box
-      sx={{
-        mb: 2,
-        p: 2,
-        borderRadius: "0.5rem",
-        backgroundColor: isDarkMode ? color.gray700 : color.gray100,
-      }}
-    >
-      <Grid container spacing={2}>
-        <Grid item xs={10} sx={{ height: "100%" }}>
-          <Typography
-            variant="h6"
-            sx={{ color: isDarkMode ? color.teal300 : color.teal700, mb: 1 }}
-          >
-            {conversation.name} #{conversation.serial}
-          </Typography>
-        </Grid>
-        {isEditMode && (
-          <Grid
-            item
-            xs={2}
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-            }}
-          >
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Stack direction="column" spacing={0.5}>
-                <Tooltip title="Move up" arrow placement="top">
-                  <IconButton
-                    size="small"
-                    onClick={onMoveUp}
-                    disabled={!onMoveUp}
-                    sx={{
-                      color: isDarkMode ? color.teal300 : color.teal600,
-                      backgroundColor: isDarkMode ? color.gray800 : color.white,
-                      "&:hover": {
-                        backgroundColor: isDarkMode
-                          ? color.teal800
-                          : color.teal100,
-                      },
-                      "&.Mui-disabled": {
-                        color: isDarkMode ? color.gray500 : color.gray400,
-                      },
-                    }}
-                  >
-                    <ArrowUpward fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Move down" arrow placement="bottom">
-                  <IconButton
-                    size="small"
-                    onClick={onMoveDown}
-                    disabled={!onMoveDown}
-                    sx={{
-                      color: isDarkMode ? color.teal300 : color.teal600,
-                      backgroundColor: isDarkMode ? color.gray800 : color.white,
-                      "&:hover": {
-                        backgroundColor: isDarkMode
-                          ? color.teal800
-                          : color.teal100,
-                      },
-                      "&.Mui-disabled": {
-                        color: isDarkMode ? color.gray500 : color.gray400,
-                      },
-                    }}
-                  >
-                    <ArrowDownward fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              </Stack>
-              <IconButton
-                size="small"
-                onClick={() => onEdit(conversation)}
-                sx={{ color: isDarkMode ? color.teal300 : color.teal600 }}
-              >
-                <EditIcon fontSize="small" />
-              </IconButton>
-              <IconButton
-                size="small"
-                onClick={() => onDelete(conversation.id)}
-                sx={{ color: isDarkMode ? color.red400 : color.red500 }}
-              >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </Stack>
-          </Grid>
-        )}
-        <Grid item xs={12}>
-          <Typography
-            variant="body1"
+    <Zoom in={true} style={{ transitionDelay: "50ms" }}>
+      <Paper
+        elevation={3}
+        sx={{
+          mb: 2,
+          borderRadius: "1rem",
+          overflow: "hidden",
+          transition: "all 0.3s ease",
+          border: `1px solid ${isDarkMode ? color.gray600 : color.gray300}`,
+          backgroundColor: "transparent",
+          "&:hover": {
+            boxShadow: 6,
+            transform: "translateY(-2px)",
+          },
+        }}
+      >
+        <Box
+          sx={{
+            position: "relative",
+            backgroundColor: isDarkMode
+              ? `linear-gradient(135deg, ${color.gray800}, ${color.gray700})`
+              : `linear-gradient(135deg, ${color.white}, ${color.gray50})`,
+            overflow: "hidden",
+          }}
+        >
+          {/* Header */}
+          <Box
             sx={{
               p: 2,
-              borderRadius: "0.5rem",
-              backgroundColor: isDarkMode ? color.gray800 : color.white,
-              color: isDarkMode ? color.gray200 : color.gray800,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              borderBottom: `1px solid ${
+                isDarkMode ? color.gray600 : color.gray200
+              }`,
+              backgroundColor: isDarkMode ? color.gray800 : color.gray50,
+              cursor: "pointer",
             }}
+            onClick={() => setExpanded(!expanded)}
           >
-            {conversation.content}
-          </Typography>
-        </Grid>
-        {conversation.audioUrl && (
-          <Grid item xs={12} sx={{ mt: 1 }}>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                p: 1,
-                borderRadius: "0.5rem",
-                backgroundColor: isDarkMode ? color.gray800 : color.white,
-              }}
-            >
-              <IconButton
-                onClick={() =>
-                  onPlayAudio(conversation.audioUrl as string, conversation.id)
-                }
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Chip
+                icon={<PersonOutline />}
+                label={`#${conversation.serial}`}
+                size="small"
                 sx={{
-                  color: isDarkMode ? color.teal300 : color.teal600,
-                  backgroundColor: isDarkMode ? color.gray700 : color.gray200,
-                  "&:hover": {
-                    backgroundColor: isDarkMode ? color.gray900 : color.gray300,
-                  },
                   mr: 2,
+                  backgroundColor: isDarkMode ? color.teal800 : color.teal100,
+                  color: isDarkMode ? color.teal200 : color.teal800,
+                  fontWeight: "bold",
+                  border: `1px solid ${
+                    isDarkMode ? color.teal700 : color.teal300
+                  }`,
+                }}
+              />
+              <Typography
+                variant="h6"
+                sx={{
+                  color: isDarkMode ? color.teal200 : color.teal800,
+                  fontWeight: "bold",
+                  textShadow: isDarkMode
+                    ? "0px 1px 2px rgba(0,0,0,0.3)"
+                    : "none",
                 }}
               >
-                {isPlaying && currentPlayingId === conversation.id ? (
-                  <PauseIcon />
-                ) : (
-                  <PlayArrowIcon />
-                )}
-              </IconButton>
-              <Typography
-                variant="body2"
-                sx={{ color: isDarkMode ? color.gray300 : color.gray600 }}
-              >
-                Audio available
+                {conversation.name}
               </Typography>
+
+              {conversation.audioUrl && (
+                <Chip
+                  icon={<VolumeUp fontSize="small" />}
+                  label="Audio"
+                  size="small"
+                  color={isCurrentlyPlaying ? "success" : "default"}
+                  variant="outlined"
+                  sx={{
+                    ml: 2,
+                    backgroundColor: isCurrentlyPlaying
+                      ? isDarkMode
+                        ? color.green800
+                        : color.green100
+                      : "transparent",
+                    color: isCurrentlyPlaying
+                      ? isDarkMode
+                        ? color.green200
+                        : color.green800
+                      : isDarkMode
+                      ? color.gray300
+                      : color.gray600,
+                  }}
+                />
+              )}
             </Box>
-          </Grid>
-        )}
-      </Grid>
-    </Box>
+
+            {/* Control Actions */}
+            <Stack direction="row" spacing={1}>
+              {isEditMode && (
+                <Stack direction="row" spacing={1}>
+                  <Stack direction="column" spacing={0.5}>
+                    <Tooltip title="Move up" arrow placement="top">
+                      <span>
+                        {" "}
+                        {/* Wrapper to handle disabled state */}
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (onMoveUp) onMoveUp();
+                          }}
+                          disabled={!onMoveUp}
+                          sx={{
+                            color: isDarkMode ? color.teal300 : color.teal600,
+                            backgroundColor: isDarkMode
+                              ? `${color.gray900}80`
+                              : `${color.white}80`,
+                            "&:hover": {
+                              backgroundColor: isDarkMode
+                                ? color.teal900
+                                : color.teal50,
+                            },
+                            "&.Mui-disabled": {
+                              color: isDarkMode ? color.gray500 : color.gray400,
+                            },
+                            width: 28,
+                            height: 28,
+                          }}
+                        >
+                          <ArrowUpward fontSize="small" />
+                        </IconButton>
+                      </span>
+                    </Tooltip>
+                    <Tooltip title="Move down" arrow placement="bottom">
+                      <span>
+                        {" "}
+                        {/* Wrapper to handle disabled state */}
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (onMoveDown) onMoveDown();
+                          }}
+                          disabled={!onMoveDown}
+                          sx={{
+                            color: isDarkMode ? color.teal300 : color.teal600,
+                            backgroundColor: isDarkMode
+                              ? `${color.gray900}80`
+                              : `${color.white}80`,
+                            "&:hover": {
+                              backgroundColor: isDarkMode
+                                ? color.teal900
+                                : color.teal50,
+                            },
+                            "&.Mui-disabled": {
+                              color: isDarkMode ? color.gray500 : color.gray400,
+                            },
+                            width: 28,
+                            height: 28,
+                          }}
+                        >
+                          <ArrowDownward fontSize="small" />
+                        </IconButton>
+                      </span>
+                    </Tooltip>
+                  </Stack>
+                  <Tooltip title="Edit conversation" arrow>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(conversation);
+                      }}
+                      sx={{
+                        color: isDarkMode ? color.teal300 : color.teal600,
+                        backgroundColor: isDarkMode
+                          ? `${color.gray900}80`
+                          : `${color.white}80`,
+                        "&:hover": {
+                          backgroundColor: isDarkMode
+                            ? color.teal900
+                            : color.teal50,
+                        },
+                      }}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Delete conversation" arrow>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(conversation.id);
+                      }}
+                      sx={{
+                        color: isDarkMode ? color.red400 : color.red500,
+                        backgroundColor: isDarkMode
+                          ? `${color.gray900}80`
+                          : `${color.white}80`,
+                        "&:hover": {
+                          backgroundColor: isDarkMode
+                            ? color.red900
+                            : color.red100,
+                          color: isDarkMode ? color.red300 : color.red600,
+                        },
+                      }}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </Stack>
+              )}
+            </Stack>
+          </Box>
+
+          {/* Content */}
+          <Collapse in={expanded} timeout="auto">
+            <Box sx={{ p: 0 }}>
+              {/* Content area */}
+              <Box
+                sx={{
+                  p: 3,
+                  backgroundColor: isDarkMode ? color.gray900 : color.white,
+                  position: "relative",
+                  borderRadius: "0.5rem",
+                  m: 2,
+                  boxShadow: isDarkMode
+                    ? "inset 0 2px 8px rgba(0,0,0,0.2)"
+                    : "inset 0 2px 8px rgba(0,0,0,0.05)",
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: isDarkMode ? color.gray200 : color.gray800,
+                    lineHeight: 1.6,
+                    fontFamily: "'Roboto', sans-serif",
+                    position: "relative",
+                    zIndex: 1,
+                  }}
+                >
+                  {conversation.content}
+                </Typography>
+              </Box>
+
+              {/* Audio player */}
+              {conversation.audioUrl && (
+                <Box sx={{ p: 2, pt: 0 }}>
+                  <AudioControls
+                    audioUrl={conversation.audioUrl}
+                    isPlaying={isCurrentlyPlaying}
+                    onPlayPause={() =>
+                      onPlayAudio(
+                        conversation.audioUrl as string,
+                        conversation.id
+                      )
+                    }
+                  />
+                </Box>
+              )}
+            </Box>
+          </Collapse>
+        </Box>
+      </Paper>
+    </Zoom>
   );
 }
