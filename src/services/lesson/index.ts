@@ -8,3 +8,4 @@ export * from "./speakingService";
 export * from "./topicService";
 export * from "./vocabService";
 export * from "./writingService";
+export * from "./writingAnswerService";

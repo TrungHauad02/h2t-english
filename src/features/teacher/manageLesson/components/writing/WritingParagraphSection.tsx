@@ -13,14 +13,10 @@ import SectionHeader from "../common/SectionHeader";
 
 interface WritingParagraphSectionProps {
   editData: Writing | null;
-  handleInputChange: (field: keyof Writing, value: any) => void;
-  onSave: () => void;
 }
 
 export default function WritingParagraphSection({
   editData,
-  handleInputChange,
-  onSave,
 }: WritingParagraphSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -28,8 +24,6 @@ export default function WritingParagraphSection({
 
   const hooks = useWritingParagraphSection({
     editData,
-    handleInputChange,
-    onSave,
   });
 
   const preview = hooks.renderParagraphPreview();
