@@ -41,9 +41,20 @@ const patch = async (id: number, data: Partial<Writing>) => {
   }
 };
 
+const verify = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/writings/${id}/verify`);
+    return response.data;
+  } catch (error) {
+    console.error("Error verifying writing:", error);
+    throw error;
+  }
+};
+
 export const writingService = {
   findById,
   create,
   update,
   patch,
+  verify,
 };

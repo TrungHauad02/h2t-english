@@ -46,9 +46,20 @@ const patch = async (id: number, data: Partial<Grammar>) => {
   }
 };
 
+const verify = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/grammars/${id}/verify`);
+    return response.data;
+  } catch (error) {
+    console.error("Error verifying grammar:", error);
+    throw error;
+  }
+};
+
 export const grammarService = {
   findById,
   create,
   update,
   patch,
+  verify,
 };

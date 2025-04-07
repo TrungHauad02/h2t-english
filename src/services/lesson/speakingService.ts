@@ -41,9 +41,20 @@ const patch = async (id: number, data: Partial<Speaking>) => {
   }
 };
 
+const verify = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/speakings/${id}/verify`);
+    return response.data;
+  } catch (error) {
+    console.error("Error verifying speaking:", error);
+    throw error;
+  }
+};
+
 export const speakingService = {
   findById,
   create,
   update,
   patch,
+  verify,
 };

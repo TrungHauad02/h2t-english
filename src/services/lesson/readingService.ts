@@ -41,9 +41,20 @@ const patch = async (id: number, data: Partial<Reading>) => {
   }
 };
 
+const verify = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/readings/${id}/verify`);
+    return response.data;
+  } catch (error) {
+    console.error("Error verifying reading:", error);
+    throw error;
+  }
+};
+
 export const readingService = {
   findById,
   create,
   update,
   patch,
+  verify,
 };

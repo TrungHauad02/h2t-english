@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   ClassifySection,
   MatchWordWithSentenceSection,
@@ -17,6 +17,14 @@ import { useParams } from "react-router-dom";
 import { useErrors } from "hooks/useErrors";
 import { extractErrorMessages } from "utils/extractErrorMessages";
 
+// Define a map of lesson services for cleaner verification logic
+const LESSON_SERVICES = {
+  readings: readingService,
+  speakings: speakingService,
+  listenings: listeningService,
+  writings: writingService,
+};
+
 export default function usePreparationSection(
   preparationId: number | null,
   type: "readings" | "speakings" | "listenings" | "writings"
@@ -29,31 +37,51 @@ export default function usePreparationSection(
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const { showError } = useErrors();
 
+  const lessonId = parseInt(id || "0");
+  const lessonService = LESSON_SERVICES[type];
+
+  // Create initial preparation data
+  const createInitialData = useCallback(() => {
+    const initialData: Preparation = {
+      id: 0,
+      title: "",
+      tip: "",
+      questions: [],
+      type: PreparationType.MATCH_WORD_WITH_SENTENCES,
+      status: false,
+    };
+    setData(initialData);
+    setEditData({ ...initialData });
+    setIsEditMode(true);
+  }, []);
+
+  // Fetch preparation data
   const fetchData = async () => {
     try {
       setIsLoading(true);
+
       if (preparationId) {
+        // Existing preparation
         const resData = await preparationService.findById(preparationId);
         if (resData.data) {
           setData(resData.data);
           setEditData({ ...resData.data });
         }
+      } else if (data && data.id > 0) {
+        // Recently created preparation
+        const resData = await preparationService.findById(data.id);
+        if (resData.data) {
+          setData(resData.data);
+          setEditData({ ...resData.data });
+        }
       } else {
-        // Create initial data for new preparation
-        const initialData: Preparation = {
-          id: 0,
-          title: "",
-          tip: "",
-          questions: [],
-          type: PreparationType.MATCH_WORD_WITH_SENTENCES,
-          status: false,
-        };
-        setData(initialData);
-        setEditData({ ...initialData });
-        setIsEditMode(true); // Automatically enter edit mode for new preparation
+        // New preparation
+        createInitialData();
+        return;
       }
     } catch (error) {
       toast.error("Error fetching preparation data");
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -85,27 +113,12 @@ export default function usePreparationSection(
       } else {
         // Create new preparation
         response = await preparationService.create(editData);
-        switch (type) {
-          case "readings":
-            await readingService.patch(parseInt(id || ""), {
-              preparationId: response.data.id,
-            });
-            break;
-          case "speakings":
-            await speakingService.patch(parseInt(id || ""), {
-              preparationId: response.data.id,
-            });
-            break;
-          case "listenings":
-            await listeningService.patch(parseInt(id || ""), {
-              preparationId: response.data.id,
-            });
-            break;
-          case "writings":
-            await writingService.patch(parseInt(id || ""), {
-              preparationId: response.data.id,
-            });
-            break;
+
+        // Link the new preparation to the lesson
+        if (response.data?.id && lessonId) {
+          await lessonService.patch(lessonId, {
+            preparationId: response.data.id,
+          });
         }
       }
 
@@ -146,36 +159,23 @@ export default function usePreparationSection(
   };
 
   const renderPreparation = () => {
-    if (isEditMode) return;
-    if (!data) return null;
+    if (isEditMode || !data) return null;
+
+    const sectionProps = {
+      questions: data.questions,
+      preparationId: data.id,
+      fetchPreparationData: fetchData,
+    };
 
     switch (data.type) {
       case PreparationType.MATCH_WORD_WITH_SENTENCES:
-        return (
-          <MatchWordWithSentenceSection
-            questions={data.questions}
-            preparationId={data.id}
-            fetchPreparationData={fetchData}
-          />
-        );
+        return <MatchWordWithSentenceSection {...sectionProps} />;
       case PreparationType.CLASSIFY:
-        return (
-          <ClassifySection
-            questions={data.questions}
-            preparationId={data.id}
-            fetchPreparationData={fetchData}
-          />
-        );
+        return <ClassifySection {...sectionProps} />;
       case PreparationType.WORDS_MAKE_SENTENCES:
-        return (
-          <WordsMakeSentencesSection
-            questions={data.questions}
-            preparationId={data.id}
-            fetchPreparationData={fetchData}
-          />
-        );
+        return <WordsMakeSentencesSection {...sectionProps} />;
       default:
-        return <></>;
+        return null;
     }
   };
 

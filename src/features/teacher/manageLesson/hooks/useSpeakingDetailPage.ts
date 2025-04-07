@@ -4,6 +4,7 @@ import { Speaking } from "interfaces";
 import { speakingService, routeService } from "services";
 import { extractErrorMessages } from "utils/extractErrorMessages";
 import { useErrors } from "hooks/useErrors";
+import { toast } from "react-toastify";
 
 export default function useSpeakingDetailPage() {
   const { id, routeId } = useParams();
@@ -17,39 +18,51 @@ export default function useSpeakingDetailPage() {
   const { showError } = useErrors();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        if (id && routeId) {
-          // Check owner id using routeId
-          const resRouteData = await routeService.getRouteById(
-            parseInt(routeId)
-          );
-          if (resRouteData.data) {
-            if (resRouteData.data.ownerId !== 1) {
-              // TODO: Check with real teacher ID
-              // TODO: Display error
-              return;
-            }
-          }
-          const resData = await speakingService.findById(parseInt(id));
-          if (resData.data) {
-            setData(resData.data);
-            setEditData({ ...resData.data });
-          }
-          setLoading(false);
-        }
-      } catch (error) {
-        // Display error
-        showError({
-          message: "Error fetching speaking exercise",
-          severity: "error",
-          details: extractErrorMessages(error),
-        });
-      }
-    };
     fetchData();
   }, [id, routeId]);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      if (id && routeId) {
+        // Check owner id using routeId
+        const resRouteData = await routeService.getRouteById(parseInt(routeId));
+        if (resRouteData.data) {
+          if (resRouteData.data.ownerId !== 1) {
+            // TODO: Check with real teacher ID
+            // TODO: Display error
+            return;
+          }
+        }
+        const resData = await speakingService.findById(parseInt(id));
+        let lessonData = { ...resData.data };
+        if (resData.data) {
+          if (resData.data.status) {
+            const verifyData = await speakingService.verify(parseInt(id));
+            if (verifyData.status === "FAIL") {
+              await speakingService.patch(parseInt(id), {
+                status: false,
+              });
+              toast.warning(
+                "Due to verify fail, this lesson has been changed to unpublish"
+              );
+              lessonData.status = false;
+            }
+          }
+          setData(lessonData);
+          setEditData({ ...lessonData });
+        }
+        setLoading(false);
+      }
+    } catch (error) {
+      // Display error
+      showError({
+        message: "Error fetching speaking exercise",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    }
+  };
 
   const handleEditMode = () => {
     setIsEditMode(!isEditMode);
@@ -89,13 +102,20 @@ export default function useSpeakingDetailPage() {
   const handlePublish = async () => {
     try {
       if (data) {
-        // TODO: Check valid lesson before publish
+        // Check valid lesson before publish
+        const verifyData = await speakingService.verify(data.id);
+        if (verifyData.status === "FAIL") {
+          toast.error(verifyData.message);
+          setOpenPublishDialog(false);
+          return;
+        }
         const resData = await speakingService.patch(data.id, {
           status: true,
         });
         setData(resData.data);
         if (editData) setEditData(resData.data);
         setOpenPublishDialog(false);
+        toast.success("Speaking published successfully");
       }
     } catch (error) {
       console.error("Error publishing speaking exercise");
@@ -153,5 +173,6 @@ export default function useSpeakingDetailPage() {
     handleUnpublish,
     handlePublishClick,
     handleUnpublishClick,
+    fetchData,
   };
 }
