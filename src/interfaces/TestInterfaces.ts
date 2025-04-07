@@ -55,7 +55,7 @@ export interface TestListening extends BaseEntity {
   questions: number[];
 }
 export interface TestSpeaking extends BaseEntity {
-  file: string;
+  title: string;
   questions: number[];
 }
 export interface TestWriting extends BaseEntity {
@@ -71,6 +71,7 @@ export interface Question extends BaseEntity {
 }
 
 export interface Answer extends BaseEntity {
+  questionId: number;
   content: string;
   correct: boolean;
 }

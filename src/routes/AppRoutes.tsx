@@ -78,6 +78,10 @@ const AppRoutes = () => {
           path="routes/:routeId/speakings/:id"
           element={<Pages.SpeakingDetailPage />}
         />
+          <Route
+          path="routes/:routeId/test/:type/:id"
+          element={<Pages.ReadingTestDetailPage />}
+        />
       </Route>
       <Route path="*" element={<Pages.ErrorPage />} />
     </Routes>
