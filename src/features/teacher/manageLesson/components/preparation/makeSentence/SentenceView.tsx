@@ -5,7 +5,7 @@ import {
   SentenceCard,
   SentenceHeader,
   SentenceMobileView,
-} from "./sentenceView";
+} from "./sentenceView/";
 
 interface SentenceViewProps {
   data: PreparationMakeSentences[];
