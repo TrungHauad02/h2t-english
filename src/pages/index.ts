@@ -40,6 +40,7 @@ export { default as ReadingDetailPage } from "features/teacher/manageLesson/page
 export { default as WritingDetailPage } from "features/teacher/manageLesson/pages/WritingDetailPage";
 export { default as ListeningDetailPage } from "features/teacher/manageLesson/pages/ListeningDetailPage";
 export { default as SpeakingDetailPage } from "features/teacher/manageLesson/pages/SpeakingDetailPage";
+export { default as ReadingTestDetailPage } from "features/teacher/manageTest/pages/TestDetailPage";
 
 // Admin Pages
 export { default as ManageUserPage } from "features/admin/pages/ManageUsersPage";
