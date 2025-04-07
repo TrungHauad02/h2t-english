@@ -3,7 +3,6 @@ import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import UpdateIcon from "@mui/icons-material/Update";
