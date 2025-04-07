@@ -46,9 +46,20 @@ const patch = async (id: number, data: Partial<Topic>) => {
   }
 };
 
+const verify = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/topics/${id}/verify`);
+    return response.data;
+  } catch (error) {
+    console.error("Error verifying topic:", error);
+    throw error;
+  }
+};
+
 export const topicService = {
   findById,
   create,
   update,
   patch,
+  verify,
 };

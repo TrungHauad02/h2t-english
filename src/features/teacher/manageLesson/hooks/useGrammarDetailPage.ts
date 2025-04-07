@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { routeService, grammarService } from "services";
 import { useErrors } from "hooks/useErrors";
 import { extractErrorMessages } from "utils/extractErrorMessages";
+import { toast } from "react-toastify";
 
 export default function useGrammarDetailPage() {
   const { id, routeId } = useParams();
@@ -22,9 +23,7 @@ export default function useGrammarDetailPage() {
         setLoading(true);
         if (id && routeId) {
           //  Check owner id using routeId
-          const resRouteData = await routeService.getRouteById(
-            parseInt(routeId)
-          );
+          const resRouteData = await routeService.findById(parseInt(routeId));
           if (resRouteData.data) {
             if (resRouteData.data.ownerId !== 1) {
               // TODO: Check with real teacher ID
@@ -33,9 +32,20 @@ export default function useGrammarDetailPage() {
             }
           }
           const resData = await grammarService.findById(parseInt(id));
+          let lessonData = { ...resData.data };
           if (resData.data) {
-            setData(resData.data);
-            setEditData({ ...resData.data });
+            if (resData.data.status) {
+              const verifyData = await grammarService.verify(parseInt(id));
+              if (verifyData.status === "FAIL") {
+                await grammarService.patch(parseInt(id), { status: false });
+                toast.warning(
+                  "Due to verify fail, this lesson has been changed to unpublish"
+                );
+                lessonData.status = false;
+              }
+            }
+            setData(lessonData);
+            setEditData({ ...lessonData });
           }
           setLoading(false);
         }
@@ -95,13 +105,20 @@ export default function useGrammarDetailPage() {
   const handlePublish = async () => {
     try {
       if (data) {
-        // TODO: Check valid lesson before publish
+        // Check valid lesson before publish
+        const verifyData = await grammarService.verify(data.id);
+        if (verifyData.status === "FAIL") {
+          toast.error(verifyData.message);
+          setOpenPublishDialog(false);
+          return;
+        }
         const resData = await grammarService.patch(data.id, {
           status: true,
         });
         setData(resData.data);
         if (editData) setEditData(resData.data);
         setOpenPublishDialog(false);
+        toast.success("Grammar published successfully");
       }
     } catch (error) {
       console.error("Error publishing grammar");

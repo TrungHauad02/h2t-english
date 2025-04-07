@@ -13,6 +13,7 @@ import {
   Topic,
   Writing,
 } from "interfaces";
+import { toast } from "react-toastify";
 
 export default function useDetailRoutePage() {
   const { id } = useParams();
@@ -59,7 +60,7 @@ export default function useDetailRoutePage() {
   const fetchData = async () => {
     if (id) {
       setLoading(true);
-      const responseData = await routeService.getRouteById(parseInt(id));
+      const responseData = await routeService.findById(parseInt(id));
       if (responseData) {
         setData(responseData.data);
         setEditedData({ ...responseData.data });
@@ -83,8 +84,7 @@ export default function useDetailRoutePage() {
 
   const handleSaveChanges = async () => {
     if (!editMode) {
-      // TODO: Haven't test yet
-      const resData = await routeService.patchRoute(data!.id, {
+      const resData = await routeService.patch(data!.id, {
         routeNodes: data?.routeNodes,
       });
       setData(resData.data);
@@ -92,7 +92,7 @@ export default function useDetailRoutePage() {
     }
     if (editedData) {
       // Save change on editData
-      const resData = await routeService.updateRoute(editedData.id, editedData);
+      const resData = await routeService.update(editedData.id, editedData);
       setData(resData.data);
       setEditMode(false);
     }
@@ -104,18 +104,25 @@ export default function useDetailRoutePage() {
   const handlePublish = async () => {
     if (data) {
       // TODO: Check valid route before publish
-      const responseData = await routeService.patchRoute(data.id, {
+      const verifyData = await routeService.verify(data.id);
+      if (verifyData.status === "FAIL") {
+        toast.error(verifyData.message);
+        setOpenPublishDialog(false);
+        return;
+      }
+      const responseData = await routeService.patch(data.id, {
         status: true,
       });
       setData(responseData.data);
       if (editedData) setEditedData(responseData.data);
       setOpenPublishDialog(false);
+      toast.success("Publish route successfully");
     }
   };
 
   const handleUnpublish = async () => {
     if (data) {
-      const responseData = await routeService.patchRoute(data.id, {
+      const responseData = await routeService.patch(data.id, {
         status: false,
       });
       setData(responseData.data);

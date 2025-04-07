@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Topic } from "interfaces";
 import { topicService, routeService } from "services";
+import { toast } from "react-toastify";
 
 export default function useTopicDetailPage() {
   const { id, routeId } = useParams();
@@ -19,9 +20,7 @@ export default function useTopicDetailPage() {
         setLoading(true);
         if (id && routeId) {
           //  Check owner id using routeId
-          const resRouteData = await routeService.getRouteById(
-            parseInt(routeId)
-          );
+          const resRouteData = await routeService.findById(parseInt(routeId));
           if (resRouteData.data) {
             if (resRouteData.data.ownerId !== 1) {
               // TODO: Check with real teacher ID
@@ -30,10 +29,24 @@ export default function useTopicDetailPage() {
             }
           }
           const resData = await topicService.findById(parseInt(id));
+          let lessonData = { ...resData.data };
           if (resData.data) {
-            setData(resData.data);
-            setEditData({ ...resData.data });
+            if (resData.data.status) {
+              const verifyData = await topicService.verify(parseInt(id));
+              if (verifyData.status === "FAIL") {
+                await topicService.patch(parseInt(id), {
+                  status: false,
+                });
+                toast.warning(
+                  "Due to verify fail, this lesson has been changed to unpublish"
+                );
+                lessonData.status = false;
+              }
+            }
           }
+
+          setData(lessonData);
+          setEditData({ ...lessonData });
         }
       } catch (error) {
         console.error("Error fetching topic");
@@ -77,13 +90,20 @@ export default function useTopicDetailPage() {
 
   const handlePublish = async () => {
     if (data) {
-      // TODO: Check valid lesson before publish
+      // Check valid lesson before publish
+      const verifyData = await topicService.verify(data.id);
+      if (verifyData.status === "FAIL") {
+        toast.error(verifyData.message);
+        setOpenPublishDialog(false);
+        return;
+      }
       const resData = await topicService.patch(data.id, {
         status: true,
       });
       setData(resData.data);
       if (editData) setEditData(resData.data);
       setOpenPublishDialog(false);
+      toast.success("Topic published successfully");
     }
   };
 

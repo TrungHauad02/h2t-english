@@ -41,9 +41,20 @@ const patch = async (id: number, data: Partial<Listening>) => {
   }
 };
 
+const verify = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/listenings/${id}/verify`);
+    return response.data;
+  } catch (error) {
+    console.error("Error verifying listening:", error);
+    throw error;
+  }
+};
+
 export const listeningService = {
   findById,
   create,
   update,
   patch,
+  verify,
 };
