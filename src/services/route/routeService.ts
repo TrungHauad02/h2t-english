@@ -57,7 +57,7 @@ const getRoutesByTeacherId = async (
   }
 };
 
-const createRoute = async (routeData: Route) => {
+const create = async (routeData: Route) => {
   try {
     const data = {
       ...routeData,
@@ -72,7 +72,7 @@ const createRoute = async (routeData: Route) => {
   }
 };
 
-const getRouteById = async (routeId: number) => {
+const findById = async (routeId: number) => {
   try {
     const response = await apiClient.get(`/routes/${routeId}`);
     return response.data;
@@ -82,7 +82,7 @@ const getRouteById = async (routeId: number) => {
   }
 };
 
-const updateRoute = async (routeId: number, routeData: Route) => {
+const update = async (routeId: number, routeData: Route) => {
   try {
     routeData.image = base64ToBlobUrl(routeData.image, "image/png");
     const response = await apiClient.put(`/routes/${routeId}`, routeData);
@@ -93,7 +93,7 @@ const updateRoute = async (routeId: number, routeData: Route) => {
   }
 };
 
-const patchRoute = async (routeId: number, routeData: any) => {
+const patch = async (routeId: number, routeData: any) => {
   try {
     if (routeData.image) {
       routeData.image = base64ToBlobUrl(routeData.image, "image/png");
@@ -107,7 +107,7 @@ const patchRoute = async (routeId: number, routeData: any) => {
   }
 };
 
-const deleteRoute = async (routeId: number) => {
+const remove = async (routeId: number) => {
   try {
     const response = await apiClient.delete(`/routes/${routeId}`);
     return response.data;
@@ -117,11 +117,22 @@ const deleteRoute = async (routeId: number) => {
   }
 };
 
+const verify = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/routes/${id}/verify`);
+    return response.data;
+  } catch (error) {
+    console.error("Error verify route:", error);
+    throw error;
+  }
+};
+
 export const routeService = {
   getRoutesByTeacherId,
-  createRoute,
-  getRouteById,
-  updateRoute,
-  patchRoute,
-  deleteRoute,
+  create,
+  findById,
+  update,
+  patch,
+  remove,
+  verify,
 };

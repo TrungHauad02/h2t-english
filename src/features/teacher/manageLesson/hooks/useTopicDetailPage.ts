@@ -20,9 +20,7 @@ export default function useTopicDetailPage() {
         setLoading(true);
         if (id && routeId) {
           //  Check owner id using routeId
-          const resRouteData = await routeService.getRouteById(
-            parseInt(routeId)
-          );
+          const resRouteData = await routeService.findById(parseInt(routeId));
           if (resRouteData.data) {
             if (resRouteData.data.ownerId !== 1) {
               // TODO: Check with real teacher ID

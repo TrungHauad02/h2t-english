@@ -41,7 +41,7 @@ export default function ListRoutes({ list, fetchData }: ListRoutesProps) {
     // Remove in db
     try {
       setIsDeleting(true);
-      await routeService.deleteRoute(deleteId!);
+      await routeService.remove(deleteId!);
       fetchData();
     } catch (error) {
       // Display error
