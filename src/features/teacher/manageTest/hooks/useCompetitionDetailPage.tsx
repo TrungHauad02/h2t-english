@@ -1,11 +1,11 @@
-import { Test, TestReading, TestListening, TestSpeaking, TestWriting, TestPart, TestTypeEnum } from "interfaces"; 
+import { TestReading, TestListening, TestSpeaking, TestWriting, TestPart, CompetitionTest } from "interfaces"; 
 import { useEffect, useState } from "react"; 
 import { useParams } from "react-router-dom"; 
 import { testService } from "../services/testServices";
 
-export default function useTestDetailPage() { 
-  const { id, routeId, type } = useParams(); 
-  const [data, setData] = useState<Test | null>(null);
+export default function useCompetitionDetailPage() { 
+  const { id } = useParams(); 
+  const [data, setData] = useState<CompetitionTest | null>(null);
   const [testParts, setTestParts] = useState<TestPart[]>([]);
   
   // States for different test types
@@ -21,25 +21,24 @@ export default function useTestDetailPage() {
   const [currentWritingTopic, setCurrentWritingTopic] = useState<TestWriting | null>(null);
   
   const [isEditMode, setIsEditMode] = useState(false); 
-  const [editData, setEditData] = useState<Test | null>(null); 
+  const [editData, setEditData] = useState<CompetitionTest | null>(null); 
   const [loading, setLoading] = useState(true); 
   const [openPublishDialog, setOpenPublishDialog] = useState<boolean>(false); 
   const [openUnpublishDialog, setOpenUnpublishDialog] = useState<boolean>(false); 
 
   useEffect(() => { 
-    if (id && routeId && type) { 
+    if (id) { 
       setLoading(true); 
       
       setTimeout(() => { 
-        // Get specific test type
-        const testType = type.toUpperCase() as keyof typeof TestTypeEnum;
-        const test = testService.getTestByIdAndType(parseInt(id), testType);
+        // Try to get the competition test directly
+        const competition = testService.getCompetitionTestById(parseInt(id));
         
-        if (test) { 
-          setData(test); 
-          setEditData({ ...test }); 
+        if (competition) { 
+          setData(competition); 
+          setEditData({ ...competition }); 
           
-          const parts = testService.getTestPartsByIds(test.parts);
+          const parts = testService.getTestPartsByIds(competition.parts);
           setTestParts(parts);
           
           // Load data for each test type that appears in the parts
@@ -48,7 +47,7 @@ export default function useTestDetailPage() {
         setLoading(false); 
       }, 500); 
     } 
-  }, [id, routeId, type]); 
+  }, [id]); 
 
   const loadTestTypeData = (parts: TestPart[]) => {
     const readingParts = parts.filter(part => part.type === "READING");
