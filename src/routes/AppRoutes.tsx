@@ -84,7 +84,15 @@ const AppRoutes = () => {
         />
         <Route
           path="routes/:routeId/test/:type/:id"
-          element={<Pages.ReadingTestDetailPage />}
+          element={<Pages.TestDetailPage />}
+        />
+        <Route
+          path="competitions"
+          element={<Pages.ManageCompetitionPage />}
+        />
+         <Route
+          path="toeics"
+          element={<Pages.ManageToeicPage />}
         />
       </Route>
       <Route path="*" element={<Pages.ErrorPage />} />

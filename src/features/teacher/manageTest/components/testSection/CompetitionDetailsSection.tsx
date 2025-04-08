@@ -1,21 +1,21 @@
 import React from "react";
 import { Box, Card, CardContent } from "@mui/material";
-import { TestDetailsView, TestEditForm } from "../common";
+import { CompetitionDetailsView, CompetitionEditForm } from "../common";
 import { TestHeader, PublishActions } from "../../components";
-import { Test } from "interfaces";
+import { CompetitionTest } from "interfaces";
 
-interface TestDetailsSectionProps {
-  testData: Test;
+interface CompetitionDetailsSectionProps {
+  testData: CompetitionTest;
   isEditMode: boolean;
-  editData: Test;
+  editData: CompetitionTest;
   handleEditMode: () => void;
-  handleInputChange: (field: keyof Test, value: any) => void;
+  handleInputChange: (field: string, value: any) => void;
   handleSaveChanges: () => void;
   handlePublishClick: () => void;
   handleUnpublishClick: () => void;
 }
 
-export const TestDetailsSection: React.FC<TestDetailsSectionProps> = ({
+export const CompetitionDetailsSection: React.FC<CompetitionDetailsSectionProps> = ({
   testData,
   isEditMode,
   editData,
@@ -30,7 +30,7 @@ export const TestDetailsSection: React.FC<TestDetailsSectionProps> = ({
       <Card elevation={2} sx={{ overflow: 'visible' }}>
         <CardContent sx={{ p: 3 }}>
           <TestHeader
-            title={`${testData.type || ""} Test Details`}
+            title="Competition Details"
             onEditMode={handleEditMode}
           />
           
@@ -43,14 +43,14 @@ export const TestDetailsSection: React.FC<TestDetailsSectionProps> = ({
           </Box>
           
           {isEditMode ? (
-            <TestEditForm
+            <CompetitionEditForm
               editData={editData}
               handleInputChange={handleInputChange}
               onSave={handleSaveChanges}
               onCancel={handleEditMode}
             />
           ) : (
-            <TestDetailsView data={testData} />
+            <CompetitionDetailsView data={testData} />
           )}
         </CardContent>
       </Card>
@@ -58,4 +58,4 @@ export const TestDetailsSection: React.FC<TestDetailsSectionProps> = ({
   );
 };
 
-export default TestDetailsSection;
+export default CompetitionDetailsSection;

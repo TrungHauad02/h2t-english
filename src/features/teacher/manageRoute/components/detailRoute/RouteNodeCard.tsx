@@ -150,11 +150,19 @@ export default function RouteNodeCard({
     let prefix = "";
     switch (node.type) {
       case RouteNodeEnum.MIXING_TEST:
+        prefix = "test/mixing";
+        break;
       case RouteNodeEnum.READING_TEST:
+        prefix = "test/reading";
+        break;
       case RouteNodeEnum.LISTENING_TEST:
+        prefix = "test/listening";
+        break;
       case RouteNodeEnum.SPEAKING_TEST:
+        prefix = "test/speaking";
+        break;
       case RouteNodeEnum.WRITING_TEST:
-        prefix = "test";
+        prefix = "test/writing";
         break;
       case RouteNodeEnum.VOCABULARY:
         prefix = "topics";

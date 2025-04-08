@@ -2,77 +2,87 @@ import { useMemo, useEffect } from "react";
 import { Stack, Container } from "@mui/material";
 
 import SubjectIcon from "@mui/icons-material/Subject";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import SpellcheckIcon from "@mui/icons-material/Spellcheck";
 import HeadphonesIcon from "@mui/icons-material/Headphones";
 import MicIcon from "@mui/icons-material/Mic";
 import CreateIcon from "@mui/icons-material/Create";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import WEFloatingNavMenu from "components/pagination/WEFloatingNavMenu";
 import { testService } from "../services/testServices";
 import { NotFoundTest, LoadingTest, PublishDialogs } from "../components";
-import { TestTypeEnum, TestPartTypeEnum, Test } from "interfaces";
+import { TestPartTypeEnum, CompetitionTest } from "interfaces";
 
 import {
+  VocabularySection,
+  GrammarSection,
   ReadingSection,
   ListeningSection,
   SpeakingSection,
   WritingSection,
-  TestDetailsSection
+  CompetitionDetailsSection
 } from "../components/testSection";
-import useTestDetailPage from "../hooks/useTestDetailPage";
+import useCompetitionDetailPage from "../hooks/useCompetitionDetailPage";
 
-export default function TestDetailPage() {
-  const hooks = useTestDetailPage();
+export default function CompetitionDetailPage() {
+  const hooks = useCompetitionDetailPage();
 
   const navItems = useMemo(() => {
     const items = [
       {
-        id: "test-details",
-        label: "Test Details",
-        icon: <SubjectIcon fontSize="small" />,
+        id: "competition-details",
+        label: "Competition Details",
+        icon: <EmojiEventsIcon fontSize="small" />,
       }
     ];
 
-    if (hooks.data && hooks.data.type) {
-      // For specific test types or mixing test
-      if (hooks.data.type === TestTypeEnum.MIXING) {
-        // For mixing tests, show all sections that have parts
-        if (hooks.testParts.some(part => part.type === TestPartTypeEnum.READING)) {
-          items.push({
-            id: "reading-section",
-            label: "Reading",
-            icon: <SubjectIcon fontSize="small" />,
-          });
-        }
-        
-        if (hooks.testParts.some(part => part.type === TestPartTypeEnum.LISTENING)) {
-          items.push({
-            id: "listening-section",
-            label: "Listening",
-            icon: <HeadphonesIcon fontSize="small" />,
-          });
-        }
-        
-        if (hooks.testParts.some(part => part.type === TestPartTypeEnum.SPEAKING)) {
-          items.push({
-            id: "speaking-section",
-            label: "Speaking",
-            icon: <MicIcon fontSize="small" />,
-          });
-        }
-        
-        if (hooks.testParts.some(part => part.type === TestPartTypeEnum.WRITING)) {
-          items.push({
-            id: "writing-section",
-            label: "Writing",
-            icon: <CreateIcon fontSize="small" />,
-          });
-        }
-      } else {
-        // For specific test types, only show the corresponding section
-        const sectionIcon = getTestTypeIcon(hooks.data.type);
+    if (hooks.data) {
+      // For competition tests, show all sections that have parts
+      if (hooks.testParts.some(part => part.type === TestPartTypeEnum.VOCABULARY)) {
         items.push({
-          id: `${hooks.data.type.toLowerCase()}-section`,
-          label: `${hooks.data.type} Section`, 
-          icon: sectionIcon,
+          id: "vocabulary-section",
+          label: "Vocabulary",
+          icon: <SpellcheckIcon fontSize="small" />,
+        });
+      }
+      
+      if (hooks.testParts.some(part => part.type === TestPartTypeEnum.GRAMMAR)) {
+        items.push({
+          id: "grammar-section",
+          label: "Grammar",
+          icon: <MenuBookIcon fontSize="small" />,
+        });
+      }
+      
+      if (hooks.testParts.some(part => part.type === TestPartTypeEnum.READING)) {
+        items.push({
+          id: "reading-section",
+          label: "Reading",
+          icon: <SubjectIcon fontSize="small" />,
+        });
+      }
+      
+      if (hooks.testParts.some(part => part.type === TestPartTypeEnum.LISTENING)) {
+        items.push({
+          id: "listening-section",
+          label: "Listening",
+          icon: <HeadphonesIcon fontSize="small" />,
+        });
+      }
+      
+      if (hooks.testParts.some(part => part.type === TestPartTypeEnum.SPEAKING)) {
+        items.push({
+          id: "speaking-section",
+          label: "Speaking",
+          icon: <MicIcon fontSize="small" />,
+        });
+      }
+      
+      if (hooks.testParts.some(part => part.type === TestPartTypeEnum.WRITING)) {
+        items.push({
+          id: "writing-section",
+          label: "Writing",
+          icon: <CreateIcon fontSize="small" />,
         });
       }
     }
@@ -87,24 +97,8 @@ export default function TestDetailPage() {
   }, [hooks.data, hooks.testParts, hooks.readingFiles, hooks.listeningFiles, hooks.speakingTitles, hooks.writingTopics]);
 
   if (hooks.loading) return <LoadingTest />;
-  if (!hooks.data) return <NotFoundTest title="Test not found" />;
-  if (hooks.testParts.length === 0) return <NotFoundTest title="Test parts not found" />;
-
-  // Make sure this function always returns a React Element, never undefined
-  function getTestTypeIcon(typeStr: TestTypeEnum) {
-    switch (typeStr) {
-      case TestTypeEnum.READING:
-        return <SubjectIcon fontSize="small" />;
-      case TestTypeEnum.LISTENING:
-        return <HeadphonesIcon fontSize="small" />;
-      case TestTypeEnum.SPEAKING:
-        return <MicIcon fontSize="small" />;
-      case TestTypeEnum.WRITING:
-        return <CreateIcon fontSize="small" />;
-      default:
-        return <SubjectIcon fontSize="small" />;
-    }
-  }
+  if (!hooks.data) return <NotFoundTest title="Competition not found" />;
+  if (hooks.testParts.length === 0) return <NotFoundTest title="Competition parts not found" />;
 
   function initializeSelectedFiles() {
     const readingParts = hooks.testParts.filter(part => part.type === TestPartTypeEnum.READING);
@@ -140,8 +134,9 @@ export default function TestDetailPage() {
     }
   }
 
-  // Get parts for the test based on type
-  const isMixingTest = hooks.data.type === TestTypeEnum.MIXING;
+  // Get parts for all section types
+  const vocabularyParts = hooks.testParts.filter(part => part.type === TestPartTypeEnum.VOCABULARY);
+  const grammarParts = hooks.testParts.filter(part => part.type === TestPartTypeEnum.GRAMMAR);
   const readingParts = hooks.testParts.filter(part => part.type === TestPartTypeEnum.READING);
   const listeningParts = hooks.testParts.filter(part => part.type === TestPartTypeEnum.LISTENING);
   const speakingParts = hooks.testParts.filter(part => part.type === TestPartTypeEnum.SPEAKING);
@@ -151,20 +146,15 @@ export default function TestDetailPage() {
     ? testService.getQuestionsByIds(hooks.currentSpeakingTitle.questions)
     : [];
 
-  // Helper function to determine if a section should be displayed
-  const shouldDisplaySection = (sectionType: TestTypeEnum): boolean => {
-    return isMixingTest || hooks.data?.type === sectionType;
-  };
-
   return (
     <Container maxWidth="lg">
       <WEFloatingNavMenu items={navItems} />
 
       <Stack spacing={5} sx={{ mt: 6, mb: 6, px: { xs: 2, md: 0 } }}>
-        <TestDetailsSection 
+        <CompetitionDetailsSection 
           testData={hooks.data}
           isEditMode={hooks.isEditMode}
-          editData={hooks.editData as Test}
+          editData={hooks.editData as CompetitionTest}
           handleEditMode={hooks.handleEditMode}
           handleInputChange={hooks.handleInputChange}
           handleSaveChanges={hooks.handleSaveChanges}
@@ -172,8 +162,24 @@ export default function TestDetailPage() {
           handleUnpublishClick={hooks.handleUnpublishClick}
         />
         
-        {/* Display reading section if appropriate */}
-        {shouldDisplaySection(TestTypeEnum.READING) && readingParts.length > 0 && hooks.currentReadingFile && (
+        {/* Display vocabulary section if it has vocabulary parts */}
+        {vocabularyParts.length > 0 && (
+          <VocabularySection 
+            parts={vocabularyParts}
+            isEditMode={hooks.isEditMode}
+          />
+        )}
+        
+        {/* Display grammar section if it has grammar parts */}
+        {grammarParts.length > 0 && (
+          <GrammarSection 
+            parts={grammarParts}
+            isEditMode={hooks.isEditMode}
+          />
+        )}
+        
+        {/* Display reading section if it has reading parts */}
+        {readingParts.length > 0 && hooks.currentReadingFile && (
           <ReadingSection
             readingFiles={hooks.readingFiles}
             selectedFile={hooks.currentReadingFile}
@@ -182,8 +188,8 @@ export default function TestDetailPage() {
           />
         )}
         
-        {/* Display listening section if appropriate */}
-        {shouldDisplaySection(TestTypeEnum.LISTENING) && listeningParts.length > 0 && hooks.currentListeningFile && (
+        {/* Display listening section if it has listening parts */}
+        {listeningParts.length > 0 && hooks.currentListeningFile && (
           <ListeningSection
             listeningFiles={hooks.listeningFiles}
             selectedFile={hooks.currentListeningFile}
@@ -192,8 +198,8 @@ export default function TestDetailPage() {
           />
         )}
         
-        {/* Display speaking section if appropriate */}
-        {shouldDisplaySection(TestTypeEnum.SPEAKING) && speakingParts.length > 0 && hooks.currentSpeakingTitle && (
+        {/* Display speaking section if it has speaking parts */}
+        {speakingParts.length > 0 && hooks.currentSpeakingTitle && (
           <SpeakingSection
             speakingTitles={hooks.speakingTitles}
             selectedTitle={hooks.currentSpeakingTitle}
@@ -203,8 +209,8 @@ export default function TestDetailPage() {
           />
         )}
         
-        {/* Display writing section if appropriate */}
-        {shouldDisplaySection(TestTypeEnum.WRITING) && writingParts.length > 0 && hooks.currentWritingTopic && (
+        {/* Display writing section if it has writing parts */}
+        {writingParts.length > 0 && hooks.currentWritingTopic && (
           <WritingSection
             writingTopics={hooks.writingTopics}
             selectedTopic={hooks.currentWritingTopic}
