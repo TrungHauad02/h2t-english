@@ -1,27 +1,33 @@
-import {
-  Box,
-  Typography,
-  Container,
-  Stack,
-  TextField,
-  InputAdornment,
-} from "@mui/material";
+import React, { useState } from "react";
+import { Box, Container, Fade } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import ListRoute from "../components/ListRoute";
-import SearchIcon from "@mui/icons-material/Search";
-import SchoolIcon from "@mui/icons-material/School";
-import { useState } from "react";
+import { Header, ListRoute, SearchRoutes } from "../components";
+import { WEPaginationSelect } from "components/pagination";
 
 export default function ListRoutePage() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [itemPerPage, setItemPerPage] = useState(8);
 
   const backgroundColor = isDarkMode ? color.gray900 : color.gray50;
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value);
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  const handleChangePage = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value);
+  };
+
+  const handleItemPerPageChange = (itemPerPage: number) => {
+    setItemPerPage(itemPerPage);
   };
 
   return (
@@ -30,129 +36,78 @@ export default function ListRoutePage() {
         minHeight: "100vh",
         width: "100%",
         bgcolor: backgroundColor,
+        backgroundImage: isDarkMode
+          ? `radial-gradient(${color.teal900} 1px, transparent 1px)`
+          : `radial-gradient(${color.teal200} 1px, transparent 1px)`,
         backgroundSize: "20px 20px",
         pt: 10,
         pb: 8,
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      <Container maxWidth="xl">
-        {/* Header section with title and description */}
-        <Stack
-          direction={{ xs: "column", sm: "row" }}
-          spacing={{ xs: 2, sm: 4 }}
-          alignItems={{ xs: "flex-start", sm: "center" }}
-          sx={{ mb: 5 }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: { xs: 60, sm: 80 },
-              height: { xs: 60, sm: 80 },
-              borderRadius: "20%",
-              background: `linear-gradient(135deg, ${
-                isDarkMode ? color.teal700 : color.teal400
-              }, ${isDarkMode ? color.teal900 : color.teal600})`,
-              boxShadow: `0 8px 20px ${
-                isDarkMode ? color.teal900 + "80" : color.teal500 + "40"
-              }`,
-              flexShrink: 0,
-            }}
-          >
-            <SchoolIcon sx={{ fontSize: { xs: 36, sm: 48 }, color: "white" }} />
-          </Box>
+      {/* Abstract background elements */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: -100,
+          right: -100,
+          width: 400,
+          height: 400,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${
+            isDarkMode ? color.teal700 + "30" : color.teal300 + "30"
+          } 0%, transparent 70%)`,
+          filter: "blur(40px)",
+          zIndex: 0,
+        }}
+      />
 
-          <Box>
-            <Typography
-              variant="h3"
-              component="h1"
-              sx={{
-                color: isDarkMode ? color.teal300 : color.teal700,
-                fontWeight: 800,
-                mb: 1.5,
-                position: "relative",
-                display: "inline-block",
-                "&::after": {
-                  content: '""',
-                  position: "absolute",
-                  bottom: -8,
-                  left: 0,
-                  width: "60%",
-                  height: 4,
-                  borderRadius: 2,
-                  bgcolor: isDarkMode ? color.teal500 : color.teal400,
-                },
-              }}
-            >
-              Learning Routes
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{
-                color: isDarkMode ? color.gray300 : color.gray700,
-                fontWeight: 400,
-                maxWidth: "800px",
-              }}
-            >
-              Explore our structured learning paths designed to help you build
-              skills step by step. Each route contains a curated collection of
-              lessons to guide your learning journey.
-            </Typography>
-          </Box>
-        </Stack>
+      <Box
+        sx={{
+          position: "absolute",
+          bottom: -50,
+          left: -50,
+          width: 300,
+          height: 300,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${
+            isDarkMode ? color.emerald700 + "30" : color.emerald300 + "30"
+          } 0%, transparent 70%)`,
+          filter: "blur(40px)",
+          zIndex: 0,
+        }}
+      />
+
+      <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1 }}>
+        {/* Header section with title and description */}
+        <Header />
 
         {/* Search box with improved styling */}
-        <Box
-          sx={{
-            mb: 5,
-            maxWidth: 500,
-            mx: "auto",
-          }}
-        >
-          <TextField
-            placeholder="Search learning routes..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon
-                    sx={{ color: isDarkMode ? color.gray400 : color.gray500 }}
-                  />
-                </InputAdornment>
-              ),
-            }}
-            variant="outlined"
-            sx={{
-              bgcolor: isDarkMode ? color.gray800 : color.white,
-              borderRadius: 2,
-              boxShadow: `0 4px 12px ${
-                isDarkMode ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.08)"
-              }`,
-              "& .MuiOutlinedInput-root": {
-                borderRadius: 2,
-                "& fieldset": {
-                  borderColor: isDarkMode ? color.gray700 : color.gray300,
-                },
-                "&:hover fieldset": {
-                  borderColor: isDarkMode ? color.teal500 : color.teal400,
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: isDarkMode ? color.teal400 : color.teal500,
-                  borderWidth: 2,
-                },
-              },
-              "& .MuiInputBase-input": {
-                py: 1.5,
-              },
-            }}
-          />
-        </Box>
+        <Fade in timeout={1600}>
+          <Box sx={{ mb: 5 }}>
+            <SearchRoutes onSearch={handleSearch} />
+          </Box>
+        </Fade>
 
         {/* Routes list component */}
-        <ListRoute searchQuery={searchQuery} />
+        <Fade in timeout={1800}>
+          <Box>
+            <ListRoute
+              searchQuery={searchQuery}
+              page={page}
+              itemPerPage={itemPerPage}
+              setTotalPages={setTotalPages}
+            />
+            <WEPaginationSelect
+              page={page}
+              totalPage={totalPages}
+              itemsPerPage={itemPerPage}
+              onPageChange={handleChangePage}
+              onItemsPerPageChange={handleItemPerPageChange}
+            />
+          </Box>
+        </Fade>
       </Container>
     </Box>
   );
