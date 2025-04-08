@@ -13,7 +13,7 @@ export { default as ReviewHistoryTestPage } from "features/historyTest/pages/Rev
 export { default as HistoryToeicPage } from "features/historyTest/pages/HistoryToeicPage";
 
 // Error Log Page
-export { default as ErrorLogPage } from "features/errorlog/pages/ErrorLogPage"
+export { default as ErrorLogPage } from "features/errorlog/pages/ErrorLogPage";
 // Error Page
 export { default as ErrorPage } from "pages/ErrorPage";
 
@@ -34,6 +34,7 @@ export { default as CompetitionTestPage } from "features/test/pages/CompetitionT
 export { default as LisToeicPage } from "features/listTest/pages/ListToeicPage";
 export { default as ToeicPage } from "features/test/pages/ToeicPage";
 // Teacher Pages
+export { default as TeacherDashboardPage } from "features/teacher/dashboard/pages/TeacherDashboardPage";
 export { default as ManageRoutePage } from "features/teacher/manageRoute/pages/ManageRoutePage";
 export { default as InformationPage } from "features/teacher/information/pages/InformationPage";
 export { default as DetailRoutePage } from "features/teacher/manageRoute/pages/DetailRoutePage";
