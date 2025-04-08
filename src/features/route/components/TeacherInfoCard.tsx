@@ -1,24 +1,26 @@
 import React from "react";
 import {
-  Avatar,
-  Box,
   Card,
   CardContent,
-  Chip,
-  Divider,
   Typography,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  List,
+  Divider,
+  Chip,
+  Tooltip,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
-import EmailIcon from "@mui/icons-material/Email";
-import PhoneIcon from "@mui/icons-material/Phone";
-import SchoolIcon from "@mui/icons-material/School";
+import BadgeIcon from "@mui/icons-material/Badge";
+
 import { User, LevelsEnum } from "interfaces";
 import { mockData } from "../services/mockData";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
+import {
+  AvatarSection,
+  ContactInfoSection,
+  ExpertiseSection,
+  LevelBadge,
+} from "./teacherInfo";
 
 interface TeacherInfoCardProps {
   userId: number;
@@ -27,43 +29,46 @@ interface TeacherInfoCardProps {
 export default function TeacherInfoCard({ userId }: TeacherInfoCardProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const teacher: User = mockData.teacher;
-
-  const cardBackgroundColor = isDarkMode ? color.gray700 : color.white;
-  const cardBorderColor = isDarkMode ? color.gray600 : color.gray200;
-  const textColor = isDarkMode ? color.gray100 : color.gray900;
-  const secondaryTextColor = isDarkMode ? color.gray300 : color.gray700;
 
   const getLevelColor = (level: LevelsEnum) => {
     switch (level) {
       case LevelsEnum.BACHELOR:
         return {
-          bg: color.teal400,
+          primary: color.teal400,
+          secondary: color.teal200,
           text: isDarkMode ? color.gray900 : color.white,
         };
       case LevelsEnum.MASTER:
         return {
-          bg: color.emerald500,
+          primary: color.emerald500,
+          secondary: color.emerald200,
           text: isDarkMode ? color.gray900 : color.white,
         };
       case LevelsEnum.DOCTOR:
         return {
-          bg: color.green500,
+          primary: color.green500,
+          secondary: color.green200,
           text: isDarkMode ? color.gray900 : color.white,
         };
       case LevelsEnum.PROFESSOR:
         return {
-          bg: color.teal600,
+          primary: color.teal600,
+          secondary: color.teal300,
           text: isDarkMode ? color.gray900 : color.white,
         };
       case LevelsEnum.STUDENT:
         return {
-          bg: color.teal300,
+          primary: color.teal300,
+          secondary: color.teal100,
           text: isDarkMode ? color.gray900 : color.white,
         };
       default:
         return {
-          bg: color.gray500,
+          primary: color.gray500,
+          secondary: color.gray300,
           text: isDarkMode ? color.gray900 : color.white,
         };
     }
@@ -73,142 +78,90 @@ export default function TeacherInfoCard({ userId }: TeacherInfoCardProps) {
 
   return (
     <Card
+      elevation={8}
       sx={{
-        bgcolor: cardBackgroundColor,
-        border: `1px solid ${cardBorderColor}`,
+        position: "relative",
+        overflow: "visible",
         borderRadius: 4,
-        boxShadow: 3,
         height: "100%",
-        display: "flex",
-        flexDirection: "column",
+        bgcolor: isDarkMode ? color.gray800 : color.white,
+        border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+        transition: "transform 0.3s ease, box-shadow 0.3s ease",
+        "&:hover": {
+          transform: "translateY(-8px)",
+          boxShadow: 16,
+        },
       }}
     >
-      <Box
+      <AvatarSection teacher={teacher} levelColors={levelColors} />
+
+      <CardContent
         sx={{
-          p: 3,
-          backgroundColor: isDarkMode ? color.gray800 : color.gray50,
-          borderTopLeftRadius: 4,
-          borderTopRightRadius: 4,
+          pt: 8,
+          px: 3,
+          pb: 3,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          borderBottom: `1px solid ${cardBorderColor}`,
         }}
       >
-        <Avatar
-          src={teacher.avatar}
-          alt={teacher.name}
-          sx={{
-            width: 100,
-            height: 100,
-            mb: 2,
-            border: `4px solid ${isDarkMode ? color.teal700 : color.teal100}`,
-            boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-          }}
-        />
-
         <Typography
           variant="h5"
           sx={{
-            color: textColor,
+            color: isDarkMode ? color.gray100 : color.gray900,
             fontWeight: "bold",
+            mb: 1,
             textAlign: "center",
+            letterSpacing: 0.5,
           }}
         >
           {teacher.name}
         </Typography>
 
-        <Chip
-          label={teacher.levelEnum}
-          sx={{
-            mt: 1,
-            bgcolor: levelColors.bg,
-            color: levelColors.text,
-            fontWeight: "bold",
-            px: 1,
-          }}
-          icon={<SchoolIcon style={{ color: levelColors.text }} />}
-        />
-      </Box>
+        <LevelBadge levelEnum={teacher.levelEnum} levelColors={levelColors} />
 
-      <CardContent sx={{ flexGrow: 1 }}>
-        <Typography
-          variant="body2"
+        <Divider
           sx={{
-            color: isDarkMode ? color.teal300 : color.teal600,
-            fontWeight: "bold",
-            textTransform: "uppercase",
-            letterSpacing: 1,
-            mb: 2,
+            width: "80%",
+            my: 2,
+            "&::before, &::after": {
+              borderColor: isDarkMode ? color.gray600 : color.gray300,
+            },
           }}
         >
-          Teacher Information
-        </Typography>
-
-        <List dense disablePadding>
-          <ListItem disableGutters sx={{ pb: 2 }}>
-            <ListItemIcon sx={{ minWidth: 36 }}>
-              <EmailIcon
-                color={isDarkMode ? "info" : "primary"}
-                fontSize="small"
-              />
-            </ListItemIcon>
-            <ListItemText
-              primary="Email"
-              secondary={teacher.email}
-              primaryTypographyProps={{
-                variant: "body2",
-                color: secondaryTextColor,
-              }}
-              secondaryTypographyProps={{
-                variant: "body1",
-                color: textColor,
-                fontWeight: "medium",
-              }}
-            />
-          </ListItem>
-
-          <ListItem disableGutters>
-            <ListItemIcon sx={{ minWidth: 36 }}>
-              <PhoneIcon
-                color={isDarkMode ? "info" : "primary"}
-                fontSize="small"
-              />
-            </ListItemIcon>
-            <ListItemText
-              primary="Phone"
-              secondary={teacher.phoneNumber}
-              primaryTypographyProps={{
-                variant: "body2",
-                color: secondaryTextColor,
-              }}
-              secondaryTypographyProps={{
-                variant: "body1",
-                color: textColor,
-                fontWeight: "medium",
-              }}
-            />
-          </ListItem>
-        </List>
-
-        <Divider sx={{ my: 2 }} />
-
-        <Box sx={{ mt: 2 }}>
-          <Typography
-            variant="body2"
+          <Chip
+            label="CONTACT"
+            size="small"
             sx={{
-              color: secondaryTextColor,
-              fontStyle: "italic",
-              textAlign: "center",
+              bgcolor: isDarkMode ? color.gray700 : color.gray100,
+              color: isDarkMode ? color.gray200 : color.gray800,
+              border: `1px solid ${isDarkMode ? color.gray600 : color.gray300}`,
+              fontSize: "0.7rem",
+              height: 24,
             }}
-          >
-            {teacher.levelEnum === LevelsEnum.PROFESSOR
-              ? "Experienced professor with expertise in teaching language skills."
-              : teacher.levelEnum === LevelsEnum.DOCTOR
-              ? "Doctoral educator with advanced teaching methodologies."
-              : "Qualified instructor dedicated to student success."}
-          </Typography>
-        </Box>
+          />
+        </Divider>
+
+        <ContactInfoSection teacher={teacher} isMobile={isMobile} />
+
+        <ExpertiseSection teacher={teacher} levelColors={levelColors} />
+
+        <Tooltip title="Teacher ID" placement="bottom">
+          <Chip
+            icon={<BadgeIcon />}
+            label={`ID: TCH-${userId.toString().padStart(5, "0")}`}
+            size="small"
+            sx={{
+              mt: 1,
+              bgcolor: isDarkMode ? color.gray700 : color.gray100,
+              color: isDarkMode ? color.gray300 : color.gray700,
+              border: `1px solid ${isDarkMode ? color.gray600 : color.gray300}`,
+              "& .MuiChip-icon": {
+                color: isDarkMode ? color.gray400 : color.gray500,
+              },
+            }}
+          />
+        </Tooltip>
       </CardContent>
     </Card>
   );
