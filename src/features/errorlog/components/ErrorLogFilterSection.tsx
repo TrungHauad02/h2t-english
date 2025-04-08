@@ -9,13 +9,10 @@ import {
   TextField,
   Collapse,
   Button,
-  IconButton,
   Typography,
   Chip,
   Stack,
-  SelectChangeEvent,
 } from "@mui/material";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import { useDarkMode } from "hooks/useDarkMode";
@@ -23,6 +20,8 @@ import useColor from "theme/useColor";
 import { SeverityEnum, BaseFilter } from "interfaces";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import useErrorLogFilter from "./filter/useErrorLogFilters";
+import { ShowFilter } from "./filter";
 
 interface ErrorLogFilterSectionProps {
   filters: BaseFilter & {
@@ -39,41 +38,7 @@ export default function ErrorLogFilterSection({
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const [showFilters, setShowFilters] = React.useState(false);
-
-  const handleSeverityChange = (event: SelectChangeEvent<string>) => {
-    const value = event.target.value;
-    onFilterChange({
-      severity: value === "all" ? null : Number(value),
-    });
-  };
-
-  const handleStatusChange = (event: SelectChangeEvent<string>) => {
-    const value = event.target.value;
-    onFilterChange({
-      status: value === "all" ? null : value === "true",
-    });
-  };
-
-  const handleSortChange = (event: SelectChangeEvent<string>) => {
-    onFilterChange({ sortBy: event.target.value });
-  };
-
-  const handleErrorCodeChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    onFilterChange({ errorCode: event.target.value });
-  };
-
-  const handleResetFilters = () => {
-    onFilterChange({
-      status: null,
-      sortBy: "-createdAt",
-      severity: null,
-      errorCode: "",
-      startCreatedAt: null,
-      endCreatedAt: null,
-    });
-  };
+  const hooks = useErrorLogFilter(onFilterChange);
 
   const toggleFilters = () => {
     setShowFilters(!showFilters);
@@ -94,86 +59,13 @@ export default function ErrorLogFilterSection({
 
   return (
     <Box sx={{ mb: 4 }}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 2,
-        }}
-      >
-        <Button
-          startIcon={<FilterListIcon />}
-          endIcon={
-            activeFilterCount > 0 ? (
-              <Chip
-                label={activeFilterCount}
-                size="small"
-                sx={{
-                  height: 20,
-                  minWidth: 20,
-                  backgroundColor: isDarkMode
-                    ? color.teal700
-                    : color.teal500,
-                  color: "white",
-                }}
-              />
-            ) : null
-          }
-          onClick={toggleFilters}
-          sx={{
-            color: isDarkMode ? color.teal300 : color.teal700,
-            backgroundColor: isDarkMode ? color.gray700 : color.gray100,
-            "&:hover": {
-              backgroundColor: isDarkMode ? color.gray600 : color.gray200,
-            },
-            borderRadius: "8px",
-          }}
-        >
-          {showFilters ? "Hide Filters" : "Show Filters"}
-        </Button>
-
-        <FormControl
-          variant="outlined"
-          size="small"
-          sx={{
-            minWidth: 200,
-            backgroundColor: isDarkMode ? color.gray800 : color.white,
-            borderRadius: "8px",
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: isDarkMode ? color.gray700 : color.gray300,
-            },
-            "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: isDarkMode ? color.teal600 : color.teal400,
-            },
-          }}
-        >
-          <InputLabel
-            id="sort-by-label"
-            sx={{ color: isDarkMode ? color.gray400 : color.gray600 }}
-          >
-            Sort By
-          </InputLabel>
-          <Select
-            labelId="sort-by-label"
-            value={filters.sortBy || "-createdAt"}
-            onChange={handleSortChange}
-            label="Sort By"
-            sx={{
-              color: isDarkMode ? color.gray200 : color.gray800,
-              "& .MuiSelect-icon": {
-                color: isDarkMode ? color.gray400 : color.gray600,
-              },
-            }}
-          >
-            <MenuItem value="-createdAt">Newest First</MenuItem>
-            <MenuItem value="createdAt">Oldest First</MenuItem>
-            <MenuItem value="-updatedAt">Recently Updated</MenuItem>
-            <MenuItem value="updatedAt">Last Updated</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
-
+      <ShowFilter
+        activeFilterCount={activeFilterCount}
+        showFilters={showFilters}
+        toggleFilters={toggleFilters}
+        handleSortChange={hooks.handleSortChange}
+        filters={filters}
+      />
       <Collapse in={showFilters}>
         <Box
           sx={{
@@ -207,11 +99,11 @@ export default function ErrorLogFilterSection({
                 <Select
                   labelId="severity-label"
                   value={
-                    filters.severity !== null &&  filters.severity !== undefined
+                    filters.severity !== null && filters.severity !== undefined
                       ? filters.severity.toString()
                       : "all"
                   }
-                  onChange={handleSeverityChange}
+                  onChange={hooks.handleSeverityChange}
                   label="Severity Level"
                   sx={{
                     color: isDarkMode ? color.gray200 : color.gray800,
@@ -275,7 +167,7 @@ export default function ErrorLogFilterSection({
                       ? filters.status.toString()
                       : "all"
                   }
-                  onChange={handleStatusChange}
+                  onChange={hooks.handleStatusChange}
                   label="Status"
                   sx={{
                     color: isDarkMode ? color.gray200 : color.gray800,
@@ -313,7 +205,7 @@ export default function ErrorLogFilterSection({
                 label="Error Code"
                 variant="outlined"
                 value={filters.errorCode || ""}
-                onChange={handleErrorCodeChange}
+                onChange={hooks.handleErrorCodeChange}
                 InputProps={{
                   sx: {
                     color: isDarkMode ? color.gray200 : color.gray800,
@@ -341,8 +233,8 @@ export default function ErrorLogFilterSection({
                     onChange={(date) => {
                       onFilterChange({ startCreatedAt: date });
                     }}
-                    slotProps={{ 
-                      textField: { 
+                    slotProps={{
+                      textField: {
                         size: 'small',
                         fullWidth: true,
                         sx: {
@@ -358,14 +250,14 @@ export default function ErrorLogFilterSection({
                             color: isDarkMode ? color.gray400 : color.gray600,
                           },
                         }
-                      } 
+                      }
                     }}
                   />
-                  <Box 
-                    sx={{ 
-                      display: "flex", 
-                      alignItems: "center", 
-                      color: isDarkMode ? color.gray500 : color.gray400 
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      color: isDarkMode ? color.gray500 : color.gray400
                     }}
                   >
                     <DateRangeIcon fontSize="small" />
@@ -376,8 +268,8 @@ export default function ErrorLogFilterSection({
                     onChange={(date) => {
                       onFilterChange({ endCreatedAt: date });
                     }}
-                    slotProps={{ 
-                      textField: { 
+                    slotProps={{
+                      textField: {
                         size: 'small',
                         fullWidth: true,
                         sx: {
@@ -393,7 +285,7 @@ export default function ErrorLogFilterSection({
                             color: isDarkMode ? color.gray400 : color.gray600,
                           },
                         }
-                      } 
+                      }
                     }}
                   />
                 </Stack>
@@ -411,7 +303,7 @@ export default function ErrorLogFilterSection({
             <Button
               variant="outlined"
               startIcon={<RestartAltIcon />}
-              onClick={handleResetFilters}
+              onClick={hooks.handleResetFilters}
               sx={{
                 color: isDarkMode ? color.teal300 : color.teal700,
                 borderColor: isDarkMode ? color.teal700 : color.teal300,
@@ -450,13 +342,12 @@ export default function ErrorLogFilterSection({
           </Typography>
           {filters.severity !== null && (
             <Chip
-              label={`Severity: ${
-                filters.severity === SeverityEnum.HIGH
+              label={`Severity: ${filters.severity === SeverityEnum.HIGH
                   ? "High"
                   : filters.severity === SeverityEnum.MEDIUM
-                  ? "Medium"
-                  : "Low"
-              }`}
+                    ? "Medium"
+                    : "Low"
+                }`}
               onDelete={() => onFilterChange({ severity: null })}
               size="small"
               sx={{
@@ -465,13 +356,13 @@ export default function ErrorLogFilterSection({
                   ? filters.severity === SeverityEnum.HIGH
                     ? color.red300
                     : filters.severity === SeverityEnum.MEDIUM
-                    ? color.warning
-                    : color.teal300
+                      ? color.warning
+                      : color.teal300
                   : filters.severity === SeverityEnum.HIGH
-                  ? color.red700
-                  : filters.severity === SeverityEnum.MEDIUM
-                  ? color.warning
-                  : color.teal700,
+                    ? color.red700
+                    : filters.severity === SeverityEnum.MEDIUM
+                      ? color.warning
+                      : color.teal700,
                 "& .MuiChip-deleteIcon": {
                   color: isDarkMode ? color.gray400 : color.gray600,
                   "&:hover": {
@@ -493,8 +384,8 @@ export default function ErrorLogFilterSection({
                     ? color.successDarkMode
                     : color.gray300
                   : filters.status
-                  ? color.success
-                  : color.gray700,
+                    ? color.success
+                    : color.gray700,
                 "& .MuiChip-deleteIcon": {
                   color: isDarkMode ? color.gray400 : color.gray600,
                   "&:hover": {
