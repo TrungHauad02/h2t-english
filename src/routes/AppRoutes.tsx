@@ -9,10 +9,19 @@ const AppRoutes = () => {
       <Route element={<Layouts.StudentLayout />}>
         <Route path="/profile" element={<Pages.StudentProfilePage />} />
         <Route path="/history-test" element={<Pages.ListHistoryTestPage />} />
-        <Route path="/history-test/:type/:id" element={<Pages.HistoryTestPage />} />
-        <Route path="/history-test/toeic/:id" element={<Pages.HistoryToeicPage />} />
-        <Route path="/history-test/:type/:id/review" element={<Pages.ReviewHistoryTestPage />} />
-        
+        <Route
+          path="/history-test/:type/:id"
+          element={<Pages.HistoryTestPage />}
+        />
+        <Route
+          path="/history-test/toeic/:id"
+          element={<Pages.HistoryToeicPage />}
+        />
+        <Route
+          path="/history-test/:type/:id/review"
+          element={<Pages.ReviewHistoryTestPage />}
+        />
+
         <Route path="/login" element={<Pages.LoginPage />} />
         <Route path="/register" element={<Pages.RegisterPage />} />
         <Route path="/forgot-password" element={<Pages.ResetPasswordPage />} />
@@ -30,14 +39,8 @@ const AppRoutes = () => {
         />
         <Route path="/test/:type" element={<Pages.ListTestPage />} />
         <Route path="/test/:type/:id" element={<Pages.TestPage />} />
-        <Route
-          path="/toeic"
-          element={<Pages.LisToeicPage />}
-        />
-        <Route
-          path="/toeic/:id"
-          element={<Pages.ToeicPage />}
-        />
+        <Route path="/toeic" element={<Pages.LisToeicPage />} />
+        <Route path="/toeic/:id" element={<Pages.ToeicPage />} />
       </Route>
       <Route path="/admin" element={<Layouts.AdminLayout />}>
         <Route index element={<Pages.ManageUserPage />} />
@@ -47,10 +50,11 @@ const AppRoutes = () => {
           path="manage-teacher/teacher-advance"
           element={<Pages.ManageTeacherAdvancePage />}
         />
-        <Route path="error-log" element={<Pages.ErrorLogPage />}/>
+        <Route path="error-log" element={<Pages.ErrorLogPage />} />
       </Route>
       <Route path="/teacher" element={<Layouts.TeacherLayout />}>
-        <Route index element={<Pages.ManageRoutePage />} />
+        <Route index element={<Pages.TeacherDashboardPage />} />
+        <Route path="dashboard" element={<Pages.TeacherDashboardPage />} />
         <Route path="routes" element={<Pages.ManageRoutePage />} />
         <Route path="information" element={<Pages.InformationPage />} />
         <Route path="routes/:id" element={<Pages.DetailRoutePage />} />
@@ -78,7 +82,7 @@ const AppRoutes = () => {
           path="routes/:routeId/speakings/:id"
           element={<Pages.SpeakingDetailPage />}
         />
-          <Route
+        <Route
           path="routes/:routeId/test/:type/:id"
           element={<Pages.ReadingTestDetailPage />}
         />
