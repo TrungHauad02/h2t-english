@@ -43,8 +43,9 @@ export { default as ReadingDetailPage } from "features/teacher/manageLesson/page
 export { default as WritingDetailPage } from "features/teacher/manageLesson/pages/WritingDetailPage";
 export { default as ListeningDetailPage } from "features/teacher/manageLesson/pages/ListeningDetailPage";
 export { default as SpeakingDetailPage } from "features/teacher/manageLesson/pages/SpeakingDetailPage";
-export { default as ReadingTestDetailPage } from "features/teacher/manageTest/pages/TestDetailPage";
-
+export { default as TestDetailPage } from "features/teacher/manageTest/pages/TestDetailPage";
+export { default as ManageCompetitionPage } from "features/teacher/manageTest/pages/ManageCompetitionPage";
+export { default as ManageToeicPage } from "features/teacher/manageTest/pages/ManageToeicPage";
 // Admin Pages
 export { default as ManageUserPage } from "features/admin/pages/ManageUsersPage";
 export { default as ManageStudentPage } from "features/admin/pages/ManageStudentsPage";
