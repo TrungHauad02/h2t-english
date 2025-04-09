@@ -1,4 +1,3 @@
-import React from "react";
 import { TableCell, TableRow, Box, Typography } from "@mui/material";
 import BugReportOutlinedIcon from "@mui/icons-material/BugReportOutlined";
 import { useDarkMode } from "hooks/useDarkMode";

@@ -15,17 +15,11 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { ErrorLog } from "interfaces";
-import {
-  ErrorLogTableHead,
-  ErrorLogTableRow,
-  ErrorLogDetailsDialog,
-  ErrorLogEmptyState,
-} from "./table";
+import { ErrorLogTableHead, ErrorLogTableRow, ErrorLogDetailsDialog, ErrorLogEmptyState } from "./table";
 import useErrorLog from "./useErrorLogTable";
 
 interface ErrorLogTableProps {
@@ -114,24 +108,6 @@ export default function ErrorLogTable({
                 )}
               </Typography>
               <Box sx={{ display: "flex", gap: 1 }}>
-                <Tooltip title="Filter logs">
-                  <IconButton
-                    size="small"
-                    sx={{
-                      backgroundColor: isDarkMode
-                        ? color.gray800
-                        : color.gray100,
-                      color: isDarkMode ? color.gray300 : color.gray700,
-                      "&:hover": {
-                        backgroundColor: isDarkMode
-                          ? color.gray700
-                          : color.gray200,
-                      },
-                    }}
-                  >
-                    <FilterListIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
                 <Tooltip title="Refresh logs">
                   <IconButton
                     size="small"

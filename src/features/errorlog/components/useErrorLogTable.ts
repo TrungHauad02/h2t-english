@@ -1,4 +1,3 @@
-// hooks/useErrorLog.ts
 import { ErrorLog } from "interfaces";
 import { useCallback, useState } from "react";
 
