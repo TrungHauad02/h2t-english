@@ -5,10 +5,10 @@ import { useParams } from "react-router-dom";
 import { lessonService } from "../services/lessonService";
 import {
   Grammar,
+  Lesson,
   Listening,
   Reading,
   Speaking,
-  Topic,
   Writing,
 } from "interfaces";
 import {
@@ -20,22 +20,38 @@ import {
   WritingLesson,
   Introduction,
 } from "../components";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export default function LessonPage() {
   const { type, id } = useParams();
-  const lesson:
-    | Topic
-    | Grammar
-    | Reading
-    | Speaking
-    | Listening
-    | Writing
-    | undefined = lessonService.getLessonById(type ?? "", Number(id) || 0);
-  const siteInfo: SiteInfo = {
-    bgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/englishweb-5a6ce.appspot.com/o/static%2Fbg_vocabulary.png?alt=media",
-    title: lesson?.title || "",
-  };
+  const [lesson, setLesson] = useState<Lesson | null>();
+  const [siteInfo, setSiteInfo] = useState<SiteInfo>({
+    bgUrl: "",
+    title: "",
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (id && type) {
+        try {
+          const resData = await lessonService.findLessonById(
+            parseInt(id),
+            type
+          );
+          setLesson(resData.data);
+          setSiteInfo({
+            bgUrl: resData.data.image,
+            title: resData.data.title,
+          });
+        } catch (error) {
+          toast.error("Fail to fetch data");
+        }
+      }
+    };
+    fetchData();
+  }, [id, type]);
+
   const renderLesson = () => {
     if (!lesson) return null;
 

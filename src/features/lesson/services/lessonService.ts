@@ -1,33 +1,27 @@
-import {
-  Grammar,
-  Listening,
-  Reading,
-  Speaking,
-  Topic,
-  Writing,
-} from "interfaces";
 import { mockData } from "features/listLesson/services/mockData";
+import {
+  grammarService,
+  listeningService,
+  readingService,
+  speakingService,
+  topicService,
+  writingService,
+} from "services";
 
-const getLessonById = (
-  type: string,
-  id: number
-): Topic | Grammar | Reading | Speaking | Listening | Writing | undefined => {
+const findLessonById = async (id: number, type: string) => {
   switch (type) {
     case "topics":
-      return mockData.topics.find((item) => item.id === id);
+      return await topicService.findById(id);
     case "grammars":
-      return mockData.grammars.find((item) => item.id === id);
+      return await grammarService.findById(id);
     case "readings":
-      return mockData.readings.find((item) => item.id === id);
+      return await readingService.findById(id);
     case "speakings":
-      return mockData.speakings.find((item) => item.id === id);
+      return await speakingService.findById(id);
     case "listenings":
-      return mockData.listenings.find((item) => item.id === id);
-    case "writings":
-      return mockData.writings.find((item) => item.id === id);
-
+      return await listeningService.findById(id);
     default:
-      return undefined;
+      return await writingService.findById(id);
   }
 };
 
@@ -36,6 +30,6 @@ const getVocabularyByTopicId = (topicId: number) => {
 };
 
 export const lessonService = {
-  getLessonById,
   getVocabularyByTopicId,
+  findLessonById,
 };
