@@ -4,10 +4,11 @@ import { useParams } from "react-router-dom";
 import VocabularyCard from "./VocabularyCard";
 import { WEPaginationSelect } from "components/pagination";
 import { useState } from "react";
+import { Vocabulary } from "interfaces";
 
 export default function FlashcardSection() {
   const { id } = useParams();
-  const listVocab = lessonService.getVocabularyByTopicId(Number(id) || 0);
+  const [listVocab, setListVocab] = useState<Vocabulary[]>([]);
   const [page, setPage] = useState(1);
   const [lessonsPerPage, setLessonsPerPage] = useState(8);
 

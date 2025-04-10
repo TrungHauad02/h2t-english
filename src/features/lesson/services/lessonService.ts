@@ -1,4 +1,3 @@
-import { mockData } from "features/listLesson/services/mockData";
 import {
   grammarService,
   listeningService,
@@ -25,11 +24,6 @@ const findLessonById = async (id: number, type: string) => {
   }
 };
 
-const getVocabularyByTopicId = (topicId: number) => {
-  return mockData.listVocabulary.filter((item) => item.topicId === topicId);
-};
-
 export const lessonService = {
-  getVocabularyByTopicId,
   findLessonById,
 };
