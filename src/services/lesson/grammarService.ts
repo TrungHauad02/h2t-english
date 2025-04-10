@@ -2,6 +2,18 @@ import { Grammar } from "interfaces";
 import apiClient from "services/apiClient";
 import { base64ToBlobUrl } from "utils/convert";
 
+const getLessonsForStudent = async (page: number, itemsPerPage: number) => {
+  try {
+    const response = await apiClient.get(
+      `/grammars?page=${page - 1}&size=${itemsPerPage}&status=true`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error getting grammars:", error);
+    throw error;
+  }
+};
+
 const findById = async (id: number) => {
   try {
     const response = await apiClient.get(`/grammars/${id}`);
@@ -62,4 +74,5 @@ export const grammarService = {
   update,
   patch,
   verify,
+  getLessonsForStudent,
 };

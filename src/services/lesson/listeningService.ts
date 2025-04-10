@@ -1,6 +1,18 @@
 import { Listening } from "interfaces";
 import apiClient from "services/apiClient";
 
+const getLessonsForStudent = async (page: number, itemsPerPage: number) => {
+  try {
+    const response = await apiClient.get(
+      `/listenings?page=${page - 1}&size=${itemsPerPage}&status=true`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error getting listenings:", error);
+    throw error;
+  }
+};
+
 const findById = async (id: number) => {
   try {
     const response = await apiClient.get(`/listenings/${id}`);
@@ -57,4 +69,5 @@ export const listeningService = {
   update,
   patch,
   verify,
+  getLessonsForStudent,
 };
