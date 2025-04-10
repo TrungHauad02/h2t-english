@@ -1,15 +1,9 @@
-import React, { useState } from "react";
-import { 
-  Paper, 
-  InputBase, 
-  IconButton, 
-  Box,
-  Zoom
-} from "@mui/material";
+import { Paper,  InputBase,  IconButton,  Box, Zoom } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
+import useErrorLogSearchBar from "./useErrorLogSearchBar";
 
 interface ErrorLogSearchBarProps {
   onSearch: (query: string) => void;
@@ -18,27 +12,13 @@ interface ErrorLogSearchBarProps {
 export default function ErrorLogSearchBar({ onSearch }: ErrorLogSearchBarProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const [searchValue, setSearchValue] = useState("");
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(e.target.value);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSearch(searchValue);
-  };
-
-  const handleClear = () => {
-    setSearchValue("");
-    onSearch("");
-  };
+  const hooks = useErrorLogSearchBar(onSearch);
 
   return (
     <Box sx={{ mb: 3, width: "100%" }}>
       <Paper
         component="form"
-        onSubmit={handleSubmit}
+        onSubmit={hooks.handleSubmit}
         sx={{
           p: "2px 8px",
           display: "flex",
@@ -85,15 +65,15 @@ export default function ErrorLogSearchBar({ onSearch }: ErrorLogSearchBarProps) 
             },
           }}
           placeholder="Search by error code or message..."
-          value={searchValue}
-          onChange={handleSearchChange}
+          value={hooks.searchValue}
+          onChange={hooks.handleSearchChange}
           inputProps={{ "aria-label": "search error logs" }}
         />
-        <Zoom in={searchValue.length > 0}>
+        <Zoom in={hooks.searchValue.length > 0}>
           <IconButton 
-            onClick={handleClear}
+            onClick={hooks.handleClear}
             sx={{ 
-              visibility: searchValue ? "visible" : "hidden",
+              visibility: hooks.searchValue ? "visible" : "hidden",
               color: isDarkMode ? color.gray400 : color.gray600,
               "&:hover": {
                 color: isDarkMode ? color.gray200 : color.gray800,
