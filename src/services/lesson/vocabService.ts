@@ -10,7 +10,7 @@ const findVocabByTopicId = async (
   try {
     const url = `/vocabularies?page=${
       page - 1
-    }&itemsPerPage=${itemsPerPage}&topicId=${topicId}`;
+    }&size=${itemsPerPage}&topicId=${topicId}`;
 
     const response = await apiClient.get(url);
     return response.data;

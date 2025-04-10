@@ -1,16 +1,38 @@
 import { Box, Grid } from "@mui/material";
-import { lessonService } from "features/lesson/services/lessonService";
 import { useParams } from "react-router-dom";
 import VocabularyCard from "./VocabularyCard";
 import { WEPaginationSelect } from "components/pagination";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Vocabulary } from "interfaces";
+import { vocabService } from "services";
+import { toast } from "react-toastify";
 
 export default function FlashcardSection() {
   const { id } = useParams();
   const [listVocab, setListVocab] = useState<Vocabulary[]>([]);
   const [page, setPage] = useState(1);
-  const [lessonsPerPage, setLessonsPerPage] = useState(8);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [totalPage, setTotalPage] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (id) {
+        try {
+          const resData = await vocabService.findVocabByTopicId(
+            page,
+            itemsPerPage,
+            parseInt(id),
+            { status: true }
+          );
+          setListVocab(resData.data.content);
+          setTotalPage(resData.data.totalPages);
+        } catch (error) {
+          toast.error("Fetch data fail");
+        }
+      }
+    };
+    fetchData();
+  }, [id, page, itemsPerPage]);
 
   const handleChangePage = (
     event: React.ChangeEvent<unknown>,
@@ -19,20 +41,15 @@ export default function FlashcardSection() {
     setPage(value);
   };
 
-  const handleLessonsPerPageChange = (value: string | number) => {
-    setLessonsPerPage(value as number);
+  const handleItemsPerPageChange = (value: string | number) => {
+    setItemsPerPage(value as number);
     setPage(1);
   };
-
-  const paginatedLessons = listVocab.slice(
-    (page - 1) * lessonsPerPage,
-    page * lessonsPerPage
-  );
 
   return (
     <Box sx={{ mx: 2 }}>
       <Grid container direction={"row"}>
-        {paginatedLessons.map((vocab) => (
+        {listVocab.map((vocab) => (
           <Grid xs={12} sm={6} md={4} lg={3}>
             <VocabularyCard vocab={vocab} />
           </Grid>
@@ -40,10 +57,10 @@ export default function FlashcardSection() {
       </Grid>
       <WEPaginationSelect
         page={page}
-        totalPage={Math.ceil(listVocab.length / lessonsPerPage)}
-        itemsPerPage={lessonsPerPage}
+        totalPage={totalPage}
+        itemsPerPage={itemsPerPage}
         onPageChange={handleChangePage}
-        onItemsPerPageChange={handleLessonsPerPageChange}
+        onItemsPerPageChange={handleItemsPerPageChange}
       />
     </Box>
   );
