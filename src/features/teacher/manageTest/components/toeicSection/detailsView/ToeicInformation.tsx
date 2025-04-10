@@ -3,18 +3,16 @@ import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday"; // Changed from EventIcon
-import UpdateIcon from "@mui/icons-material/Update"; // Changed from EventIcon for end time
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import UpdateIcon from "@mui/icons-material/Update";
 import { formatDate } from "utils/format";
-import { CompetitionTest } from "interfaces";
+import { Toeic } from "interfaces";
 
-interface CompetitionInformationProps {
-  data: CompetitionTest;
+interface ToeicInformationProps {
+  data: Toeic;
 }
 
-export default function CompetitionInformation({ data }: CompetitionInformationProps) {
+export default function ToeicInformation({ data }: ToeicInformationProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
@@ -75,28 +73,7 @@ export default function CompetitionInformation({ data }: CompetitionInformationP
         </Box>
       </Box>
       <Stack spacing={2} sx={{ p: 3 }}>
-        {/* Questions */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            p: 1.5,
-            bgcolor: isDarkMode ? color.gray800 : color.teal50,
-            borderRadius: 2,
-          }}
-        >
-          <HelpOutlineIcon sx={{ mr: 1.5, color: accentColor }} />
-          <Typography
-            variant="body2"
-            sx={{
-              color: secondaryTextColor,
-              fontWeight: "medium",
-            }}
-          >
-            <strong>{data.totalQuestions || "Multiple"}</strong> Questions
-          </Typography>
-        </Box>
-
+       
         <Box
           sx={{
             display: "flex",
@@ -114,7 +91,7 @@ export default function CompetitionInformation({ data }: CompetitionInformationP
               fontWeight: "medium",
             }}
           >
-          Created: {data.createdAt ? formatDate(data.createdAt) : "Not set"}
+            Created: {data.createdAt ? formatDate(data.createdAt) : "Not set"}
           </Typography>
         </Box>
 
@@ -135,7 +112,7 @@ export default function CompetitionInformation({ data }: CompetitionInformationP
               fontWeight: "medium",
             }}
           >
-            Updated: {data.endTime ? formatDate(data.updatedAt) : "Not set"}
+            Updated: {data.updatedAt ? formatDate(data.updatedAt) : "Not set"}
           </Typography>
         </Box>
 
