@@ -51,7 +51,7 @@ export default function PublishActions({
         }}
         onClick={status ? onUnpublish : onPublish}
       >
-        {status ? "Deactivate this lesson" : "Activate this lesson"}
+        {status ? "Deactivate this Toeic" : "Activate this Toeic"}
       </Button>
     </Box>
   );

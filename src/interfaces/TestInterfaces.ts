@@ -121,7 +121,7 @@ export interface ToeicPart3_4 extends BaseEntity {
   answer1Q2: string;
   answer2Q2: string;
   answer3Q2: string;
-  answer4Q: string;
+  answer4Q2: string;
 
   answer1Q3: string;
   answer2Q3: string;

@@ -10,10 +10,6 @@ export default interface BaseEntity {
   updatedAt?: Date;
 }
 
-export enum StatusEnum {
-  ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE",
-}
 
 export type QuestionSupportType =
   | "topics"
