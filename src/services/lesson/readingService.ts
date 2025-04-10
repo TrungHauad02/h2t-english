@@ -1,6 +1,18 @@
 import { Reading } from "interfaces";
 import apiClient from "services/apiClient";
 
+const getLessonsForStudent = async (page: number, itemsPerPage: number) => {
+  try {
+    const response = await apiClient.get(
+      `/readings?page=${page - 1}&size=${itemsPerPage}&status=true`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error getting readings:", error);
+    throw error;
+  }
+};
+
 const findById = async (id: number) => {
   try {
     const response = await apiClient.get(`/readings/${id}`);
@@ -57,4 +69,5 @@ export const readingService = {
   update,
   patch,
   verify,
+  getLessonsForStudent,
 };

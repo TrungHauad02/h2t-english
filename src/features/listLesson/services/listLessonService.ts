@@ -1,19 +1,30 @@
-import { mockData } from "./mockData";
+import {
+  grammarService,
+  listeningService,
+  readingService,
+  speakingService,
+  topicService,
+  writingService,
+} from "services";
 
-const getListLessonByType = (type: string) => {
+const getListLessonByType = async (
+  type: string,
+  page: number,
+  itemsPerPage: number
+) => {
   switch (type) {
     case "topics":
-      return mockData.topics;
+      return await topicService.getLessonsForStudent(page, itemsPerPage);
     case "grammars":
-      return mockData.grammars;
+      return await grammarService.getLessonsForStudent(page, itemsPerPage);
     case "readings":
-      return mockData.readings;
+      return await readingService.getLessonsForStudent(page, itemsPerPage);
     case "speakings":
-      return mockData.speakings;
+      return speakingService.getLessonsForStudent(page, itemsPerPage);
     case "listenings":
-      return mockData.listenings;
+      return listeningService.getLessonsForStudent(page, itemsPerPage);
     default:
-      return mockData.writings;
+      return writingService.getLessonsForStudent(page, itemsPerPage);
   }
 };
 

@@ -2,6 +2,18 @@ import { Topic } from "interfaces";
 import apiClient from "services/apiClient";
 import { base64ToBlobUrl } from "utils/convert";
 
+const getLessonsForStudent = async (page: number, itemsPerPage: number) => {
+  try {
+    const response = await apiClient.get(
+      `/topics?page=${page - 1}&size=${itemsPerPage}&status=true`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error getting topics:", error);
+    throw error;
+  }
+};
+
 const findById = async (id: number) => {
   try {
     const response = await apiClient.get(`/topics/${id}`);
@@ -62,4 +74,5 @@ export const topicService = {
   update,
   patch,
   verify,
+  getLessonsForStudent,
 };
