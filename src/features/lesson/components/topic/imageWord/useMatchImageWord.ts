@@ -1,6 +1,8 @@
-import { lessonService } from "features/lesson/services/lessonService";
-import { useState } from "react";
+import { Vocabulary } from "interfaces";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { vocabService } from "services";
 import { shuffleArray } from "utils/shuffleArray";
 
 export interface ImageWord {
@@ -10,7 +12,7 @@ export interface ImageWord {
 
 export default function useMatchImageWord() {
   const { id } = useParams();
-  const listVocab = lessonService.getVocabularyByTopicId(Number(id) || 0);
+  const [listVocab, setListVocab] = useState<Vocabulary[]>([]);
 
   // Lưu danh sách từ được hiển thị (các từ chưa được ghép vào hình ảnh) và trộn ngẫu nhiên
   const [displayWord, setDisplayWord] = useState<string[]>(
@@ -27,6 +29,29 @@ export default function useMatchImageWord() {
   const [isShowExplain, setIsShowExplain] = useState(false);
   const [isShowConfirm, setIsShowConfirm] = useState(false);
   const [isShowScoreDialog, setIsShowScoreDialog] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (id) {
+        try {
+          const resData = await vocabService.findVocabByTopicId(
+            1,
+            8,
+            parseInt(id),
+            { status: true }
+          );
+          setListVocab(resData.data.content);
+        } catch (error) {
+          toast.error("Error when fetch vocab data");
+        }
+      }
+    };
+    fetchData();
+  }, [id]);
+
+  useEffect(() => {
+    setDisplayWord(shuffleArray(listVocab.map((item) => item.word)));
+  }, [listVocab]);
 
   const onSelectWord = (word: string) => {
     console.log(word);
