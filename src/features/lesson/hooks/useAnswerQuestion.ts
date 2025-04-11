@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { aqService } from "../services/aqService";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAnswers } from "../../../redux/slices/aqSlice";
-import { LessonQuestion } from "interfaces";
+import { LessonQuestion, QuestionSupportType } from "interfaces";
 import { RootState } from "../../../redux/type";
+import { aqService } from "services";
+
+const VALID_TYPES: QuestionSupportType[] = [
+  "topics",
+  "grammars",
+  "listenings",
+  "readings",
+];
 
 export default function useAnswerQuestion() {
   const { id, type } = useParams();
   const dispatch = useDispatch();
-  const listAQ: LessonQuestion[] = aqService.getQuestionByLessonId(
-    id ?? "",
-    type ?? ""
-  );
+  const [listAQ, setListAQ] = useState<LessonQuestion[]>([]);
   const selectedAnswers = useSelector(
     (state: RootState) => state.aq.selectedAnswers
   );
@@ -20,6 +24,24 @@ export default function useAnswerQuestion() {
   const [isShowExplain, setIsShowExplain] = useState(false);
   const [isShowConfirm, setIsShowConfirm] = useState(false);
   const [isShowScoreDialog, setIsShowScoreDialog] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (id && type && VALID_TYPES.includes(type as QuestionSupportType)) {
+        try {
+          const resData = await aqService.findByLessonId(
+            parseInt(id),
+            type as QuestionSupportType,
+            true
+          );
+          setListAQ(resData.data);
+        } catch (error) {
+          console.error("Error fetching topics");
+        }
+      }
+    };
+    fetchData();
+  }, [id, type]);
 
   useEffect(() => {
     dispatch(clearAnswers());

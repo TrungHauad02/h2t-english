@@ -1,11 +1,17 @@
 import { LessonQuestion, QuestionSupportType } from "interfaces";
 import apiClient from "services/apiClient";
 
-const findByLessonId = async (lessonId: number, type: QuestionSupportType) => {
+const findByLessonId = async (
+  lessonId: number,
+  type: QuestionSupportType,
+  status?: boolean
+) => {
   try {
-    const response = await apiClient.get(
-      `/${type}/questions?lessonId=${lessonId}`
-    );
+    let url = `/${type}/questions?lessonId=${lessonId}`;
+    if (status !== undefined) {
+      url += `&status=${status}`;
+    }
+    const response = await apiClient.get(url);
     return response.data;
   } catch (error) {
     console.error("Error getting question by lesson id:", error);
