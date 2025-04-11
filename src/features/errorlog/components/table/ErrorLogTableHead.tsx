@@ -1,4 +1,3 @@
-import React from "react";
 import { TableCell, TableHead, TableRow } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";

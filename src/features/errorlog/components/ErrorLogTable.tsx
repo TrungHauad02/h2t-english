@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -16,17 +15,12 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { ErrorLog } from "interfaces";
-import {
-  ErrorLogTableHead,
-  ErrorLogTableRow,
-  ErrorLogDetailsDialog,
-  ErrorLogEmptyState,
-} from "./table";
+import { ErrorLogTableHead, ErrorLogTableRow, ErrorLogDetailsDialog, ErrorLogEmptyState } from "./table";
+import useErrorLog from "./useErrorLogTable";
 
 interface ErrorLogTableProps {
   errorLogs: ErrorLog[];
@@ -41,21 +35,7 @@ export default function ErrorLogTable({
   const { isDarkMode } = useDarkMode();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
-  // State for the details dialog
-  const [selectedLog, setSelectedLog] = useState<ErrorLog | null>(null);
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
-
-  // Handler for opening the details dialog
-  const handleViewDetails = (log: ErrorLog) => {
-    setSelectedLog(log);
-    setOpenDialog(true);
-  };
-
-  // Handler for closing the details dialog
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
+  const hooks = useErrorLog();
 
   // Get high severity error count
   const highSeverityCount = errorLogs.filter(
@@ -128,24 +108,6 @@ export default function ErrorLogTable({
                 )}
               </Typography>
               <Box sx={{ display: "flex", gap: 1 }}>
-                <Tooltip title="Filter logs">
-                  <IconButton
-                    size="small"
-                    sx={{
-                      backgroundColor: isDarkMode
-                        ? color.gray800
-                        : color.gray100,
-                      color: isDarkMode ? color.gray300 : color.gray700,
-                      "&:hover": {
-                        backgroundColor: isDarkMode
-                          ? color.gray700
-                          : color.gray200,
-                      },
-                    }}
-                  >
-                    <FilterListIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
                 <Tooltip title="Refresh logs">
                   <IconButton
                     size="small"
@@ -204,7 +166,7 @@ export default function ErrorLogTable({
                   <ErrorLogTableRow
                     key={log.id}
                     log={log}
-                    onViewDetails={() => handleViewDetails(log)}
+                    onViewDetails={() => hooks.handleViewDetails(log)}
                   />
                 ))
               )}
@@ -214,9 +176,12 @@ export default function ErrorLogTable({
 
         {/* Error Log Details Dialog */}
         <ErrorLogDetailsDialog
-          open={openDialog}
-          log={selectedLog}
-          onClose={handleCloseDialog}
+          open={hooks.openDialog}
+          log={hooks.selectedLog}
+          onClose={hooks.handleCloseDialog}
+          onMarkResolved={(log) => {
+            hooks.handleMarkResolved()
+          }}
         />
       </Card>
     </Fade>

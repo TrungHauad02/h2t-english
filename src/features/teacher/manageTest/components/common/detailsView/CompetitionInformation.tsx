@@ -97,7 +97,6 @@ export default function CompetitionInformation({ data }: CompetitionInformationP
           </Typography>
         </Box>
 
-        {/* Start Time */}
         <Box
           sx={{
             display: "flex",
@@ -115,11 +114,10 @@ export default function CompetitionInformation({ data }: CompetitionInformationP
               fontWeight: "medium",
             }}
           >
-            Start: {data.startTime ? formatDate(data.startTime) : "Not set"}
+          Created: {data.createdAt ? formatDate(data.createdAt) : "Not set"}
           </Typography>
         </Box>
 
-        {/* End Time */}
         <Box
           sx={{
             display: "flex",
@@ -137,7 +135,7 @@ export default function CompetitionInformation({ data }: CompetitionInformationP
               fontWeight: "medium",
             }}
           >
-            End: {data.endTime ? formatDate(data.endTime) : "Not set"}
+            Updated: {data.endTime ? formatDate(data.updatedAt) : "Not set"}
           </Typography>
         </Box>
 
