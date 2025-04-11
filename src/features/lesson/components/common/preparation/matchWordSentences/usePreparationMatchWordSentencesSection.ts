@@ -1,5 +1,7 @@
 import { PreparationMatchWordSentences } from "interfaces";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { preparationMatchWordSentencesService } from "services";
 import { shuffleArray } from "utils/shuffleArray";
 
 interface SentenceWord {
@@ -8,63 +10,10 @@ interface SentenceWord {
   sentence: string;
 }
 
-export default function usePreparationMatchWordSentencesSection() {
-  const data: PreparationMatchWordSentences[] = [
-    {
-      id: 1,
-      status: true,
-      word: "apple",
-      sentence: "I like to eat an apple a day.",
-    },
-    {
-      id: 2,
-      status: true,
-      word: "banana",
-      sentence: "I like to eat a banana a day.",
-    },
-    {
-      id: 3,
-      status: true,
-      word: "cherry",
-      sentence: "I like to eat a cherry a day.",
-    },
-    {
-      id: 4,
-      status: true,
-      word: "date",
-      sentence: "I like to eat a date a day.",
-    },
-    {
-      id: 5,
-      status: true,
-      word: "elderberry",
-      sentence: "I like to eat an elderberry a day.",
-    },
-    {
-      id: 6,
-      status: true,
-      word: "fig",
-      sentence: "I like to eat a fig a day.",
-    },
-    {
-      id: 7,
-      status: true,
-      word: "grape",
-      sentence: "I like to eat a grape a day.",
-    },
-    {
-      id: 8,
-      status: true,
-      word: "honeydew",
-      sentence: "I like to eat a honeydew a day.",
-    },
-    {
-      id: 9,
-      status: true,
-      word: "kiwi",
-      sentence: "I like to eat a kiwi a day.",
-    },
-  ];
+export default function usePreparationMatchWordSentencesSection(
+  questions: number[]
+) {
+  const [data, setData] = useState<PreparationMatchWordSentences[]>([]);
 
   const [words, setWords] = useState<string[]>([]);
   const [sentences, setSentences] = useState<SentenceWord[]>([]);
@@ -78,9 +27,32 @@ export default function usePreparationMatchWordSentencesSection() {
   const [isShowScoreDialog, setIsShowScoreDialog] = useState(false);
 
   useEffect(() => {
+    const fetchData = async () => {
+      if (questions.length > 0) {
+        try {
+          const promises = questions.map((questionId) =>
+            preparationMatchWordSentencesService.findById(questionId)
+          );
+          const responses = await Promise.all(promises);
+
+          const validData = responses
+            .filter(
+              (response) => response.status === "SUCCESS" && response.data
+            )
+            .map((response) => response.data);
+          setData(validData);
+        } catch (error) {
+          toast.error("Error fetching preparation data");
+        }
+      }
+    };
+    fetchData();
+  }, [questions]);
+
+  useEffect(() => {
     resetState();
     setNumberOfItems(data.length);
-  }, []);
+  }, [data]);
 
   const onSelectItem = (item: string) => {
     if (item === selectedItem) {

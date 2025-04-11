@@ -6,11 +6,15 @@ import usePreparationClassifySection from "./usePreparationClassifySection";
 import WEActionButtons from "components/input/WEActionButtons";
 import { WEConfirmDialog, WEScoreDialog } from "components/display";
 
-export default function PreparationClassifySection() {
+export default function PreparationClassifySection({
+  questions,
+}: {
+  questions: number[];
+}) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
-  const hooks = usePreparationClassifySection();
+  const hooks = usePreparationClassifySection(questions);
 
   return (
     <Stack sx={{ mt: 1 }}>
