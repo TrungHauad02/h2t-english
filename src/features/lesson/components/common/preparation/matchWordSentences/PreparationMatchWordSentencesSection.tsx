@@ -6,11 +6,15 @@ import WordItem from "../WordItem";
 import WEActionButtons from "components/input/WEActionButtons";
 import { WEConfirmDialog, WEScoreDialog } from "components/display";
 
-export default function PreparationMatchWordSentencesSection() {
+export default function PreparationMatchWordSentencesSection({
+  questions,
+}: {
+  questions: number[];
+}) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
-  const hooks = usePreparationMatchWordSentencesSection();
+  const hooks = usePreparationMatchWordSentencesSection(questions);
 
   return (
     <Stack sx={{ mt: 1 }}>

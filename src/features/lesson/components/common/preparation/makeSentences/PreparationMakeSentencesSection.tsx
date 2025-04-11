@@ -8,11 +8,15 @@ import WEActionButtons from "components/input/WEActionButtons";
 import { WEConfirmDialog, WEScoreDialog } from "components/display";
 import { CircleRounded } from "@mui/icons-material";
 
-export default function PreparationMakeSentencesSection() {
+export default function PreparationMakeSentencesSection({
+  questions,
+}: {
+  questions: number[];
+}) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
-  const hooks = usePreparationMakeSentences();
+  const hooks = usePreparationMakeSentences(questions);
 
   return (
     <Stack sx={{ mt: 1 }}>

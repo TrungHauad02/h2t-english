@@ -9,7 +9,7 @@ export default function SpeakingLesson({ lesson }: { lesson: Speaking }) {
   return (
     <Box sx={{ mx: 8, my: 4 }}>
       <CollapsibleSection text="Speaking Preparation">
-        <PreparationSection />
+        <PreparationSection preparationId={lesson.preparationId} />
       </CollapsibleSection>
       <CollapsibleSection text="Speaking Conversation">
         <ConversationSection />

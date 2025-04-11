@@ -14,7 +14,7 @@ export default function WritingLesson({ lesson }: { lesson: Writing }) {
   return (
     <Box sx={{ mx: 8, my: 4 }}>
       <CollapsibleSection text="Writing Preparation">
-        <PreparationSection />
+        <PreparationSection preparationId={lesson.preparationId} />
       </CollapsibleSection>
       <CollapsibleSection text="Writing Document">
         <WEDocumentViewer fileUrl={lesson.file} lineHeight="2" sx={{ my: 2 }} />

@@ -1,5 +1,7 @@
 import { PreparationClassify } from "interfaces";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
+import { preparationClassifyService } from "services";
 import { shuffleArray } from "utils/shuffleArray";
 
 interface GroupClassify {
@@ -8,45 +10,8 @@ interface GroupClassify {
   members: string[];
 }
 
-export default function usePreparationClassifySection() {
-  const data: PreparationClassify[] = useMemo(
-    () => [
-      {
-        id: 1,
-        groupName: "Fruits",
-        members: [
-          "Apple",
-          "Banana",
-          "Orange",
-          "Grapes",
-          "Strawberry",
-          "Pineapple",
-          "Watermelon",
-          "Mango",
-          "Kiwi",
-        ],
-        status: true,
-      },
-      {
-        id: 2,
-        groupName: "Vegetables",
-        members: [
-          "Carrot",
-          "Broccoli",
-          "Spinach",
-          "Tomato",
-          "Cucumber",
-          "Bell Pepper",
-          "Potato",
-          "Onion",
-          "Lettuce",
-          "Zucchini",
-        ],
-        status: true,
-      },
-    ],
-    []
-  );
+export default function usePreparationClassifySection(questions: number[]) {
+  const [data, setData] = useState<PreparationClassify[]>([]);
 
   const [members, setMembers] = useState<string[]>([]);
   const [groups, setGroups] = useState<GroupClassify[]>([]);
@@ -62,8 +27,31 @@ export default function usePreparationClassifySection() {
   }, [data]);
 
   useEffect(() => {
+    const fetchData = async () => {
+      if (questions.length > 0) {
+        try {
+          const promises = questions.map((questionId) =>
+            preparationClassifyService.findById(questionId)
+          );
+          const responses = await Promise.all(promises);
+
+          const validData = responses
+            .filter(
+              (response) => response.status === "SUCCESS" && response.data
+            )
+            .map((response) => response.data);
+          setData(validData);
+        } catch (error) {
+          toast.error("Error fetching preparation data");
+        }
+      }
+    };
+    fetchData();
+  }, [questions]);
+
+  useEffect(() => {
     resetState();
-  }, []);
+  }, [data]);
 
   const resetMember = () => {
     let allMembers: string[] = [];

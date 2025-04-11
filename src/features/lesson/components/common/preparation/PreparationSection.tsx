@@ -1,26 +1,57 @@
 import { Box, Typography } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
-import { Preparation, PreparationType } from "interfaces";
+import { Preparation } from "interfaces";
 import useColor from "theme/useColor";
 import PreparationMakeSentencesSection from "./makeSentences/PreparationMakeSentencesSection";
+import { useEffect, useState } from "react";
+import { preparationService } from "services";
+import { toast } from "react-toastify";
+import PreparationMatchWordSentencesSection from "./matchWordSentences/PreparationMatchWordSentencesSection";
+import PreparationClassifySection from "./classify/PreparationClassifySection";
 
-export default function PreparationSection() {
+export default function PreparationSection({
+  preparationId,
+}: {
+  preparationId: number | null;
+}) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const [data, setData] = useState<Preparation | null>();
 
-  const data: Preparation = {
-    id: 1,
-    questions: [1],
-    status: true,
-    tip: "This is tip for studying",
-    title: "Preparation Classify",
-    type: PreparationType.CLASSIFY,
+  useEffect(() => {
+    const fetchData = async () => {
+      if (preparationId) {
+        try {
+          const resData = await preparationService.findById(preparationId);
+          setData(resData.data);
+        } catch (error) {
+          toast.error("Error fetching preparation data");
+        }
+      }
+    };
+    fetchData();
+  }, [preparationId]);
+
+  const renderPreparation = () => {
+    if (!data) return <></>;
+    switch (data?.type) {
+      case "MATCH_WORD_WITH_SENTENCES":
+        return (
+          <PreparationMatchWordSentencesSection questions={data.questions} />
+        );
+      case "WORDS_MAKE_SENTENCES":
+        return <PreparationMakeSentencesSection questions={data.questions} />;
+      default:
+        return <PreparationClassifySection questions={data.questions} />;
+    }
   };
 
   const backgroundColor = isDarkMode ? color.gray800 : color.gray50;
   const titleColor = isDarkMode ? color.teal300 : color.teal500;
   const tipColor = isDarkMode ? color.gray100 : color.gray700;
   const borderColor = isDarkMode ? color.gray700 : color.gray300;
+
+  if (!data) return <></>;
 
   return (
     <Box
@@ -51,7 +82,7 @@ export default function PreparationSection() {
         {data.tip}
       </Typography>
 
-      <PreparationMakeSentencesSection />
+      {renderPreparation()}
     </Box>
   );
 }
