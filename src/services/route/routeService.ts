@@ -1,6 +1,6 @@
 import { Route, RouteFilter } from "interfaces";
 import apiClient from "services/apiClient";
-import { base64ToBlobUrl } from "utils/convert";
+import { fileHandlerService } from "services/features/fileHandlerService";
 
 const getRoutesForStudent = async (
   page: number,
@@ -107,12 +107,18 @@ const getRoutesByTeacherId = async (
 
 const create = async (routeData: Route) => {
   try {
-    const data = {
+    // Use fileHandlerService to upload image
+    const fileResult = await fileHandlerService.handleFileUpdate({
+      base64: routeData.image,
+      path: "route",
+      randomName: "YES",
+      fileName: routeData.id.toString(),
+    });
+
+    const response = await apiClient.post("/routes", {
       ...routeData,
-      image: base64ToBlobUrl(routeData.image, "image/png"),
-    };
-    console.log(data);
-    const response = await apiClient.post("/routes", data);
+      image: fileResult.data,
+    });
     return response.data;
   } catch (error) {
     console.error("Error creating route:", error);
@@ -132,7 +138,19 @@ const findById = async (routeId: number) => {
 
 const update = async (routeId: number, routeData: Route) => {
   try {
-    routeData.image = base64ToBlobUrl(routeData.image, "image/png");
+    // Get existing route to retrieve old image path
+    const existingRoute = await findById(routeId);
+
+    // Use fileHandlerService to handle image update (upload new and delete old)
+    const fileResult = await fileHandlerService.handleFileUpdate({
+      base64: routeData.image,
+      path: "route",
+      randomName: "YES",
+      fileName: routeData.id.toString(),
+      oldFilePath: existingRoute.data.image,
+    });
+
+    routeData.image = fileResult.data;
     const response = await apiClient.put(`/routes/${routeId}`, routeData);
     return response.data;
   } catch (error) {
@@ -144,10 +162,21 @@ const update = async (routeId: number, routeData: Route) => {
 const patch = async (routeId: number, routeData: any) => {
   try {
     if (routeData.image) {
-      routeData.image = base64ToBlobUrl(routeData.image, "image/png");
+      const existingRoute = await findById(routeId);
+
+      // Handle file update
+      const fileResult = await fileHandlerService.handleFileUpdate({
+        base64: routeData.image,
+        path: "route",
+        randomName: "YES",
+        fileName: routeId.toString(),
+        oldFilePath: existingRoute.data.image,
+      });
+
+      routeData.image = fileResult.data;
     }
+
     const response = await apiClient.patch(`/routes/${routeId}`, routeData);
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error updating route:", error);
@@ -157,6 +186,15 @@ const patch = async (routeId: number, routeData: any) => {
 
 const remove = async (routeId: number) => {
   try {
+    // Get existing route to retrieve image path
+    const existingRoute = await findById(routeId);
+
+    // Delete the associated image file first
+    if (existingRoute.data.image) {
+      await fileHandlerService.deleteFile(existingRoute.data.image);
+    }
+
+    // Then delete the route
     const response = await apiClient.delete(`/routes/${routeId}`);
     return response.data;
   } catch (error) {

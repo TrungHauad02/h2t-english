@@ -10,7 +10,6 @@ export default interface BaseEntity {
   updatedAt?: Date;
 }
 
-
 export type QuestionSupportType =
   | "topics"
   | "grammars"
@@ -29,10 +28,10 @@ export interface Voice {
   fileData: string;
 }
 
-export enum SeverityEnum{
+export enum SeverityEnum {
   LOW,
   MEDIUM,
-  HIGH
+  HIGH,
 }
 
 export interface ErrorLog extends BaseEntity {
@@ -40,3 +39,5 @@ export interface ErrorLog extends BaseEntity {
   errorCode: string;
   severity: SeverityEnum;
 }
+
+export type RandomName = "YES" | "NO";
