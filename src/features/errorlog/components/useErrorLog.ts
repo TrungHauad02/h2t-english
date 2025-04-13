@@ -1,7 +1,6 @@
 import { BaseFilter, ErrorLog, SeverityEnum } from "interfaces";
 import { useEffect, useState } from "react";
-import { mockErrorLogs } from "../services/mockData";
-
+import { errorLogService } from "services/features/errorLogService";
 export default function useErrorLog(initialItemsPerPage: number) {
   const [errorLogs, setErrorLogs] = useState<ErrorLog[]>([]);
   const [filteredErrorLogs, setFilteredErrorLogs] = useState<ErrorLog[]>([]);
@@ -19,8 +18,17 @@ export default function useErrorLog(initialItemsPerPage: number) {
   });
 
   useEffect(() => {
-    setErrorLogs(mockErrorLogs);
-  }, []);
+    const fetchLogs = async () => {
+      try {
+        const response = await errorLogService.getErrorLogs(page, itemsPerPage); 
+        setErrorLogs(response.data.content); 
+      } catch (error) {
+        console.error("Failed to fetch error logs", error);
+      }
+    };
+  
+    fetchLogs();
+  }, [page, itemsPerPage]); // <<== Cập nhật dependency  
 
   useEffect(() => {
     let result = [...errorLogs];
