@@ -30,7 +30,11 @@ export const convertBase64ToArrayBuffer = (base64: string): ArrayBuffer => {
  */
 export const base64ToBlobUrl = (base64: string, type: string): string => {
   if (!base64) return "";
-  if (base64.startsWith("blob:")) {
+  if (
+    base64.startsWith("blob:") ||
+    base64.startsWith("https://") ||
+    base64.startsWith("http://")
+  ) {
     return base64;
   }
 
