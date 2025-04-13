@@ -4,7 +4,6 @@ import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { WESelectImage } from "components/input";
 import { WETextField, WESelect } from "components/input";
-import { base64ToBlobUrl } from "utils/convert";
 
 interface VocabularyEditFormProps {
   editData: Vocabulary;
@@ -20,13 +19,6 @@ export default function VocabularyEditForm({
   const accentColor = isDarkMode ? color.teal300 : color.teal600;
 
   const handleVocabChange = (field: keyof Vocabulary, value: any) => {
-    if (field === "image") {
-      setEditData({
-        ...editData,
-        [field]: base64ToBlobUrl(value, "image/png"),
-      });
-      return;
-    }
     setEditData({ ...editData, [field]: value });
   };
 

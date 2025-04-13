@@ -7,7 +7,6 @@ import {
 import { useDarkMode } from "hooks/useDarkMode";
 import { Speaking } from "interfaces";
 import useColor from "theme/useColor";
-import { base64ToBlobUrl } from "utils/convert";
 
 interface SpeakingEditFormProps {
   editData: Speaking | null;
@@ -53,9 +52,7 @@ export default function SpeakingEditForm({
             <WESelectImage
               label="Speaking Image"
               value={editData?.image || ""}
-              onChange={(base64) =>
-                handleInputChange("image", base64ToBlobUrl(base64, "image/png"))
-              }
+              onChange={(base64) => handleInputChange("image", base64)}
               required
             />
           </Box>

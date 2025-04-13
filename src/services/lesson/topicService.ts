@@ -1,6 +1,6 @@
 import { Topic } from "interfaces";
 import apiClient from "services/apiClient";
-import { base64ToBlobUrl } from "utils/convert";
+import { fileHandlerService } from "services/features/fileHandlerService";
 
 const getLessonsForStudent = async (page: number, itemsPerPage: number) => {
   try {
@@ -24,9 +24,20 @@ const findById = async (id: number) => {
   }
 };
 
-const create = async (data: Topic) => {
+const create = async (topicData: Topic) => {
   try {
-    const response = await apiClient.post("/topics", data);
+    // Use fileHandlerService to upload image
+    const fileResult = await fileHandlerService.handleFileUpdate({
+      base64: topicData.image,
+      path: "topic",
+      randomName: "YES",
+      fileName: topicData.id.toString(),
+    });
+
+    const response = await apiClient.post("/topics", {
+      ...topicData,
+      image: fileResult.data,
+    });
     return response.data;
   } catch (error) {
     console.error("Error creating topic:", error);
@@ -34,11 +45,22 @@ const create = async (data: Topic) => {
   }
 };
 
-const update = async (id: number, data: Topic) => {
+const update = async (topicId: number, topicData: Topic) => {
   try {
-    // TODO: Luu image vao firebase
-    data.image = base64ToBlobUrl(data.image, "image/png");
-    const response = await apiClient.put(`/topics/${id}`, data);
+    // Get existing topic to retrieve old image path
+    const existingTopic = await findById(topicId);
+
+    // Use fileHandlerService to handle image update (upload new and delete old)
+    const fileResult = await fileHandlerService.handleFileUpdate({
+      base64: topicData.image,
+      path: "topic",
+      randomName: "YES",
+      fileName: topicData.id.toString(),
+      oldFilePath: existingTopic.data.image,
+    });
+
+    topicData.image = fileResult.data;
+    const response = await apiClient.put(`/topics/${topicId}`, topicData);
     return response.data;
   } catch (error) {
     console.error("Error updating topic:", error);
@@ -46,11 +68,24 @@ const update = async (id: number, data: Topic) => {
   }
 };
 
-const patch = async (id: number, data: Partial<Topic>) => {
+const patch = async (topicId: number, topicData: Partial<Topic>) => {
   try {
-    // TODO: Luu image vao firebase
-    if (data.image) data.image = base64ToBlobUrl(data.image, "image/png");
-    const response = await apiClient.patch(`/topics/${id}`, data);
+    if (topicData.image) {
+      const existingTopic = await findById(topicId);
+
+      // Handle file update
+      const fileResult = await fileHandlerService.handleFileUpdate({
+        base64: topicData.image,
+        path: "topic",
+        randomName: "YES",
+        fileName: topicId.toString(),
+        oldFilePath: existingTopic.data.image,
+      });
+
+      topicData.image = fileResult.data;
+    }
+
+    const response = await apiClient.patch(`/topics/${topicId}`, topicData);
     return response.data;
   } catch (error) {
     console.error("Error updating topic:", error);

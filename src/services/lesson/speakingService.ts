@@ -1,5 +1,6 @@
 import { Speaking } from "interfaces";
 import apiClient from "services/apiClient";
+import { fileHandlerService } from "services/features";
 
 const getLessonsForStudent = async (page: number, itemsPerPage: number) => {
   try {
@@ -25,7 +26,17 @@ const findById = async (id: number) => {
 
 const create = async (data: Speaking) => {
   try {
-    const response = await apiClient.post("/speakings", data);
+    const imageResult = await fileHandlerService.handleFileUpdate({
+      base64: data.image,
+      path: "speaking",
+      randomName: "YES",
+      fileName: data.id.toString(),
+    });
+
+    const response = await apiClient.post("/speakings", {
+      ...data,
+      image: imageResult.data,
+    });
     return response.data;
   } catch (error) {
     console.error("Error creating speaking:", error);
@@ -35,6 +46,17 @@ const create = async (data: Speaking) => {
 
 const update = async (id: number, data: Speaking) => {
   try {
+    const existingData = await findById(id);
+    const imageResult = await fileHandlerService.handleFileUpdate({
+      base64: data.image,
+      path: "speaking",
+      randomName: "YES",
+      fileName: data.id.toString(),
+      oldFilePath: existingData.data.image,
+    });
+
+    data.image = imageResult.data;
+
     const response = await apiClient.put(`/speakings/${id}`, data);
     return response.data;
   } catch (error) {
@@ -45,6 +67,19 @@ const update = async (id: number, data: Speaking) => {
 
 const patch = async (id: number, data: Partial<Speaking>) => {
   try {
+    const existingData = await findById(id);
+
+    if (data.image) {
+      const imageResult = await fileHandlerService.handleFileUpdate({
+        base64: data.image,
+        path: "speaking",
+        randomName: "YES",
+        fileName: id.toString(),
+        oldFilePath: existingData.data.image,
+      });
+      data.image = imageResult.data;
+    }
+
     const response = await apiClient.patch(`/speakings/${id}`, data);
     return response.data;
   } catch (error) {

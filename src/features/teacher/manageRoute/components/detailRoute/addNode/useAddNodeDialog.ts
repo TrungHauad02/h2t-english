@@ -11,7 +11,6 @@ import {
   Test,
   TestTypeEnum,
 } from "interfaces";
-import { base64ToBlobUrl } from "utils/convert";
 
 export interface UseAddNodeDialogProps {
   data: RouteNode;
@@ -31,7 +30,7 @@ export default function useAddNodeDialog({
   setNewLesson,
 }: UseAddNodeDialogProps) {
   const [tips, setTips] = useState<string[]>(
-    (newLesson as Grammar)?.tips || []
+    (newLesson as Grammar | Writing)?.tips || []
   );
 
   const [isTestNode, setIsTestNode] = useState<boolean>(false);
@@ -44,6 +43,8 @@ export default function useAddNodeDialog({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    // Update both data and newLesson for syncing
     setData({ ...data, [name]: value });
     setNewLesson((prev) => ({
       ...prev,
@@ -56,11 +57,11 @@ export default function useAddNodeDialog({
   };
 
   const handleImageChange = (base64: string) => {
-    const blobUrl = base64ToBlobUrl(base64, "image/png");
-    setData({ ...data, image: blobUrl });
+    // Update both data and newLesson for syncing
+    setData({ ...data, image: base64 });
     setNewLesson((prev) => ({
       ...prev,
-      image: blobUrl,
+      image: base64,
     }));
   };
 
@@ -69,10 +70,7 @@ export default function useAddNodeDialog({
       if ("file" in prev) {
         return {
           ...prev,
-          file: base64ToBlobUrl(
-            base64,
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-          ),
+          file: base64,
         };
       }
       return prev;
@@ -152,7 +150,7 @@ function createInitialLesson(
     status: false,
     views: 0,
     questions: [],
-    image: "",
+    image: data.image || "", // Ensure image sync
   };
 
   switch (data.type) {

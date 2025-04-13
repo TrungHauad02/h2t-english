@@ -24,7 +24,8 @@ import {
   useAddNodeDialog,
   WritingFields,
 } from "./addNode";
-import { base64ToBlobUrl } from "utils/convert";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
 
 interface AddNodeDialogProps {
   open: boolean;
@@ -49,6 +50,8 @@ export default function AddNodeDialog({
   onOk,
   setData,
 }: AddNodeDialogProps) {
+  const color = useColor();
+  const { isDarkMode } = useDarkMode();
   const hooks = useAddNodeDialog({ data, setData, newLesson, setNewLesson });
 
   return (
@@ -58,11 +61,24 @@ export default function AddNodeDialog({
       onCancel={onCancel}
       onOk={onOk}
     >
-      <Stack spacing={2} sx={{ p: 2, width: "100%" }}>
+      <Stack
+        spacing={2}
+        sx={{
+          p: 2,
+          width: "100%",
+          bgcolor: isDarkMode ? color.gray800 : color.gray50,
+          borderRadius: 2,
+        }}
+      >
         <Stack
           direction={{ xs: "column", md: "row" }}
           spacing={2}
           alignItems="flex-start"
+          sx={{
+            border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+            borderRadius: 1,
+            p: 2,
+          }}
         >
           <Stack sx={{ width: "100%" }}>
             <WETextField
@@ -74,7 +90,16 @@ export default function AddNodeDialog({
               required
               disabled
             />
-            <Stack sx={{ width: "100%" }}>
+            <Stack
+              sx={{
+                width: "100%",
+                mt: 2,
+                borderTop: `1px solid ${
+                  isDarkMode ? color.gray700 : color.gray300
+                }`,
+                pt: 2,
+              }}
+            >
               <NodeTypeSelect
                 value={data.type || ""}
                 onChange={hooks.handleTypeChange}
@@ -82,72 +107,114 @@ export default function AddNodeDialog({
             </Stack>
           </Stack>
         </Stack>
-        <WETextField
-          label="Title"
-          type="text"
-          value={newLesson.title || ""}
-          onChange={hooks.handleChange}
-          name="title"
-          required
-          placeholder="Enter node title"
-        />
-        <WETextField
-          label="Description"
-          type="text"
-          value={newLesson.description || ""}
-          onChange={hooks.handleChange}
-          name="description"
-          required
-          placeholder="Enter node description"
-          sx={{ mb: 2 }}
-        />
+
+        <Stack
+          spacing={2}
+          sx={{
+            border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+            borderRadius: 1,
+            p: 2,
+          }}
+        >
+          <WETextField
+            label="Title"
+            type="text"
+            value={newLesson.title || ""}
+            onChange={hooks.handleChange}
+            name="title"
+            required
+            placeholder="Enter node title"
+          />
+          <WETextField
+            label="Description"
+            type="text"
+            value={newLesson.description || ""}
+            onChange={hooks.handleChange}
+            name="description"
+            required
+            placeholder="Enter node description"
+          />
+        </Stack>
 
         {/* Conditional Rendering Based on Node Type */}
         {!hooks.isTestNode && (
-          <WESelectImage
-            required
-            label="Node Image"
-            value={data.image || ""}
-            onChange={hooks.handleImageChange}
-            sx={{ mb: 2 }}
-          />
+          <Stack
+            sx={{
+              border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+              borderRadius: 1,
+              p: 2,
+            }}
+          >
+            <WESelectImage
+              required
+              label="Node Image"
+              value={data.image || ""}
+              onChange={hooks.handleImageChange}
+            />
+          </Stack>
         )}
 
         {/* Specific Fields for Different Node Types */}
         {data.type === RouteNodeEnum.GRAMMAR && (
-          <GrammarFields
-            newLesson={newLesson as Grammar}
-            tips={hooks.tips}
-            setNewLesson={
-              setNewLesson as React.Dispatch<React.SetStateAction<Grammar>>
-            }
-            handleTipChange={hooks.handleTipChange}
-            addTip={hooks.addTip}
-            removeTip={hooks.removeTip}
-            handleFileChange={hooks.handleFileChange}
-          />
+          <Stack
+            spacing={2}
+            sx={{
+              border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+              borderRadius: 1,
+              p: 2,
+              bgcolor: isDarkMode ? color.gray700 : color.gray100,
+            }}
+          >
+            <GrammarFields
+              newLesson={newLesson as Grammar}
+              tips={hooks.tips}
+              setNewLesson={
+                setNewLesson as React.Dispatch<React.SetStateAction<Grammar>>
+              }
+              handleTipChange={hooks.handleTipChange}
+              addTip={hooks.addTip}
+              removeTip={hooks.removeTip}
+              handleFileChange={hooks.handleFileChange}
+            />
+          </Stack>
         )}
 
-        {/* Add similar sections for other node types */}
-        {/* Reading, Listening, Writing nodes will have specific fields */}
         {data.type === RouteNodeEnum.READING && (
-          <WEDocxInput
-            label="Reading File"
-            value={(newLesson as Reading).file}
-            onChange={hooks.handleFileChange}
-            required
-          />
+          <Stack
+            sx={{
+              border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+              borderRadius: 1,
+              p: 2,
+              bgcolor: isDarkMode ? color.gray700 : color.gray100,
+            }}
+          >
+            <WEDocxInput
+              label="Reading File"
+              value={(newLesson as Reading).file}
+              onChange={hooks.handleFileChange}
+              required
+            />
+          </Stack>
         )}
 
         {data.type === RouteNodeEnum.LISTENING && (
-          <Stack direction={"column"} spacing={2}>
+          <Stack
+            direction="column"
+            spacing={2}
+            sx={{
+              border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+              borderRadius: 1,
+              p: 2,
+              bgcolor: isDarkMode ? color.gray700 : color.gray100,
+            }}
+          >
             <WEAudioInputVer2
               label="Listening Audio"
               value={(newLesson as Listening).audio}
               onChange={(base64) =>
                 setNewLesson((prev) => ({
                   ...(prev as Listening),
-                  audio: base64ToBlobUrl(base64, "audio/wav"),
+                  audio: base64,
                 }))
               }
               accept=".mp3,.wav"
@@ -167,21 +234,39 @@ export default function AddNodeDialog({
         )}
 
         {data.type === RouteNodeEnum.WRITING && (
-          <WritingFields
-            newLesson={newLesson as Writing}
-            tips={hooks.tips}
-            setNewLesson={
-              setNewLesson as React.Dispatch<React.SetStateAction<Writing>>
-            }
-            handleTipChange={hooks.handleTipChange}
-            addTip={hooks.addTip}
-            removeTip={hooks.removeTip}
-            handleFileChange={hooks.handleFileChange}
-          />
+          <Stack
+            spacing={2}
+            sx={{
+              border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+              borderRadius: 1,
+              p: 2,
+              bgcolor: isDarkMode ? color.gray700 : color.gray100,
+            }}
+          >
+            <WritingFields
+              newLesson={newLesson as Writing}
+              tips={hooks.tips}
+              setNewLesson={
+                setNewLesson as React.Dispatch<React.SetStateAction<Writing>>
+              }
+              handleTipChange={hooks.handleTipChange}
+              addTip={hooks.addTip}
+              removeTip={hooks.removeTip}
+              handleFileChange={hooks.handleFileChange}
+            />
+          </Stack>
         )}
 
         {data.type === RouteNodeEnum.SPEAKING && (
-          <>
+          <Stack
+            spacing={2}
+            sx={{
+              border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+              borderRadius: 1,
+              p: 2,
+              bgcolor: isDarkMode ? color.gray700 : color.gray100,
+            }}
+          >
             <WETextField
               label="Speaking Topic"
               type="text"
@@ -195,7 +280,6 @@ export default function AddNodeDialog({
               name="topic"
               required
               placeholder="Enter speaking topic"
-              sx={{ mb: 2 }}
             />
             <WETextField
               label="Duration (minutes)"
@@ -211,11 +295,18 @@ export default function AddNodeDialog({
               required
               placeholder="Enter speaking duration"
             />
-          </>
+          </Stack>
         )}
 
         {hooks.isTestNode && (
-          <>
+          <Stack
+            sx={{
+              border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+              borderRadius: 1,
+              p: 2,
+              bgcolor: isDarkMode ? color.gray700 : color.gray100,
+            }}
+          >
             <WETextField
               label="Test Duration (minutes)"
               type="number"
@@ -229,9 +320,8 @@ export default function AddNodeDialog({
               name="duration"
               required
               placeholder="Enter test duration"
-              sx={{ mb: 2 }}
             />
-          </>
+          </Stack>
         )}
       </Stack>
     </WEDialog>
