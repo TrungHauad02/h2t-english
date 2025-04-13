@@ -35,6 +35,11 @@ const handleFileUpdate = async ({
   oldFilePath,
 }: FileUpdateOptions) => {
   try {
+    // Check if the base64 string is valid
+    if (base64 && typeof base64 === "string" && isUrlString(base64)) {
+      return { data: base64 };
+    }
+
     if (oldFilePath && base64) {
       // Upload new file first
       const uploadResult = await minioService.uploadFile(
@@ -65,7 +70,7 @@ const handleFileUpdate = async ({
       return await minioService.uploadFile(base64, path, randomName, fileName);
     }
     // Case: No new file provided (keep existing file)
-    return { path: oldFilePath };
+    return { data: oldFilePath };
   } catch (error) {
     console.error("Error handling file update:", error);
     throw error;
@@ -93,6 +98,10 @@ const isFilePathChanged = (
   if (!oldPath && !newPath) return false;
   if (!oldPath || !newPath) return true;
   return oldPath !== newPath;
+};
+
+const isUrlString = (str: string) => {
+  return str.startsWith("http://") || str.startsWith("https://");
 };
 
 export const fileHandlerService = {

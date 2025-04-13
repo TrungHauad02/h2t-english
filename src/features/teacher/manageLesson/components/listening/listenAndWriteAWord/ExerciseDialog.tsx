@@ -17,12 +17,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { ListenAndWriteAWord } from "interfaces";
-import { base64ToBlobUrl } from "utils/convert";
 import {
   AudioSection,
   SentenceConfigSection,
   PreviewSection,
 } from "./dialogSections";
+import { base64ToBlobUrl } from "utils/convert";
 
 interface ExerciseDialogProps {
   open: boolean;
@@ -55,18 +55,10 @@ export default function ExerciseDialog({
   const isNewExercise = exercise.id === 0;
 
   const handleChange = (name: keyof ListenAndWriteAWord, value: any) => {
-    if (name === "audio") {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: base64ToBlobUrl(value, "audio/wav"),
-      }));
-      return;
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
 
     // Update sentence words when sentence changes
     if (name === "sentence") {

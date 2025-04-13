@@ -21,7 +21,6 @@ import {
   PublishDialogs,
   PreparationSection,
 } from "../components";
-import { base64ToBlobUrl } from "utils/convert";
 
 export default function WritingDetailPage() {
   const hooks = useWritingDetailPage();
@@ -98,13 +97,7 @@ export default function WritingDetailPage() {
           <WritingDocumentSection
             documentUrl={hooks.editData ? hooks.editData.file : hooks.data.file}
             onDocumentChange={(base64) =>
-              hooks.handleInputChange(
-                "file",
-                base64ToBlobUrl(
-                  base64,
-                  "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                )
-              )
+              hooks.handleInputChange("file", base64)
             }
           />
         </div>

@@ -1,5 +1,6 @@
 import { Listening } from "interfaces";
 import apiClient from "services/apiClient";
+import { fileHandlerService } from "services/features";
 
 const getLessonsForStudent = async (page: number, itemsPerPage: number) => {
   try {
@@ -25,7 +26,26 @@ const findById = async (id: number) => {
 
 const create = async (data: Listening) => {
   try {
-    const response = await apiClient.post("/listenings", data);
+    const fileResult = await Promise.all([
+      fileHandlerService.handleFileUpdate({
+        base64: data.image,
+        path: "listening",
+        randomName: "YES",
+        fileName: data.id.toString(),
+      }),
+      fileHandlerService.handleFileUpdate({
+        base64: data.audio,
+        path: "listening",
+        randomName: "YES",
+        fileName: data.id.toString(),
+      }),
+    ]);
+
+    const response = await apiClient.post("/listenings", {
+      ...data,
+      image: fileResult[0].data,
+      audio: fileResult[1].data,
+    });
     return response.data;
   } catch (error) {
     console.error("Error creating listening:", error);
@@ -35,6 +55,27 @@ const create = async (data: Listening) => {
 
 const update = async (id: number, data: Listening) => {
   try {
+    const existingData = await findById(id);
+    const fileResult = await Promise.all([
+      fileHandlerService.handleFileUpdate({
+        base64: data.image,
+        path: "listening",
+        randomName: "YES",
+        fileName: data.id.toString(),
+        oldFilePath: existingData.data.image,
+      }),
+      fileHandlerService.handleFileUpdate({
+        base64: data.audio,
+        path: "listening",
+        randomName: "YES",
+        fileName: data.id.toString(),
+        oldFilePath: existingData.data.audio,
+      }),
+    ]);
+
+    data.image = fileResult[0].data;
+    data.audio = fileResult[1].data;
+
     const response = await apiClient.put(`/listenings/${id}`, data);
     return response.data;
   } catch (error) {
@@ -45,6 +86,30 @@ const update = async (id: number, data: Listening) => {
 
 const patch = async (id: number, data: Partial<Listening>) => {
   try {
+    const existingData = await findById(id);
+
+    if (data.image) {
+      const imageResult = await fileHandlerService.handleFileUpdate({
+        base64: data.image,
+        path: "listening",
+        randomName: "YES",
+        fileName: id.toString(),
+        oldFilePath: existingData.data.image,
+      });
+      data.image = imageResult.data;
+    }
+
+    if (data.audio) {
+      const audioResult = await fileHandlerService.handleFileUpdate({
+        base64: data.audio,
+        path: "listening",
+        randomName: "YES",
+        fileName: id.toString(),
+        oldFilePath: existingData.data.audio,
+      });
+      data.audio = audioResult.data;
+    }
+
     const response = await apiClient.patch(`/listenings/${id}`, data);
     return response.data;
   } catch (error) {

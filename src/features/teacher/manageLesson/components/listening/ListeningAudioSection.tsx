@@ -6,7 +6,6 @@ import AudioFileIcon from "@mui/icons-material/AudioFile";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import WEAudioInputVer2 from "components/input/WEAudioInputVer2";
 import SectionHeader from "../common/SectionHeader";
-import { base64ToBlobUrl } from "utils/convert";
 
 interface ListeningAudioSectionProps {
   audio: string;
@@ -39,7 +38,7 @@ export default function ListeningAudioSection({
   };
 
   const handleSaveChanges = () => {
-    onAudioChange(base64ToBlobUrl(tempAudio, "audio/wav"));
+    onAudioChange(tempAudio);
     onSave();
     setIsEditMode(false);
   };
