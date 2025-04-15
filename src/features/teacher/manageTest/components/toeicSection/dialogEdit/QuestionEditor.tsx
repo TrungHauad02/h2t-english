@@ -1,14 +1,15 @@
 import React from 'react';
 import { Grid } from '@mui/material';
-import { ToeicPart7Question } from 'interfaces';
+import { ToeicQuestion } from 'interfaces';
 import useColor from 'theme/useColor';
 import { useDarkMode } from 'hooks/useDarkMode';
 import { WETextField } from 'components/input';
-import { FormSectionCard, AnswerOptionsEditor } from '../dialogEdit';
+import { FormSectionCard } from '../dialogEdit';
+import EnhanceAnswerOptionsEditor from './EnhanceAnswerOptionsEditor';
 
 interface QuestionEditorProps {
-  question: ToeicPart7Question;
-  onChange: (field: keyof ToeicPart7Question, value: any) => void;
+  question: ToeicQuestion;
+  onChange: (field: keyof ToeicQuestion, value: any) => void;
 }
 
 export default function QuestionEditor({
@@ -19,16 +20,21 @@ export default function QuestionEditor({
   const { isDarkMode } = useDarkMode();
 
   const handleAnswerChange = (index: number, value: string) => {
-    const answerField = `answer${index + 1}` as keyof ToeicPart7Question;
-    onChange(answerField, value);
+    const updatedAnswers = [...question.toeicAnswers];
+    updatedAnswers[index] = {
+      ...updatedAnswers[index],
+      content: value
+    };
+    onChange('toeicAnswers', updatedAnswers);
   };
 
-  const answerOptions = [
-    { label: 'A', value: 'A' },
-    { label: 'B', value: 'B' },
-    { label: 'C', value: 'C' },
-    { label: 'D', value: 'D' },
-  ];
+  const handleCorrectAnswerChange = (value: string) => {
+    const updatedAnswers = question.toeicAnswers.map(answer => ({
+      ...answer,
+      correct: answer.content === value
+    }));
+    onChange('toeicAnswers', updatedAnswers);
+  };
 
   return (
     <Grid container spacing={3}>
@@ -69,17 +75,10 @@ export default function QuestionEditor({
 
       <Grid item xs={12}>
         <FormSectionCard title="Answer Options">
-          <AnswerOptionsEditor
-            answers={[
-              question.answer1,
-              question.answer2,
-              question.answer3,
-              question.answer4
-            ]}
-            correctAnswer={question.correctAnswer}
+          <EnhanceAnswerOptionsEditor 
+            answers={question.toeicAnswers}
             onAnswerChange={handleAnswerChange}
-            onCorrectAnswerChange={(value) => onChange("correctAnswer", value)}
-            answerOptions={answerOptions}
+            onCorrectAnswerChange={handleCorrectAnswerChange}
           />
         </FormSectionCard>
       </Grid>

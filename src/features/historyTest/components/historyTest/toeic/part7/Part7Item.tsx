@@ -6,14 +6,14 @@ import {
   FormControlLabel,
   Radio
 } from '@mui/material';
-import { ToeicPart7, ToeicPart7Question, AnswerEnum } from 'interfaces/TestInterfaces';
+import { ToeicPart7, ToeicQuestion, AnswerEnum } from 'interfaces/TestInterfaces';
 import WEDocumentViewer from 'components/display/document/WEDocumentViewer';
 import ExplanationCollapse from '../common/ExplanationCollapse';
 import { useDarkMode } from 'hooks/useDarkMode';
 
 type Props = {
   passage: ToeicPart7;
-  questions: ToeicPart7Question[];
+  questions: ToeicQuestion[];
   questionNumberStart: number;
   selectedAnswers: Record<number, AnswerEnum>;
 };
@@ -52,7 +52,7 @@ const Part7Item: React.FC<Props> = ({
         <Box flex={1} sx={{ overflowY: 'auto', maxHeight: '60vh' }}>
           {questions.map((q, idx) => {
             const number = questionNumberStart + idx;
-            const correctAnswer = q.correctAnswer;
+            const correctAnswer = q.toeicAnswers.find(a => a.correct)?.content as AnswerEnum;
             const selected = selectedAnswers[q.id];
 
             return (
@@ -63,6 +63,7 @@ const Part7Item: React.FC<Props> = ({
 
                 <RadioGroup name={`question-${q.id}`} value={selected || ''}>
                   {(['A', 'B', 'C', 'D'] as AnswerEnum[]).map((choice, i) => {
+                    const ansText = q.toeicAnswers[i]?.content;
                     const isCorrect = correctAnswer === choice;
                     const isWrong = selected === choice && selected !== correctAnswer;
 
@@ -82,7 +83,7 @@ const Part7Item: React.FC<Props> = ({
                         key={choice}
                         value={choice}
                         control={<Radio disabled />}
-                        label={`${choice}. ${q[`answer${i + 1}` as keyof ToeicPart7Question]}`}
+                        label={`${choice}. ${ansText}`}
                         sx={{
                           bgcolor: bgColor,
                           color: textColor,

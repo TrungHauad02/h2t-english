@@ -7,13 +7,13 @@ import {
   Radio,
   FormControl,
 } from '@mui/material';
-import { AnswerEnum, ToeicPart5 } from 'interfaces/TestInterfaces';
+import { AnswerEnum, ToeicQuestion } from 'interfaces/TestInterfaces';
 import ExplanationCollapse from '../common/ExplanationCollapse';
 import { useDarkMode } from 'hooks/useDarkMode';
 
 type Props = {
   questionNumber: number;
-  question: ToeicPart5;
+  question: ToeicQuestion;
   selectedAnswer?: AnswerEnum;
 };
 
@@ -23,7 +23,7 @@ const Part5Item: React.FC<Props> = ({
   selectedAnswer,
 }) => {
   const { isDarkMode } = useDarkMode();
-  const correctAnswer = question.correctAnswer;
+  const correctAnswer = question.toeicAnswers.find((a) => a.correct)?.content as AnswerEnum;
 
   return (
     <Box
@@ -49,10 +49,9 @@ const Part5Item: React.FC<Props> = ({
             name={`question-${questionNumber}`}
             value={selectedAnswer || ''}
           >
-            {(['A', 'B', 'C', 'D'] as AnswerEnum[]).map((opt, index) => {
-              const answer = question[`answer${index + 1}` as keyof ToeicPart5] as string;
-              const isCorrect = correctAnswer === opt;
-              const isWrong = selectedAnswer === opt && selectedAnswer !== correctAnswer;
+            {question.toeicAnswers.map((ans, index) => {
+              const isCorrect = ans.content === correctAnswer;
+              const isWrong = selectedAnswer === ans.content && !ans.correct;
 
               let bgColor = 'transparent';
               let textColor = 'inherit';
@@ -67,7 +66,7 @@ const Part5Item: React.FC<Props> = ({
 
               return (
                 <Box
-                  key={opt}
+                  key={ans.id}
                   sx={{
                     bgcolor: bgColor,
                     color: textColor,
@@ -79,9 +78,9 @@ const Part5Item: React.FC<Props> = ({
                   }}
                 >
                   <FormControlLabel
-                    value={opt}
+                    value={ans.content}
                     control={<Radio disabled />}
-                    label={`${opt}. ${answer}`}
+                    label={`(${String.fromCharCode(65 + index)}). ${ans.content}`}
                     sx={{
                       width: '100%',
                       m: 0,

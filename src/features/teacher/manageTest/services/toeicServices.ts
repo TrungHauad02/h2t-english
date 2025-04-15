@@ -4,13 +4,11 @@ import {
   ToeicPart1, 
   ToeicPart2, 
   ToeicPart3_4, 
-  ToeicPart5, 
   ToeicPart6, 
   ToeicPart7,
-  ToeicPart7Question,
-  AnswerEnum
+  ToeicQuestion,
+  ToeicAnswer,
 } from "interfaces";
-import BaseEntity from "interfaces";
 
 interface ToeicFilter {
   status?: boolean;
@@ -53,7 +51,7 @@ const getToeicTests = (filter?: ToeicFilter): Toeic[] => {
   return filteredToeics;
 };
 
-const createToeicTest = (toeicData: Omit<Toeic, keyof BaseEntity | "totalQuestions" | "scoreLastOfTest">): Toeic => {
+const createToeicTest = (toeicData: Omit<Toeic, 'id' | 'createdAt' | 'updatedAt' | 'totalQuestions' | 'scoreLastOfTest'>): Toeic => {
   const newId = Math.max(...mockData.toeics.map(t => t.id), 0) + 1;
   const now = new Date();
   
@@ -131,28 +129,24 @@ const getToeicPart2ByIds = (ids: number[]): ToeicPart2[] => {
   return mockData.toeicPart2s.filter(p => ids.includes(p.id));
 };
 
-const getToeicPart3ByIds = (ids: number[]): ToeicPart3_4[] => {
-  return mockData.toeicPart3s.filter(p => ids.includes(p.id));
-};
-
-const getToeicPart4ByIds = (ids: number[]): ToeicPart3_4[] => {
-  return mockData.toeicPart4s.filter(p => ids.includes(p.id));
-};
-
-const getToeicPart5ByIds = (ids: number[]): ToeicPart5[] => {
-  return mockData.toeicPart5s.filter(p => ids.includes(p.id));
+const getToeicPart3_4ByIds = (ids: number[]): ToeicPart3_4[] => {
+  return mockData.toeicPart3List.filter(p => ids.includes(p.id));
 };
 
 const getToeicPart6ByIds = (ids: number[]): ToeicPart6[] => {
-  return mockData.toeicPart6s.filter(p => ids.includes(p.id));
+  return mockData.toeicPart6List.filter(p => ids.includes(p.id));
 };
 
 const getToeicPart7ByIds = (ids: number[]): ToeicPart7[] => {
-  return mockData.toeicPart7s.filter(p => ids.includes(p.id));
+  return mockData.toeicPart7List?.filter(p => ids.includes(p.id)) || [];
 };
 
-const getToeicPart7QuestionsByIds = (ids: number[]): ToeicPart7Question[] => {
-  return mockData.toeicPart7Questions.filter(q => ids.includes(q.id));
+const getToeicQuestionsByIds = (ids: number[]): ToeicQuestion[] => {
+  return mockData.toeicQuestions.filter(q => ids.includes(q.id));
+};
+
+const getToeicAnswersByIds = (ids: number[]): ToeicAnswer[] => {
+  return mockData.toeicAnswers.filter(a => ids.includes(a.id));
 };
 
 export const toeicService = {
@@ -163,13 +157,11 @@ export const toeicService = {
   deleteToeicTest,
   updateToeicScore,
   
-  // Added individual part getter methods
   getToeicPart1ByIds,
   getToeicPart2ByIds,
-  getToeicPart3ByIds,
-  getToeicPart4ByIds,
-  getToeicPart5ByIds,
+  getToeicPart3_4ByIds,
   getToeicPart6ByIds,
   getToeicPart7ByIds,
-  getToeicPart7QuestionsByIds
+  getToeicQuestionsByIds,
+  getToeicAnswersByIds
 };

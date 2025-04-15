@@ -4,9 +4,8 @@ import useColor from "theme/useColor";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday"; // Changed from EventIcon
-import UpdateIcon from "@mui/icons-material/Update"; // Changed from EventIcon for end time
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday"; 
+import UpdateIcon from "@mui/icons-material/Update"; 
 import { formatDate } from "utils/format";
 import { CompetitionTest } from "interfaces";
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, CircularProgress } from '@mui/material';
-import { ToeicPart3_4, AnswerEnum } from 'interfaces/TestInterfaces';
+import { ToeicPart3_4, AnswerEnum, ToeicQuestion } from 'interfaces/TestInterfaces';
 import { testService } from '../../../services/testServices';
 import ListeningPart3And4Item from './ListeningPart3And4Item';
 
@@ -16,14 +16,26 @@ const ListeningPartList: React.FC<ListeningPartProps> = ({
   onFinish
 }) => {
   const [questionsList, setQuestionsList] = useState<ToeicPart3_4[]>([]);
+  const [questionMap, setQuestionMap] = useState<Record<number, ToeicQuestion[]>>({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<string, AnswerEnum>>({});
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await testService.getToeicPart3_4ByIds(questions);
-      setQuestionsList(data);
+      const partData = await testService.getToeicPart3_4ByIds(questions);
+      setQuestionsList(partData);
+
+      const allQuestionIds = partData.flatMap((part) => part.questions);
+      const questionsData = await testService.getToeicQuestionsByIds(allQuestionIds);
+
+      const map: Record<number, ToeicQuestion[]> = {};
+      partData.forEach((part) => {
+        map[part.id] = questionsData.filter((q) => part.questions.includes(q.id));
+      });
+
+      setQuestionMap(map);
     };
+
     fetchData();
   }, [questions]);
 
@@ -35,7 +47,7 @@ const ListeningPartList: React.FC<ListeningPartProps> = ({
     }
   };
 
-  if (questionsList.length === 0) {
+  if (questionsList.length === 0 || !questionMap[questionsList[currentIndex]?.id]) {
     return (
       <Box display="flex" justifyContent="center" mt={10}>
         <CircularProgress />
@@ -43,13 +55,15 @@ const ListeningPartList: React.FC<ListeningPartProps> = ({
     );
   }
 
-  const currentQuestion = questionsList[currentIndex];
+  const currentPart = questionsList[currentIndex];
+  const currentQuestions = questionMap[currentPart.id];
 
   return (
     <Box sx={{ marginTop: "1rem" }}>
       <ListeningPart3And4Item
         questionNumberStart={startIndex + currentIndex * 3}
-        data={currentQuestion}
+        questions={currentQuestions}
+        audio={currentPart.audio}
         selectedAnswers={userAnswers}
         onChange={(key, val) => setUserAnswers((prev) => ({ ...prev, [key]: val }))}
         onAudioEnded={handleAudioEnded}

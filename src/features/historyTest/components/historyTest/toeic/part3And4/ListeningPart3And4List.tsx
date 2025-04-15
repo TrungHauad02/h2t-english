@@ -3,7 +3,8 @@ import { Box, CircularProgress } from '@mui/material';
 import {
   ToeicPart3_4,
   AnswerEnum,
-  SubmitToeicPart3_4
+  SubmitToeicAnswer,
+  ToeicQuestion,
 } from 'interfaces/TestInterfaces';
 import { testService } from '../../../../../test/services/testServices';
 import ListeningPart3And4Item from './ListeningPart3And4Item';
@@ -11,7 +12,7 @@ import ListeningPart3And4Item from './ListeningPart3And4Item';
 interface ListeningPartProps {
   questions: number[];
   startIndex: number;
-  submitToeicPart3_4: SubmitToeicPart3_4[];
+  submitToeicPart3_4: SubmitToeicAnswer[];
   currentIndex: number;
   setCurrentIndex: (val: number) => void;
 }
@@ -22,27 +23,41 @@ const ListeningPart3And4List: React.FC<ListeningPartProps> = ({
   submitToeicPart3_4,
   currentIndex,
 }) => {
-  const [questionsList, setQuestionsList] = useState<ToeicPart3_4[]>([]);
-  const [userAnswers, setUserAnswers] = useState<Record<string, AnswerEnum>>({});
+  const [groupList, setGroupList] = useState<ToeicPart3_4[]>([]);
+  const [questionMap, setQuestionMap] = useState<Record<number, ToeicQuestion[]>>({});
+  const [userAnswers, setUserAnswers] = useState<Record<number, AnswerEnum>>({});
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await testService.getToeicPart3_4ByIds(questions);
-      setQuestionsList(data);
+      const groups = await testService.getToeicPart3_4ByIds(questions);
+      setGroupList(groups);
 
-      const initialAnswers: Record<string, AnswerEnum> = {};
-      submitToeicPart3_4.forEach((item) => {
-        initialAnswers[`${item.toeicPart3_4Id}-1`] = item.answerQ1;
-        initialAnswers[`${item.toeicPart3_4Id}-2`] = item.answerQ2;
-        initialAnswers[`${item.toeicPart3_4Id}-3`] = item.answerQ3;
+      const allQuestionIds = groups.flatMap(g => g.questions);
+      const allQuestions = await testService.getToeicQuestionsByIds(allQuestionIds);
+
+      const grouped: Record<number, ToeicQuestion[]> = {};
+      groups.forEach(group => {
+        grouped[group.id] = allQuestions.filter(q => group.questions.includes(q.id));
       });
-      setUserAnswers(initialAnswers);
+      setQuestionMap(grouped);
+      const allAnswers = await testService.getToeicAnswersByIds(
+        submitToeicPart3_4.map((a) => a.toeicAnswerId)
+      );
+      
+      const answerMap: Record<number, AnswerEnum> = {};
+      submitToeicPart3_4.forEach((a) => {
+        const ans = allAnswers.find(ans => ans.id === a.toeicAnswerId);
+        if (ans) {
+          answerMap[a.toeicQuestionId] = ans.content as AnswerEnum;
+        }
+      });
+      setUserAnswers(answerMap);
     };
 
     fetchData();
   }, [questions, submitToeicPart3_4]);
 
-  if (questionsList.length === 0) {
+  if (groupList.length === 0 || Object.keys(questionMap).length === 0) {
     return (
       <Box display="flex" justifyContent="center" mt={10}>
         <CircularProgress />
@@ -50,13 +65,16 @@ const ListeningPart3And4List: React.FC<ListeningPartProps> = ({
     );
   }
 
-  const currentGroup = questionsList[currentIndex];
+  const currentGroup = groupList[currentIndex];
+  const currentQuestions = questionMap[currentGroup.id] || [];
 
   return (
     <Box sx={{ marginTop: '1rem' }}>
       <ListeningPart3And4Item
         questionNumberStart={startIndex + currentIndex * 3}
-        data={currentGroup}
+        audio={currentGroup.audio}
+        transcript={currentGroup.transcript}
+        questions={currentQuestions}
         selectedAnswers={userAnswers}
       />
     </Box>

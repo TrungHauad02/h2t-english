@@ -3,10 +3,10 @@ import {
   ToeicPart1, 
   ToeicPart2, 
   ToeicPart3_4, 
-  ToeicPart5, 
   ToeicPart6, 
   ToeicPart7,
-  ToeicPart7Question
+  ToeicQuestion,
+  ToeicAnswer
 } from "interfaces"; 
 import { useEffect, useState } from "react"; 
 import { useParams } from "react-router-dom"; 
@@ -21,10 +21,18 @@ export default function useToeicDetailPage() {
   const [part2Questions, setPart2Questions] = useState<ToeicPart2[]>([]);
   const [part3Questions, setPart3Questions] = useState<ToeicPart3_4[]>([]);
   const [part4Questions, setPart4Questions] = useState<ToeicPart3_4[]>([]);
-  const [part5Questions, setPart5Questions] = useState<ToeicPart5[]>([]);
+  const [part5Questions, setPart5Questions] = useState<ToeicQuestion[]>([]);
   const [part6Questions, setPart6Questions] = useState<ToeicPart6[]>([]);
   const [part7Questions, setPart7Questions] = useState<ToeicPart7[]>([]);
-  const [part7SubQuestions, setPart7SubQuestions] = useState<{ [part7Id: number]: ToeicPart7Question[] }>({});
+  
+  // Questions organized by part
+  const [part3ToeicQuestions, setPart3ToeicQuestions] = useState<{ [partId: number]: ToeicQuestion[] }>({});
+  const [part4ToeicQuestions, setPart4ToeicQuestions] = useState<{ [partId: number]: ToeicQuestion[] }>({});
+  const [part6ToeicQuestions, setPart6ToeicQuestions] = useState<{ [partId: number]: ToeicQuestion[] }>({});
+  const [part7ToeicQuestions, setPart7ToeicQuestions] = useState<{ [partId: number]: ToeicQuestion[] }>({});
+  
+  // All questions dictionary for quick lookup
+  const [allToeicQuestions, setAllToeicQuestions] = useState<{ [id: number]: ToeicQuestion }>({});
   
   const [isEditMode, setIsEditMode] = useState(false); 
   const [editData, setEditData] = useState<Toeic | null>(null); 
@@ -37,9 +45,10 @@ export default function useToeicDetailPage() {
       setLoading(true); 
       
       setTimeout(() => { 
-        // Try to get the TOEIC test
+
+       
         const toeic = toeicService.getToeicById(parseInt(id));
-        
+
         if (toeic) { 
           setData(toeic); 
           setEditData({ ...toeic }); 
@@ -67,26 +76,58 @@ export default function useToeicDetailPage() {
     
     // Load Part 3 questions (Conversations)
     if (toeic.questionsPart3.length > 0) {
-      const part3 = toeicService.getToeicPart3ByIds(toeic.questionsPart3);
+      const part3 = toeicService.getToeicPart3_4ByIds(toeic.questionsPart3);
       setPart3Questions(part3);
+      
+      // Process each part3 item
+      part3.forEach(item => {
+        if (item.questions && item.questions.length > 0) {
+          loadQuestionsForPart(item.id, item.questions, "part3");
+        }
+      });
     }
     
     // Load Part 4 questions (Talks)
     if (toeic.questionsPart4.length > 0) {
-      const part4 = toeicService.getToeicPart4ByIds(toeic.questionsPart4);
+      const part4 = toeicService.getToeicPart3_4ByIds(toeic.questionsPart4);
       setPart4Questions(part4);
+      
+      // Process each part4 item
+      part4.forEach(item => {
+        if (item.questions && item.questions.length > 0) {
+          loadQuestionsForPart(item.id, item.questions, "part4");
+        }
+      });
     }
     
-    // Load Part 5 questions (Incomplete Sentences)
+    // Load Part 5 questions (Incomplete Sentences) - direct ToeicQuestions
     if (toeic.questionsPart5.length > 0) {
-      const part5 = toeicService.getToeicPart5ByIds(toeic.questionsPart5);
+      const part5 = toeicService.getToeicQuestionsByIds(toeic.questionsPart5);
       setPart5Questions(part5);
+      
+      // Add to all questions map
+      const questionsMap: { [id: number]: ToeicQuestion } = {};
+      part5.forEach(question => {
+        questionsMap[question.id] = question;
+      });
+      
+      setAllToeicQuestions(prev => ({
+        ...prev,
+        ...questionsMap
+      }));
     }
     
     // Load Part 6 questions (Text Completion)
     if (toeic.questionsPart6.length > 0) {
       const part6 = toeicService.getToeicPart6ByIds(toeic.questionsPart6);
       setPart6Questions(part6);
+      
+      // Process each part6 item
+      part6.forEach(item => {
+        if (item.questions && item.questions.length > 0) {
+          loadQuestionsForPart(item.id, item.questions, "part6");
+        }
+      });
     }
     
     // Load Part 7 questions (Reading Comprehension)
@@ -94,13 +135,57 @@ export default function useToeicDetailPage() {
       const part7 = toeicService.getToeicPart7ByIds(toeic.questionsPart7);
       setPart7Questions(part7);
       
-      // Load subquestions for each Part 7 passage
-      const subQuestions: { [part7Id: number]: ToeicPart7Question[] } = {};
-      part7.forEach(passage => {
-        const questions = toeicService.getToeicPart7QuestionsByIds(passage.questions);
-        subQuestions[passage.id] = questions;
+      // Process each part7 item
+      part7.forEach(item => {
+        if (item.questions && item.questions.length > 0) {
+          loadQuestionsForPart(item.id, item.questions, "part7");
+        }
       });
-      setPart7SubQuestions(subQuestions);
+    }
+  };
+  
+  // Helper function to load questions for a specific part
+  const loadQuestionsForPart = (partId: number, questionIds: number[], partType: "part3" | "part4" | "part6" | "part7") => {
+    const questions = toeicService.getToeicQuestionsByIds(questionIds);
+    
+    // Create a questions map for global lookup
+    const questionsMap: { [id: number]: ToeicQuestion } = {};
+    questions.forEach(question => {
+      questionsMap[question.id] = question;
+    });
+    
+    // Update the global questions state
+    setAllToeicQuestions(prev => ({
+      ...prev,
+      ...questionsMap
+    }));
+    
+    // Update the specific part questions
+    switch (partType) {
+      case "part3":
+        setPart3ToeicQuestions(prev => ({
+          ...prev,
+          [partId]: questions
+        }));
+        break;
+      case "part4":
+        setPart4ToeicQuestions(prev => ({
+          ...prev,
+          [partId]: questions
+        }));
+        break;
+      case "part6":
+        setPart6ToeicQuestions(prev => ({
+          ...prev,
+          [partId]: questions
+        }));
+        break;
+      case "part7":
+        setPart7ToeicQuestions(prev => ({
+          ...prev,
+          [partId]: questions
+        }));
+        break;
     }
   };
 
@@ -163,30 +248,9 @@ export default function useToeicDetailPage() {
     setOpenUnpublishDialog(true); 
   };
   
-  // Get total questions in test
+  // Get total questions in test - always return 200 as per interface requirement
   const getTotalQuestions = () => {
-    let total = 0;
-    
-    total += part1Questions.length; // Part 1
-    total += part2Questions.length; // Part 2
-    
-    // Part 3 (each has 3 sub-questions)
-    total += part3Questions.length * 3;
-    
-    // Part 4 (each has 3 sub-questions)
-    total += part4Questions.length * 3;
-    
-    total += part5Questions.length; // Part 5
-    
-    // Part 6 (each has 4 sub-questions)
-    total += part6Questions.length * 4;
-    
-    // Part 7 (variable number of questions per passage)
-    Object.values(part7SubQuestions).forEach(questions => {
-      total += questions.length;
-    });
-    
-    return total;
+    return 200; // Fixed as per interface
   };
 
   return { 
@@ -200,7 +264,15 @@ export default function useToeicDetailPage() {
     part5Questions,
     part6Questions,
     part7Questions,
-    part7SubQuestions,
+    
+    // Questions organized by part
+    part3ToeicQuestions,
+    part4ToeicQuestions,
+    part6ToeicQuestions,
+    part7ToeicQuestions,
+    
+    // All questions in one object for lookup
+    allToeicQuestions,
     
     // Edit mode and management functions
     isEditMode, 

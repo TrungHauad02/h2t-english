@@ -6,20 +6,22 @@ import {
   FormControlLabel,
   Radio,
 } from '@mui/material';
-import { ToeicPart6, AnswerEnum } from 'interfaces/TestInterfaces';
+import { AnswerEnum, ToeicQuestion } from 'interfaces/TestInterfaces';
 import WEDocumentViewer from 'components/display/document/WEDocumentViewer';
 import ExplanationCollapse from '../common/ExplanationCollapse';
 import { useDarkMode } from 'hooks/useDarkMode';
 
 type Props = {
   questionNumberStart: number;
-  question: ToeicPart6;
-  selectedAnswers: Record<string, AnswerEnum>;
+  file: string;
+  questions: ToeicQuestion[];
+  selectedAnswers: Record<number, AnswerEnum>;
 };
 
 const Part6Item: React.FC<Props> = ({
   questionNumberStart,
-  question,
+  file,
+  questions,
   selectedAnswers,
 }) => {
   const { isDarkMode } = useDarkMode();
@@ -37,41 +39,31 @@ const Part6Item: React.FC<Props> = ({
     >
       <Box sx={{ bgcolor: '#03a9f4', color: 'white', px: 2, py: 1 }}>
         <Typography fontWeight="bold">
-          Questions {questionNumberStart}–{questionNumberStart + 3}
+          Questions {questionNumberStart}–{questionNumberStart + questions.length - 1}
         </Typography>
       </Box>
 
       <Box sx={{ display: 'flex', gap: 3, mt: 2 }}>
         <Box flex={1}>
-          <WEDocumentViewer fileUrl={question.file} lineHeight="2" sx={{ my: 2 }} />
+          <WEDocumentViewer fileUrl={file} lineHeight="2" sx={{ my: 2 }} />
         </Box>
 
         <Box flex={1} sx={{ overflowY: 'auto', maxHeight: '60vh' }}>
-          {[1, 2, 3, 4].map((num) => {
-            const questionKey = `${question.id}-${num}`;
-            const content = question[`contentQuestion${num}` as keyof ToeicPart6] as string;
-            const explanation = question[`explanationQuestion${num}` as keyof ToeicPart6] as string;
-            const correctAnswer = question[`correctAnswer${num}` as keyof ToeicPart6] as AnswerEnum;
-
-            const answers = [
-              question[`answer1Q${num}` as keyof ToeicPart6],
-              question[`answer2Q${num}` as keyof ToeicPart6],
-              question[`answer3Q${num}` as keyof ToeicPart6],
-              question[`answer4Q${num}` as keyof ToeicPart6],
-            ];
+          {questions.map((q, idx) => {
+            const correctAnswer = q.toeicAnswers.find(a => a.correct)?.content as AnswerEnum;
+            const selected = selectedAnswers[q.id];
 
             return (
-              <Box key={num} mb={3}>
+              <Box key={q.id} mb={3}>
                 <Typography fontWeight="bold" mb={1}>
-                  {questionNumberStart + num - 1}. {content}
+                  {questionNumberStart + idx}. {q.content}
                 </Typography>
 
-                <RadioGroup name={questionKey} value={selectedAnswers[questionKey] || ''}>
-                  {(['A', 'B', 'C', 'D'] as AnswerEnum[]).map((choice, idx) => {
+                <RadioGroup name={`question-${q.id}`} value={selected || ''}>
+                  {(['A', 'B', 'C', 'D'] as AnswerEnum[]).map((choice, index) => {
+                    const ansText = q.toeicAnswers[index]?.content;
                     const isCorrect = correctAnswer === choice;
-                    const isWrong =
-                      selectedAnswers[questionKey] === choice &&
-                      selectedAnswers[questionKey] !== correctAnswer;
+                    const isWrong = selected === choice && selected !== correctAnswer;
 
                     let bgColor = 'transparent';
                     let textColor = 'inherit';
@@ -89,7 +81,7 @@ const Part6Item: React.FC<Props> = ({
                         key={choice}
                         value={choice}
                         control={<Radio disabled />}
-                        label={`${choice}. ${answers[idx]}`}
+                        label={`${choice}. ${ansText}`}
                         sx={{
                           bgcolor: bgColor,
                           color: textColor,
@@ -102,7 +94,7 @@ const Part6Item: React.FC<Props> = ({
                   })}
                 </RadioGroup>
 
-                <ExplanationCollapse explanation={explanation} />
+                <ExplanationCollapse explanation={q.explanation} />
               </Box>
             );
           })}

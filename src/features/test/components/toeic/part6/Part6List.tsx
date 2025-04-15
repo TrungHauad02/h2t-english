@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, CircularProgress } from '@mui/material';
-import { ToeicPart6, AnswerEnum } from 'interfaces/TestInterfaces';
+import { ToeicPart6, ToeicQuestion, AnswerEnum } from 'interfaces/TestInterfaces';
 import { testService } from '../../../services/testServices';
 import Part6Item from './Part6Item';
 
@@ -19,18 +19,30 @@ const Part6List: React.FC<Props> = ({
   setCurrentIndex,
   onFinish,
 }) => {
-  const [questions, setQuestions] = useState<ToeicPart6[]>([]);
-  const [userAnswers, setUserAnswers] = useState<Record<string, AnswerEnum>>({});
+  const [passages, setPassages] = useState<ToeicPart6[]>([]);
+  const [questionsMap, setQuestionsMap] = useState<Record<number, ToeicQuestion[]>>({});
+  const [userAnswers, setUserAnswers] = useState<Record<number, AnswerEnum>>({});
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await testService.getToeicPart6ByIds(questionsPart6);
-      setQuestions(data);
+      const passages = await testService.getToeicPart6ByIds(questionsPart6);
+      setPassages(passages);
+
+      const questionData = await Promise.all(
+        passages.map((p) => testService.getToeicQuestionsByIds(p.questions))
+      );
+
+      const map: Record<number, ToeicQuestion[]> = {};
+      passages.forEach((p, i) => {
+        map[p.id] = questionData[i];
+      });
+      setQuestionsMap(map);
     };
+
     fetchData();
   }, [questionsPart6]);
 
-  if (questions.length === 0) {
+  if (passages.length === 0) {
     return (
       <Box display="flex" justifyContent="center" mt={10}>
         <CircularProgress />
@@ -38,18 +50,18 @@ const Part6List: React.FC<Props> = ({
     );
   }
 
-  const currentQuestion = questions[currentIndex];
+  const currentPassage = passages[currentIndex];
+  const currentQuestions = questionsMap[currentPassage.id] || [];
 
   return (
     <Box sx={{ gap: 4, px: 2, py: 4 }}>
       <Part6Item
-        key={currentQuestion.id}
+        key={currentPassage.id}
         questionNumberStart={startIndex + currentIndex * 4}
-        question={currentQuestion}
+        passage={currentPassage}
+        questions={currentQuestions}
         selectedAnswers={userAnswers}
-        onChange={(key, val) =>
-          setUserAnswers((prev) => ({ ...prev, [key]: val }))
-        }
+        onChange={(id, val) => setUserAnswers((prev) => ({ ...prev, [id]: val }))}
       />
     </Box>
   );

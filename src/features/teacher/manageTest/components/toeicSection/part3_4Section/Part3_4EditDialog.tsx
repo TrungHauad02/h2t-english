@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Grid } from '@mui/material';
-import { ToeicPart3_4 } from 'interfaces';
+import { Grid, Box, Button, Typography } from '@mui/material';
+import { ToeicPart3_4, ToeicQuestion, ToeicAnswer } from 'interfaces';
 import useColor from 'theme/useColor';
 import { useDarkMode } from 'hooks/useDarkMode';
-import { WETextField } from 'components/input';
 import { base64ToBlobUrl } from 'utils/convert';
+import AddIcon from '@mui/icons-material/Add';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import ListAltIcon from '@mui/icons-material/ListAlt';
+import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
+import CampaignIcon from '@mui/icons-material/Campaign';
 import { 
   ToeicEditDialogBase, 
   StatusSwitch,
   FormSectionCard,
   MediaFileSelector,
-  AnswerOptionsEditor,
   EditTabs,
-  QuestionTabPanel
+  QuestionTabPanel,
+  QuestionEditor
 } from '../dialogEdit';
 
 interface Part3_4EditDialogProps {
@@ -21,6 +25,8 @@ interface Part3_4EditDialogProps {
   partNumber: 3 | 4;
   onClose: () => void;
   onSave: (updatedQuestion: ToeicPart3_4) => void;
+  toeicQuestions?: { [partId: number]: ToeicQuestion[] };
+  mode?: 'edit' | 'add';
 }
 
 export default function Part3_4EditDialog({
@@ -28,20 +34,31 @@ export default function Part3_4EditDialog({
   question,
   partNumber,
   onClose,
-  onSave
+  onSave,
+  toeicQuestions = {},
+  mode = 'edit'
 }: Part3_4EditDialogProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   
   const [editedQuestion, setEditedQuestion] = useState<ToeicPart3_4>({ ...question });
   const [activeTab, setActiveTab] = useState(0);
+  const [subQuestions, setSubQuestions] = useState<ToeicQuestion[]>([]);
 
   useEffect(() => {
     if (open) {
       setEditedQuestion({ ...question });
       setActiveTab(0);
+
+      const questions = toeicQuestions[question.id] || [];
+      setSubQuestions(questions);
+
+
+      if (mode === 'add' && questions.length === 0) {
+        handleAddQuestion();
+      }
     }
-  }, [open, question]);
+  }, [open, question, toeicQuestions, mode]);
 
   const handleChange = (field: keyof ToeicPart3_4, value: any) => {
     if (field === "audio") {
@@ -71,62 +88,78 @@ export default function Part3_4EditDialog({
     onSave(editedQuestion);
   };
 
-  const answerOptions = [
-    { label: 'A', value: 'A' },
-    { label: 'B', value: 'B' },
-    { label: 'C', value: 'C' },
-    { label: 'D', value: 'D' },
-  ];
+  const handleQuestionChange = (index: number, field: keyof ToeicQuestion, value: any) => {
+    const updatedQuestions = [...subQuestions];
+    updatedQuestions[index] = {
+      ...updatedQuestions[index],
+      [field]: value
+    };
+    setSubQuestions(updatedQuestions);
+  };
 
+  const handleAddQuestion = () => {
+    if (subQuestions.length >= 3) {
+      return;
+    }
+
+    // Create empty answers for the new question
+    const emptyAnswers: ToeicAnswer[] = Array(4).fill(null).map((_, index) => ({
+      id: 0,
+      content: '',
+      correct: index === 0,
+      questionId: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: true,
+    }));
+
+    // Create new empty question
+    const newQuestion: ToeicQuestion = {
+      id: 0,
+      content: '',
+      explanation: '',
+      toeicAnswers: emptyAnswers,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: true
+    };
+
+    // Add to questions list
+    const updatedQuestions = [...subQuestions, newQuestion];
+    setSubQuestions(updatedQuestions);
+    
+    // Add question ID to part
+    const updatedPart = {
+      ...editedQuestion,
+      questions: [...editedQuestion.questions, 0]  // Placeholder ID will be replaced by backend
+    };
+    setEditedQuestion(updatedPart);
+    
+    // Set active tab to the new question
+    setActiveTab(updatedQuestions.length);
+  };
+
+  // Generate tabs dynamically based on questions
   const tabs = [
-    { label: "Basic Information", id: "basic-info" },
-    { label: "Question 1", id: "question-1" },
-    { label: "Question 2", id: "question-2" },
-    { label: "Question 3", id: "question-3" },
+    { 
+      label: "Basic Information", 
+      id: "basic-info",
+      icon: <ListAltIcon fontSize="small" />
+    },
+    ...subQuestions.map((_, index) => ({
+      label: `Question ${index + 1}`,
+      id: `question-${index + 1}`,
+      icon: <QuestionAnswerIcon fontSize="small" />
+    }))
   ];
 
   const partTitle = partNumber === 3 ? "Conversations" : "Talks";
-  const dialogTitle = `Edit Part ${partNumber}: ${partTitle}`;
-
-  // Helper function to get the appropriate answers array for each question
-  const getAnswersForQuestion = (questionIndex: number) => {
-    switch (questionIndex) {
-      case 1:
-        return [
-          editedQuestion.answer1Q1,
-          editedQuestion.answer2Q1,
-          editedQuestion.answer3Q1,
-          editedQuestion.answer4Q1
-        ];
-      case 2:
-        return [
-          editedQuestion.answer1Q2,
-          editedQuestion.answer2Q2,
-          editedQuestion.answer3Q2,
-          editedQuestion.answer4Q2
-        ];
-      case 3:
-        return [
-          editedQuestion.answer1Q3,
-          editedQuestion.answer2Q3,
-          editedQuestion.answer3Q3,
-          editedQuestion.answer4Q3
-        ];
-      default:
-        return ["", "", "", ""];
-    }
-  };
-
-  // Helper function to update an answer
-  const handleAnswerChange = (questionIndex: number, answerIndex: number, value: string) => {
-    const answerField = `answer${answerIndex + 1}Q${questionIndex}` as keyof ToeicPart3_4;
-    handleChange(answerField, value);
-  };
-
-  // Helper function to get correct answer field
-  const getCorrectAnswerField = (questionIndex: number) => {
-    return `correctAnswer${questionIndex}` as keyof ToeicPart3_4;
-  };
+  const dialogTitle = mode === 'edit' 
+    ? `Edit Part ${partNumber}: ${partTitle}` 
+    : `Add Part ${partNumber}: ${partTitle}`;
+  const partIcon = partNumber === 3 
+    ? <RecordVoiceOverIcon sx={{ color: isDarkMode ? color.teal300 : color.teal600 }} /> 
+    : <CampaignIcon sx={{ color: isDarkMode ? color.teal300 : color.teal600 }} />;
 
   return (
     <ToeicEditDialogBase
@@ -136,20 +169,55 @@ export default function Part3_4EditDialog({
       title={dialogTitle}
       maxWidth="lg"
     >
-      <EditTabs
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        baseId="part3-4-edit"
-      />
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        mb: 3 
+      }}>
+        <EditTabs
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          baseId="part3-4-edit"
+        />
+        
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={handleAddQuestion}
+          disabled={subQuestions.length >= 3}
+          sx={{
+            ml: 2,
+            backgroundColor: subQuestions.length >= 3 
+              ? (isDarkMode ? color.gray600 : color.gray400)
+              : (isDarkMode ? color.emerald700 : color.emerald600),
+            color: subQuestions.length >= 3
+              ? (isDarkMode ? color.gray400 : color.gray600)
+              : color.white,
+            '&:hover': {
+              backgroundColor: subQuestions.length >= 3
+                ? (isDarkMode ? color.gray600 : color.gray400)
+                : (isDarkMode ? color.emerald600 : color.emerald500)
+            },
+            borderRadius: '0.75rem',
+            px: 2,
+            height: '36px'
+          }}
+        >
+          Add Question {subQuestions.length >= 3 ? '(Max 3)' : ''}
+        </Button>
+      </Box>
 
       <QuestionTabPanel value={activeTab} index={0} id="part3-4-edit">
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <StatusSwitch 
-              status={editedQuestion.status}
-              onChange={(value) => handleChange('status', value)}
-            />
+            <FormSectionCard title="Status">
+              <StatusSwitch 
+                status={editedQuestion.status}
+                onChange={(value) => handleChange('status', value)}
+              />
+            </FormSectionCard>
           </Grid>
 
           <Grid item xs={12}>
@@ -167,34 +235,34 @@ export default function Part3_4EditDialog({
 
           <Grid item xs={12}>
             <FormSectionCard title="Transcript">
-              <WETextField
-                label="Transcript"
-                type="text"
+              <Typography 
+                variant="subtitle2" 
+                sx={{ 
+                  mb: 1,
+                  color: isDarkMode ? color.teal300 : color.teal600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1
+                }}
+              >
+                {partIcon}
+                {partNumber === 3 ? "Conversation Transcript" : "Talk Transcript"}
+              </Typography>
+              
+              <textarea
                 value={editedQuestion.transcript}
                 onChange={(e) => handleChange("transcript", e.target.value)}
-                multiline
-                rows={5}
-                required
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: "1rem",
-                    width: "100%",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: `1px solid ${isDarkMode ? color.gray600 : color.gray400}`,
-                    },
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      border: `2px solid ${
-                        isDarkMode ? color.emerald400 : color.emerald500
-                      }`,
-                    },
-                    backgroundColor: isDarkMode ? color.gray900 : color.white,
-                  },
-                  "& .MuiInputLabel-root": {
-                    color: isDarkMode ? color.gray300 : color.gray700,
-                    "&.Mui-focused": {
-                      color: isDarkMode ? color.emerald400 : color.emerald600
-                    }
-                  }
+                rows={6}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '16px',
+                  backgroundColor: isDarkMode ? color.gray900 : color.white,
+                  color: isDarkMode ? color.gray100 : color.gray900,
+                  border: `1px solid ${isDarkMode ? color.gray600 : color.gray400}`,
+                  resize: 'vertical',
+                  fontFamily: 'inherit',
+                  fontSize: '1rem',
                 }}
               />
             </FormSectionCard>
@@ -202,107 +270,19 @@ export default function Part3_4EditDialog({
         </Grid>
       </QuestionTabPanel>
 
-      {[1, 2, 3].map((questionIndex) => (
+      {subQuestions.map((subQuestion, index) => (
         <QuestionTabPanel 
-          key={questionIndex} 
+          key={index} 
           value={activeTab} 
-          index={questionIndex}
+          index={index + 1}
           id="part3-4-edit"
         >
-          <QuestionContentEditor
-            questionIndex={questionIndex}
-            editedQuestion={editedQuestion}
-            handleChange={handleChange}
-            answerOptions={answerOptions}
-            getAnswersForQuestion={getAnswersForQuestion}
-            handleAnswerChange={handleAnswerChange}
-            getCorrectAnswerField={getCorrectAnswerField}
+          <QuestionEditor
+            question={subQuestion}
+            onChange={(field, value) => handleQuestionChange(index, field, value)}
           />
         </QuestionTabPanel>
       ))}
     </ToeicEditDialogBase>
-  );
-}
-
-// Sub-component for question content editing
-interface QuestionContentEditorProps {
-  questionIndex: number;
-  editedQuestion: ToeicPart3_4;
-  handleChange: (field: keyof ToeicPart3_4, value: any) => void;
-  answerOptions: { label: string; value: string }[];
-  getAnswersForQuestion: (questionIndex: number) => string[];
-  handleAnswerChange: (questionIndex: number, answerIndex: number, value: string) => void;
-  getCorrectAnswerField: (questionIndex: number) => keyof ToeicPart3_4;
-}
-
-function QuestionContentEditor({
-  questionIndex,
-  editedQuestion,
-  handleChange,
-  answerOptions,
-  getAnswersForQuestion,
-  handleAnswerChange,
-  getCorrectAnswerField
-}: QuestionContentEditorProps) {
-  const color = useColor();
-  const { isDarkMode } = useDarkMode();
-  
-  const contentField = `contentQuestion${questionIndex}` as keyof ToeicPart3_4;
-  const correctAnswerField = getCorrectAnswerField(questionIndex);
-  const answers = getAnswersForQuestion(questionIndex);
-
-  return (
-    <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <FormSectionCard title={`Question ${questionIndex}`}>
-          <WETextField
-            label={`Question ${questionIndex} Content`}
-            type="text"
-            value={editedQuestion[contentField] as string}
-            onChange={(e) => handleChange(contentField, e.target.value)}
-            multiline
-            rows={3}
-            required
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "1rem",
-                width: "100%",
-                "& .MuiOutlinedInput-notchedOutline": {
-                  border: `1px solid ${isDarkMode ? color.gray600 : color.gray400}`,
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  border: `2px solid ${
-                    isDarkMode ? color.emerald400 : color.emerald500
-                  }`,
-                },
-                backgroundColor: isDarkMode ? color.gray900 : color.white,
-              },
-              "& .MuiInputLabel-root": {
-                color: isDarkMode ? color.gray300 : color.gray700,
-                "&.Mui-focused": {
-                  color: isDarkMode ? color.emerald400 : color.emerald600
-                }
-              }
-            }}
-          />
-        </FormSectionCard>
-      </Grid>
-
-      <Grid item xs={12}>
-        <FormSectionCard title="Answer Options">
-          <AnswerOptionsEditor
-            answers={answers}
-            correctAnswer={editedQuestion[correctAnswerField] as string}
-            onAnswerChange={(index, value) => 
-              handleAnswerChange(questionIndex, index, value)
-            }
-            onCorrectAnswerChange={(value) => 
-              handleChange(correctAnswerField, value)
-            }
-            answerOptions={answerOptions}
-          />
-        </FormSectionCard>
-      </Grid>
-    </Grid>
   );
 }

@@ -1,26 +1,47 @@
 import React, { useState } from 'react';
-import { Grid, Divider, Typography, Box } from '@mui/material';
-import { ToeicPart7, ToeicPart7Question } from 'interfaces';
+import { 
+  Grid, 
+  Divider, 
+  Typography, 
+  Box, 
+  Paper,
+  Chip,
+  Fade,
+  Zoom,
+  IconButton,
+  Tooltip
+} from '@mui/material';
+import { ToeicPart7, ToeicQuestion, AnswerEnum } from 'interfaces';
 import WEDocumentViewer from "components/display/document/WEDocumentViewer";
 import useColor from 'theme/useColor';
 import { useDarkMode } from 'hooks/useDarkMode';
 import { 
   PartContainer,
   TabNavigation,
-  QuestionContent
+  QuestionContent,
+  AnswerOptionsGrid
 } from '../common';
 import Part7EditDialog from './Part7EditDialog';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
+import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
+import DescriptionIcon from '@mui/icons-material/Description';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 
 interface Part7SectionProps {
   questions: ToeicPart7[];
-  part7SubQuestions?: { [part7Id: number]: ToeicPart7Question[] };
-  onUpdatePassage?: (updatedPassage: ToeicPart7, updatedQuestions: ToeicPart7Question[]) => void;
+  toeicQuestions?: { [part7Id: number]: ToeicQuestion[] };
+  onUpdateQuestion?: (updatedPassage: ToeicPart7, updatedQuestions: ToeicQuestion[]) => void;
+  onAddQuestion?: (newPassage: ToeicPart7, newQuestions: ToeicQuestion[]) => void;
 }
 
 export default function Part7Section({
   questions,
-  part7SubQuestions = {},
-  onUpdatePassage
+  toeicQuestions = {},
+  onUpdateQuestion,
+  onAddQuestion
 }: Part7SectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -28,9 +49,11 @@ export default function Part7Section({
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
   const [showExplanation, setShowExplanation] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [dialogMode, setDialogMode] = useState<'edit' | 'add'>('edit');
+  const [layoutMode, setLayoutMode] = useState<'split' | 'fullscreen'>('split');
 
   const currentPassage = questions.length > 0 ? questions[currentPassageIndex] : null;
-  const subQuestions = currentPassage ? part7SubQuestions[currentPassage.id] || [] : [];
+  const subQuestions = currentPassage ? toeicQuestions[currentPassage.id] || [] : [];
   const currentQuestion = subQuestions.length > activeQuestionIndex ? subQuestions[activeQuestionIndex] : null;
 
   const onSelectPassage = (index: number) => {
@@ -65,6 +88,12 @@ export default function Part7Section({
   };
 
   const handleOpenEditDialog = () => {
+    setDialogMode('edit');
+    setIsEditDialogOpen(true);
+  };
+
+  const handleOpenAddDialog = () => {
+    setDialogMode('add');
     setIsEditDialogOpen(true);
   };
 
@@ -72,16 +101,40 @@ export default function Part7Section({
     setIsEditDialogOpen(false);
   };
 
-  const handleSavePassage = (updatedPassage: ToeicPart7, updatedQuestions: ToeicPart7Question[]) => {
-    if (onUpdatePassage) {
-      onUpdatePassage(updatedPassage, updatedQuestions);
+  const handleSavePassage = (updatedPassage: ToeicPart7, updatedQuestions: ToeicQuestion[]) => {
+    if (dialogMode === 'edit' && onUpdateQuestion) {
+      onUpdateQuestion(updatedPassage, updatedQuestions);
+    } else if (dialogMode === 'add' && onAddQuestion) {
+      onAddQuestion(updatedPassage, updatedQuestions);
     }
     handleCloseEditDialog();
   };
+  
+  const toggleLayoutMode = () => {
+    setLayoutMode(prev => prev === 'split' ? 'fullscreen' : 'split');
+  };
 
-  if (!currentPassage || questions.length === 0) {
+  // Create empty passage and questions for add mode
+  const emptyPassage: ToeicPart7 = {
+    id: 0,
+    file: '',
+    questions: [],
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  };
+
+  const emptyQuestions: ToeicQuestion[] = [];
+
+  if (!currentPassage && questions.length === 0 && dialogMode !== 'add') {
     return null;
   }
+
+  // Styling
+  const accentColor = isDarkMode ? color.teal300 : color.teal600;
+  const borderColor = isDarkMode ? color.gray700 : color.gray300;
+  const bgColor = isDarkMode ? color.gray800 : color.white;
+  const cardBgColor = isDarkMode ? color.gray900 : color.gray50;
 
   // Generate tab labels for questions
   const questionTabs = subQuestions.map((_, index) => `Question ${index + 1}`);
@@ -91,90 +144,235 @@ export default function Part7Section({
       <PartContainer
         id="part7-section"
         title="Part 7: Reading Comprehension"
-        subtitle={`Passage ${currentPassageIndex + 1} of ${questions.length}`}
+        subtitle={`Read the passage and answer the questions - Passage ${currentPassageIndex + 1} of ${questions.length}`}
         currentIndex={currentPassageIndex}
         totalItems={questions.length}
         onSelectQuestion={onSelectPassage}
         onPrevious={onNavigatePrevious}
         onNext={onNavigateNext}
-        onEditQuestion={handleOpenEditDialog }
+        onEditQuestion={handleOpenEditDialog}
+        onAddQuestion={handleOpenAddDialog}
       >
-        <Grid container spacing={3}>
-          {/* Reading Passage */}
-          <Grid item xs={12}>
-            <Box mb={2}>
-              <Typography
-                variant="h6"
-                sx={{
-                  mb: 2,
-                  color: isDarkMode ? color.teal300 : color.teal700,
-                  fontWeight: 'bold',
-                }}
-              >
-                Reading Passage
-              </Typography>
-              
-              <WEDocumentViewer 
-                fileUrl={currentPassage.file}
-                maxHeight="450px"
-                padding="16px"
-                sx={{
-                  mb: 3,
-                  border: `1px solid ${isDarkMode ? color.gray500 : color.gray300}`,
-                  borderRadius: '0.75rem',
-                }}
-                fontFamily="'Times New Roman', serif"
-                lineHeight="1.6"
-              />
-            </Box>
-          </Grid>
-          
-          <Grid item xs={12}>
-            <Divider sx={{ mb: 3 }} />
+        {currentPassage && (
+          <Grid container spacing={3}>
+            {/* Reading Passage */}
+            <Grid item xs={12} >
+              <Fade in={true} timeout={300}>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    backgroundColor: bgColor,
+                    borderRadius: '1rem',
+                    p: 3,
+                    border: `1px solid ${borderColor}`,
+                    position: 'relative',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        color: isDarkMode ? color.teal300 : color.teal700,
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      <MenuBookIcon />
+                      Reading Passage
+                    </Typography>
+                    
+                    <Zoom in={true}>
+                      <Chip
+                        icon={<DescriptionIcon />}
+                        label={`Passage ${currentPassageIndex + 1}`}
+                        color="primary"
+                        sx={{
+                          backgroundColor: accentColor,
+                          color: isDarkMode ? color.gray900 : color.white,
+                          fontWeight: 'bold',
+                          '& .MuiChip-icon': {
+                            color: isDarkMode ? color.gray900 : color.white
+                          }
+                        }}
+                      />
+                    </Zoom>
+                  </Box>
+                  
+                 
+                    <WEDocumentViewer 
+                      fileUrl={currentPassage.file}
+                      maxHeight={layoutMode === 'fullscreen' ? '650px' : '550px'}
+                      padding="16px"
+                      sx={{
+                        borderRadius: '0.75rem',
+                      }}
+                      fontFamily="'Times New Roman', serif"
+                      lineHeight="1.6"
+                    />
+                </Paper>
+              </Fade>
+            </Grid>
             
-            {/* Questions Tabs */}
-            {subQuestions.length > 0 && (
-              <>
-                <TabNavigation 
-                  tabs={questionTabs}
-                  activeTab={activeQuestionIndex}
-                  onChange={handleChangeQuestion}
-                  variant="scrollable"
-                />
-                
-                {/* Question Content */}
-                {currentQuestion && (
-                  <QuestionContent 
-                    content={currentQuestion.content}
-                    questionNumber={activeQuestionIndex + 1}
-                    explanation={currentQuestion.explanation}
-                    showExplanation={showExplanation}
-                    onToggleExplanation={toggleExplanation}
-                    options={[
-                      currentQuestion.answer1,
-                      currentQuestion.answer2,
-                      currentQuestion.answer3,
-                      currentQuestion.answer4
-                    ]}
-                    correctAnswer={currentQuestion.correctAnswer}
-                  />
-                )}
-              </>
-            )}
+            {/* Questions Section */}
+            <Grid item xs={12} >
+              <Fade in={true} timeout={300}>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    backgroundColor: bgColor,
+                    borderRadius: '1rem',
+                    p: 3,
+                    border: `1px solid ${borderColor}`,
+                    position: 'relative',
+                    overflow: 'hidden',
+                    height: '100%'
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      mb: 2,
+                      color: isDarkMode ? color.teal300 : color.teal700,
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    <QuestionAnswerIcon />
+                    Questions
+                  </Typography>
+                  
+                  <Box>
+                    <Box 
+                      sx={{
+                        backgroundColor: cardBgColor,
+                        borderRadius: '1rem',
+                        border: `1px solid ${borderColor}`,
+                        p: 2,
+                        mb: 3
+                      }}
+                    >
+                      <TabNavigation 
+                        tabs={questionTabs}
+                        activeTab={activeQuestionIndex}
+                        onChange={handleChangeQuestion}
+                        variant="scrollable"
+                      />
+                    </Box>
+
+                    {currentQuestion && (
+                      <Box
+                        sx={{
+                          backgroundColor: cardBgColor,
+                          borderRadius: '1rem',
+                          border: `1px solid ${borderColor}`,
+                          p: 3,
+                          maxHeight: '400px',
+                          overflowY: 'auto'
+                        }}
+                      >
+                        <Box sx={{ mb: 3 }}>
+                          <Chip
+                            icon={<FormatQuoteIcon />}
+                            label="Question"
+                            size="small"
+                            sx={{
+                              backgroundColor: isDarkMode ? color.teal800 : color.teal100,
+                              color: isDarkMode ? color.teal200 : color.teal800,
+                              fontWeight: 'bold',
+                              mb: 2
+                            }}
+                          />
+                          
+                          <QuestionContent
+                            content={currentQuestion.content}
+                            questionNumber={activeQuestionIndex + 1}
+                          />
+                        </Box>
+
+                        <AnswerOptionsGrid
+                          options={currentQuestion.toeicAnswers.map((ans, i) => 
+                            `(${String.fromCharCode(65 + i)}) ${ans.content}`
+                          )}
+                          correctAnswer={
+                            currentQuestion.toeicAnswers.findIndex(a => a.correct) === 0 ? AnswerEnum.A : 
+                            currentQuestion.toeicAnswers.findIndex(a => a.correct) === 1 ? AnswerEnum.B : 
+                            currentQuestion.toeicAnswers.findIndex(a => a.correct) === 2 ? AnswerEnum.C : 
+                            AnswerEnum.D
+                          } 
+                        />
+
+                        {currentQuestion.explanation && showExplanation && (
+                          <Box 
+                            sx={{ 
+                              mt: 3, 
+                              pt: 3, 
+                              borderTop: `1px solid ${borderColor}` 
+                            }}
+                          >
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                              <TipsAndUpdatesIcon sx={{ color: accentColor }} />
+                              <Typography 
+                                fontWeight="bold" 
+                                color={accentColor}
+                              >
+                                Explanation
+                              </Typography>
+                            </Box>
+                            
+                            <Typography 
+                              sx={{ 
+                                fontStyle: 'italic',
+                                color: isDarkMode ? color.gray300 : color.gray700
+                              }}
+                            >
+                              {currentQuestion.explanation}
+                            </Typography>
+                          </Box>
+                        )}
+                        
+                        {currentQuestion.explanation && !showExplanation && (
+                          <Box sx={{ textAlign: 'right', mt: 2 }}>
+                            <Chip
+                              icon={<TipsAndUpdatesIcon />}
+                              label="Show Explanation"
+                              onClick={toggleExplanation}
+                              clickable
+                              sx={{
+                                backgroundColor: isDarkMode ? color.teal900 : color.teal50,
+                                color: accentColor,
+                                borderColor: accentColor,
+                                border: '1px solid',
+                                '&:hover': {
+                                  backgroundColor: isDarkMode ? color.teal800 : color.teal100,
+                                }
+                              }}
+                            />
+                          </Box>
+                        )}
+                      </Box>
+                    )}
+                  </Box>
+                </Paper>
+              </Fade>
+            </Grid>
           </Grid>
-        </Grid>
+        )}
       </PartContainer>
 
       {/* Edit Dialog */}
-      {currentPassage && (
-        <Part7EditDialog
-          open={isEditDialogOpen}
-          passage={currentPassage}
-          questions={subQuestions}
-          onClose={handleCloseEditDialog}
-          onSave={handleSavePassage}
-        />
-      )}
+      <Part7EditDialog
+        open={isEditDialogOpen}
+        passage={dialogMode === 'edit' ? currentPassage || emptyPassage : emptyPassage}
+        questions={dialogMode === 'edit' ? subQuestions : emptyQuestions}
+        onClose={handleCloseEditDialog}
+        onSave={handleSavePassage}
+        mode={dialogMode}
+      />
     </>
   );
 }

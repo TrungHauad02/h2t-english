@@ -20,11 +20,8 @@ import {
   SubmitCompetitionWriting,
   SubmitToeicPart1,
   SubmitToeicPart2,
-  SubmitToeicPart3_4,
-  SubmitToeicPart5,
-  SubmitToeicPart6,
-  SubmitToeicPart7,
   AnswerEnum,
+  SubmitToeicAnswer
 
 } from "interfaces";
 
@@ -777,17 +774,16 @@ export const submitToeicPart2: SubmitToeicPart2[] = [
   },
 ];
 
-export const submitToeicPart3_4: SubmitToeicPart3_4[] = [
+export const submitToeicAnswers: SubmitToeicAnswer[] = [
+  // Part 3_4
   {
     id: 1,
     status: true,
     createdAt: new Date(),
     updatedAt: new Date(),
     submitToeicId: 1,
-    toeicPart3_4Id: 1,
-    answerQ1: AnswerEnum.A,
-    answerQ2: AnswerEnum.C,
-    answerQ3: AnswerEnum.D,
+    toeicQuestionId: 101,
+    toeicAnswerId: 1001,
   },
   {
     id: 2,
@@ -795,31 +791,8 @@ export const submitToeicPart3_4: SubmitToeicPart3_4[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     submitToeicId: 1,
-    toeicPart3_4Id: 2,
-    answerQ1: AnswerEnum.A,
-    answerQ2: AnswerEnum.C,
-    answerQ3: AnswerEnum.D,
-  },
-];
-
-export const submitToeicPart5: SubmitToeicPart5[] = [
-  {
-    id: 1,
-    status: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    submitToeicId: 1,
-    toeicPart5Id: 1,
-    answer: AnswerEnum.C,
-  },
-  {
-    id: 2,
-    status: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    submitToeicId: 1,
-    toeicPart5Id: 2,
-    answer: AnswerEnum.C,
+    toeicQuestionId: 102,
+    toeicAnswerId: 1003,
   },
   {
     id: 3,
@@ -827,8 +800,8 @@ export const submitToeicPart5: SubmitToeicPart5[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     submitToeicId: 1,
-    toeicPart5Id: 3,
-    answer: AnswerEnum.C,
+    toeicQuestionId: 103,
+    toeicAnswerId: 1004,
   },
   {
     id: 4,
@@ -836,59 +809,160 @@ export const submitToeicPart5: SubmitToeicPart5[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     submitToeicId: 1,
-    toeicPart5Id: 4,
-    answer: AnswerEnum.C,
+    toeicQuestionId: 104,
+    toeicAnswerId: 1001,
+  },
+  {
+    id: 5,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicQuestionId: 105,
+    toeicAnswerId: 1003,
+  },
+  {
+    id: 6,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicQuestionId: 106,
+    toeicAnswerId: 1004,
+  },
+
+  // Part 5
+  {
+    id: 7,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicQuestionId: 201,
+    toeicAnswerId: 2003,
+  },
+  {
+    id: 8,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicQuestionId: 202,
+    toeicAnswerId: 2003,
+  },
+  {
+    id: 9,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicQuestionId: 203,
+    toeicAnswerId: 2003,
+  },
+  {
+    id: 10,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicQuestionId: 204,
+    toeicAnswerId: 2003,
+  },
+
+  // Part 6 (4 câu / đoạn)
+  {
+    id: 11,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicQuestionId: 301,
+    toeicAnswerId: 3001,
+  },
+  {
+    id: 12,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicQuestionId: 302,
+    toeicAnswerId: 3002,
+  },
+  {
+    id: 13,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicQuestionId: 303,
+    toeicAnswerId: 3003,
+  },
+  {
+    id: 14,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicQuestionId: 304,
+    toeicAnswerId: 3004,
+  },
+  {
+    id: 15,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicQuestionId: 305,
+    toeicAnswerId: 3001,
+  },
+  {
+    id: 16,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicQuestionId: 306,
+    toeicAnswerId: 3002,
+  },
+  {
+    id: 17,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicQuestionId: 307,
+    toeicAnswerId: 3003,
+  },
+  {
+    id: 18,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicQuestionId: 308,
+    toeicAnswerId: 3004,
+  },
+
+  // Part 7
+  {
+    id: 19,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicQuestionId: 401,
+    toeicAnswerId: 4002,
+  },
+  {
+    id: 20,
+    status: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    submitToeicId: 1,
+    toeicQuestionId: 402,
+    toeicAnswerId: 4002,
   },
 ];
-
-export const submitToeicPart6: SubmitToeicPart6[] = [
-  {
-    id: 1,
-    status: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    submitToeicId: 1,
-    toeicPart6Id: 1,
-    answerQ1: AnswerEnum.A,
-    answerQ2: AnswerEnum.B,
-    answerQ3: AnswerEnum.C,
-    answerQ4: AnswerEnum.D,
-  },
-  {
-    id: 2,
-    status: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    submitToeicId: 1,
-    toeicPart6Id: 2,
-    answerQ1: AnswerEnum.A,
-    answerQ2: AnswerEnum.B,
-    answerQ3: AnswerEnum.C,
-    answerQ4: AnswerEnum.D,
-  },
-];
-
-export const submitToeicPart7: SubmitToeicPart7[] = [
-  {
-    id: 1,
-    status: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    submitToeicId: 1,
-    toeicPart7QuestionId: 1,
-    answer: AnswerEnum.B,
-  },
-  {
-    id: 2,
-    status: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    submitToeicId: 1,
-    toeicPart7QuestionId: 2,
-    answer: AnswerEnum.B,
-  },
-];
-
 
 
 
@@ -912,8 +986,6 @@ export const mockData = {
   submitCompetitionWriting,
   submitToeicPart1,
   submitToeicPart2,
-  submitToeicPart3_4,
-  submitToeicPart5,
-  submitToeicPart6,
-  submitToeicPart7,
+  submitToeicAnswers
+
 };
