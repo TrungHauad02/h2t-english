@@ -1,36 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { Grid } from '@mui/material';
-import { ToeicPart6,  } from 'interfaces';
+import { 
+  Grid, 
+  Button, 
+  Box, 
+  Typography
+} from '@mui/material';
+import { ToeicPart6, ToeicQuestion, ToeicAnswer } from 'interfaces';
 import useColor from 'theme/useColor';
 import { useDarkMode } from 'hooks/useDarkMode';
 import { WETextField, WEDocumentInput } from 'components/input';
 import { base64ToBlobUrl } from 'utils/convert';
+import AddIcon from '@mui/icons-material/Add';
 import { 
   ToeicEditDialogBase, 
   StatusSwitch,
   FormSectionCard,
-  AnswerOptionsEditor,
   EditTabs,
-  QuestionTabPanel
+  QuestionTabPanel,
+  QuestionEditor
 } from '../dialogEdit';
 
 interface Part6EditDialogProps {
   open: boolean;
-  question: ToeicPart6;
+  question: ToeicPart6 & { questionData: ToeicQuestion[] };
   onClose: () => void;
   onSave: (updatedQuestion: ToeicPart6) => void;
+  mode?: 'edit' | 'add';
 }
 
 export default function Part6EditDialog({ 
   open, 
   question, 
   onClose, 
-  onSave 
+  onSave,
+  mode = 'edit'
 }: Part6EditDialogProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   
-  const [editedQuestion, setEditedQuestion] = useState<ToeicPart6>({ ...question });
+  const [editedQuestion, setEditedQuestion] = useState<ToeicPart6 & { questionData: ToeicQuestion[] }>({ ...question });
   const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
@@ -56,66 +64,127 @@ export default function Part6EditDialog({
   };
 
   const handleSave = () => {
-    onSave(editedQuestion);
+    const { questionData, ...saveData } = editedQuestion;
+    onSave(saveData);
   };
 
-  // Helper function to get the appropriate field names for a question
-  const getQuestionFields = (questionIndex: number) => {
-    return {
-      content: `contentQuestion${questionIndex}` as keyof ToeicPart6,
-      explanation: `explanationQuestion${questionIndex}` as keyof ToeicPart6,
-      correctAnswer: `correctAnswer${questionIndex}` as keyof ToeicPart6,
-      answers: [
-        `answer1Q${questionIndex}` as keyof ToeicPart6,
-        `answer2Q${questionIndex}` as keyof ToeicPart6,
-        `answer3Q${questionIndex}` as keyof ToeicPart6,
-        `answer4Q${questionIndex}` as keyof ToeicPart6
-      ]
+  const handleQuestionChange = (questionIndex: number, field: keyof ToeicQuestion, value: any) => {
+    const updatedQuestionData = [...editedQuestion.questionData];
+    updatedQuestionData[questionIndex] = {
+      ...updatedQuestionData[questionIndex],
+      [field]: value
     };
+    setEditedQuestion({
+      ...editedQuestion,
+      questionData: updatedQuestionData
+    });
+
+    if (field === 'content') {
+      handleChange(`contentQuestion${questionIndex + 1}` as keyof ToeicPart6, value);
+    } else if (field === 'explanation') {
+      handleChange(`explanationQuestion${questionIndex + 1}` as keyof ToeicPart6, value);
+    }
   };
 
-  // Helper function to get answer values for a question
-  const getAnswerValues = (questionIndex: number) => {
-    const fields = getQuestionFields(questionIndex);
-    return fields.answers.map(field => editedQuestion[field] as string);
-  };
+  const handleAddQuestion = () => {
+    if (editedQuestion.questionData.length >= 4) {
+      return;
+    }
+    
+    const emptyAnswers: ToeicAnswer[] = Array(4).fill(null).map((_, index) => ({
+      id: 0,
+      content: '',
+      correct: index === 0,
+      questionId: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: true,
+    }));
 
-  // Helper function to update an answer value
-  const handleAnswerChange = (questionIndex: number, answerIndex: number, value: string) => {
-    const fields = getQuestionFields(questionIndex);
-    const field = fields.answers[answerIndex];
-    handleChange(field, value);
-  };
+    const newQuestion: ToeicQuestion = {
+      id: 0,
+      content: '',
+      explanation: '',
+      toeicAnswers: emptyAnswers,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: true
+    };
 
-  const answerOptions = [
-    { label: 'A', value: 'A' },
-    { label: 'B', value: 'B' },
-    { label: 'C', value: 'C' },
-    { label: 'D', value: 'D' },
-  ];
+    const questionIndex = editedQuestion.questionData.length + 1;
+    const updatedQuestion = {
+      ...editedQuestion,
+      [`contentQuestion${questionIndex}`]: '',
+      [`explanationQuestion${questionIndex}`]: '',
+      [`correctAnswer${questionIndex}`]: 'A',
+      [`answer1Q${questionIndex}`]: '',
+      [`answer2Q${questionIndex}`]: '',
+      [`answer3Q${questionIndex}`]: '',
+      [`answer4Q${questionIndex}`]: '',
+      questionData: [...editedQuestion.questionData, newQuestion]
+    };
+
+    setEditedQuestion(updatedQuestion);
+    setActiveTab(questionIndex);
+  };
 
   const tabs = [
     { label: "Document", id: "document-tab" },
-    { label: "Question 1", id: "question-1-tab" },
-    { label: "Question 2", id: "question-2-tab" },
-    { label: "Question 3", id: "question-3-tab" },
-    { label: "Question 4", id: "question-4-tab" }
+    ...editedQuestion.questionData.map((_, index) => ({
+      label: `Question ${index + 1}`, 
+      id: `question-${index + 1}-tab`
+    }))
   ];
+
+  // If it's add mode and no questions exist yet, add one automatically on first render
+  useEffect(() => {
+    if (mode === 'add' && open && editedQuestion.questionData.length === 0) {
+      handleAddQuestion();
+    }
+  }, [mode, open, editedQuestion.questionData.length]);
 
   return (
     <ToeicEditDialogBase
       open={open}
       onClose={onClose}
       onSave={handleSave}
-      title="Edit Part 6 Question"
+      title={mode === 'edit' ? "Edit Part 6 Question" : "Add Part 6 Question"}
       maxWidth="lg"
     >
-      <EditTabs
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        baseId="part6-edit"
-      />
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <EditTabs
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          baseId="part6-edit"
+        />
+        
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={handleAddQuestion}
+          disabled={editedQuestion.questionData.length >= 4}
+          sx={{
+            ml: 2,
+            backgroundColor: editedQuestion.questionData.length >= 4 
+              ? (isDarkMode ? color.gray600 : color.gray400)
+              : (isDarkMode ? color.emerald700 : color.emerald600),
+            color: editedQuestion.questionData.length >= 4
+              ? (isDarkMode ? color.gray400 : color.gray600)
+              : color.white,
+            '&:hover': {
+              backgroundColor: editedQuestion.questionData.length >= 4
+                ? (isDarkMode ? color.gray600 : color.gray400)
+                : (isDarkMode ? color.emerald600 : color.emerald500)
+            },
+            borderRadius: '0.75rem',
+            px: 2,
+            height: '36px'
+          }}
+        >
+          Add Question {editedQuestion.questionData.length >= 4 ? '(Max 4)' : ''}
+        </Button>
+      </Box>
 
       <QuestionTabPanel value={activeTab} index={0} id="part6-edit">
         <Grid container spacing={3}>
@@ -139,149 +208,19 @@ export default function Part6EditDialog({
         </Grid>
       </QuestionTabPanel>
 
-      {[1, 2, 3, 4].map((questionIndex) => (
+      {editedQuestion.questionData.map((questionData, index) => (
         <QuestionTabPanel 
-          key={questionIndex} 
+          key={index} 
           value={activeTab} 
-          index={questionIndex}
+          index={index + 1}
           id="part6-edit"
         >
-          <QuestionEditPanel
-            questionIndex={questionIndex}
-            editedQuestion={editedQuestion}
-            handleChange={handleChange}
-            handleAnswerChange={handleAnswerChange}
-            getAnswerValues={getAnswerValues}
-            getQuestionFields={getQuestionFields}
-            answerOptions={answerOptions}
-            color={color}
-            isDarkMode={isDarkMode}
+          <QuestionEditor 
+            question={questionData}
+            onChange={(field, value) => handleQuestionChange(index, field, value)}
           />
         </QuestionTabPanel>
       ))}
     </ToeicEditDialogBase>
-  );
-}
-
-// Sub-component for question editing
-interface QuestionEditPanelProps {
-  questionIndex: number;
-  editedQuestion: ToeicPart6;
-  handleChange: (field: keyof ToeicPart6, value: any) => void;
-  handleAnswerChange: (questionIndex: number, answerIndex: number, value: string) => void;
-  getAnswerValues: (questionIndex: number) => string[];
-  getQuestionFields: (questionIndex: number) => {
-    content: keyof ToeicPart6;
-    explanation: keyof ToeicPart6;
-    correctAnswer: keyof ToeicPart6;
-    answers: (keyof ToeicPart6)[];
-  };
-  answerOptions: { label: string; value: string }[];
-  color: ReturnType<typeof useColor>;
-  isDarkMode: boolean;
-}
-
-function QuestionEditPanel({
-  questionIndex,
-  editedQuestion,
-  handleChange,
-  handleAnswerChange,
-  getAnswerValues,
-  getQuestionFields,
-  answerOptions,
-  color,
-  isDarkMode
-}: QuestionEditPanelProps) {
-  const fields = getQuestionFields(questionIndex);
-  const answerValues = getAnswerValues(questionIndex);
-
-  return (
-    <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <FormSectionCard title={`Question ${questionIndex} Content`}>
-          <WETextField
-            label={`Question ${questionIndex} Content`}
-            type="text"
-            value={editedQuestion[fields.content] as string}
-            onChange={(e) => handleChange(fields.content, e.target.value)}
-            multiline
-            rows={3}
-            required
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "1rem",
-                width: "100%",
-                "& .MuiOutlinedInput-notchedOutline": {
-                  border: `1px solid ${isDarkMode ? color.gray600 : color.gray400}`,
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  border: `2px solid ${
-                    isDarkMode ? color.emerald400 : color.emerald500
-                  }`,
-                },
-                backgroundColor: isDarkMode ? color.gray900 : color.white,
-              },
-              "& .MuiInputLabel-root": {
-                color: isDarkMode ? color.gray300 : color.gray700,
-                "&.Mui-focused": {
-                  color: isDarkMode ? color.emerald400 : color.emerald600
-                }
-              }
-            }}
-          />
-        </FormSectionCard>
-      </Grid>
-
-      <Grid item xs={12}>
-        <FormSectionCard title="Answer Options">
-          <AnswerOptionsEditor
-            answers={answerValues}
-            correctAnswer={editedQuestion[fields.correctAnswer] as string}
-            onAnswerChange={(answerIndex, value) => 
-              handleAnswerChange(questionIndex, answerIndex, value)
-            }
-            onCorrectAnswerChange={(value) => 
-              handleChange(fields.correctAnswer, value)
-            }
-            answerOptions={answerOptions}
-          />
-        </FormSectionCard>
-      </Grid>
-
-      <Grid item xs={12}>
-        <FormSectionCard title="Explanation">
-          <WETextField
-            label={`Explanation for Question ${questionIndex}`}
-            type="text"
-            value={editedQuestion[fields.explanation] as string}
-            onChange={(e) => handleChange(fields.explanation, e.target.value)}
-            multiline
-            rows={4}
-            required
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "1rem",
-                width: "100%",
-                "& .MuiOutlinedInput-notchedOutline": {
-                  border: `1px solid ${isDarkMode ? color.gray600 : color.gray400}`,
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  border: `2px solid ${
-                    isDarkMode ? color.emerald400 : color.emerald500
-                  }`,
-                },
-                backgroundColor: isDarkMode ? color.gray900 : color.white,
-              },
-              "& .MuiInputLabel-root": {
-                color: isDarkMode ? color.gray300 : color.gray700,
-                "&.Mui-focused": {
-                  color: isDarkMode ? color.emerald400 : color.emerald600
-                }
-              }
-            }}
-          />
-        </FormSectionCard>
-      </Grid>
-    </Grid>
   );
 }

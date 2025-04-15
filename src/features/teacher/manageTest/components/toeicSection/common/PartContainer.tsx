@@ -3,10 +3,12 @@ import {
   Paper,   
   Card,   
   CardContent,   
-  Button ,
+  Button,
   Box,
+  Stack
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
 import useColor from 'theme/useColor';
 import { useDarkMode } from 'hooks/useDarkMode';
 import SectionHeader from './SectionHeader';
@@ -25,6 +27,7 @@ interface PartContainerProps {
   children: ReactNode;
   showNavigation?: boolean;
   onEditQuestion?: () => void;
+  onAddQuestion?: () => void;
 }
 
 export default function PartContainer({
@@ -38,7 +41,8 @@ export default function PartContainer({
   onNext,
   children,
   showNavigation = true,
-  onEditQuestion
+  onEditQuestion,
+  onAddQuestion
 }: PartContainerProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -89,34 +93,53 @@ export default function PartContainer({
           border: `1px solid ${isDarkMode ? color.gray600 : color.gray200}`
         }}
       >
-       
-        
-        
         <CardContent sx={{ p: 3 }}>
-        {onEditQuestion && (
-       
-          <Button
-            startIcon={<EditIcon />}
-            onClick={onEditQuestion}
-            variant="outlined"
-            size="small"
-           
-            sx={{
-              float:"right",
-              borderColor: isDarkMode ? color.emerald400 : color.emerald600,
-              color: isDarkMode ? color.emerald400 : color.emerald600,
-              '&:hover': {
-                backgroundColor: isDarkMode 
-                  ? color.emerald900 + '33' 
-                  : color.emerald100
-              }
-            }}
-          >
-            Edit Question
-          </Button>
-                      
-
-        )}
+          {(onEditQuestion || onAddQuestion) && (
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+              <Stack direction="row" spacing={2}>
+                {onAddQuestion && (
+                  <Button
+                    startIcon={<AddIcon />}
+                    onClick={onAddQuestion}
+                    variant="contained"
+                    size="small"
+                    sx={{
+                      backgroundColor: isDarkMode ? color.emerald700 : color.emerald600,
+                      color: color.white,
+                      '&:hover': {
+                        backgroundColor: isDarkMode ? color.emerald600 : color.emerald500
+                      },
+                      borderRadius: '0.75rem'
+                    }}
+                  >
+                    Add Question
+                  </Button>
+                )}
+                
+                {onEditQuestion && (
+                  <Button
+                    startIcon={<EditIcon />}
+                    onClick={onEditQuestion}
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                      borderColor: isDarkMode ? color.emerald400 : color.emerald600,
+                      color: isDarkMode ? color.emerald400 : color.emerald600,
+                      '&:hover': {
+                        backgroundColor: isDarkMode 
+                          ? color.emerald900 + '33' 
+                          : color.emerald100
+                      },
+                      borderRadius: '0.75rem'
+                    }}
+                  >
+                    Edit Question
+                  </Button>
+                )}
+              </Stack>
+            </Box>
+          )}
+          
           {children}
         </CardContent>
       </Card>
