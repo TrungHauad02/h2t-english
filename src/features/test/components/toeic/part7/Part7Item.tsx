@@ -6,12 +6,12 @@ import {
   FormControlLabel,
   Radio
 } from '@mui/material';
-import { ToeicPart7, ToeicPart7Question, AnswerEnum } from 'interfaces/TestInterfaces';
+import { ToeicPart7, ToeicQuestion, AnswerEnum } from 'interfaces/TestInterfaces';
 import WEDocumentViewer from 'components/display/document/WEDocumentViewer';
 
 type Props = {
   passage: ToeicPart7;
-  questions: ToeicPart7Question[];
+  questions: ToeicQuestion[];
   questionNumberStart: number;
   selectedAnswers: Record<number, AnswerEnum>;
   onChange: (id: number, value: AnswerEnum) => void;
@@ -36,27 +36,32 @@ const Part7Item: React.FC<Props> = ({
           <WEDocumentViewer fileUrl={passage.file} lineHeight="2" sx={{ my: 2 }} />
         </Box>
         <Box flex={1} sx={{ overflowY: 'auto', maxHeight: '50vh' }}>
-          {questions.map((q, idx) => (
-            <Box key={q.id} mb={3}>
-              <Typography fontWeight="bold" mb={1}>
-                {questionNumberStart + idx}. {q.content}
-              </Typography>
-              <RadioGroup
-                name={`question-${q.id}`}
-                value={selectedAnswers[q.id] || ''}
-                onChange={(e) => onChange(q.id, e.target.value as AnswerEnum)}
-              >
-                {(['A', 'B', 'C', 'D'] as AnswerEnum[]).map((choice, i) => (
-                  <FormControlLabel
-                    key={choice}
-                    value={choice}
-                    control={<Radio />}
-                    label={`${choice}. ${q[`answer${i + 1}` as keyof ToeicPart7Question]}`}
-                  />
-                ))}
-              </RadioGroup>
-            </Box>
-          ))}
+          {questions.map((q, idx) => {
+            const number = questionNumberStart + idx;
+            const selected = selectedAnswers[q.id];
+
+            return (
+              <Box key={q.id} mb={3}>
+                <Typography fontWeight="bold" mb={1}>
+                  {number}. {q.content}
+                </Typography>
+                <RadioGroup
+                  name={`question-${q.id}`}
+                  value={selected || ''}
+                  onChange={(e) => onChange(q.id, e.target.value as AnswerEnum)}
+                >
+                  {q.toeicAnswers.map((ans, i) => (
+                    <FormControlLabel
+                      key={ans.id}
+                      value={(['A', 'B', 'C', 'D'][i]) as AnswerEnum}
+                      control={<Radio />}
+                      label={`${(['A', 'B', 'C', 'D'][i])}. ${ans.content}`}
+                    />
+                  ))}
+                </RadioGroup>
+              </Box>
+            );
+          })}
         </Box>
       </Box>
     </Box>

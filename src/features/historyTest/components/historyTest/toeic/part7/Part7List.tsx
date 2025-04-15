@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import {
   ToeicPart7,
-  ToeicPart7Question,
+  ToeicQuestion,
+  SubmitToeicAnswer,
   AnswerEnum,
-  SubmitToeicPart7,
 } from 'interfaces/TestInterfaces';
 import { testService } from '../../../../../test/services/testServices';
 import Part7Item from './Part7Item';
@@ -12,7 +12,7 @@ import Part7Item from './Part7Item';
 type Props = {
   questionsPart7: number[];
   startIndex: number;
-  submitToeicPart7: SubmitToeicPart7[];
+  submitToeicPart7: SubmitToeicAnswer[];
   currentIndex: number;
   setCurrentIndex: (val: number) => void;
 };
@@ -24,30 +24,38 @@ const Part7List: React.FC<Props> = ({
   currentIndex,
   setCurrentIndex,
 }) => {
-  const [data, setData] = useState<{ passage: ToeicPart7; questions: ToeicPart7Question[] }[]>([]);
+  const [data, setData] = useState<{ passage: ToeicPart7; questions: ToeicQuestion[] }[]>([]);
   const [userAnswers, setUserAnswers] = useState<Record<number, AnswerEnum>>({});
 
   useEffect(() => {
     const fetchData = async () => {
-      const part7s = await testService.getToeicPart7ByIds(questionsPart7);
+      const passages = await testService.getToeicPart7ByIds(questionsPart7);
 
-      const result = await Promise.all(
-        part7s.map(async (p7) => {
-          const questions = await testService.getToeicPart7QuestionsByIds(p7.questions);
-          return { passage: p7, questions };
-        })
-      );
-      setData(result);
+      const allQuestionIds = passages.flatMap(p => p.questions);
+      const questions = await testService.getToeicQuestionsByIds(allQuestionIds);
 
-      const answers: Record<number, AnswerEnum> = {};
-      submitToeicPart7.forEach((item) => {
-        answers[item.toeicPart7QuestionId] = item.answer;
+      const grouped = passages.map(p => ({
+        passage: p,
+        questions: questions.filter(q => p.questions.includes(q.id)),
+      }));
+      setData(grouped);
+
+      const answerIds = submitToeicPart7.map(a => a.toeicAnswerId);
+      const answers = await testService.getToeicAnswersByIds(answerIds);
+
+      const map: Record<number, AnswerEnum> = {};
+      submitToeicPart7.forEach(sub => {
+        const ans = answers.find(a => a.id === sub.toeicAnswerId);
+        if (ans) {
+          map[sub.toeicQuestionId] = ans.content as AnswerEnum;
+        }
       });
-      setUserAnswers(answers);
+      setUserAnswers(map);
     };
 
     fetchData();
   }, [questionsPart7, submitToeicPart7]);
+
   if (data.length === 0 || !data[currentIndex]) {
     return (
       <Box display="flex" justifyContent="center" mt={10}>

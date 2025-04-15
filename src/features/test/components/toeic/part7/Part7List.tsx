@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { testService } from '../../../services/testServices';
-import { ToeicPart7, ToeicPart7Question, AnswerEnum } from 'interfaces/TestInterfaces';
+import { ToeicPart7, ToeicQuestion, AnswerEnum } from 'interfaces/TestInterfaces';
 import Part7Item from './Part7Item';
 
 type Props = {
@@ -19,20 +19,23 @@ const Part7List: React.FC<Props> = ({
   setCurrentIndex,
   onFinish,
 }) => {
-  const [data, setData] = useState<{ passage: ToeicPart7; questions: ToeicPart7Question[] }[]>([]);
+  const [data, setData] = useState<{ passage: ToeicPart7; questions: ToeicQuestion[] }[]>([]);
   const [userAnswers, setUserAnswers] = useState<Record<number, AnswerEnum>>({});
 
   useEffect(() => {
     const fetchData = async () => {
       const part7s = await testService.getToeicPart7ByIds(questionsPart7);
+
       const result = await Promise.all(
         part7s.map(async (p7: ToeicPart7) => {
-          const questions = await testService.getToeicPart7QuestionsByIds(p7.questions);
+          const questions = await testService.getToeicQuestionsByIds(p7.questions);
           return { passage: p7, questions };
         })
       );
+
       setData(result);
     };
+
     fetchData();
   }, [questionsPart7]);
 
