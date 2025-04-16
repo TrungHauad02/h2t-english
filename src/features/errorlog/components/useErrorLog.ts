@@ -81,15 +81,11 @@ export default function useErrorLog(initialItemsPerPage: number) {
     }
 
     setFilteredErrorLogs(result);
-    setPage(1);
   }, [errorLogs, searchQuery, filters]);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  const paginatedLogs = filteredErrorLogs.slice(
-    (page - 1) * itemsPerPage,
-    page * itemsPerPage
-  );
+  const paginatedLogs = filteredErrorLogs;
 
   const errorCounts = {
     [SeverityEnum.LOW]: errorLogs.filter((log) => log.severity === SeverityEnum.LOW).length,

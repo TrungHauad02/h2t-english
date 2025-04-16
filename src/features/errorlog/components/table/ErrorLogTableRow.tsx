@@ -29,26 +29,26 @@ export default function ErrorLogTableRow({
     switch (severity) {
       case SeverityEnum.HIGH:
         return {
-          bg: isDarkMode ? alpha(color.red700, 0.4) : alpha(color.red100, 0.7),
-          text: isDarkMode ? color.red100 : color.red900,
-          borderColor: isDarkMode ? color.red600 : color.red300,
-          label: "High",
+          bg: isDarkMode ? alpha(color.red800, 0.6) : alpha(color.red100, 0.8),
+          text: isDarkMode ? color.red50 : color.red900,
+          borderColor: isDarkMode ? color.red700 : color.red400,
+          label: SeverityEnum.HIGH,
         };
       case SeverityEnum.MEDIUM:
         return {
-          bg: isDarkMode
-            ? alpha(color.warningDarkMode, 0.3)
-            : alpha(color.warning, 0.15),
-          text: isDarkMode ? color.warning : color.black,
-          borderColor: isDarkMode ? alpha(color.warning, 0.6) : color.warning,
-          label: "Medium",
+          bg: isDarkMode 
+            ? alpha(color.warning, 0.6) 
+            : alpha(color.warning, 0.8),
+          text: isDarkMode ? color.warning : color.warning,
+          borderColor: isDarkMode ? color.warning : color.warning,
+          label: SeverityEnum.MEDIUM,
         };
       case SeverityEnum.LOW:
         return {
-          bg: isDarkMode ? alpha(color.teal700, 0.4) : alpha(color.teal100, 0.7),
-          text: isDarkMode ? color.teal100 : color.teal900,
-          borderColor: isDarkMode ? color.teal600 : color.teal300,
-          label: "Low",
+          bg: isDarkMode ? alpha(color.blue700, 0.6) : alpha(color.blue100, 0.8),
+          text: isDarkMode ? color.blue50 : color.blue900,
+          borderColor: isDarkMode ? color.blue600 : color.blue300,
+          label: SeverityEnum.LOW,
         };
       default:
         return {
@@ -169,7 +169,7 @@ export default function ErrorLogTableRow({
       </TableCell>
       <TableCell>
         <Chip
-          label={severityInfo.label}
+          label={log.severity}
           size="small"
           sx={{
             backgroundColor: severityInfo.bg,
