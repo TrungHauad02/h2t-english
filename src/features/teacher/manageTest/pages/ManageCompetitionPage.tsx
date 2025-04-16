@@ -1,88 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
   Container,
-  Grid,
-  TextField,
   Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Pagination,
-  Card,
-  Stack,
-  Chip,
-  Tabs,
-  Tab
+  Paper,
+  useTheme,
+  useMediaQuery,
+  Fade,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import useManageCompetitionsPage from "../hooks/useManageCompetitionsPage";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
 import { CompetitionTest } from "interfaces";
-import { formatDate } from "utils/format";
-
-function CompetitionCard({ competition }: { competition: CompetitionTest }) {
-  return (
-    <Card
-      sx={{
-        p: 2,
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        cursor: "pointer",
-        transition: "all 0.2s",
-        "&:hover": {
-          transform: "translateY(-4px)",
-          boxShadow: "0 12px 20px rgba(0,0,0,0.1)",
-        },
-      }}
-    >
-      <Box>
-        <Typography variant="h6" fontWeight="bold" mb={1}>
-          {competition.title}
-        </Typography>
-        <Stack direction="row" spacing={1} mb={2}>
-          <Chip
-            size="small"
-            label={competition.status ? "Active" : "Inactive"}
-            color={competition.status ? "success" : "error"}
-          />
-          <Chip
-            size="small"
-            label={`${competition.totalQuestions || 0} Questions`}
-            color="primary"
-          />
-          <Chip
-            size="small"
-            label={`${competition.duration} min`}
-            color="secondary"
-          />
-        </Stack>
-      </Box>
-      <Box>
-        <Stack spacing={1}>
-          <Box display="flex" alignItems="center">
-            <CalendarTodayIcon fontSize="small" sx={{ mr: 1 }} />
-            <Typography variant="body2">
-              Start: {formatDate(competition.startTime)}
-            </Typography>
-          </Box>
-          <Box display="flex" alignItems="center">
-            <CalendarTodayIcon fontSize="small" sx={{ mr: 1 }} />
-            <Typography variant="body2">
-              End: {formatDate(competition.endTime)}
-            </Typography>
-          </Box>
-        </Stack>
-      </Box>
-    </Card>
-  );
-}
+import {
+  SearchFilterSection,
+  TabsNavigation,
+  CompetitionsGrid,
+  PaginationSection,
+} from "../components/manageCompetition";
+import CreateCompetitionDialog from "../components/CreateCompetitionDialog";
 
 export default function ManageCompetitionsPage() {
+  const color = useColor();
+  const { isDarkMode } = useDarkMode();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const [tabValue, setTabValue] = React.useState(0);
+
+  // State for create dialog
+  const [isOpenCreateDialog, setIsOpenCreateDialog] = useState(false);
+  const [newCompetition, setNewCompetition] = useState<Partial<CompetitionTest>>({
+    title: "",
+    duration: 60,
+    totalQuestions: null,
+    status: true,
+    startTime: new Date(new Date().setHours(new Date().getHours() + 1)),
+    endTime: new Date(new Date().setHours(new Date().getHours() + 3)),
+  });
+
   const {
     searchText,
     setSearchText,
@@ -98,135 +57,220 @@ export default function ManageCompetitionsPage() {
     displayedCompetitions,
     upcomingCompetitions,
     activeCompetitions,
-    pastCompetitions
+    pastCompetitions,
+    createCompetition,
   } = useManageCompetitionsPage();
-
-  const [tabValue, setTabValue] = React.useState(0);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
+  // Dialog handlers
+  const handleOpenCreateDialog = () => {
+    setIsOpenCreateDialog(!isOpenCreateDialog);
+  };
+
+  const handleChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewCompetition({
+      ...newCompetition,
+      title: event.target.value,
+    });
+  };
+
+  const handleChangeDuration = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewCompetition({
+      ...newCompetition,
+      duration: Number(event.target.value),
+    });
+  };
+
+  const handleChangeTotalQuestions = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewCompetition({
+      ...newCompetition,
+      totalQuestions: event.target.value === "" ? null : Number(event.target.value),
+    });
+  };
+
+  const handleChangeStartTime = (date: Date | null) => {
+    if (date) {
+      setNewCompetition({
+        ...newCompetition,
+        startTime: date,
+      });
+    }
+  };
+
+  const handleChangeEndTime = (date: Date | null) => {
+    if (date) {
+      setNewCompetition({
+        ...newCompetition,
+        endTime: date,
+      });
+    }
+  };
+
+  const handleCreateCompetition = () => {
+    // Basic validation
+    if (!newCompetition.title || !newCompetition.duration || !newCompetition.startTime || !newCompetition.endTime) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
+    if (newCompetition.startTime >= newCompetition.endTime) {
+      alert("End time must be after start time");
+      return;
+    }
+
+    // Create the competition
+    createCompetition(newCompetition as CompetitionTest);
+    
+    // Reset form and close dialog
+    setNewCompetition({
+      title: "",
+      duration: 60,
+      totalQuestions: null,
+      status: true,
+      startTime: new Date(new Date().setHours(new Date().getHours() + 1)),
+      endTime: new Date(new Date().setHours(new Date().getHours() + 3)),
+    });
+    handleOpenCreateDialog();
+  };
+
+  const backgroundGradient = isDarkMode
+    ? `linear-gradient(135deg, ${color.gray900}, ${color.gray800})`
+    : `linear-gradient(135deg, ${color.emerald50}, ${color.teal50})`;
+
   return (
-    <Container maxWidth="xl">
-      <Box py={4}>
-        <Typography variant="h4" fontWeight="bold" mb={4}>
-          Manage Competitions
-        </Typography>
-
-        {/* Search and filter controls */}
-        <Grid container spacing={2} mb={4} alignItems="flex-end">
-          <Grid item xs={12} sm={6} md={4}>
-            <TextField
-              fullWidth
-              label="Search by title"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              InputProps={{
-                endAdornment: (
-                  <SearchIcon color="action" />
-                ),
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: backgroundGradient,
+        pt: { xs: 2, md: 4 },
+        pb: { xs: 4, md: 6 },
+      }}
+    >
+      <Container maxWidth="xl">
+        <Fade in={true} timeout={800}>
+          <Paper
+            elevation={isDarkMode ? 3 : 1}
+            sx={{
+              p: { xs: 2, sm: 3, md: 4 },
+              borderRadius: "1rem",
+              backgroundColor: isDarkMode ? color.gray800 : color.white,
+              boxShadow: isDarkMode
+                ? "0 6px 24px rgba(0,0,0,0.4)"
+                : "0 6px 24px rgba(0,0,0,0.08)",
+              overflow: "hidden",
+              position: "relative",
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "5px",
+                background: `linear-gradient(90deg, ${color.teal500}, ${color.emerald400})`,
+              },
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                alignItems: { xs: "flex-start", sm: "center" },
+                justifyContent: "space-between",
+                mb: { xs: 3, md: 4 },
+                gap: 2,
               }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select
-                value={statusFilter}
-                label="Status"
-                onChange={(e) => handleStatusFilterChange(e.target.value as string)}
-              >
-                <MenuItem value="all">All</MenuItem>
-                <MenuItem value="published">Published</MenuItem>
-                <MenuItem value="draft">Draft</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6} md={2}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSearch}
-              fullWidth
             >
-              Search
-            </Button>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Button
-              variant="contained"
-              color="success"
-              fullWidth
-            >
-              Create New Competition
-            </Button>
-          </Grid>
-        </Grid>
-
-        <Box mb={3}>
-          <Tabs value={tabValue} onChange={handleTabChange}>
-            <Tab label={`All (${competitions.length})`} />
-            <Tab label={`Active (${activeCompetitions.length})`} />
-            <Tab label={`Upcoming (${upcomingCompetitions.length})`} />
-            <Tab label={`Past (${pastCompetitions.length})`} />
-          </Tabs>
-        </Box>
-
-        {/* Competition cards */}
-        <Box mb={4}>
-          <Grid container spacing={3}>
-            {displayedCompetitions.length > 0 ? (
-              displayedCompetitions.map((competition) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={competition.id}>
-                  <CompetitionCard competition={competition} />
-                </Grid>
-              ))
-            ) : (
-              <Grid item xs={12}>
-                <Box 
-                  display="flex" 
-                  justifyContent="center" 
-                  alignItems="center" 
-                  p={4}
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                <EmojiEventsIcon
+                  sx={{
+                    fontSize: { xs: 28, sm: 32 },
+                    color: isDarkMode ? color.teal300 : color.teal600,
+                  }}
+                />
+                <Typography
+                  variant={isMobile ? "h5" : "h4"}
+                  fontWeight="bold"
+                  sx={{
+                    background: isDarkMode
+                      ? `linear-gradient(90deg, ${color.teal300}, ${color.emerald300})`
+                      : `linear-gradient(90deg, ${color.teal600}, ${color.emerald600})`,
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    letterSpacing: "-0.5px",
+                  }}
                 >
-                  <Typography variant="h6" color="textSecondary">
-                    No competitions found matching your filters
-                  </Typography>
-                </Box>
-              </Grid>
-            )}
-          </Grid>
-        </Box>
+                  Manage Competitions
+                </Typography>
+              </Box>
 
-        {/* Pagination */}
-        <Box display="flex" justifyContent="center">
-          <Pagination
-            count={totalPages}
-            page={page}
-            onChange={handleChangePage}
-            color="primary"
-            size="large"
-          />
-        </Box>
+              <Button
+                variant="contained"
+                startIcon={<AddCircleOutlineIcon />}
+                onClick={handleOpenCreateDialog}
+                sx={{
+                  backgroundColor: color.btnSubmitBg,
+                  "&:hover": {
+                    backgroundColor: color.btnSubmitHoverBg,
+                  },
+                  px: { xs: 2, md: 3 },
+                  py: 1,
+                  borderRadius: "8px",
+                  fontWeight: "600",
+                  boxShadow: isDarkMode
+                    ? "0 4px 10px rgba(16, 185, 129, 0.3)"
+                    : "0 4px 10px rgba(16, 185, 129, 0.2)",
+                }}
+              >
+                Create New Competition
+              </Button>
+            </Box>
 
-        {/* Items per page */}
-        <Box display="flex" justifyContent="flex-end" mt={2}>
-          <FormControl variant="outlined" size="small" sx={{ minWidth: 120 }}>
-            <InputLabel>Items per page</InputLabel>
-            <Select
-              value={itemsPerPage}
-              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-              label="Items per page"
-            >
-              <MenuItem value={4}>4</MenuItem>
-              <MenuItem value={8}>8</MenuItem>
-              <MenuItem value={12}>12</MenuItem>
-              <MenuItem value={16}>16</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-      </Box>
-    </Container>
+            <SearchFilterSection
+              searchText={searchText}
+              setSearchText={setSearchText}
+              statusFilter={statusFilter}
+              handleStatusFilterChange={handleStatusFilterChange}
+              handleSearch={handleSearch}
+            />
+
+            <TabsNavigation
+              tabValue={tabValue}
+              handleTabChange={handleTabChange}
+              competitions={competitions}
+              activeCompetitions={activeCompetitions}
+              upcomingCompetitions={upcomingCompetitions}
+              pastCompetitions={pastCompetitions}
+            />
+
+            <CompetitionsGrid displayedCompetitions={displayedCompetitions} />
+
+            <PaginationSection
+              totalPages={totalPages}
+              page={page}
+              itemsPerPage={itemsPerPage}
+              handleChangePage={handleChangePage}
+              handleItemsPerPageChange={handleItemsPerPageChange}
+              displayedCompetitions={displayedCompetitions}
+            />
+          </Paper>
+        </Fade>
+      </Container>
+
+      {/* Create Competition Dialog */}
+      <CreateCompetitionDialog
+        isOpenCreateDialog={isOpenCreateDialog}
+        handleOpenCreateDialog={handleOpenCreateDialog}
+        data={newCompetition}
+        onChangeTitle={handleChangeTitle}
+        onChangeDuration={handleChangeDuration}
+        onChangeTotalQuestions={handleChangeTotalQuestions}
+        onChangeStartTime={handleChangeStartTime}
+        onChangeEndTime={handleChangeEndTime}
+        onCreateCompetition={handleCreateCompetition}
+      />
+    </Box>
   );
 }
