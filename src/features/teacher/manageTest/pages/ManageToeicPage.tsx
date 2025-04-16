@@ -1,87 +1,56 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
   Container,
-  Grid,
-  TextField,
   Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Pagination,
-  Card,
-  CardContent,
-  CardActions,
-  Chip,
-  Divider,
-  Stack,
+  Paper,
+  useTheme,
+  useMediaQuery,
+  Fade,
+  Snackbar,
+  Alert,
+  Backdrop,
+  CircularProgress,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import QuizIcon from "@mui/icons-material/Quiz";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import useManageToeicPage from "../hooks/useManageToeicPage";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
 import { Toeic } from "interfaces";
-
-function ToeicTestCard({ test, onView, onEdit, onDelete }: { test: Toeic, onView: () => void, onEdit: () => void, onDelete: () => void }) {
-  return (
-    <Card
-      sx={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        transition: "all 0.2s",
-        "&:hover": {
-          transform: "translateY(-4px)",
-          boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
-        },
-      }}
-    >
-      <CardContent sx={{ flexGrow: 1 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
-          <Typography variant="h6" component="div" fontWeight="bold" sx={{ mb: 1 }}>
-            {test.title}
-          </Typography>
-          <Chip
-            label={test.status ? "Published" : "Draft"}
-            color={test.status ? "success" : "default"}
-            size="small"
-          />
-        </Box>
-        
-        <Stack spacing={1.5}>
-          <Box display="flex" alignItems="center">
-            <AccessTimeIcon fontSize="small" sx={{ mr: 1, color: "text.secondary" }} />
-            <Typography variant="body2" color="text.secondary">
-              Duration: {test.duration} minutes
-            </Typography>
-          </Box>
-          
-          <Box display="flex" alignItems="center">
-            <QuizIcon fontSize="small" sx={{ mr: 1, color: "text.secondary" }} />
-            <Typography variant="body2" color="text.secondary">
-              Questions: {test.totalQuestions}
-            </Typography>
-          </Box>
-   
-        </Stack>
-      </CardContent>
-      
-      <Divider />
-      
-      <CardActions>
-        <Button size="small" onClick={onView}>View</Button>
-        <Button size="small" color="primary" onClick={onEdit}>Edit</Button>
-        <Button size="small" color="error" onClick={onDelete}>Delete</Button>
-      </CardActions>
-    </Card>
-  );
-}
-
-
+import {
+  SearchFilterBar,
+  ToeicTestCardGrid,
+  PaginationControl,
+} from "../components/manageToeic";
+import CreateToeicDialog from "../components/CreateToeicDialog";
 
 export default function ManageToeicPage() {
+  const color = useColor();
+  const { isDarkMode } = useDarkMode();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // State for create dialog
+  const [isOpenCreateDialog, setIsOpenCreateDialog] = useState(false);
+  const [newToeic, setNewToeic] = useState<Partial<Toeic>>({
+    id: 1,
+    title: "",
+    duration: 120,
+    
+    status: true,
+  });
+  
+  // State for notification
+  const [notification, setNotification] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "error" | "info" | "warning",
+  });
+
+  // State for additional loading indicator (used for CRUD operations)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const {
     searchText,
     setSearchText,
@@ -94,6 +63,7 @@ export default function ManageToeicPage() {
     handleItemsPerPageChange,
     handleStatusFilterChange,
     deleteToeicTest,
+    createToeicTest,
     totalPages,
     displayedToeicTests,
   } = useManageToeicPage();
@@ -108,136 +78,240 @@ export default function ManageToeicPage() {
     // Implementation would depend on your navigation setup
   };
 
-  const handleDeleteTest = (testId: number) => {
+  const handleDeleteTest = async (testId: number) => {
     if (window.confirm("Are you sure you want to delete this TOEIC test?")) {
-      deleteToeicTest(testId);
+      try {
+        setIsSubmitting(true);
+        await deleteToeicTest(testId);
+        showNotification("TOEIC test deleted successfully", "success");
+      } catch (error) {
+        console.error("Error deleting TOEIC test:", error);
+        showNotification("Failed to delete TOEIC test", "error");
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
-  return (
-    <Container maxWidth="lg">
-      <Box py={4}>
-        <Typography variant="h4" fontWeight="bold" mb={1}>
-          Manage TOEIC Tests
-        </Typography>
   
+  const handleOpenCreateDialog = () => {
+    setIsOpenCreateDialog(!isOpenCreateDialog);
+    if (isOpenCreateDialog) {
+      // Reset form when closing
+      setNewToeic({
+        title: "",
+        duration: 120,
+        status: true,
+      });
+    }
+  };
 
-        {/* Search and filter controls */}
-        <Grid container spacing={2} mb={4} alignItems="flex-end">
-          <Grid item xs={12} sm={6} md={4}>
-            <TextField
-              fullWidth
-              label="Search by title"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              InputProps={{
-                endAdornment: (
-                  <SearchIcon color="action" />
-                ),
+  const handleChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewToeic({
+      ...newToeic,
+      title: event.target.value,
+    });
+  };
+
+  const handleChangeDuration = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewToeic({
+      ...newToeic,
+      duration: Number(event.target.value),
+    });
+  };
+
+  const handleCreateToeic = async () => {
+    // Basic validation
+    if (!newToeic.title || !newToeic.duration) {
+      showNotification("Please fill in all required fields", "error");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      // Create the TOEIC test
+      await createToeicTest(newToeic as Toeic);
+      showNotification("TOEIC test created successfully", "success");
+      
+      // Reset form and close dialog
+      setNewToeic({
+        title: "",
+        duration: 120,
+        status: true,
+      });
+      handleOpenCreateDialog();
+    } catch (error) {
+      console.error("Error creating TOEIC test:", error);
+      showNotification("Failed to create TOEIC test", "error");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const showNotification = (message: string, severity: "success" | "error" | "info" | "warning") => {
+    setNotification({
+      open: true,
+      message,
+      severity,
+    });
+  };
+
+  const handleCloseNotification = () => {
+    setNotification({
+      ...notification,
+      open: false,
+    });
+  };
+
+  const backgroundGradient = isDarkMode
+    ? `linear-gradient(120deg, ${color.gray900}, ${color.gray800})`
+    : `linear-gradient(120deg, ${color.emerald50}, ${color.teal50})`;
+
+  return (
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: backgroundGradient,
+        pt: { xs: 2, md: 4 },
+        pb: { xs: 4, md: 6 },
+      }}
+    >
+      <Container maxWidth="lg">
+        <Fade in={true} timeout={800}>
+          <Paper
+            elevation={isDarkMode ? 2 : 1}
+            sx={{
+              p: { xs: 2, sm: 3, md: 4 },
+              borderRadius: "1rem",
+              backgroundColor: isDarkMode ? color.gray800 : color.white,
+              boxShadow: isDarkMode
+                ? "0 4px 20px rgba(0,0,0,0.4)"
+                : "0 4px 20px rgba(0,0,0,0.08)",
+              overflow: "hidden",
+              position: "relative",
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "5px",
+                background: `linear-gradient(90deg, ${color.teal400}, ${color.emerald400})`,
+              },
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                alignItems: { xs: "flex-start", sm: "center" },
+                justifyContent: "space-between",
+                mb: { xs: 3, md: 4 },
+                gap: 2,
               }}
+            >
+              <Typography
+                variant={isMobile ? "h5" : "h4"}
+                fontWeight="bold"
+                sx={{
+                  background: isDarkMode
+                    ? `linear-gradient(90deg, ${color.teal300}, ${color.emerald300})`
+                    : `linear-gradient(90deg, ${color.teal600}, ${color.emerald600})`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  letterSpacing: "-0.5px",
+                }}
+              >
+                Manage TOEIC Tests
+              </Typography>
+
+              <Button
+                variant="contained"
+                startIcon={<AddCircleOutlineIcon />}
+                onClick={handleOpenCreateDialog}
+                disabled={loading || isSubmitting}
+                sx={{
+                  backgroundColor: color.btnSubmitBg,
+                  "&:hover": {
+                    backgroundColor: color.btnSubmitHoverBg,
+                  },
+                  px: { xs: 2, md: 3 },
+                  py: 1,
+                  borderRadius: "8px",
+                  fontWeight: "600",
+                  boxShadow: isDarkMode
+                    ? "0 4px 10px rgba(16, 185, 129, 0.3)"
+                    : "0 4px 10px rgba(16, 185, 129, 0.2)",
+                }}
+              >
+                Create New Test
+              </Button>
+            </Box>
+
+            <SearchFilterBar
+              searchText={searchText}
+              setSearchText={setSearchText}
+              statusFilter={statusFilter}
+              handleStatusFilterChange={handleStatusFilterChange}
+              handleSearch={handleSearch}
             />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select
-                value={statusFilter === undefined ? "all" : statusFilter ? "published" : "draft"}
-                label="Status"
-                onChange={(e) => handleStatusFilterChange(e.target.value as string)}
-              >
-                <MenuItem value="all">All</MenuItem>
-                <MenuItem value="published">Published</MenuItem>
-                <MenuItem value="draft">Draft</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6} md={2}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSearch}
-              fullWidth
-            >
-              Search
-            </Button>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Button
-              variant="contained"
-              color="success"
-              fullWidth
-            >
-              Create New TOEIC Test
-            </Button>
-          </Grid>
-        </Grid>
 
-        {/* TOEIC test cards */}
-        {loading ? (
-          <Box display="flex" justifyContent="center" my={4}>
-            <Typography>Loading...</Typography>
-          </Box>
-        ) : (
-          <>
-            {displayedToeicTests.length > 0 ? (
-              <Grid container spacing={3} mb={4}>
-                {displayedToeicTests.map((test) => (
-                  <Grid item xs={12} sm={6} md={4} key={test.id}>
-                    <ToeicTestCard
-                      test={test}
-                      onView={() => handleViewTest(test.id)}
-                      onEdit={() => handleEditTest(test.id)}
-                      onDelete={() => handleDeleteTest(test.id)}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
-            ) : (
-              <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                minHeight={200}
-                mb={4}
-              >
-                <Typography variant="h6" color="text.secondary">
-                  No TOEIC tests found matching your criteria
-                </Typography>
-              </Box>
-            )}
-          </>
-        )}
+            <ToeicTestCardGrid
+              loading={loading}
+              displayedToeicTests={displayedToeicTests}
+              handleViewTest={handleViewTest}
+              handleEditTest={handleEditTest}
+              handleDeleteTest={handleDeleteTest}
+            />
 
-        {/* Pagination */}
-        {displayedToeicTests.length > 0 && (
-          <Box display="flex" justifyContent="center">
-            <Pagination
-              count={totalPages}
+            <PaginationControl
+              totalPages={totalPages}
               page={page}
-              onChange={handleChangePage}
-              color="primary"
-              size="large"
+              itemsPerPage={itemsPerPage}
+              handleChangePage={handleChangePage}
+              handleItemsPerPageChange={handleItemsPerPageChange}
+              displayedToeicTests={displayedToeicTests}
             />
-          </Box>
-        )}
+          </Paper>
+        </Fade>
+      </Container>
 
-        {/* Items per page */}
-        <Box display="flex" justifyContent="flex-end" mt={2}>
-          <FormControl variant="outlined" size="small" sx={{ minWidth: 120 }}>
-            <InputLabel>Items per page</InputLabel>
-            <Select
-              value={itemsPerPage}
-              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-              label="Items per page"
-            >
-              <MenuItem value={4}>4</MenuItem>
-              <MenuItem value={8}>8</MenuItem>
-              <MenuItem value={12}>12</MenuItem>
-              <MenuItem value={16}>16</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-      </Box>
-    </Container>
+      {/* Create TOEIC Dialog */}
+      <CreateToeicDialog
+        isOpenCreateDialog={isOpenCreateDialog}
+        handleOpenCreateDialog={handleOpenCreateDialog}
+        data={newToeic}
+        onChangeTitle={handleChangeTitle}
+        onChangeDuration={handleChangeDuration}
+        onCreateToeic={handleCreateToeic}
+      />
+
+      {/* Notification Snackbar */}
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={6000}
+        onClose={handleCloseNotification}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleCloseNotification}
+          severity={notification.severity}
+          sx={{ width: "100%" }}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
+
+      {/* Global loading overlay for submissions */}
+      <Backdrop
+        sx={{
+          color: "#fff",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}
+        open={isSubmitting}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    </Box>
   );
 }

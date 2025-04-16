@@ -1,11 +1,36 @@
-import React, { useState } from 'react';
-import { Grid, Box, Tabs, Tab, CardMedia, Divider, Paper } from '@mui/material';
+import React, { 
+  useState, 
+  useEffect, 
+  useCallback, 
+  useMemo, 
+  useRef 
+} from 'react';
+import { 
+  Grid, 
+  Box, 
+  Tabs, 
+  Tab, 
+  CardMedia, 
+  Divider, 
+  Paper,
+  Typography,
+  Fade,
+  Zoom,
+  Stack,
+  Chip,
+  Tooltip
+} from '@mui/material';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import HeadphonesIcon from '@mui/icons-material/Headphones';
+import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
+import CampaignIcon from '@mui/icons-material/Campaign';
+import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import useColor from 'theme/useColor';
 import { useDarkMode } from 'hooks/useDarkMode';
-import { ToeicPart3_4, AnswerEnum } from 'interfaces';
-import { 
-  PartContainer, 
-  AudioPlayer, 
+import { AnswerEnum, ToeicPart3_4, ToeicQuestion } from 'interfaces';
+import {
+  PartContainer,
+  AudioPlayer,
   QuestionContent,
   AnswerOptionsGrid,
   TranscriptBox
@@ -14,249 +39,395 @@ import Part3_4EditDialog from './Part3_4EditDialog';
 
 interface Part3_4SectionProps {
   questions: ToeicPart3_4[];
-  partNumber: 3 | 4; // To differentiate between Part 3 and Part 4
+  partNumber: 3 | 4;
+  toeicQuestions: { [partId: number]: ToeicQuestion[] };
   onUpdateQuestion?: (updatedQuestion: ToeicPart3_4) => void;
+  onAddQuestion?: (newQuestion: ToeicPart3_4, newSubQuestions: ToeicQuestion[]) => void;
 }
 
 export default function Part3_4Section({
   questions,
   partNumber,
-  onUpdateQuestion
+  toeicQuestions,
+  onUpdateQuestion,
+  onAddQuestion
 }: Part3_4SectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [activeSubQuestion, setActiveSubQuestion] = useState(0); // 0, 1, 2 for three sub-questions
+  const [activeSubQuestion, setActiveSubQuestion] = useState(0);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [currentSubQuestions, setCurrentSubQuestions] = useState<ToeicQuestion[]>([]);
+  const [dialogMode, setDialogMode] = useState<'edit' | 'add'>('edit');
+  
+  // Refs to handle scroll and render issues
+  const tabsRef = useRef<HTMLDivElement | null>(null);
+  const tabContainerRef = useRef<HTMLDivElement | null>(null);
 
-  const currentQuestion = questions.length > 0 ? questions[currentQuestionIndex] : null;
+  // Memoize current question to prevent unnecessary re-renders
+  const currentQuestion = useMemo(() => 
+    questions.length > 0 ? questions[currentQuestionIndex] : null, 
+    [questions, currentQuestionIndex]
+  );
 
-  const onSelectQuestion = (index: number) => {
+  // Stable effect for loading sub-questions
+  useEffect(() => {
+    if (currentQuestion) {
+      const subQuestions = toeicQuestions[currentQuestion.id] || [];
+      setCurrentSubQuestions(subQuestions);
+      
+      // Reset active sub-question when main question changes
+      setActiveSubQuestion(0);
+    }
+  }, [currentQuestion, toeicQuestions]);
+
+  // Effect to handle scroll issues
+  useEffect(() => {
+    const handleScrollFix = () => {
+      try {
+        if (tabsRef.current) {
+          // Force reset of scroll position
+          tabsRef.current.scrollLeft = 0;
+        }
+        if (tabContainerRef.current) {
+          // Additional safeguard
+          tabContainerRef.current.scrollTop = 0;
+        }
+      } catch (error) {
+        console.warn('Scroll reset failed', error);
+      }
+    };
+
+    // Run scroll fix after render
+    const timeoutId = setTimeout(handleScrollFix, 100);
+
+    // Cleanup timeout
+    return () => clearTimeout(timeoutId);
+  }, [activeSubQuestion, currentQuestionIndex]);
+
+  // Memoized navigation handlers to prevent unnecessary re-renders
+  const onSelectQuestion = useCallback((index: number) => {
     setCurrentQuestionIndex(index);
-    setActiveSubQuestion(0); // Reset to first sub-question
-  };
+    setActiveSubQuestion(0);
+  }, []);
 
-  const onNavigatePrevious = () => {
+  const onNavigatePrevious = useCallback(() => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-      setActiveSubQuestion(0); // Reset to first sub-question
+      setCurrentQuestionIndex(prev => prev - 1);
+      setActiveSubQuestion(0);
     }
-  };
+  }, [currentQuestionIndex]);
 
-  const onNavigateNext = () => {
+  const onNavigateNext = useCallback(() => {
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setActiveSubQuestion(0); // Reset to first sub-question
+      setCurrentQuestionIndex(prev => prev + 1);
+      setActiveSubQuestion(0);
     }
-  };
+  }, [currentQuestionIndex, questions.length]);
 
-  const handleChangeSubQuestion = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveSubQuestion(newValue);
-  };
+  // Safe tab change handler
+  const handleChangeSubQuestion = useCallback(
+    (_: React.SyntheticEvent, newValue: number) => {
+      try {
+        setActiveSubQuestion(newValue);
+      } catch (error) {
+        console.warn('Error changing sub-question', error);
+      }
+    }, 
+    []
+  );
 
-  const handleOpenEditDialog = () => {
+  const handleOpenEditDialog = useCallback(() => {
+    setDialogMode('edit');
     setIsEditDialogOpen(true);
-  };
+  }, []);
 
-  const handleCloseEditDialog = () => {
+  const handleOpenAddDialog = useCallback(() => {
+    setDialogMode('add');
+    setIsEditDialogOpen(true);
+  }, []);
+
+  const handleCloseEditDialog = useCallback(() => {
     setIsEditDialogOpen(false);
-  };
+  }, []);
 
-  const handleSaveQuestion = (updatedQuestion: ToeicPart3_4) => {
-    if (onUpdateQuestion) {
+  const handleSaveQuestion = useCallback((updatedQuestion: ToeicPart3_4, subQuestions?: ToeicQuestion[]) => {
+    if (dialogMode === 'edit' && onUpdateQuestion) {
       onUpdateQuestion(updatedQuestion);
+    } else if (dialogMode === 'add' && onAddQuestion && subQuestions) {
+      onAddQuestion(updatedQuestion, subQuestions);
     }
     handleCloseEditDialog();
-  };
+  }, [dialogMode, onUpdateQuestion, onAddQuestion, handleCloseEditDialog]);
 
-  // Get the correct sub-question content and answers
-  const getSubQuestionContent = (index: number) => {
-    if (!currentQuestion) return { content: '', answers: [], correctAnswer: AnswerEnum.A };
+  // Create empty question for add mode
+  const createEmptyQuestion = useCallback((): ToeicPart3_4 => {
+    return {
+      id: 0,
+      audio: '',
+      image: '',
+      transcript: '',
+      questions: [],
+      status: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+  }, []);
 
-    let content: string, answers: string[], correctAnswer: AnswerEnum;
-    
-    switch (index) {
-      case 0:
-        content = currentQuestion.contentQuestion1;
-        answers = [
-          currentQuestion.answer1Q1,
-          currentQuestion.answer2Q1,
-          currentQuestion.answer3Q1,
-          currentQuestion.answer4Q1
-        ];
-        correctAnswer = currentQuestion.correctAnswer1;
-        break;
-      case 1:
-        content = currentQuestion.contentQuestion2;
-        answers = [
-          currentQuestion.answer1Q2,
-          currentQuestion.answer2Q2,
-          currentQuestion.answer3Q2,
-          currentQuestion.answer4Q2
-        ];
-        correctAnswer = currentQuestion.correctAnswer2;
-        break;
-      case 2:
-        content = currentQuestion.contentQuestion3;
-        answers = [
-          currentQuestion.answer1Q3,
-          currentQuestion.answer2Q3,
-          currentQuestion.answer3Q3,
-          currentQuestion.answer4Q3
-        ];
-        correctAnswer = currentQuestion.correctAnswer3;
-        break;
-      default:
-        content = '';
-        answers = [];
-        correctAnswer = AnswerEnum.A;
-    }
-
-    return { content, answers, correctAnswer };
-  };
-
-  if (!currentQuestion || questions.length === 0) {
+  // Early return if no current question and not in add mode
+  if (!currentQuestion && questions.length === 0 && dialogMode !== 'add') {
     return null;
   }
 
-  const activeSubQuestionData = getSubQuestionContent(activeSubQuestion);
+  // Derive part-specific labels and icons
   const partTitle = partNumber === 3 ? "Part 3: Conversations" : "Part 4: Talks";
+  const partSubtitle = partNumber === 3 
+    ? "Listen to short conversations and answer questions" 
+    : "Listen to talks and answer questions";
+  const partIcon = partNumber === 3 
+    ? <RecordVoiceOverIcon fontSize="small" /> 
+    : <CampaignIcon fontSize="small" />;
+  const partLabel = partNumber === 3 
+    ? `Conversation ${currentQuestionIndex + 1}` 
+    : `Talk ${currentQuestionIndex + 1}`;
+
+  // Derive color palette
   const accentColor = isDarkMode ? color.teal300 : color.teal600;
-  const borderColor = isDarkMode ? color.gray700 : color.gray200;
-  const bgColor = isDarkMode ? color.gray800 : color.gray50;
-  const cardBgColor = isDarkMode ? color.gray900 : color.white;
+  const borderColor = isDarkMode ? color.gray700 : color.gray300;
+  const bgColor = isDarkMode ? color.gray800 : color.white;
+  const cardBgColor = isDarkMode ? color.gray900 : color.gray50;
+  const tabBgColor = isDarkMode ? color.gray900 : color.gray100;
 
   return (
     <>
       <PartContainer
         id={`part${partNumber}-section`}
         title={partTitle}
+        subtitle={partSubtitle}
         currentIndex={currentQuestionIndex}
         totalItems={questions.length}
         onSelectQuestion={onSelectQuestion}
         onPrevious={onNavigatePrevious}
         onNext={onNavigateNext}
         onEditQuestion={handleOpenEditDialog}
+        onAddQuestion={handleOpenAddDialog}
       >
-        <Grid container spacing={3}>
-          {/* Left Side - Audio and Transcript */}
-          <Grid item xs={12} md={currentQuestion.image ? 6 : 12}>
-              {/* Audio Player */}
-              <AudioPlayer 
-                audioUrl={currentQuestion.audio}
-              />
-              
-              {/* Transcript */}
-              <TranscriptBox 
-                  transcript={currentQuestion.transcript}
-                />
-          </Grid>
-          
-          {/* Right Side - Image (if available) */}
-          {currentQuestion.image && (
-            <Grid item xs={12} md={6}>
+        {currentQuestion && (
+          <Grid container spacing={3}>
+            {/* Audio + Transcript Section */}
+            <Grid item xs={12}>
               <Paper
-                elevation={0}
-                sx={{ 
+                elevation={3}
+                sx={{
                   backgroundColor: bgColor,
                   borderRadius: '1rem',
                   p: 3,
+                  mb: 2,
                   border: `1px solid ${borderColor}`,
-                  height: '100%'
+                  position: 'relative',
+                  overflow: 'hidden'
                 }}
               >
-                <CardMedia
-                  component="img"
-                  sx={{ 
-                    height: '100%',
-                    minHeight: 300,
-                    maxHeight: 400,
-                    objectFit: 'contain',
-                    backgroundColor: cardBgColor,
-                    p: 2,
-                    borderRadius: '0.75rem',
-                    border: `1px solid ${borderColor}`
-                  }}
-                  image={currentQuestion.image}
-                  alt="Reference Image"
-                />
+                <Zoom in={true}>
+                  <Chip
+                    icon={partIcon}
+                    label={partLabel}
+                    color="primary"
+                    sx={{
+                      position: 'absolute',
+                      top: 16,
+                      right: 16,
+                      backgroundColor: accentColor,
+                      color: isDarkMode ? color.gray900 : color.white,
+                      fontWeight: 'bold',
+                      '& .MuiChip-icon': {
+                        color: isDarkMode ? color.gray900 : color.white
+                      }
+                    }}
+                  />
+                </Zoom>
+
+                <Stack spacing={3}>
+                  {/* Audio Player */}
+                  <Box>
+                    <Typography 
+                      variant="h6" 
+                      sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: 1,
+                        mb: 2,
+                        color: isDarkMode ? color.teal300 : color.teal700
+                      }}
+                    >
+                      <HeadphonesIcon />
+                      Audio Recording
+                    </Typography>
+                    
+                    <AudioPlayer 
+                      audioUrl={currentQuestion.audio} 
+                    />
+                  </Box>
+
+                  {/* Image (if available) */}
+                  {currentQuestion.image && (
+                    <Box>
+                      <CardMedia
+                        component="img"
+                        image={currentQuestion.image}
+                        alt="Question Image"
+                        sx={{
+                          borderRadius: '1rem',
+                          maxHeight: 250,
+                          width: 'auto',
+                          mx: 'auto',
+                          objectFit: 'contain',
+                          border: `1px solid ${borderColor}`
+                        }}
+                      />
+                    </Box>
+                  )}
+
+                  {/* Transcript */}
+                  <Box>
+                    <Typography 
+                      variant="h6" 
+                      sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: 1,
+                        mb: 2,
+                        color: isDarkMode ? color.teal300 : color.teal700
+                      }}
+                    >
+                      <TextSnippetIcon />
+                      Transcript
+                    </Typography>
+                    
+                    <TranscriptBox
+                      transcript={currentQuestion.transcript}
+                    />
+                  </Box>
+                </Stack>
               </Paper>
             </Grid>
-          )}
 
-          <Grid item xs={12}>
-            <Divider sx={{ 
-              my: 3,
-              borderColor: borderColor
-            }} />
-            
-            {/* Sub-Questions Container */}
-            <Paper
-              elevation={0}
-              sx={{
-                backgroundColor: bgColor,
-                borderRadius: '1rem',
-                border: `1px solid ${borderColor}`,
-                overflow: 'hidden',
-                mb: 3
-              }}
-            >
-              {/* Sub-Questions Tabs */}
-              <Tabs 
-                value={activeSubQuestion} 
-                onChange={handleChangeSubQuestion}
-                variant="fullWidth"
-                sx={{
-                  borderBottom: `1px solid ${borderColor}`,
-                  '& .MuiTabs-indicator': {
+            {/* Questions Section */}
+            <Grid item xs={12}>
+              <Divider sx={{ 
+                my: 2, 
+                borderColor: isDarkMode ? color.gray700 : color.gray300,
+                '&::before, &::after': {
+                  borderColor: isDarkMode ? color.gray700 : color.gray300,
+                }
+              }}>
+                <Chip 
+                  icon={<QuestionAnswerIcon />}
+                  label="Questions" 
+                  sx={{ 
                     backgroundColor: accentColor,
-                    height: 3
-                  },
-                  '& .MuiTab-root': {
-                    color: isDarkMode ? color.gray400 : color.gray500,
+                    color: isDarkMode ? color.gray900 : color.white,
                     fontWeight: 'bold',
-                    py: 2,
-                    '&.Mui-selected': {
-                      color: accentColor,
-                    },
-                  },
+                    px: 1,
+                    '& .MuiChip-icon': {
+                      color: isDarkMode ? color.gray900 : color.white
+                    }
+                  }}
+                />
+              </Divider>
+
+              <Paper
+                ref={tabContainerRef}
+                elevation={3}
+                sx={{
+                  backgroundColor: bgColor,
+                  borderRadius: '1rem',
+                  border: `1px solid ${borderColor}`,
+                  overflow: 'hidden',
+                  mb: 3
                 }}
               >
-                <Tab label="Question 1" />
-                <Tab label="Question 2" />
-                <Tab label="Question 3" />
-              </Tabs>
-              
-              {/* Question Content and Answer Options */}
-              <Box sx={{ p: 3 }}>
-                <QuestionContent 
-                  content={activeSubQuestionData.content}
-                  questionNumber={activeSubQuestion + 1}
-                />
-                
-                {/* Answer Options */}
-                <AnswerOptionsGrid
-                  options={activeSubQuestionData.answers.map((answer, index) => 
-                    `(${String.fromCharCode(65 + index)}) ${answer}`
-                  )}
-                  correctAnswer={activeSubQuestionData.correctAnswer}
-                />
-              </Box>
-            </Paper>
+                <Tabs
+                  ref={tabsRef}
+                  value={activeSubQuestion}
+                  onChange={handleChangeSubQuestion}
+                  variant="scrollable"
+                  scrollButtons="auto"
+                  allowScrollButtonsMobile
+                  sx={{
+                    backgroundColor: tabBgColor,
+                    borderBottom: `1px solid ${borderColor}`,
+                    '& .MuiTabs-indicator': {
+                      backgroundColor: accentColor,
+                      height: 3
+                    },
+                    '& .MuiTab-root': {
+                      color: isDarkMode ? color.gray400 : color.gray600,
+                      fontWeight: 'bold',
+                      py: 2,
+                      transition: 'all 0.2s ease-in-out',
+                      '&.Mui-selected': {
+                        color: accentColor
+                      },
+                      '&:hover': {
+                        backgroundColor: isDarkMode ? color.gray800 : color.gray200,
+                      }
+                    }
+                  }}
+                >
+                  {currentSubQuestions.map((subQ, index) => (
+                    <Tab 
+                      key={index} 
+                      label={`Question ${index + 1}`}
+                      icon={
+                        <Tooltip title={subQ?.content?.substring(0, 30) + "..."}>
+                          <QuestionAnswerIcon fontSize="small" />
+                        </Tooltip>
+                      }
+                      iconPosition="start"
+                    />
+                  ))}
+                </Tabs>
+
+                <Fade in={true} timeout={300}>
+                  <Box sx={{ p: { xs: 2, md: 4 } }}>
+                    {currentSubQuestions[activeSubQuestion] && (
+                      <>
+                        <QuestionContent
+                          content={currentSubQuestions[activeSubQuestion].content}
+                          questionNumber={activeSubQuestion + 1}
+                        />
+
+                        <AnswerOptionsGrid
+                          options={currentSubQuestions[activeSubQuestion].toeicAnswers.map((ans, i) => 
+                            `(${String.fromCharCode(65 + i)}) ${ans.content}`
+                          )}
+                          correctAnswer={
+                            currentSubQuestions[activeSubQuestion].toeicAnswers.findIndex(a => a.correct) === 0 ? AnswerEnum.A : 
+                            currentSubQuestions[activeSubQuestion].toeicAnswers.findIndex(a => a.correct) === 1 ? AnswerEnum.B : 
+                            currentSubQuestions[activeSubQuestion].toeicAnswers.findIndex(a => a.correct) === 2 ? AnswerEnum.C : 
+                            AnswerEnum.D
+                          } 
+                        />    
+                      </>
+                    )}
+                  </Box>
+                </Fade>
+              </Paper>
+            </Grid>
           </Grid>
-        </Grid>
+        )}
       </PartContainer>
 
-      {/* Edit Dialog - Using Refactored Version */}
-      {currentQuestion && (
-        <Part3_4EditDialog
-          open={isEditDialogOpen}
-          question={currentQuestion}
-          partNumber={partNumber}
-          onClose={handleCloseEditDialog}
-          onSave={handleSaveQuestion}
-        />
-      )}
+      <Part3_4EditDialog
+        open={isEditDialogOpen}
+        question={dialogMode === 'edit' ? (currentQuestion || createEmptyQuestion()) : createEmptyQuestion()}
+        partNumber={partNumber}
+        onClose={handleCloseEditDialog}
+        onSave={handleSaveQuestion}
+        toeicQuestions={toeicQuestions}
+        mode={dialogMode}
+      />
     </>
   );
 }

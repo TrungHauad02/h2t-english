@@ -4,12 +4,9 @@ import {
   SubmitTestSpeaking,
   SubmitTestWriting,
   SubmitToeic,
+  SubmitToeicAnswer,
   SubmitToeicPart1,
   SubmitToeicPart2,
-  SubmitToeicPart3_4,
-  SubmitToeicPart5,
-  SubmitToeicPart6,
-  SubmitToeicPart7,
 } from "interfaces";
 
 const getSubmitTestByUserId = (userId: number) => {
@@ -94,37 +91,20 @@ const getSubmitCompetitionWritings = (competitionId: number): SubmitTestWriting[
 const getSubmitToeicByUserId = (userId: number) => {
   return mockData.submitToeic.filter((s) => s.user_id === userId);
 };
+
 const getSubmitToeicById = (submitId: number): SubmitToeic | undefined => {
-  console.log("cappp");
-  
   return mockData.submitToeic.find((s) => s.id === submitId);
 };
 
+const getSubmitToeicAnswersBySubmitId = (submitId: number): SubmitToeicAnswer[] => {
+  return mockData.submitToeicAnswers.filter((s) => s.submitToeicId === submitId);
+};
 
 const getSubmitToeicPart1BySubmitId = (submitId: number): SubmitToeicPart1[] => {
   return mockData.submitToeicPart1.filter((s) => s.submitToeicId === submitId);
 };
-
 const getSubmitToeicPart2BySubmitId = (submitId: number): SubmitToeicPart2[] => {
   return mockData.submitToeicPart2.filter((s) => s.submitToeicId === submitId);
-};
-
-
-
-const getSubmitToeicPart3_4BySubmitId = (submitId: number): SubmitToeicPart3_4[] => {
-  return mockData.submitToeicPart3_4.filter((s) => s.submitToeicId === submitId);
-};
-
-const getSubmitToeicPart5BySubmitId = (submitId: number): SubmitToeicPart5[] => {
-  return mockData.submitToeicPart5.filter((s) => s.submitToeicId === submitId);
-};
-
-const getSubmitToeicPart6BySubmitId = (submitId: number): SubmitToeicPart6[] => {
-  return mockData.submitToeicPart6.filter((s) => s.submitToeicId === submitId);
-};
-
-const getSubmitToeicPart7BySubmitId = (submitId: number): SubmitToeicPart7[] => {
-  return mockData.submitToeicPart7.filter((s) => s.submitToeicId === submitId);
 };
 
 export const historyTestService = {
@@ -138,12 +118,8 @@ export const historyTestService = {
   getSubmitCompetitionWritings,
   getSubmitToeicByUserId,
   getSubmitToeicById,
+  getSubmitToeicAnswersBySubmitId,
   getSubmitToeicPart1BySubmitId,
-  getSubmitToeicPart2BySubmitId,
-  getSubmitToeicPart3_4BySubmitId,
-  getSubmitToeicPart5BySubmitId,
-  getSubmitToeicPart6BySubmitId,
-  getSubmitToeicPart7BySubmitId,
-
+  getSubmitToeicPart2BySubmitId
 
 };

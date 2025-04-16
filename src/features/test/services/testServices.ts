@@ -13,41 +13,41 @@ import {
   ToeicPart1,
   ToeicPart2,
   ToeicPart3_4,
-  ToeicPart5,
   ToeicPart6,
   ToeicPart7,
-  ToeicPart7Question,
+  ToeicQuestion,
+  ToeicAnswer,
 } from "interfaces";
 
 const getTestById = (testId: number): Test | null => {
   return mockData.tests.find((t) => t.id === testId) || null;
 };
+
 const getCompetitionTestById = (competitionTestId: number): CompetitionTest | null => {
   return mockData.CompetitionTests.find((t) => t.id === competitionTestId) || null;
 };
+
 const getTestPartsByIds = (partIds: number[]): TestPart[] => {
   return mockData.testParts.filter((part) => partIds.includes(part.id));
 };
+
 const getQuestionsByIds = (questionIds: number[]): Question[] => {
   return mockData.questions.filter((q) => questionIds.includes(q.id));
 };
-const getQuestionsByIdsAndType = (questionIds: number[], type: TestPartTypeEnum): Question[] => {
 
+const getQuestionsByIdsAndType = (questionIds: number[], type: TestPartTypeEnum): Question[] => {
   switch (type) {
     case TestPartTypeEnum.VOCABULARY:
     case TestPartTypeEnum.GRAMMAR:
       return mockData.questions.filter((q) => questionIds.includes(q.id));
-
     case TestPartTypeEnum.READING:
       return mockData.testReadings
         .filter((reading) => questionIds.includes(reading.id))
         .flatMap((reading) => mockData.questions.filter((q) => reading.questions.includes(q.id)));
-
     case TestPartTypeEnum.LISTENING:
       return mockData.testListenings
         .filter((listening) => questionIds.includes(listening.id))
         .flatMap((listening) => mockData.questions.filter((q) => listening.questions.includes(q.id)));
-
     case TestPartTypeEnum.SPEAKING:
       return mockData.testSpeakings
         .filter((speaking) => questionIds.includes(speaking.id))
@@ -57,19 +57,22 @@ const getQuestionsByIdsAndType = (questionIds: number[], type: TestPartTypeEnum)
   }
 };
 
-
 const getTestReadingsByIds = (testIds: number[]): TestReading[] => {
   return mockData.testReadings.filter((t) => testIds.includes(t.id));
 };
+
 const getTestListeningsByIds = (testIds: number[]): TestListening[] => {
   return mockData.testListenings.filter((t) => testIds.includes(t.id));
 };
+
 const getTestSpeakingsByIds = (testIds: number[]): TestSpeaking[] => {
   return mockData.testSpeakings.filter((t) => testIds.includes(t.id));
 };
+
 const getTestWritingsByIds = (testIds: number[]): TestWriting[] => {
   return mockData.testWritings.filter((t) => testIds.includes(t.id));
 };
+
 const getDataTestByTypeAndId = (type: string, id: string) => {
   const testId = Number(id);
   if (isNaN(testId)) return null;
@@ -104,6 +107,7 @@ const getDataTestByTypeAndId = (type: string, id: string) => {
         break;
     }
   });
+
   switch (type.toLowerCase()) {
     case "mixing":
       return {
@@ -125,9 +129,11 @@ const getDataTestByTypeAndId = (type: string, id: string) => {
       return null;
   }
 };
+
 const getTestByIdAndType = (testId: number, testType: string): Test | null => {
   return mockData.tests.find((t) => t.id === testId && t.type === testType) || null;
 };
+
 const getToeicById = (toeicId: number): Toeic | null => {
   return mockData.toeic?.id === toeicId ? mockData.toeic : null;
 };
@@ -144,26 +150,25 @@ const getToeicPart3_4ByIds = (ids: number[]): ToeicPart3_4[] => {
   return mockData.toeicPart3_4List.filter((q) => ids.includes(q.id));
 };
 
-const getToeicPart5ByIds = (ids: number[]): ToeicPart5[] => {
-  return mockData.toeicPart5List.filter((q) => ids.includes(q.id));
-};
-
 const getToeicPart6ByIds = (ids: number[]): ToeicPart6[] => {
   return mockData.toeicPart6List.filter((q) => ids.includes(q.id));
 };
+
 const getToeicPart7ByIds = (ids: number[]): ToeicPart7[] => {
   return mockData.toeicPart7list?.filter((item) => ids.includes(item.id)) || [];
 };
 
-const getToeicPart7QuestionsByIds = (ids: number[]): ToeicPart7Question[] => {
-  return mockData.toeicPart7Questions.filter((q) => ids.includes(q.id));
+const getToeicQuestionsByIds = (ids: number[]): ToeicQuestion[] => {
+  return mockData.toeicQuestions.filter((q) => ids.includes(q.id));
 };
+
+const getToeicAnswersByIds = (ids: number[]): ToeicAnswer[] => {
+  return mockData.toeicAnswers.filter((a) => ids.includes(a.id));
+};
+
 const parseIds = (idsString: string): number[] => {
   return idsString.split(',').map((id) => parseInt(id.trim())).filter(Boolean);
 };
-
-
-
 
 export const testService = {
   getTestById,
@@ -181,9 +186,9 @@ export const testService = {
   getToeicPart1ByIds,
   getToeicPart2ByIds,
   getToeicPart3_4ByIds,
-  getToeicPart5ByIds,
   getToeicPart6ByIds,
   getToeicPart7ByIds,
-  getToeicPart7QuestionsByIds,
+  getToeicQuestionsByIds,
+  getToeicAnswersByIds,
   parseIds,
 };

@@ -14,11 +14,11 @@ import {
   ToeicPart1,
   ToeicPart2,
   ToeicPart3_4,
-  ToeicPart5,
   ToeicPart6,
   ToeicPart7,
   AnswerEnum,
-  ToeicPart7Question
+  ToeicQuestion,
+  ToeicAnswer,
 } from "interfaces";
 
 const questions: Question[] = Array.from({ length: 300 }, (_, i) => ({
@@ -416,30 +416,16 @@ const toeicPart2s: ToeicPart2[] = [
   },
 ];
 
+
+
 // TOEIC Part 3 data (Conversations)
-const toeicPart3s: ToeicPart3_4[] = [
+const toeicPart3List: ToeicPart3_4[] = [
   {
     id: 1,
     audio: "https://example.com/toeic/part3/audio1.mp3",
+    image: "",
     transcript: "Man: I'm thinking about taking a vacation next month.\nWoman: That sounds nice. Where are you planning to go?\nMan: I'm considering either Hawaii or Japan.\nWoman: Both are great choices. Have you checked the weather for that time of year?",
-    contentQuestion1: "What is the man planning to do?",
-    contentQuestion2: "What places is the man considering?",
-    contentQuestion3: "What does the woman ask about?",
-    answer1Q1: "Change his job",
-    answer2Q1: "Take a vacation",
-    answer3Q1: "Move to a new city",
-    answer4Q1: "Visit his family",
-    answer1Q2: "Europe and Asia",
-    answer2Q2: "Hawaii and Japan",
-    answer3Q2: "Canada and Mexico",
-    answer4Q2: "Australia and New Zealand", // Note: This should be answer4Q2 in the interface
-    answer1Q3: "The cost of the trip",
-    answer2Q3: "His travel companions",
-    answer3Q3: "The weather",
-    answer4Q3: "Flight schedules",
-    correctAnswer1: "B" as AnswerEnum,
-    correctAnswer2: "B" as AnswerEnum,
-    correctAnswer3: "C" as AnswerEnum,
+    questions: [1, 2, 3],
     status: true,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -447,55 +433,23 @@ const toeicPart3s: ToeicPart3_4[] = [
   {
     id: 2,
     audio: "https://example.com/toeic/part3/audio2.mp3",
+    image: "",
     transcript: "Woman: Have you finished the quarterly report?\nMan: I'm still working on it. The data analysis is taking longer than I expected.\nWoman: Do you need any help?\nMan: Actually, if you could review the marketing section, that would be great.",
-    contentQuestion1: "What are they discussing?",
-    contentQuestion2: "Why is the man delayed?",
-    contentQuestion3: "What does the woman offer?",
-    answer1Q1: "A holiday plan",
-    answer2Q1: "A quarterly report",
-    answer3Q1: "A new product",
-    answer4Q1: "A staff meeting",
-    answer1Q2: "He's been on vacation",
-    answer2Q2: "He's been in meetings",
-    answer3Q2: "The data analysis is taking longer",
-    answer4Q2: "He lost the original files", // Note: This should be answer4Q2 in the interface
-    answer1Q3: "To take over the project",
-    answer2Q3: "To help him",
-    answer3Q3: "To extend the deadline",
-    answer4Q3: "To speak to their manager",
-    correctAnswer1: "B" as AnswerEnum,
-    correctAnswer2: "C" as AnswerEnum,
-    correctAnswer3: "B" as AnswerEnum,
+    questions: [4, 5, 6],
     status: true,
     createdAt: new Date(),
     updatedAt: new Date(),
-  },
+  }
 ];
 
 // TOEIC Part 4 data (Talks)
-const toeicPart4s: ToeicPart3_4[] = [
+const toeicPart4List: ToeicPart3_4[] = [
   {
     id: 1,
     audio: "https://example.com/toeic/part4/audio1.mp3",
+    image: "",
     transcript: "Attention shoppers. Our annual spring sale begins today and will continue through the weekend. You'll find discounts of up to 50% on selected items throughout the store. In addition, if you spend over $100, you'll receive a free gift at checkout. Store hours will be extended until 9 PM on Friday and Saturday. Thank you for shopping with us.",
-    contentQuestion1: "What is being announced?",
-    contentQuestion2: "How long will the sale last?",
-    contentQuestion3: "What will customers receive if they spend over $100?",
-    answer1Q1: "A new store opening",
-    answer2Q1: "A spring sale",
-    answer3Q1: "A change in store hours",
-    answer4Q1: "A product recall",
-    answer1Q2: "One day",
-    answer2Q2: "Through the weekend",
-    answer3Q2: "One week",
-    answer4Q2: "Until the end of the month", // Note: This should be answer4Q2 in the interface
-    answer1Q3: "A 50% discount",
-    answer2Q3: "A coupon for their next purchase",
-    answer3Q3: "Extended warranty",
-    answer4Q3: "A free gift",
-    correctAnswer1: "B" as AnswerEnum,
-    correctAnswer2: "B" as AnswerEnum,
-    correctAnswer3: "D" as AnswerEnum,
+    questions: [7, 8, 9],
     status: true,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -503,94 +457,21 @@ const toeicPart4s: ToeicPart3_4[] = [
   {
     id: 2,
     audio: "https://example.com/toeic/part4/audio2.mp3",
+    image: "",
     transcript: "Good morning everyone. I'd like to remind you that the company picnic is scheduled for this Saturday at Central Park. We'll be meeting at the south entrance at 11 AM. The company will provide the main dishes, but we're asking everyone to bring a side dish or dessert to share. If you haven't signed up yet, please do so by the end of today. In case of rain, we'll reschedule for the following weekend.",
-    contentQuestion1: "What event is being discussed?",
-    contentQuestion2: "What time will they meet?",
-    contentQuestion3: "What should employees bring?",
-    answer1Q1: "A business meeting",
-    answer2Q1: "A company picnic",
-    answer3Q1: "A training session",
-    answer4Q1: "A product launch",
-    answer1Q2: "9 AM",
-    answer2Q2: "10 AM",
-    answer3Q2: "11 AM",
-    answer4Q2: "12 PM", // Note: This should be answer4Q2 in the interface
-    answer1Q3: "Main dishes",
-    answer2Q3: "Drinks",
-    answer3Q3: "Side dish or dessert",
-    answer4Q3: "Nothing",
-    correctAnswer1: "B" as AnswerEnum,
-    correctAnswer2: "C" as AnswerEnum,
-    correctAnswer3: "C" as AnswerEnum,
+    questions: [10, 11, 12],
     status: true,
     createdAt: new Date(),
     updatedAt: new Date(),
-  },
-];
-
-// TOEIC Part 5 data (Incomplete Sentences)
-const toeicPart5s: ToeicPart5[] = [
-  {
-    id: 1,
-    content: "The marketing department needs to _____ the effectiveness of the new advertising campaign.",
-    answer1: "evaluate",
-    answer2: "evaluates",
-    answer3: "evaluating",
-    answer4: "evaluation",
-    correctAnswer: "A" as AnswerEnum,
-    explanation: "We need a verb after 'to', so 'evaluate' is correct.",
-    status: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 2,
-    content: "Despite the economic downturn, the company reported a(n) _____ increase in profits last quarter.",
-    answer1: "significance",
-    answer2: "significantly",
-    answer3: "significant",
-    answer4: "signify",
-    correctAnswer: "C" as AnswerEnum,
-    explanation: "We need an adjective to describe 'increase', so 'significant' is correct.",
-    status: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
+  }
 ];
 
 // TOEIC Part 6 data (Text Completion)
-const toeicPart6s: ToeicPart6[] = [
+const toeicPart6List: ToeicPart6[] = [
   {
     id: 1,
     file: "Dear Mr. Thompson,\n\nThank you for your interest in our company. We have received your application for the position of Marketing Manager. After careful consideration of your qualifications and experience, we would like to invite you for an interview.\n\nThe interview is scheduled for next Tuesday at 2 PM at our head office. Please bring your portfolio and any additional documents that might be relevant to your application.\n\nIf you have any questions or if the suggested time is not convenient for you, please do not hesitate to contact me.\n\nWe look forward to meeting you.\n\nSincerely,\nSarah Johnson\nHR Manager",
-    contentQuestion1: "What position did the recipient apply for?",
-    contentQuestion2: "When is the interview scheduled?",
-    contentQuestion3: "What should the applicant bring to the interview?",
-    contentQuestion4: "Who sent this letter?",
-    explanationQuestion1: "The letter states 'We have received your application for the position of Marketing Manager.'",
-    explanationQuestion2: "The letter mentions 'The interview is scheduled for next Tuesday at 2 PM.'",
-    explanationQuestion3: "The applicant is asked to 'bring your portfolio and any additional documents.'",
-    explanationQuestion4: "The letter is signed by 'Sarah Johnson, HR Manager.'",
-    answer1Q1: "HR Manager",
-    answer2Q1: "Marketing Manager",
-    answer3Q1: "Sales Representative",
-    answer4Q1: "Financial Analyst",
-    answer1Q2: "Monday at 10 AM",
-    answer2Q2: "Tuesday at 2 PM",
-    answer3Q2: "Wednesday at noon",
-    answer4Q2: "Friday at 3 PM",
-    answer1Q3: "A resume",
-    answer2Q3: "Reference letters",
-    answer3Q3: "Portfolio and additional documents",
-    answer4Q3: "A laptop",
-    answer1Q4: "Mr. Thompson",
-    answer2Q4: "The Marketing Director",
-    answer3Q4: "The CEO",
-    answer4Q4: "Sarah Johnson",
-    correctAnswer1: "B" as AnswerEnum,
-    correctAnswer2: "B" as AnswerEnum,
-    correctAnswer3: "C" as AnswerEnum,
-    correctAnswer4: "D" as AnswerEnum,
+    questions: [1,2],
     status: true,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -598,42 +479,15 @@ const toeicPart6s: ToeicPart6[] = [
   {
     id: 2,
     file: "MEMO\n\nTO: All Staff\nFROM: Office Management\nDATE: March 15, 2023\nSUBJECT: Office Relocation\n\nPlease be informed that our office will be relocating to a new building effective April 1, 2023. The new office is located at 123 Business Avenue, about 2 miles from our current location.\n\nDuring the weekend of March 25-26, all office equipment and furniture will be moved to the new location. Please ensure that you pack all personal items from your desk by Friday, March 24.\n\nParking will be available in the underground garage. Access cards will be distributed on March 30.\n\nIf you have any questions regarding the relocation, please contact the Office Management team.",
-    contentQuestion1: "What is the purpose of this memo?",
-    contentQuestion2: "When will the office relocation take effect?",
-    contentQuestion3: "What should employees do by March 24?",
-    contentQuestion4: "Where will parking be available at the new location?",
-    explanationQuestion1: "The memo is about the office relocation as stated in the subject line.",
-    explanationQuestion2: "The memo states 'our office will be relocating to a new building effective April 1, 2023.'",
-    explanationQuestion3: "Employees are instructed to 'pack all personal items from your desk by Friday, March 24.'",
-    explanationQuestion4: "The memo mentions 'Parking will be available in the underground garage.'",
-    answer1Q1: "To announce a company merger",
-    answer2Q1: "To inform about office relocation",
-    answer3Q1: "To explain new office policies",
-    answer4Q1: "To announce staff changes",
-    answer1Q2: "March 15, 2023",
-    answer2Q2: "March 24, 2023",
-    answer3Q2: "March 30, 2023",
-    answer4Q2: "April 1, 2023",
-    answer1Q3: "Move their furniture",
-    answer2Q3: "Visit the new location",
-    answer3Q3: "Pack personal items",
-    answer4Q3: "Collect access cards",
-    answer1Q4: "Street parking",
-    answer2Q4: "Current office location",
-    answer3Q4: "Underground garage",
-    answer4Q4: "There will be no parking",
-    correctAnswer1: "B" as AnswerEnum,
-    correctAnswer2: "D" as AnswerEnum,
-    correctAnswer3: "C" as AnswerEnum,
-    correctAnswer4: "C" as AnswerEnum,
+    questions: [17, 18, 19, 20],
     status: true,
     createdAt: new Date(),
     updatedAt: new Date(),
-  },
+  }
 ];
 
 // TOEIC Part 7 data (Reading Comprehension)
-const toeicPart7s: ToeicPart7[] = [
+const toeicPart7List: ToeicPart7[] = [
   {
     id: 1,
     file: "./document.docx",
@@ -649,92 +503,65 @@ const toeicPart7s: ToeicPart7[] = [
     status: true,
     createdAt: new Date(),
     updatedAt: new Date(),
-  },
+  }
 ];
 
-// TOEIC Part 7 Questions
-const toeicPart7Questions: ToeicPart7Question[] = [
+
+// TOEIC Questions
+const toeicQuestions: ToeicQuestion[] = [
   {
     id: 1,
-    content: "What is the purpose of John Smith's email?",
-    answer1: "To cancel an order",
-    answer2: "To inquire about the status of an order",
-    answer3: "To request a refund",
-    answer4: "To place a new order",
-    explanation: "John Smith's email is asking about the status of order #RT-29384 which has not been received yet.",
-    correctAnswer: "B" as AnswerEnum,
+    content: "What is the man planning to do?",
+    explanation: "The conversation reveals the man is thinking about taking a vacation next month.",
+    toeicAnswers: [
+      { 
+        id: 1, 
+        content: "Change his job", 
+        correct: false, 
+        questionId: 1,
+        status: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      { 
+        id: 2, 
+        content: "Take a vacation", 
+        correct: true, 
+        questionId: 1,
+        status: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      { 
+        id: 3, 
+        content: "Move to a new city", 
+        correct: false, 
+        questionId: 1,
+        status: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      { 
+        id: 4, 
+        content: "Visit his family", 
+        correct: false, 
+        questionId: 1,
+        status: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ],
     status: true,
     createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 2,
-    content: "According to the emails, when was the order placed?",
-    answer1: "September 28",
-    answer2: "September 30",
-    answer3: "October 3",
-    answer4: "October 10",
-    explanation: "John Smith mentions in his email that they placed the order on September 28.",
-    correctAnswer: "A" as AnswerEnum,
-    status: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 3,
-    content: "What does Sarah Williams suggest Mr. Smith should do?",
-    answer1: "Cancel the order and place a new one",
-    answer2: "Contact the courier company",
-    answer3: "Check with the receiving department",
-    answer4: "Wait for another delivery",
-    explanation: "Sarah Williams suggests that Mr. Smith should 'check with your receiving department to locate the package.'",
-    correctAnswer: "C" as AnswerEnum,
-    status: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 4,
-    content: "What position is being advertised?",
-    answer1: "Sales Representative",
-    answer2: "Marketing Specialist",
-    answer3: "Digital Content Creator",
-    answer4: "Customer Service Representative",
-    explanation: "The job posting is for a Marketing Specialist position at Global Innovations Inc.",
-    correctAnswer: "B" as AnswerEnum,
-    status: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 5,
-    content: "How many years of experience are required for this position?",
-    answer1: "No experience required",
-    answer2: "1 year",
-    answer3: "2 years",
-    answer4: "5 years",
-    explanation: "The requirements section states 'Minimum 2 years of experience in a marketing role.'",
-    correctAnswer: "C" as AnswerEnum,
-    status: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: 6,
-    content: "How should interested candidates apply for the position?",
-    answer1: "Call the HR department",
-    answer2: "Apply in person at the Chicago office",
-    answer3: "Fill out an online application form",
-    answer4: "Submit a resume and cover letter by email",
-    explanation: "The posting instructs candidates to 'submit your resume and cover letter to careers@globalinnovations.com.'",
-    correctAnswer: "D" as AnswerEnum,
-    status: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
+    updatedAt: new Date()
+  }
 ];
 
-// Update the export to include all TOEIC-related data
+// TOEIC Answers
+const toeicAnswers: ToeicAnswer[] = toeicQuestions.flatMap(q => q.toeicAnswers);
+
+
+
 export const mockData = {
   tests,
   CompetitionTests,
@@ -748,12 +575,12 @@ export const mockData = {
   // Add TOEIC-specific data
   toeicPart1s,
   toeicPart2s,
-  toeicPart3s,
-  toeicPart4s,
-  toeicPart5s,
-  toeicPart6s,
-  toeicPart7s,
-  toeicPart7Questions
+  toeicPart3List,
+  toeicPart4List,
+  toeicPart6List,
+  toeicPart7List,
+  toeicQuestions,
+  toeicAnswers,
 };
 
 export { questions };

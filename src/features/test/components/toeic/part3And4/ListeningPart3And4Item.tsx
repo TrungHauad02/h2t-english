@@ -4,13 +4,14 @@ import {
   Typography,
   RadioGroup,
   FormControlLabel,
-  Radio
+  Radio,
 } from '@mui/material';
-import { AnswerEnum, ToeicPart3_4 } from 'interfaces/TestInterfaces';
+import { AnswerEnum, ToeicQuestion } from 'interfaces/TestInterfaces';
 
 type Props = {
   questionNumberStart: number;
-  data: ToeicPart3_4;
+  questions: ToeicQuestion[];
+  audio: string;
   selectedAnswers: Record<string, AnswerEnum>;
   onChange: (questionKey: string, value: AnswerEnum) => void;
   onAudioEnded: () => void;
@@ -18,7 +19,8 @@ type Props = {
 
 const ListeningPart3And4Item: React.FC<Props> = ({
   questionNumberStart,
-  data,
+  questions,
+  audio,
   selectedAnswers,
   onChange,
   onAudioEnded
@@ -36,38 +38,30 @@ const ListeningPart3And4Item: React.FC<Props> = ({
         boxShadow: 3,
       }}
     >
-      <audio src={data.audio} autoPlay onEnded={onAudioEnded} style={{ display: 'none' }} />
+      <audio src={audio} autoPlay onEnded={onAudioEnded} style={{ display: 'none' }} />
 
       <Typography fontWeight="bold" mb={2}>
         Choose the correct answer.
       </Typography>
 
-      {[1, 2, 3].map((num) => {
-        const questionKey = `${data.id}-Q${num}`;
-        const content = data[`contentQuestion${num}` as keyof ToeicPart3_4];
-        const answers = [
-          data[`answer1Q${num}` as keyof ToeicPart3_4],
-          data[`answer2Q${num}` as keyof ToeicPart3_4],
-          data[`answer3Q${num}` as keyof ToeicPart3_4],
-          data[`answer4Q${num}` as keyof ToeicPart3_4]
-        ];
-
+      {questions.map((question, index) => {
+        const questionKey = `${question.id}`;
         return (
-          <Box key={num} mb={3}>
+          <Box key={question.id} mb={3}>
             <Typography mb={1}>
-              {questionNumberStart + num - 1}. {String(content)}
+              {questionNumberStart + index}. {question.content}
             </Typography>
             <RadioGroup
               name={questionKey}
               value={selectedAnswers[questionKey] || ''}
               onChange={(e) => onChange(questionKey, e.target.value as AnswerEnum)}
             >
-              {(['A', 'B', 'C', 'D'] as AnswerEnum[]).map((choice, idx) => (
+              {question.toeicAnswers.map((answer, idx) => (
                 <FormControlLabel
-                  key={choice}
-                  value={choice}
+                  key={answer.id}
+                  value={(['A', 'B', 'C', 'D'][idx]) as AnswerEnum}
                   control={<Radio />}
-                  label={`${choice}. ${answers[idx]}`}
+                  label={`${(['A', 'B', 'C', 'D'][idx])}. ${answer.content}`}
                 />
               ))}
             </RadioGroup>

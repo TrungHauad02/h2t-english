@@ -5,3 +5,5 @@ export { default as QuestionTabPanel } from './QuestionTabPanel';
 export { default as EditTabs } from './EditTabs';
 export { default as AnswerOptionsEditor } from './AnswerOptionsEditor';
 export { default as MediaFileSelector } from './MediaFileSelector';
+export { default as QuestionEditor } from './QuestionEditor';
+export { default as EnhanceAnswerOptionsEditor } from './EnhanceAnswerOptionsEditor';

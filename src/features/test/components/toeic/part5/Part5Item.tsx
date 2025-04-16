@@ -6,11 +6,11 @@ import {
   FormControlLabel,
   Radio,
 } from '@mui/material';
-import { AnswerEnum, ToeicPart5 } from 'interfaces/TestInterfaces';
+import { AnswerEnum, ToeicQuestion } from 'interfaces/TestInterfaces';
 
 type Props = {
   questionNumber: number;
-  question: ToeicPart5;
+  question: ToeicQuestion;
   selectedAnswer?: AnswerEnum;
   onChange: (val: AnswerEnum) => void;
 };
@@ -44,10 +44,14 @@ const Part5Item: React.FC<Props> = ({
           value={selectedAnswer || ''}
           onChange={(e) => onChange(e.target.value as AnswerEnum)}
         >
-          <FormControlLabel value="A" control={<Radio />} label={`A. ${question.answer1}`} />
-          <FormControlLabel value="B" control={<Radio />} label={`B. ${question.answer2}`} />
-          <FormControlLabel value="C" control={<Radio />} label={`C. ${question.answer3}`} />
-          <FormControlLabel value="D" control={<Radio />} label={`D. ${question.answer4}`} />
+          {question.toeicAnswers.map((answer, idx) => (
+            <FormControlLabel
+              key={answer.id}
+              value={(['A', 'B', 'C', 'D'][idx]) as AnswerEnum}
+              control={<Radio />}
+              label={`${(['A', 'B', 'C', 'D'][idx])}. ${answer.content}`}
+            />
+          ))}
         </RadioGroup>
       </Box>
     </Box>

@@ -10,7 +10,7 @@ import {
   AccordionDetails,
   Tooltip
 } from '@mui/material';
-import { ToeicPart7, ToeicPart7Question, AnswerEnum } from 'interfaces';
+import { ToeicPart7, ToeicQuestion, ToeicAnswer } from 'interfaces';
 import useColor from 'theme/useColor';
 import { useDarkMode } from 'hooks/useDarkMode';
 import { WEDocumentInput } from 'components/input';
@@ -18,7 +18,8 @@ import { base64ToBlobUrl } from 'utils/convert';
 import { 
   ToeicEditDialogBase, 
   StatusSwitch,
-  FormSectionCard
+  FormSectionCard,
+  QuestionEditor
 } from '../dialogEdit';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -26,14 +27,14 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import QuestionEditor from './QuestionEditor';
 
 interface Part7EditDialogProps {
   open: boolean;
   passage: ToeicPart7;
-  questions: ToeicPart7Question[];
+  questions: ToeicQuestion[];
   onClose: () => void;
-  onSave: (updatedPassage: ToeicPart7, updatedQuestions: ToeicPart7Question[]) => void;
+  onSave: (updatedPassage: ToeicPart7, updatedQuestions: ToeicQuestion[]) => void;
+  mode?: 'edit' | 'add';
 }
 
 export default function Part7EditDialog({ 
@@ -41,13 +42,14 @@ export default function Part7EditDialog({
   passage, 
   questions,
   onClose, 
-  onSave 
+  onSave,
+  mode = 'edit'
 }: Part7EditDialogProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   
   const [editedPassage, setEditedPassage] = useState<ToeicPart7>({ ...passage });
-  const [editedQuestions, setEditedQuestions] = useState<ToeicPart7Question[]>([...questions]);
+  const [editedQuestions, setEditedQuestions] = useState<ToeicQuestion[]>([...questions]);
   const [expandedQuestion, setExpandedQuestion] = useState<number | false>(false);
 
   useEffect(() => {
@@ -69,7 +71,7 @@ export default function Part7EditDialog({
     setEditedPassage({ ...editedPassage, [field]: value });
   };
 
-  const handleQuestionChange = (index: number, field: keyof ToeicPart7Question, value: any) => {
+  const handleQuestionChange = (index: number, field: keyof ToeicQuestion, value: any) => {
     const updatedQuestions = [...editedQuestions];
     updatedQuestions[index] = {
       ...updatedQuestions[index],
@@ -79,18 +81,30 @@ export default function Part7EditDialog({
   };
 
   const handleAddQuestion = () => {
-    const newQuestion: ToeicPart7Question = {
-      id: 0, // Temporary ID, will be replaced on save
-      status: true,
+    if (editedQuestions.length >= 4) {
+      return;
+    }
+
+    const emptyAnswers: ToeicAnswer[] = Array(4).fill(null).map((_, index) => ({
+      id: 0,
       content: '',
-      answer1: '',
-      answer2: '',
-      answer3: '',
-      answer4: '',
+      correct: index === 0,
+      questionId: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: true,
+    }));
+
+    const newQuestion: ToeicQuestion = {
+      id: 0,
+      content: '',
       explanation: '',
-      correctAnswer: AnswerEnum.A
+      toeicAnswers: emptyAnswers,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: true
     };
-    
+
     const updatedQuestions = [...editedQuestions, newQuestion];
     setEditedQuestions(updatedQuestions);
     setExpandedQuestion(updatedQuestions.length - 1);
@@ -101,10 +115,9 @@ export default function Part7EditDialog({
     updatedQuestions.splice(index, 1);
     setEditedQuestions(updatedQuestions);
     
-    // Adjust expanded panel
     if (expandedQuestion === index) {
       setExpandedQuestion(index > 0 ? index - 1 : (updatedQuestions.length > 0 ? 0 : false));
-    } else if (expandedQuestion && expandedQuestion > index) {
+    } else if (expandedQuestion !== false && expandedQuestion > index) {
       setExpandedQuestion(expandedQuestion - 1);
     }
   };
@@ -126,7 +139,6 @@ export default function Part7EditDialog({
     
     setEditedQuestions(updatedQuestions);
     
-    // Update expanded panel if needed
     if (expandedQuestion === fromIndex) {
       setExpandedQuestion(toIndex);
     } else if (
@@ -134,7 +146,6 @@ export default function Part7EditDialog({
       ((fromIndex < expandedQuestion && toIndex >= expandedQuestion) || 
        (fromIndex > expandedQuestion && toIndex <= expandedQuestion))
     ) {
-      // If a question is moved across the currently expanded question, adjust the index
       const adjustment = fromIndex < expandedQuestion ? -1 : 1;
       setExpandedQuestion(expandedQuestion + adjustment);
     }
@@ -149,7 +160,6 @@ export default function Part7EditDialog({
   };
 
   const handleSave = () => {
-    // Update the questions array in the passage
     const updatedPassage = {
       ...editedPassage,
       questions: editedQuestions.map(q => q.id)
@@ -162,6 +172,13 @@ export default function Part7EditDialog({
     setExpandedQuestion(isExpanded ? panel : false);
   };
 
+  // If it's add mode and no questions exist yet, add one automatically on first render
+  useEffect(() => {
+    if (mode === 'add' && open && editedQuestions.length === 0) {
+      handleAddQuestion();
+    }
+  }, [mode, open, editedQuestions.length]);
+
   const bgColor = isDarkMode ? color.gray800 : color.gray50;
   const textPrimaryColor = isDarkMode ? color.gray100 : color.gray900;
   const textSecondaryColor = isDarkMode ? color.gray300 : color.gray600;
@@ -173,7 +190,7 @@ export default function Part7EditDialog({
       open={open}
       onClose={onClose}
       onSave={handleSave}
-      title="Edit Part 7 Reading Passage"
+      title={mode === 'edit' ? "Edit Part 7 Reading Passage" : "Add Part 7 Reading Passage"}
       maxWidth="lg"
     >
       <Grid container spacing={3}>
@@ -209,17 +226,24 @@ export default function Part7EditDialog({
               variant="contained"
               startIcon={<AddIcon />}
               onClick={handleAddQuestion}
+              disabled={editedQuestions.length >= 4}
               sx={{
-                backgroundColor: isDarkMode ? color.emerald700 : color.emerald600,
-                color: color.white,
+                backgroundColor: editedQuestions.length >= 4 
+                  ? (isDarkMode ? color.gray600 : color.gray400)
+                  : (isDarkMode ? color.emerald700 : color.emerald600),
+                color: editedQuestions.length >= 4
+                  ? (isDarkMode ? color.gray400 : color.gray600)
+                  : color.white,
                 '&:hover': {
-                  backgroundColor: isDarkMode ? color.emerald600 : color.emerald500
+                  backgroundColor: editedQuestions.length >= 4
+                    ? (isDarkMode ? color.gray600 : color.gray400)
+                    : (isDarkMode ? color.emerald600 : color.emerald500)
                 },
                 borderRadius: '0.75rem',
                 px: 2
               }}
             >
-              Add Question
+              Add Question {editedQuestions.length >= 4 ? '(Max 4)' : ''}
             </Button>
           </Box>
 

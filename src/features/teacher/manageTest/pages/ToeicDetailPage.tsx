@@ -114,7 +114,7 @@ export default function ToeicDetailPage() {
           handleUnpublishClick={hooks.handleUnpublishClick}
         />
 
-        {/* Part Sections - only passing questions prop */}
+        {/* Part Sections - with appropriate question data */}
         {hooks.part1Questions.length > 0 && (
           <Part1Section 
             questions={hooks.part1Questions}
@@ -130,12 +130,14 @@ export default function ToeicDetailPage() {
         {hooks.part3Questions.length > 0 && (
           <Part3Section 
             questions={hooks.part3Questions}
+            toeicQuestions={hooks.part3ToeicQuestions}
           />
         )}
 
         {hooks.part4Questions.length > 0 && (
           <Part4Section 
             questions={hooks.part4Questions}
+            toeicQuestions={hooks.part4ToeicQuestions}
           />
         )}
 
@@ -148,13 +150,14 @@ export default function ToeicDetailPage() {
         {hooks.part6Questions.length > 0 && (
           <Part6Section 
             questions={hooks.part6Questions}
+            toeicQuestions={hooks.part6ToeicQuestions}
           />
         )}
 
         {hooks.part7Questions.length > 0 && (
           <Part7Section 
             questions={hooks.part7Questions}
-            part7SubQuestions={hooks.part7SubQuestions}
+            toeicQuestions={hooks.part7ToeicQuestions}
           />
         )}
       </Stack>

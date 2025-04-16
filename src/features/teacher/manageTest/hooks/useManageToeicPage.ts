@@ -63,10 +63,9 @@ export default function useManageToeicPage() {
     setScoreRange(newScoreRange);
   };
 
-  const createToeicTest = (toeicData: Omit<Toeic, "id" | "status" | "createdAt" | "updatedAt" | "totalQuestions" | "scoreLastOfTest">) => {
+  const createToeicTest = (toeicData: Toeic) => {
     const newToeic = toeicService.createToeicTest(toeicData);
-    
-    // Refresh the list of TOEIC tests
+
     setToeicTests(prev => [...prev, newToeic]);
     
     return newToeic;
