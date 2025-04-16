@@ -85,7 +85,7 @@ export default function SpeakingTopicSection({ data }: { data: Speaking }) {
       {/* Assessment Results */}
       {hooks.assessmentResult && (
         <AssessmentResultsCard
-          score={hooks.assessmentResult.score}
+          score={parseInt(hooks.assessmentResult.score)}
           feedback={hooks.assessmentResult.feedback}
           strengths={hooks.assessmentResult.strengths}
           areas_to_improve={hooks.assessmentResult.areas_to_improve}

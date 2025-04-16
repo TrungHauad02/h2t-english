@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { Speaking } from "interfaces";
+import { scoreSpeakingService } from "services";
 
 interface AssessmentResult {
-  score: number;
+  score: string; // Updated from number to string to match DTO
   feedback: string;
   transcript: string;
   strengths?: string[];
@@ -25,13 +26,18 @@ export default function useSpeakingTopicSection(data: Speaking) {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [audioLevel, setAudioLevel] = useState<number>(0);
+  const [audioFormat, setAudioFormat] = useState<string>("audio/wav");
 
   // Refs
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
+  // Timer effect
   useEffect(() => {
     if (isRecording && !isPaused && timeLeft > 0) {
       timerRef.current = setInterval(() => {
@@ -58,18 +64,31 @@ export default function useSpeakingTopicSection(data: Speaking) {
 
   // Audio levels monitoring
   useEffect(() => {
-    if (!audioStream) return;
+    if (!audioStream || !isRecording) return;
 
-    const audioContext = new AudioContext();
-    const analyser = audioContext.createAnalyser();
-    const microphone = audioContext.createMediaStreamSource(audioStream);
-    microphone.connect(analyser);
+    // Create audio context and analyzer only if not already created
+    if (!audioContextRef.current) {
+      audioContextRef.current = new AudioContext();
+      analyserRef.current = audioContextRef.current.createAnalyser();
+      const microphone =
+        audioContextRef.current.createMediaStreamSource(audioStream);
+      microphone.connect(analyserRef.current);
+      analyserRef.current.fftSize = 256;
+    }
 
-    analyser.fftSize = 256;
+    // Ensure analyzer exists before proceeding
+    const analyser = analyserRef.current;
+    if (!analyser) {
+      console.error("Analyzer node is not available");
+      return;
+    }
+
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
     const checkAudioLevel = () => {
+      if (!analyser) return;
+
       analyser.getByteFrequencyData(dataArray);
       // Calculate average volume level
       let sum = 0;
@@ -80,26 +99,75 @@ export default function useSpeakingTopicSection(data: Speaking) {
       setAudioLevel(average);
 
       if (isRecording) {
-        requestAnimationFrame(checkAudioLevel);
+        animationFrameRef.current = requestAnimationFrame(checkAudioLevel);
       }
     };
 
-    if (isRecording) {
-      checkAudioLevel();
-    }
+    checkAudioLevel();
 
     return () => {
-      microphone.disconnect();
-      audioContext.close();
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
     };
   }, [audioStream, isRecording]);
+
+  // Cleanup resources when component unmounts
+  useEffect(() => {
+    return () => {
+      cleanupAudioResources();
+    };
+  }, []);
+
+  // Function to safely cleanup all audio resources
+  const cleanupAudioResources = () => {
+    // Clean up audio URL if it exists
+    if (audioUrl) {
+      URL.revokeObjectURL(audioUrl);
+    }
+
+    // Stop and cleanup audio context safely
+    if (audioContextRef.current && audioContextRef.current.state !== "closed") {
+      try {
+        audioContextRef.current.close();
+      } catch (error) {
+        console.error("Error closing AudioContext:", error);
+      }
+    }
+
+    // Set ref to null to indicate it's closed
+    audioContextRef.current = null;
+
+    // Stop media stream tracks
+    if (audioStream) {
+      audioStream.getTracks().forEach((track) => track.stop());
+    }
+
+    // Cancel any animation frames
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+  };
 
   const requestMicrophoneAccess = async (): Promise<void> => {
     setIsLoading(true);
     setErrorMessage("");
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Stop any existing streams before requesting a new one
+      if (audioStream) {
+        audioStream.getTracks().forEach((track) => track.stop());
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      });
+
       setAudioStream(stream);
       setMicrophoneAccess(true);
       setIsLoading(false);
@@ -122,8 +190,31 @@ export default function useSpeakingTopicSection(data: Speaking) {
     audioChunksRef.current = [];
 
     try {
-      const mediaRecorder = new MediaRecorder(audioStream);
-      mediaRecorderRef.current = mediaRecorder;
+      // Try to use wav or mp3 format directly for compatibility with backend
+      // Order by preference - wav first, then mp3, then fallback formats
+      const mimeOptions = [
+        "audio/wav",
+        "audio/mp3",
+        "audio/webm;codecs=pcm",
+        "audio/webm",
+      ];
+      let selectedMimeType = "";
+
+      // Find a supported MIME type
+      for (const mimeType of mimeOptions) {
+        if (MediaRecorder.isTypeSupported(mimeType)) {
+          selectedMimeType = mimeType;
+          break;
+        }
+      }
+
+      // If no specific MIME type is supported, use default
+      const options = selectedMimeType ? { mimeType: selectedMimeType } : {};
+      setAudioFormat(selectedMimeType || "audio/webm");
+      console.log("Recording with format:", selectedMimeType || "default");
+
+      mediaRecorderRef.current = new MediaRecorder(audioStream, options);
+      const mediaRecorder = mediaRecorderRef.current;
 
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
@@ -132,14 +223,14 @@ export default function useSpeakingTopicSection(data: Speaking) {
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, {
-          type: "audio/wav",
-        });
+        const mimeType = mediaRecorder.mimeType || audioFormat;
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
         const url = URL.createObjectURL(audioBlob);
         setAudioUrl(url);
       };
 
-      mediaRecorder.start();
+      // Request data every 1 second for smoother experience
+      mediaRecorder.start(1000);
       setIsRecording(true);
       setIsPaused(false);
     } catch (error) {
@@ -181,6 +272,11 @@ export default function useSpeakingTopicSection(data: Speaking) {
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
+
+    // Cancel audio level monitoring
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
   };
 
   const resetRecording = (): void => {
@@ -206,33 +302,84 @@ export default function useSpeakingTopicSection(data: Speaking) {
     }
   };
 
-  const submitRecording = (): void => {
-    setIsSubmitting(true);
+  const submitRecording = async (): Promise<void> => {
+    if (!audioUrl) {
+      setErrorMessage("No recording available to submit");
+      return;
+    }
 
-    // Enhanced mock assessment result
-    const enhancedMockResult: AssessmentResult = {
-      score: 87,
-      feedback:
-        "Good job! Your pronunciation was clear and you covered the main points of the topic. Try to expand your vocabulary and use more complex sentence structures in future attempts.",
-      transcript:
-        "Today I will talk about artificial intelligence. AI has become an important part of our daily lives. It helps us with many tasks like searching information, recommending products, and even driving cars. However, there are also concerns about privacy and job displacement. I think AI technology should be developed responsibly with proper regulations. Overall, AI offers great benefits but we need to be careful about potential risks.",
-      strengths: [
-        "Clear pronunciation and intonation",
-        "Good coverage of main topic points",
-        "Logical structure with introduction and conclusion",
-      ],
-      areas_to_improve: [
-        "Use more complex vocabulary",
-        "Develop more detailed examples",
-        "Incorporate more varied sentence structures",
-      ],
-    };
+    try {
+      setIsSubmitting(true);
+      setErrorMessage("");
 
-    // Simulate API call with a timeout
-    setTimeout(() => {
-      setAssessmentResult(enhancedMockResult);
+      // Get the audio blob from the URL
+      const response = await fetch(audioUrl);
+      const audioBlob = await response.blob();
+
+      // Determine if we need to convert the format
+      const needsConversion = !(
+        audioBlob.type === "audio/wav" ||
+        audioBlob.type === "audio/mp3" ||
+        audioBlob.type === "audio/mpeg"
+      );
+
+      console.log(
+        `Original audio format: ${audioBlob.type}, needs conversion: ${needsConversion}`
+      );
+
+      // If format is not WAV or MP3, we need to create a new blob with the correct type
+      // Since we can't easily convert formats in the browser without extra libraries,
+      // we'll just change the content type to ensure the server accepts it
+      const finalType =
+        audioBlob.type === "audio/mpeg"
+          ? "audio/mp3"
+          : audioBlob.type === "audio/wav"
+          ? "audio/wav"
+          : "audio/mp3";
+
+      // Create a new blob with the correct type if needed
+      const finalBlob = needsConversion
+        ? new Blob([await audioBlob.arrayBuffer()], { type: "audio/mp3" })
+        : audioBlob;
+
+      // Create a File object with .wav or .mp3 extension
+      const extension = finalType.includes("mp3") ? "mp3" : "wav";
+      const fileName = `recording_${new Date().getTime()}.${extension}`;
+
+      // Create a File object with explicit MIME type
+      const audioFile = new File([finalBlob], fileName, {
+        type: finalType,
+      });
+
+      console.log(
+        `Submitting audio file: ${fileName}, type: ${finalType}, size: ${finalBlob.size} bytes`
+      );
+
+      // Call the scoring service using the File object
+      const result = await scoreSpeakingService.evaluateSpeaking(
+        audioFile,
+        data.topic
+      );
+
+      if (result.status === "SUCCESS" && result.data) {
+        setAssessmentResult({
+          score: result.data.score,
+          feedback: result.data.feedback,
+          transcript: result.data.transcript,
+          strengths: result.data.strengths,
+          areas_to_improve: result.data.areas_to_improve,
+        });
+      } else {
+        setErrorMessage(result.message || "Failed to evaluate your speaking");
+      }
+    } catch (error) {
+      console.error("Error submitting recording:", error);
+      setErrorMessage(
+        "An error occurred while evaluating your speaking. Please try again."
+      );
+    } finally {
       setIsSubmitting(false);
-    }, 2000);
+    }
   };
 
   return {
