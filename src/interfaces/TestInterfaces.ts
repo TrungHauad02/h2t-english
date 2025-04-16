@@ -23,6 +23,10 @@ export enum AnswerEnum {
 }
 
 
+export interface SubmitTestStats extends BaseEntity {
+  count: number;
+  score: number;
+}
 export interface Test extends BaseEntity {
   title: string;
   description: string;
