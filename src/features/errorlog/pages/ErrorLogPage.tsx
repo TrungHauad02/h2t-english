@@ -54,7 +54,7 @@ export default function ErrorLogPage() {
             sx={{ mt: 3, mb: 2, flexWrap: "wrap", gap: 1 }}
           >
             <Chip
-              label={`All Errors: ${hooks.errorLogs.length}`}
+              label={`All Errors: ${hooks.totalItems}`}
               sx={{
                 bgcolor: isDarkMode ? color.gray700 : color.gray200,
                 color: isDarkMode ? color.white : color.gray800,

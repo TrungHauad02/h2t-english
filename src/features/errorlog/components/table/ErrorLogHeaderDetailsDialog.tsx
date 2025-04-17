@@ -130,36 +130,6 @@ export default function ErrorLogHeaderDetailsDialog({
                         </Box>
 
                         <Box sx={{ display: "flex", gap: 1 }}>
-                            <Tooltip title="Previous Error">
-                                <IconButton
-                                    size="small"
-                                    sx={{
-                                        color: isDarkMode ? color.gray400 : color.gray600,
-                                        "&:hover": {
-                                            backgroundColor: isDarkMode
-                                                ? alpha(color.gray700, 0.7)
-                                                : alpha(color.gray200, 0.7),
-                                        },
-                                    }}
-                                >
-                                    <ArrowBackIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Next Error">
-                                <IconButton
-                                    size="small"
-                                    sx={{
-                                        color: isDarkMode ? color.gray400 : color.gray600,
-                                        "&:hover": {
-                                            backgroundColor: isDarkMode
-                                                ? alpha(color.gray700, 0.7)
-                                                : alpha(color.gray200, 0.7),
-                                        },
-                                    }}
-                                >
-                                    <ArrowForwardIcon fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
                             <Tooltip title="Close">
                                 <IconButton
                                     edge="end"

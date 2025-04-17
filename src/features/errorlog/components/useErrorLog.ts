@@ -1,13 +1,13 @@
 import { BaseFilter, ErrorLog, SeverityEnum } from "interfaces";
 import { useEffect, useState } from "react";
-import { mockErrorLogs } from "../services/mockData";
-
+import { errorLogService } from "services/features/errorLogService";
 export default function useErrorLog(initialItemsPerPage: number) {
   const [errorLogs, setErrorLogs] = useState<ErrorLog[]>([]);
   const [filteredErrorLogs, setFilteredErrorLogs] = useState<ErrorLog[]>([]);
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
   const [searchQuery, setSearchQuery] = useState("");
+  const [totalItems, setTotalItems] = useState(0);
   const [filters, setFilters] = useState<BaseFilter & {
     severity?: SeverityEnum | null;
     errorCode?: string;
@@ -19,8 +19,18 @@ export default function useErrorLog(initialItemsPerPage: number) {
   });
 
   useEffect(() => {
-    setErrorLogs(mockErrorLogs);
-  }, []);
+    const fetchLogs = async () => {
+      try {
+        const response = await errorLogService.getErrorLogs(page, itemsPerPage); 
+        setErrorLogs(response.data.content); 
+        setTotalItems(response.data.totalElements);
+      } catch (error) {
+        console.error("Failed to fetch error logs", error);
+      }
+    };
+  
+    fetchLogs();
+  }, [page, itemsPerPage]);
 
   useEffect(() => {
     let result = [...errorLogs];
@@ -71,14 +81,11 @@ export default function useErrorLog(initialItemsPerPage: number) {
     }
 
     setFilteredErrorLogs(result);
-    setPage(1);
   }, [errorLogs, searchQuery, filters]);
 
-  const totalPages = Math.ceil(filteredErrorLogs.length / itemsPerPage);
-  const paginatedLogs = filteredErrorLogs.slice(
-    (page - 1) * itemsPerPage,
-    page * itemsPerPage
-  );
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const paginatedLogs = filteredErrorLogs;
 
   const errorCounts = {
     [SeverityEnum.LOW]: errorLogs.filter((log) => log.severity === SeverityEnum.LOW).length,
@@ -136,5 +143,7 @@ export default function useErrorLog(initialItemsPerPage: number) {
     handleItemsPerPageChange,
     handleSearchChange,
     handleFilterChange,
+    totalItems, 
+    setTotalItems
   };
 }
