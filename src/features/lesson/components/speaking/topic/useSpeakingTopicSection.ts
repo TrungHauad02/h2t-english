@@ -356,7 +356,7 @@ export default function useSpeakingTopicSection(data: Speaking) {
       );
 
       // Call the scoring service using the File object
-      const result = await scoreSpeakingService.evaluateSpeaking(
+      const result = await scoreSpeakingService.evaluateSpeechInTopic(
         audioFile,
         data.topic
       );
