@@ -20,7 +20,7 @@ import { useDarkMode } from "hooks/useDarkMode";
 interface SearchFilterBarProps {
   searchText: string;
   setSearchText: (text: string) => void;
-  statusFilter: boolean | undefined;
+  statusFilter: boolean | null;
   handleStatusFilterChange: (value: string) => void;
   handleSearch: () => void;
 }
@@ -124,18 +124,18 @@ export default function SearchFilterBar({
               <InputLabel>Status</InputLabel>
               <Select
                 value={
-                  statusFilter === undefined
+                  statusFilter === null
                     ? "all"
                     : statusFilter
                     ? "published"
-                    : "draft"
+                    : "unpulished"
                 }
                 label="Status"
                 onChange={(e) => handleStatusFilterChange(e.target.value as string)}
               >
                 <MenuItem value="all">All</MenuItem>
                 <MenuItem value="published">Published</MenuItem>
-                <MenuItem value="draft">Draft</MenuItem>
+                <MenuItem value="unpublished">Unpublish</MenuItem>
               </Select>
             </FormControl>
           </Grid>

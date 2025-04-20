@@ -113,53 +113,71 @@ export default function ToeicDetailPage() {
           handlePublishClick={hooks.handlePublishClick}
           handleUnpublishClick={hooks.handleUnpublishClick}
         />
+      <Part1Section
+        questions={hooks.part1Questions}
+        onAddQuestion={hooks.addPart1Question}
+        onUpdateQuestion={hooks.updatePart1Question}
+        onDeleteQuestion={hooks.deletePart1Question}
+      />
 
-        {/* Part Sections - with appropriate question data */}
-        {hooks.part1Questions.length > 0 && (
-          <Part1Section 
-            questions={hooks.part1Questions}
-          />
-        )}
+      <Part2Section
+        questions={hooks.part2Questions}
+        onAddQuestion={hooks.addPart2Question}
+        onUpdateQuestion={hooks.updatePart2Question}
+        onDeleteQuestion={hooks.deletePart2Question}
+      />
 
-        {hooks.part2Questions.length > 0 && (
-          <Part2Section 
-            questions={hooks.part2Questions}
-          />
-        )}
+      <Part3Section
+        questions={hooks.part3Questions}
+        toeicQuestions={hooks.part3ToeicQuestions}
+        onAddQuestion={(question) => hooks.addPart3_4(question, false)}
+        onUpdateQuestion={(question) => hooks.updatePart3_4(question, false)}
+        onDeleteQuestion={(id) => hooks.deletePart3_4(id, false)}
+        onAddSubQuestion={(parentId, question) => hooks.addSubQuestion(parentId, question, "part3")}
+        onUpdateSubQuestion={(question, parentId) => hooks.updateSubQuestion(question, "part3", parentId)}
+        onDeleteSubQuestion={(questionId, parentId) => hooks.deleteSubQuestion(questionId, "part3", parentId)}
+      />
 
-        {hooks.part3Questions.length > 0 && (
-          <Part3Section 
-            questions={hooks.part3Questions}
-            toeicQuestions={hooks.part3ToeicQuestions}
-          />
-        )}
+      <Part4Section
+        questions={hooks.part4Questions}
+        toeicQuestions={hooks.part4ToeicQuestions}
+        onAddQuestion={(question) => hooks.addPart3_4(question, true)}
+        onUpdateQuestion={(question) => hooks.updatePart3_4(question, true)}
+        onDeleteQuestion={(id) => hooks.deletePart3_4(id, true)}
+        onAddSubQuestion={(parentId, question) => hooks.addSubQuestion(parentId, question, "part4")}
+        onUpdateSubQuestion={(question, parentId) => hooks.updateSubQuestion(question, "part4", parentId)}
+        onDeleteSubQuestion={(questionId, parentId) => hooks.deleteSubQuestion(questionId, "part4", parentId)}
+   
+      />
 
-        {hooks.part4Questions.length > 0 && (
-          <Part4Section 
-            questions={hooks.part4Questions}
-            toeicQuestions={hooks.part4ToeicQuestions}
-          />
-        )}
+      <Part5Section
+        questions={hooks.part5Questions}
+        onAddQuestion={hooks.addToeicQuestion}
+        onUpdateQuestion={hooks.updateToeicQuestion}
+        onDeleteQuestion={hooks.deleteToeicQuestion}
+      />
 
-        {hooks.part5Questions.length > 0 && (
-          <Part5Section 
-            questions={hooks.part5Questions}
-          />
-        )}
+      <Part6Section
+        questions={hooks.part6Questions}
+        onAddQuestion={hooks.addPart6}
+        onUpdateQuestion={hooks.updatePart6}
+        onDeleteQuestion={hooks.deletePart6}
+        toeicQuestions={hooks.part6ToeicQuestions}
+        onAddSubQuestion={(parentId, question) => hooks.addSubQuestion(parentId, question, "part6")}
+        onUpdateSubQuestion={(question, parentId) => hooks.updateSubQuestion(question, "part6", parentId)}
+        onDeleteSubQuestion={(questionId, parentId) => hooks.deleteSubQuestion(questionId, "part6", parentId)}
+      />
 
-        {hooks.part6Questions.length > 0 && (
-          <Part6Section 
-            questions={hooks.part6Questions}
-            toeicQuestions={hooks.part6ToeicQuestions}
-          />
-        )}
-
-        {hooks.part7Questions.length > 0 && (
-          <Part7Section 
-            questions={hooks.part7Questions}
-            toeicQuestions={hooks.part7ToeicQuestions}
-          />
-        )}
+      <Part7Section
+        questions={hooks.part7Questions}
+        onAddQuestion={hooks.addPart7}
+        onUpdateQuestion={hooks.updatePart7}
+        onDeleteQuestion={hooks.deletePart7}
+        toeicQuestions={hooks.part7ToeicQuestions}
+        onAddSubQuestion={(parentId, question) => hooks.addSubQuestion(parentId, question, "part7")}
+        onUpdateSubQuestion={(question, parentId) => hooks.updateSubQuestion(question, "part7", parentId)}
+        onDeleteSubQuestion={(questionId, parentId) => hooks.deleteSubQuestion(questionId, "part7", parentId)}
+      />
       </Stack>
       
       {/* Publish Dialogs */}

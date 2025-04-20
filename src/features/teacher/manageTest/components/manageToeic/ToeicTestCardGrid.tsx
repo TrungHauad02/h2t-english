@@ -17,7 +17,6 @@ interface ToeicTestCardGridProps {
   loading: boolean;
   displayedToeicTests: Toeic[];
   handleViewTest: (id: number) => void;
-  handleEditTest: (id: number) => void;
   handleDeleteTest: (id: number) => void;
 }
 
@@ -25,7 +24,6 @@ export default function ToeicTestCardGrid({
   loading,
   displayedToeicTests,
   handleViewTest,
-  handleEditTest,
   handleDeleteTest,
 }: ToeicTestCardGridProps) {
   const color = useColor();
@@ -119,7 +117,6 @@ export default function ToeicTestCardGrid({
               <ToeicTestCard
                 test={test}
                 onView={() => handleViewTest(test.id)}
-                onEdit={() => handleEditTest(test.id)}
                 onDelete={() => handleDeleteTest(test.id)}
               />
             </Box>
