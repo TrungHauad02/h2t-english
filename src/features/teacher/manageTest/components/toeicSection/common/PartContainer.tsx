@@ -5,10 +5,13 @@ import {
   CardContent,   
   Button,
   Box,
-  Stack
+  Stack,
+  Collapse,
+  Tooltip
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 import useColor from 'theme/useColor';
 import { useDarkMode } from 'hooks/useDarkMode';
 import SectionHeader from './SectionHeader';
@@ -28,6 +31,7 @@ interface PartContainerProps {
   showNavigation?: boolean;
   onEditQuestion?: () => void;
   onAddQuestion?: () => void;
+  onDeleteQuestion?: () => void;
 }
 
 export default function PartContainer({
@@ -42,10 +46,13 @@ export default function PartContainer({
   children,
   showNavigation = true,
   onEditQuestion,
-  onAddQuestion
+  onAddQuestion,
+  onDeleteQuestion
 }: PartContainerProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+
+  const borderColor = isDarkMode ? color.gray600 : color.gray200;
 
   return (
     <Paper        
@@ -54,7 +61,10 @@ export default function PartContainer({
         p: 3,
         borderRadius: '1rem',
         backgroundColor: isDarkMode ? color.gray800 : color.white,
-        transition: 'all 0.3s ease'
+        transition: 'all 0.3s ease',
+        border: `1px solid ${borderColor}`,
+        position: 'relative',
+        overflow: 'hidden'
       }}
       id={id}
     >
@@ -65,81 +75,121 @@ export default function PartContainer({
         totalItems={totalItems}
       />
       
-      {showNavigation && (
-        <QuestionNavigation 
-          total={totalItems} 
-          current={currentIndex} 
-          onSelect={onSelectQuestion} 
-        />
-      )}
+      {/* Action Buttons - Always visible */}
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 3, mt: 1 }}>
+        <Stack direction="row" spacing={2}>
+          {onAddQuestion && (
+            <Tooltip title="Add a new question">
+              <Button
+                startIcon={<AddIcon />}
+                onClick={onAddQuestion}
+                variant="contained"
+                size="small"
+                sx={{
+                  backgroundColor: isDarkMode ? color.emerald700 : color.emerald600,
+                  color: color.white,
+                  '&:hover': {
+                    backgroundColor: isDarkMode ? color.emerald600 : color.emerald500
+                  },
+                  borderRadius: '0.75rem',
+                  boxShadow: isDarkMode ? '0 4px 12px rgba(10, 10, 10, 0.2)' : '0 4px 12px rgba(16, 185, 129, 0.2)',
+                  fontWeight: 500,
+                  px: 2
+                }}
+              >
+                Add Question
+              </Button>
+            </Tooltip>
+          )}
+          
+          {onEditQuestion && totalItems > 0 && (
+            <Tooltip title="Edit current question">
+              <Button
+                startIcon={<EditIcon />}
+                onClick={onEditQuestion}
+                variant="outlined"
+                size="small"
+                sx={{
+                  borderColor: isDarkMode ? color.teal400 : color.teal600,
+                  color: isDarkMode ? color.teal400 : color.teal600,
+                  '&:hover': {
+                    backgroundColor: isDarkMode 
+                      ? `${color.teal900}33` 
+                      : color.teal50,
+                    borderColor: isDarkMode ? color.teal300 : color.teal500
+                  },
+                  borderRadius: '0.75rem',
+                  fontWeight: 500,
+                  px: 2
+                }}
+              >
+                Edit Question
+              </Button>
+            </Tooltip>
+          )}
+          
+          {onDeleteQuestion && totalItems > 0 && (
+            <Tooltip title="Delete current question">
+              <Button
+                startIcon={<DeleteIcon />}
+                onClick={onDeleteQuestion}
+                variant="outlined"
+                size="small"
+                sx={{
+                  borderColor: isDarkMode ? color.red400 : color.red600,
+                  color: isDarkMode ? color.red400 : color.red600,
+                  '&:hover': {
+                    backgroundColor: isDarkMode 
+                      ? `${color.red900}33` 
+                      : color.red50,
+                    borderColor: isDarkMode ? color.red300 : color.red500
+                  },
+                  borderRadius: '0.75rem',
+                  fontWeight: 500,
+                  px: 2
+                }}
+              >
+                Delete Question
+              </Button>
+            </Tooltip>
+          )}
+        </Stack>
+      </Box>
       
-      {showNavigation && (
-        <NavigationButtons 
-          onPrevious={onPrevious}
-          onNext={onNext}
-          isPreviousDisabled={currentIndex === 0}
-          isNextDisabled={currentIndex === totalItems - 1}
-        />
-      )}
+      {/* Navigation components with Collapse animation */}
+      <Collapse in={showNavigation && totalItems > 0}>
+        <Box>
+          <QuestionNavigation 
+            total={totalItems} 
+            current={currentIndex} 
+            onSelect={onSelectQuestion} 
+          />
+          
+          <NavigationButtons 
+            onPrevious={onPrevious}
+            onNext={onNext}
+            isPreviousDisabled={currentIndex === 0}
+            isNextDisabled={currentIndex === totalItems - 1}
+          />
+        </Box>
+      </Collapse>
       
+      {/* Content Card */}
       <Card 
         elevation={2}
         sx={{
           borderRadius: '1rem',
           overflow: 'hidden',
-          mb: 3,
           position: 'relative',
           backgroundColor: isDarkMode ? color.gray700 : color.gray50,
-          border: `1px solid ${isDarkMode ? color.gray600 : color.gray200}`
+          border: `1px solid ${isDarkMode ? color.gray600 : color.gray200}`,
+          boxShadow: isDarkMode 
+            ? '0 4px 20px rgba(0, 0, 0, 0.2)' 
+            : '0 4px 20px rgba(0, 0, 0, 0.05)',
+          transition: 'all 0.3s ease'
         }}
       >
-        <CardContent sx={{ p: 3 }}>
-          {(onEditQuestion || onAddQuestion) && (
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-              <Stack direction="row" spacing={2}>
-                {onAddQuestion && (
-                  <Button
-                    startIcon={<AddIcon />}
-                    onClick={onAddQuestion}
-                    variant="contained"
-                    size="small"
-                    sx={{
-                      backgroundColor: isDarkMode ? color.emerald700 : color.emerald600,
-                      color: color.white,
-                      '&:hover': {
-                        backgroundColor: isDarkMode ? color.emerald600 : color.emerald500
-                      },
-                      borderRadius: '0.75rem'
-                    }}
-                  >
-                    Add Question
-                  </Button>
-                )}
-                
-                {onEditQuestion && (
-                  <Button
-                    startIcon={<EditIcon />}
-                    onClick={onEditQuestion}
-                    variant="outlined"
-                    size="small"
-                    sx={{
-                      borderColor: isDarkMode ? color.emerald400 : color.emerald600,
-                      color: isDarkMode ? color.emerald400 : color.emerald600,
-                      '&:hover': {
-                        backgroundColor: isDarkMode 
-                          ? color.emerald900 + '33' 
-                          : color.emerald100
-                      },
-                      borderRadius: '0.75rem'
-                    }}
-                  >
-                    Edit Question
-                  </Button>
-                )}
-              </Stack>
-            </Box>
-          )}
-          
+        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
           {children}
         </CardContent>
       </Card>

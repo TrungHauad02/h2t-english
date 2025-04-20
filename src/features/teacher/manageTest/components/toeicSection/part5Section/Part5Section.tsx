@@ -6,12 +6,18 @@ import {
   Paper,
   Fade,
   Zoom,
-  Chip
+  Chip,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button
 } from '@mui/material';
 import { ToeicQuestion, AnswerEnum, ToeicAnswer } from 'interfaces';
 import {
   PartContainer,
-  QuestionContent,
   AnswerOptionsGrid
 } from '../common';
 import Part5EditDialog from './Part5EditDialog';
@@ -26,18 +32,21 @@ interface Part5SectionProps {
   questions: ToeicQuestion[];
   onUpdateQuestion?: (updatedQuestion: ToeicQuestion) => void;
   onAddQuestion?: (newQuestion: ToeicQuestion) => void;
+  onDeleteQuestion?: (questionId: number) => void;
 }
 
 export default function Part5Section({
   questions,
   onUpdateQuestion,
-  onAddQuestion
+  onAddQuestion,
+  onDeleteQuestion
 }: Part5SectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [showExplanation, setShowExplanation] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<'edit' | 'add'>('edit');
 
   const currentQuestion = questions.length > 0 ? questions[currentQuestionIndex] : null;
@@ -79,6 +88,14 @@ export default function Part5Section({
     setIsEditDialogOpen(false);
   };
 
+  const handleOpenDeleteDialog = () => {
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setIsDeleteDialogOpen(false);
+  };
+
   const handleSaveQuestion = (updatedQuestion: ToeicQuestion) => {
     if (dialogMode === 'edit' && onUpdateQuestion) {
       onUpdateQuestion(updatedQuestion);
@@ -86,6 +103,19 @@ export default function Part5Section({
       onAddQuestion(updatedQuestion);
     }
     handleCloseEditDialog();
+  };
+
+  const handleDeleteQuestion = () => {
+    if (currentQuestion && onDeleteQuestion) {
+      onDeleteQuestion(currentQuestion.id);
+      
+      if (currentQuestionIndex > 0) {
+        setCurrentQuestionIndex(currentQuestionIndex - 1);
+      } else if (questions.length > 1) {
+        // Stay at index 0 as the next question will shift into position 0
+      }
+    }
+    handleCloseDeleteDialog();
   };
 
   // Create empty question for add mode
@@ -111,8 +141,44 @@ export default function Part5Section({
     };
   };
 
+  // Handle empty state
   if (!currentQuestion && questions.length === 0) {
-    return null;
+    return (
+      <Container maxWidth="lg">
+        <PartContainer
+          id="part5-section-empty"
+          title="Part 5: Incomplete Sentences"
+          subtitle="No questions available. Please add a question to get started."
+          currentIndex={0}
+          totalItems={0}
+          onSelectQuestion={() => {}}
+          onPrevious={() => {}}
+          onNext={() => {}}
+          onEditQuestion={undefined}
+          onAddQuestion={handleOpenAddDialog}
+          onDeleteQuestion={undefined}
+          showNavigation={false}
+        >
+          <Box sx={{ 
+            textAlign: 'center', 
+            py: 6,
+            color: isDarkMode ? color.gray400 : color.gray600
+          }}>
+            <SubjectIcon sx={{ fontSize: 64, mb: 2, opacity: 0.6 }} />
+            <Typography variant="h6">No questions available</Typography>
+            <Typography sx={{ mt: 1 }}>Click the "Add Question" button to create your first question.</Typography>
+          </Box>
+        </PartContainer>
+        
+        <Part5EditDialog
+          open={isEditDialogOpen}
+          question={createEmptyQuestion()}
+          onClose={handleCloseEditDialog}
+          onSave={handleSaveQuestion}
+          mode={dialogMode}
+        />
+      </Container>
+    );
   }
 
   const accentColor = isDarkMode ? color.teal300 : color.teal600;
@@ -133,6 +199,7 @@ export default function Part5Section({
         onNext={onNavigateNext}
         onEditQuestion={handleOpenEditDialog}
         onAddQuestion={handleOpenAddDialog}
+        onDeleteQuestion={onDeleteQuestion ? handleOpenDeleteDialog : undefined}
       >
         {currentQuestion && (
           <Fade in={true} timeout={300}>
@@ -169,7 +236,6 @@ export default function Part5Section({
 
               <Grid container spacing={3}>
                 <Grid item xs={12}>
-                  {/* Question Content */}
                   <Box 
                     sx={{
                       mt: 2, 
@@ -293,7 +359,6 @@ export default function Part5Section({
         )}
       </PartContainer>
 
-      {/* Edit/Add Dialog */}
       <Part5EditDialog
         open={isEditDialogOpen}
         question={dialogMode === 'edit' ? (currentQuestion || createEmptyQuestion()) : createEmptyQuestion()}
@@ -301,6 +366,40 @@ export default function Part5Section({
         onSave={handleSaveQuestion}
         mode={dialogMode}
       />
+
+      <Dialog
+        open={isDeleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
+      >
+        <DialogTitle id="delete-dialog-title">
+          Confirm Deletion
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="delete-dialog-description">
+            Are you sure you want to delete this question? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="primary">
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleDeleteQuestion} 
+            color="error" 
+            variant="contained"
+            sx={{
+              backgroundColor: color.delete,
+              '&:hover': {
+                backgroundColor: isDarkMode ? color.red700 : color.red600
+              }
+            }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
