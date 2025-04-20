@@ -20,6 +20,7 @@ export default function useConversationSection() {
     name: "",
     serial: 1,
     content: "",
+    audioUrl: "",
   });
   const [voices, setVoices] = useState<Voice[]>([]);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -105,6 +106,7 @@ export default function useConversationSection() {
           ? Math.max(...conversations.map((c) => c.serial)) + 1
           : 1,
       content: "",
+      audioUrl: "",
     });
     setIsDialogOpen(true);
   };
@@ -272,11 +274,20 @@ export default function useConversationSection() {
 
     try {
       const resData = await ttsService.textToSpeech(text, voice);
+      const reader = new FileReader();
       const audioBlob = new Blob([resData], { type: "audio/mpeg" });
-      const audioUrl = URL.createObjectURL(audioBlob);
+
+      const base64Audio = await new Promise<string>((resolve) => {
+        reader.onloadend = () => {
+          // reader.result có dạng "data:audio/mpeg;base64,BASE64_STRING"
+          resolve(reader.result as string);
+        };
+        reader.readAsDataURL(audioBlob);
+      });
+
       setEditData({
         ...editData,
-        audioUrl: audioUrl,
+        audioUrl: base64Audio,
       });
     } catch (error) {
       showError({

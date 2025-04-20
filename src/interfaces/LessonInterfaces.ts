@@ -1,6 +1,5 @@
 import BaseEntity from "interfaces";
 
-
 export interface Lesson extends BaseEntity {
   title: string;
   image: string;
@@ -142,7 +141,7 @@ export interface SpeakingConversation extends BaseEntity {
   name: string;
   serial: number;
   content: string;
-  audioUrl?: string;
+  audioUrl: string;
 }
 
 export interface ListenAndWriteAWord extends BaseEntity {

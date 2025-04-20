@@ -304,10 +304,7 @@ export default function ConversationItem({
                     audioUrl={conversation.audioUrl}
                     isPlaying={isCurrentlyPlaying}
                     onPlayPause={() =>
-                      onPlayAudio(
-                        conversation.audioUrl as string,
-                        conversation.id
-                      )
+                      onPlayAudio(conversation.audioUrl, conversation.id)
                     }
                   />
                 </Box>
