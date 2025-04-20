@@ -25,12 +25,15 @@ const ListeningPartList: React.FC<ListeningPartProps> = ({
       const partData = await testService.getToeicPart3_4ByIds(questions);
       setQuestionsList(partData);
 
-      const allQuestionIds = partData.flatMap((part) => part.questions);
+      const allQuestionIds = partData
+        .flatMap((part) => part.questions ?? [])
+        .filter((id): id is number => typeof id === 'number');
+
       const questionsData = await testService.getToeicQuestionsByIds(allQuestionIds);
 
       const map: Record<number, ToeicQuestion[]> = {};
       partData.forEach((part) => {
-        map[part.id] = questionsData.filter((q) => part.questions.includes(q.id));
+        map[part.id] = questionsData.filter((q) => part.questions?.includes(q.id));
       });
 
       setQuestionMap(map);
@@ -47,16 +50,16 @@ const ListeningPartList: React.FC<ListeningPartProps> = ({
     }
   };
 
-  if (questionsList.length === 0 || !questionMap[questionsList[currentIndex]?.id]) {
+  const currentPart = questionsList[currentIndex];
+  const currentQuestions = currentPart?.id ? questionMap[currentPart.id] ?? [] : [];
+
+  if (questionsList.length === 0 || currentQuestions.length === 0) {
     return (
       <Box display="flex" justifyContent="center" mt={10}>
         <CircularProgress />
       </Box>
     );
   }
-
-  const currentPart = questionsList[currentIndex];
-  const currentQuestions = questionMap[currentPart.id];
 
   return (
     <Box sx={{ marginTop: "1rem" }}>
