@@ -83,15 +83,15 @@ export interface Answer extends BaseEntity {
 export interface Toeic extends BaseEntity {
   title: string;
   duration: number;
-  questionsPart1: number[];
-  questionsPart2: number[];
-  questionsPart3: number[];
-  questionsPart4: number[];
-  questionsPart5: number[];
-  questionsPart6: number[];
-  questionsPart7: number[];  
-  totalQuestions: 200;
-  scoreLastOfTest: number | null ;
+  questionsPart1?: number[];
+  questionsPart2?: number[];
+  questionsPart3?: number[];
+  questionsPart4?: number[];
+  questionsPart5?: number[];
+  questionsPart6?: number[];
+  questionsPart7?: number[];  
+  totalQuestions?: 200;
+  scoreLastOfTest?: number | null ;
 }
 
 export interface ToeicPart1 extends BaseEntity {
@@ -110,16 +110,16 @@ export interface ToeicPart3_4 extends BaseEntity {
   audio: string;
   image: string;
   transcript: string;
-  questions: number[];
+  questions?: number[];
 }
 export interface ToeicPart6 extends BaseEntity {
   file: string;
-  questions: number[];
+  questions?: number[];
 }
 
 export interface ToeicPart7 extends BaseEntity {
   file: string;
-  questions: number[];
+  questions?: number[];
 }
 export interface ToeicQuestion extends BaseEntity {
   content: string;

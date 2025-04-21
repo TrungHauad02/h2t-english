@@ -31,21 +31,27 @@ const Part7List: React.FC<Props> = ({
     const fetchData = async () => {
       const passages = await testService.getToeicPart7ByIds(questionsPart7);
 
-      const allQuestionIds = passages.flatMap(p => p.questions);
+      const allQuestionIds = passages
+        .flatMap((p) => p.questions ?? [])
+        .filter((id): id is number => typeof id === 'number');
+
       const questions = await testService.getToeicQuestionsByIds(allQuestionIds);
 
-      const grouped = passages.map(p => ({
+      const grouped = passages.map((p) => ({
         passage: p,
-        questions: questions.filter(q => p.questions.includes(q.id)),
+        questions: p.questions
+          ? questions.filter((q) => p.questions?.includes(q.id))
+          : [],
       }));
+
       setData(grouped);
 
-      const answerIds = submitToeicPart7.map(a => a.toeicAnswerId);
+      const answerIds = submitToeicPart7.map((a) => a.toeicAnswerId);
       const answers = await testService.getToeicAnswersByIds(answerIds);
 
       const map: Record<number, AnswerEnum> = {};
-      submitToeicPart7.forEach(sub => {
-        const ans = answers.find(a => a.id === sub.toeicAnswerId);
+      submitToeicPart7.forEach((sub) => {
+        const ans = answers.find((a) => a.id === sub.toeicAnswerId);
         if (ans) {
           map[sub.toeicQuestionId] = ans.content as AnswerEnum;
         }

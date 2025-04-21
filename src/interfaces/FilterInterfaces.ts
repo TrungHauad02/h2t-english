@@ -12,6 +12,9 @@ export interface BaseFilter {
 export interface RouteFilter extends BaseFilter {
   title?: string;
 }
+export interface ToeicFilter extends BaseFilter {
+  title?: string;
+}
 
 export interface VocabularyFilter extends BaseFilter {
   word?: string;

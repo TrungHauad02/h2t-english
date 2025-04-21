@@ -32,21 +32,30 @@ const Part6List: React.FC<Props> = ({
       const part6Groups = await testService.getToeicPart6ByIds(questionsPart6);
       setGroups(part6Groups);
 
-      const allQIds = part6Groups.flatMap(g => g.questions);
+      const allQIds = part6Groups
+        .flatMap((g) => g.questions ?? [])
+        .filter((id): id is number => typeof id === 'number');
+
       const toeicQuestions = await testService.getToeicQuestionsByIds(allQIds);
 
       const qMap: Record<number, ToeicQuestion[]> = {};
-      part6Groups.forEach(group => {
-        qMap[group.id] = toeicQuestions.filter(q => group.questions.includes(q.id));
+      part6Groups.forEach((group) => {
+        if (group.questions) {
+          qMap[group.id] = toeicQuestions.filter((q) =>
+            group.questions?.includes(q.id)
+          );
+        } else {
+          qMap[group.id] = [];
+        }
       });
       setQuestionMap(qMap);
 
       const ansMap: Record<number, AnswerEnum> = {};
-      const allAnswerIds = submitToeicPart6.map(s => s.toeicAnswerId);
+      const allAnswerIds = submitToeicPart6.map((s) => s.toeicAnswerId);
       const allAnswers = await testService.getToeicAnswersByIds(allAnswerIds);
 
-      submitToeicPart6.forEach(sub => {
-        const ans = allAnswers.find(a => a.id === sub.toeicAnswerId);
+      submitToeicPart6.forEach((sub) => {
+        const ans = allAnswers.find((a) => a.id === sub.toeicAnswerId);
         if (ans) {
           ansMap[sub.toeicQuestionId] = ans.content as AnswerEnum;
         }

@@ -89,9 +89,9 @@ const ToeicTest: React.FC<Props> = ({ toeic }) => {
 
   const getTotalCurrentPartItems = () => {
     switch (step) {
-      case 7: return toeic.questionsPart5.length;
-      case 8: return toeic.questionsPart6.length;
-      case 9: return toeic.questionsPart7.length;
+      case 7: return toeic.questionsPart5?.length ?? 0;
+      case 8: return toeic.questionsPart6?.length ?? 0;
+      case 9: return toeic.questionsPart7?.length ?? 0;
       default: return 0;
     }
   };
@@ -111,17 +111,16 @@ const ToeicTest: React.FC<Props> = ({ toeic }) => {
       case 0: return <VolumeTestStep />;
       case 1: return <DirectionsStep />;
       case 2: return <ListeningPart1Step />;
-      case 3: return <ListeningPart1List questionsPart1={toeic.questionsPart1} startIndex={1} onFinish={() => setStep(4)} />;
-      case 4: return <ListeningPart2List questionsPart2={toeic.questionsPart2} startIndex={7} onFinish={() => setStep(5)} />;
-      case 5: return <ListeningPart3And4List questions={toeic.questionsPart3} startIndex={32} onFinish={() => setStep(6)} />;
-      case 6: return <ListeningPart3And4List questions={toeic.questionsPart4} startIndex={71} onFinish={() => setStep(7)} />;
-      case 7: return <Part5List questionsPart5={toeic.questionsPart5} startIndex={101} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} onFinish={() => setStep(8)} />;
-      case 8: return <Part6List questionsPart6={toeic.questionsPart6} startIndex={131} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} onFinish={() => setStep(9)} />;
-      case 9: return <Part7List questionsPart7={toeic.questionsPart7} startIndex={147} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} onFinish={() => {}} />;
+      case 3: return <ListeningPart1List questionsPart1={toeic.questionsPart1 ?? []} startIndex={1} onFinish={() => setStep(4)} />;
+      case 4: return <ListeningPart2List questionsPart2={toeic.questionsPart2 ?? []} startIndex={7} onFinish={() => setStep(5)} />;
+      case 5: return <ListeningPart3And4List questions={toeic.questionsPart3 ?? []} startIndex={32} onFinish={() => setStep(6)} />;
+      case 6: return <ListeningPart3And4List questions={toeic.questionsPart4 ?? []} startIndex={71} onFinish={() => setStep(7)} />;
+      case 7: return <Part5List questionsPart5={toeic.questionsPart5 ?? []} startIndex={101} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} onFinish={() => setStep(8)} />;
+      case 8: return <Part6List questionsPart6={toeic.questionsPart6 ?? []} startIndex={131} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} onFinish={() => setStep(9)} />;
+      case 9: return <Part7List questionsPart7={toeic.questionsPart7 ?? []} startIndex={147} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} onFinish={() => {}} />;
       default: return <Typography>Coming soon...</Typography>;
     }
   };
-
   return (
     <Box sx={{ minHeight: "100vh", width: '100%', display: 'flex', flexDirection: 'column', pt: { xs: 10, sm: 12 }, fontFamily: 'Roboto, sans-serif' }}>
       <Box sx={{ width: 'auto', bgcolor: '#00aaff', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 2, py: 1, boxShadow: 2 }}>

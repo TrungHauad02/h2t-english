@@ -29,12 +29,12 @@ const Part6List: React.FC<Props> = ({
       setPassages(passages);
 
       const questionData = await Promise.all(
-        passages.map((p) => testService.getToeicQuestionsByIds(p.questions))
+        passages.map((p) => testService.getToeicQuestionsByIds(p.questions ?? []))
       );
 
       const map: Record<number, ToeicQuestion[]> = {};
       passages.forEach((p, i) => {
-        map[p.id] = questionData[i];
+        map[p.id] = questionData[i] ?? [];
       });
       setQuestionsMap(map);
     };
@@ -42,7 +42,7 @@ const Part6List: React.FC<Props> = ({
     fetchData();
   }, [questionsPart6]);
 
-  if (passages.length === 0) {
+  if (passages.length === 0 || !passages[currentIndex]) {
     return (
       <Box display="flex" justifyContent="center" mt={10}>
         <CircularProgress />

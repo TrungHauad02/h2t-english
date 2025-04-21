@@ -28,7 +28,8 @@ const Part7List: React.FC<Props> = ({
 
       const result = await Promise.all(
         part7s.map(async (p7: ToeicPart7) => {
-          const questions = await testService.getToeicQuestionsByIds(p7.questions);
+          const questionIds = p7.questions ?? [];
+          const questions = await testService.getToeicQuestionsByIds(questionIds);
           return { passage: p7, questions };
         })
       );
@@ -39,7 +40,7 @@ const Part7List: React.FC<Props> = ({
     fetchData();
   }, [questionsPart7]);
 
-  if (data.length === 0) {
+  if (data.length === 0 || !data[currentIndex]) {
     return (
       <Box display="flex" justifyContent="center" mt={10}>
         <CircularProgress />

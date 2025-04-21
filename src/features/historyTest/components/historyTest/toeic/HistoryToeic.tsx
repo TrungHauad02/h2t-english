@@ -63,21 +63,21 @@ const HistoryToeic: React.FC<{
 
   const getTotalQuestionsForCurrentStep = async () => {
     switch (step) {
-      case 1: return toeic.questionsPart1.length;
-      case 2: return toeic.questionsPart2.length;
-      case 3: return toeic.questionsPart3.length;
-      case 4: return toeic.questionsPart4.length;
-      case 5: return toeic.questionsPart5.length;
-      case 6: return toeic.questionsPart6.length;
+      case 1: return toeic.questionsPart1?.length || 0;
+      case 2: return toeic.questionsPart2?.length || 0;
+      case 3: return toeic.questionsPart3?.length || 0;
+      case 4: return toeic.questionsPart4?.length || 0;
+      case 5: return toeic.questionsPart5?.length || 0;
+      case 6: return toeic.questionsPart6?.length || 0;
       case 7: {
-        const part7s = await testService.getToeicPart7ByIds(toeic.questionsPart7);
-        return part7s.reduce((acc, p7) => acc + p7.questions.length, 0);
+        const part7s = await testService.getToeicPart7ByIds(toeic.questionsPart7 || []);
+        return part7s.reduce((acc, p7) => acc + (p7.questions?.length || 0), 0);
       }
       default: return 0;
     }
   };
 
-  const filterSubmitAnswer = (part: number[]) =>
+  const filterSubmitAnswer = (part: number[] = []) =>
     submitToeicAnswers.filter(a => part.includes(a.toeicQuestionId));
 
   const renderStep = () => {
@@ -85,7 +85,7 @@ const HistoryToeic: React.FC<{
       case 1:
         return (
           <ListeningPart1List
-            questionsPart1={toeic.questionsPart1}
+            questionsPart1={toeic.questionsPart1 || []}
             startIndex={1}
             submitToeicPart1={submitToeicPart1}
             currentIndex={currentIndex}
@@ -95,7 +95,7 @@ const HistoryToeic: React.FC<{
       case 2:
         return (
           <ListeningPart2List
-            questionsPart2={toeic.questionsPart2}
+            questionsPart2={toeic.questionsPart2 || []}
             startIndex={7}
             submitToeicPart2={submitToeicPart2}
             currentIndex={currentIndex}
@@ -105,7 +105,7 @@ const HistoryToeic: React.FC<{
       case 3:
         return (
           <ListeningPart3And4List
-            questions={toeic.questionsPart3}
+            questions={toeic.questionsPart3 || []}
             startIndex={32}
             submitToeicPart3_4={filterSubmitAnswer(toeic.questionsPart3)}
             currentIndex={currentIndex}
@@ -115,7 +115,7 @@ const HistoryToeic: React.FC<{
       case 4:
         return (
           <ListeningPart3And4List
-            questions={toeic.questionsPart4}
+            questions={toeic.questionsPart4 || []}
             startIndex={71}
             submitToeicPart3_4={filterSubmitAnswer(toeic.questionsPart4)}
             currentIndex={currentIndex}
@@ -125,7 +125,7 @@ const HistoryToeic: React.FC<{
       case 5:
         return (
           <Part5List
-            questionsPart5={toeic.questionsPart5}
+            questionsPart5={toeic.questionsPart5 || []}
             startIndex={101}
             submitToeicPart5={filterSubmitAnswer(toeic.questionsPart5)}
             currentIndex={currentIndex}
@@ -135,7 +135,7 @@ const HistoryToeic: React.FC<{
       case 6:
         return (
           <Part6List
-            questionsPart6={toeic.questionsPart6}
+            questionsPart6={toeic.questionsPart6 || []}
             startIndex={131}
             submitToeicPart6={filterSubmitAnswer(toeic.questionsPart6)}
             currentIndex={currentIndex}
@@ -145,7 +145,7 @@ const HistoryToeic: React.FC<{
       case 7:
         return (
           <Part7List
-            questionsPart7={toeic.questionsPart7}
+            questionsPart7={toeic.questionsPart7 || []}
             startIndex={147}
             submitToeicPart7={filterSubmitAnswer(
               submitToeicAnswers.map((a) => a.toeicQuestionId)
@@ -169,7 +169,6 @@ const HistoryToeic: React.FC<{
         </Box>
       </Box>
 
-      {/* NAVIGATION BAR */}
       <Box sx={{ width: 'auto', bgcolor: '#00b0ff', py: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 4, px: 2 }}>
         <Button variant="contained" onClick={() => {
           if (currentIndex === 0 && step > 1) {
@@ -195,7 +194,6 @@ const HistoryToeic: React.FC<{
         }} disabled={step === 7 && currentIndex === 53}>NEXT</Button>
       </Box>
 
-      {/* DIALOG CHỌN CÂU HỎI */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <Box sx={{ p: 2, maxWidth: 400 }}>
           <Typography variant="h6" mb={2}>Chọn câu hỏi</Typography>

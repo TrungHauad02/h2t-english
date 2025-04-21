@@ -19,7 +19,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 interface AnswerOptionsEditorProps {
   answers: ToeicAnswer[];
   onAnswerChange: (index: number, value: string) => void;
-  onCorrectAnswerChange: (value: string) => void;
+  onCorrectAnswerChange: (id: number) => void;
 }
 
 export default function AnswerOptionsEditor({
@@ -31,24 +31,14 @@ export default function AnswerOptionsEditor({
   const { isDarkMode } = useDarkMode();
 
   const answerLabels = ['A', 'B', 'C', 'D'];
-  const correctAnswer = answers.find(answer => answer.correct)?.content || '';
+  const correctAnswerId = answers.find(answer => answer.correct)?.id ?? -1;
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Typography
-        variant="subtitle1"
-        sx={{
-          color: isDarkMode ? color.gray300 : color.gray700,
-          fontWeight: 'bold',
-          mb: 2
-        }}
-      >
-        Answer Options:
-      </Typography>
 
       <RadioGroup
-        value={correctAnswer}
-        onChange={(e) => onCorrectAnswerChange(e.target.value)}
+        value={correctAnswerId}
+        onChange={(e) => onCorrectAnswerChange(Number(e.target.value))}
       >
         <Grid container spacing={2}>
           {answers.map((answer, index) => (
@@ -93,7 +83,7 @@ export default function AnswerOptionsEditor({
                     </Typography>
                     
                     <FormControlLabel
-                      value={answer.content}
+                      value={answer.id}
                       control={
                         <Radio 
                           sx={{
@@ -111,7 +101,6 @@ export default function AnswerOptionsEditor({
                   
                   <Box sx={{ flexGrow: 1 }}>
                     <WETextField
-                      label={`Option ${answerLabels[index]}`}
                       value={answer.content}
                       type='text'
                       onChange={(e) => onAnswerChange(index, e.target.value)}

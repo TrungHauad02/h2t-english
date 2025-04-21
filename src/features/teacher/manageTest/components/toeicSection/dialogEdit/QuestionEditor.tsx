@@ -10,30 +10,44 @@ import EnhanceAnswerOptionsEditor from './EnhanceAnswerOptionsEditor';
 interface QuestionEditorProps {
   question: ToeicQuestion;
   onChange: (field: keyof ToeicQuestion, value: any) => void;
+  onAnswerChange?: (answerIndex: number, value: string) => void;
+  onCorrectAnswerChange?: (answerIndex: number) => void;
 }
 
 export default function QuestionEditor({
   question,
-  onChange
+  onChange,
+  onAnswerChange,
+  onCorrectAnswerChange
 }: QuestionEditorProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
   const handleAnswerChange = (index: number, value: string) => {
-    const updatedAnswers = [...question.toeicAnswers];
-    updatedAnswers[index] = {
-      ...updatedAnswers[index],
-      content: value
-    };
-    onChange('toeicAnswers', updatedAnswers);
+    if (onAnswerChange) {
+      onAnswerChange(index, value);
+    } else {
+      const updatedAnswers = [...question.toeicAnswers];
+      updatedAnswers[index] = {
+        ...updatedAnswers[index],
+        content: value
+      };
+      onChange('toeicAnswers', updatedAnswers);
+    }
   };
 
-  const handleCorrectAnswerChange = (value: string) => {
-    const updatedAnswers = question.toeicAnswers.map(answer => ({
-      ...answer,
-      correct: answer.content === value
-    }));
-    onChange('toeicAnswers', updatedAnswers);
+  const handleCorrectAnswerChange = (id: number) => {
+    if (onCorrectAnswerChange) {
+      // Nếu có prop onCorrectAnswerChange, sử dụng nó
+      onCorrectAnswerChange(id);
+    } else {
+      // Nếu không, sử dụng cách cũ (dựa trên answer.id)
+      const updatedAnswers = question.toeicAnswers.map(answer => ({
+        ...answer,
+        correct: answer.id === id
+      }));
+      onChange('toeicAnswers', updatedAnswers);
+    }
   };
 
   return (

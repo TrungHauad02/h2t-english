@@ -10,7 +10,14 @@ import {
   Zoom,
   Tabs,
   Tab,
-  Divider
+  Divider,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button
 } from '@mui/material';
 import useColor from 'theme/useColor';
 import { useDarkMode } from 'hooks/useDarkMode';
@@ -31,17 +38,20 @@ interface Part1SectionProps {
   questions: ToeicPart1[];
   onUpdateQuestion?: (updatedQuestion: ToeicPart1) => void;
   onAddQuestion?: (newQuestion: ToeicPart1) => void;
+  onDeleteQuestion?: (questionId: number) => void;
 }
 
 export default function Part1Section({ 
   questions, 
   onUpdateQuestion,
-  onAddQuestion
+  onAddQuestion,
+  onDeleteQuestion
 }: Part1SectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<'edit' | 'add'>('edit');
   const [activeTab, setActiveTab] = useState(0);
 
@@ -77,6 +87,14 @@ export default function Part1Section({
     setIsEditDialogOpen(false);
   };
 
+  const handleOpenDeleteDialog = () => {
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setIsDeleteDialogOpen(false);
+  };
+
   const handleSaveQuestion = (updatedQuestion: ToeicPart1) => {
     if (dialogMode === 'edit' && onUpdateQuestion) {
       onUpdateQuestion(updatedQuestion);
@@ -84,6 +102,22 @@ export default function Part1Section({
       onAddQuestion(updatedQuestion);
     }
     handleCloseEditDialog();
+  };
+
+  const handleDeleteQuestion = () => {
+    if (currentQuestion && onDeleteQuestion) {
+      onDeleteQuestion(currentQuestion.id);
+      
+      // Navigate to previous question or next if at first question
+      if (currentQuestionIndex > 0) {
+        setCurrentQuestionIndex(currentQuestionIndex - 1);
+      } else if (questions.length > 1) {
+        // Stay at index 0 as the next question will shift into position 0
+      } else {
+        // No questions left, do nothing as component will re-render in empty state
+      }
+    }
+    handleCloseDeleteDialog();
   };
 
   const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
@@ -105,7 +139,42 @@ export default function Part1Section({
   };
 
   if (!currentQuestion && questions.length === 0 && dialogMode !== 'add') {
-    return null;
+    return (
+      <Container maxWidth="lg">
+        <PartContainer
+          id="part1-section-empty"
+          title="Part 1: Photographs"
+          subtitle="No questions available. Please add a question to get started."
+          currentIndex={0}
+          totalItems={0}
+          onSelectQuestion={() => {}}
+          onPrevious={() => {}}
+          onNext={() => {}}
+          onEditQuestion={undefined}
+          onAddQuestion={handleOpenAddDialog}
+          onDeleteQuestion={undefined}
+          showNavigation={false}
+        >
+          <Box sx={{ 
+            textAlign: 'center', 
+            py: 6,
+            color: isDarkMode ? color.gray400 : color.gray600
+          }}>
+            <QuestionAnswerIcon sx={{ fontSize: 64, mb: 2, opacity: 0.6 }} />
+            <Typography variant="h6">No questions available</Typography>
+            <Typography sx={{ mt: 1 }}>Click the "Add Question" button to create your first question.</Typography>
+          </Box>
+        </PartContainer>
+        
+        <Part1EditDialog
+          open={isEditDialogOpen}
+          question={createEmptyQuestion()}
+          onClose={handleCloseEditDialog}
+          onSave={handleSaveQuestion}
+          mode={dialogMode}
+        />
+      </Container>
+    );
   }
 
   // Styling
@@ -138,6 +207,7 @@ export default function Part1Section({
         onNext={onNavigateNext}
         onEditQuestion={handleOpenEditDialog}
         onAddQuestion={handleOpenAddDialog}
+        onDeleteQuestion={onDeleteQuestion ? handleOpenDeleteDialog : undefined}
       >
         {currentQuestion && (
           <Fade in={true} timeout={300}>
@@ -366,6 +436,41 @@ export default function Part1Section({
         onSave={handleSaveQuestion}
         mode={dialogMode}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={isDeleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
+      >
+        <DialogTitle id="delete-dialog-title">
+          Confirm Deletion
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="delete-dialog-description">
+            Are you sure you want to delete this question? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="primary">
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleDeleteQuestion} 
+            color="error" 
+            variant="contained"
+            sx={{
+              backgroundColor: color.delete,
+              '&:hover': {
+                backgroundColor: isDarkMode ? color.red700 : color.red600
+              }
+            }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

@@ -8,8 +8,6 @@ import {
   useTheme,
   useMediaQuery,
   Fade,
-  Snackbar,
-  Alert,
   Backdrop,
   CircularProgress,
 } from "@mui/material";
@@ -24,33 +22,21 @@ import {
   PaginationControl,
 } from "../components/manageToeic";
 import CreateToeicDialog from "../components/CreateToeicDialog";
-
+import WEConfirmDelete from "components/display/WEConfirmDelete";
+import { useNavigate } from "react-router-dom";
 export default function ManageToeicPage() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // State for create dialog
   const [isOpenCreateDialog, setIsOpenCreateDialog] = useState(false);
-  const [newToeic, setNewToeic] = useState<Partial<Toeic>>({
-    id: 1,
-    title: "",
-    duration: 120,
-    
-    status: true,
-  });
-  
-  // State for notification
-  const [notification, setNotification] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "error" | "info" | "warning",
-  });
-
-  // State for additional loading indicator (used for CRUD operations)
+  const [newToeic, setNewToeic] = useState<Toeic>({ id: 1, title: "", duration: 120, status: true });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [testToDelete, setTestToDelete] = useState<number | null>(null);
+  const [testToDeleteName, setTestToDeleteName] = useState<string>("");
+  const navigate = useNavigate();
   const {
     searchText,
     setSearchText,
@@ -69,98 +55,49 @@ export default function ManageToeicPage() {
   } = useManageToeicPage();
 
   const handleViewTest = (testId: number) => {
-    console.log(`View test ${testId}`);
-    // Implementation would depend on your navigation setup
+    navigate(`${testId}`);
   };
 
-  const handleEditTest = (testId: number) => {
-    console.log(`Edit test ${testId}`);
-    // Implementation would depend on your navigation setup
-  };
-
-  const handleDeleteTest = async (testId: number) => {
-    if (window.confirm("Are you sure you want to delete this TOEIC test?")) {
-      try {
-        setIsSubmitting(true);
-        await deleteToeicTest(testId);
-        showNotification("TOEIC test deleted successfully", "success");
-      } catch (error) {
-        console.error("Error deleting TOEIC test:", error);
-        showNotification("Failed to delete TOEIC test", "error");
-      } finally {
-        setIsSubmitting(false);
-      }
+  const handleDeleteTest = (testId: number) => {
+    const test = displayedToeicTests.find(t => t.id === testId);
+    if (test) {
+      setTestToDelete(testId);
+      setTestToDeleteName(test.title);
+      setDeleteConfirmOpen(true);
     }
   };
 
-  
+  const handleConfirmDelete = async () => {
+    if (testToDelete === null) return;
+    setIsSubmitting(true);
+    await deleteToeicTest(testToDelete);
+    setIsSubmitting(false);
+    setDeleteConfirmOpen(false);
+    setTestToDelete(null);
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteConfirmOpen(false);
+    setTestToDelete(null);
+  };
+
   const handleOpenCreateDialog = () => {
-    setIsOpenCreateDialog(!isOpenCreateDialog);
-    if (isOpenCreateDialog) {
-      // Reset form when closing
-      setNewToeic({
-        title: "",
-        duration: 120,
-        status: true,
-      });
-    }
+    setIsOpenCreateDialog(prev => !prev);
   };
 
-  const handleChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewToeic({
-      ...newToeic,
-      title: event.target.value,
-    });
+  const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewToeic(prev => ({ ...prev, title: e.target.value }));
   };
 
-  const handleChangeDuration = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewToeic({
-      ...newToeic,
-      duration: Number(event.target.value),
-    });
+  const handleChangeDuration = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewToeic(prev => ({ ...prev, duration: Number(e.target.value) }));
   };
 
   const handleCreateToeic = async () => {
-    // Basic validation
-    if (!newToeic.title || !newToeic.duration) {
-      showNotification("Please fill in all required fields", "error");
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-      // Create the TOEIC test
-      await createToeicTest(newToeic as Toeic);
-      showNotification("TOEIC test created successfully", "success");
-      
-      // Reset form and close dialog
-      setNewToeic({
-        title: "",
-        duration: 120,
-        status: true,
-      });
-      handleOpenCreateDialog();
-    } catch (error) {
-      console.error("Error creating TOEIC test:", error);
-      showNotification("Failed to create TOEIC test", "error");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const showNotification = (message: string, severity: "success" | "error" | "info" | "warning") => {
-    setNotification({
-      open: true,
-      message,
-      severity,
-    });
-  };
-
-  const handleCloseNotification = () => {
-    setNotification({
-      ...notification,
-      open: false,
-    });
+    setIsSubmitting(true);
+    await createToeicTest(newToeic);
+    setIsSubmitting(false);
+    handleOpenCreateDialog();
   };
 
   const backgroundGradient = isDarkMode
@@ -168,25 +105,16 @@ export default function ManageToeicPage() {
     : `linear-gradient(120deg, ${color.emerald50}, ${color.teal50})`;
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        background: backgroundGradient,
-        pt: { xs: 2, md: 4 },
-        pb: { xs: 4, md: 6 },
-      }}
-    >
+    <Box sx={{ minHeight: "100vh", background: backgroundGradient, pt: { xs: 2, md: 4 }, pb: { xs: 4, md: 6 } }}>
       <Container maxWidth="lg">
-        <Fade in={true} timeout={800}>
+        <Fade in timeout={800}>
           <Paper
             elevation={isDarkMode ? 2 : 1}
             sx={{
               p: { xs: 2, sm: 3, md: 4 },
               borderRadius: "1rem",
               backgroundColor: isDarkMode ? color.gray800 : color.white,
-              boxShadow: isDarkMode
-                ? "0 4px 20px rgba(0,0,0,0.4)"
-                : "0 4px 20px rgba(0,0,0,0.08)",
+              boxShadow: isDarkMode ? "0 4px 20px rgba(0,0,0,0.4)" : "0 4px 20px rgba(0,0,0,0.08)",
               overflow: "hidden",
               position: "relative",
               "&::before": {
@@ -232,13 +160,11 @@ export default function ManageToeicPage() {
                 disabled={loading || isSubmitting}
                 sx={{
                   backgroundColor: color.btnSubmitBg,
-                  "&:hover": {
-                    backgroundColor: color.btnSubmitHoverBg,
-                  },
+                  "&:hover": { backgroundColor: color.btnSubmitHoverBg },
                   px: { xs: 2, md: 3 },
                   py: 1,
                   borderRadius: "8px",
-                  fontWeight: "600",
+                  fontWeight: 600,
                   boxShadow: isDarkMode
                     ? "0 4px 10px rgba(16, 185, 129, 0.3)"
                     : "0 4px 10px rgba(16, 185, 129, 0.2)",
@@ -260,7 +186,6 @@ export default function ManageToeicPage() {
               loading={loading}
               displayedToeicTests={displayedToeicTests}
               handleViewTest={handleViewTest}
-              handleEditTest={handleEditTest}
               handleDeleteTest={handleDeleteTest}
             />
 
@@ -276,7 +201,6 @@ export default function ManageToeicPage() {
         </Fade>
       </Container>
 
-      {/* Create TOEIC Dialog */}
       <CreateToeicDialog
         isOpenCreateDialog={isOpenCreateDialog}
         handleOpenCreateDialog={handleOpenCreateDialog}
@@ -286,32 +210,21 @@ export default function ManageToeicPage() {
         onCreateToeic={handleCreateToeic}
       />
 
-      {/* Notification Snackbar */}
-      <Snackbar
-        open={notification.open}
-        autoHideDuration={6000}
-        onClose={handleCloseNotification}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert
-          onClose={handleCloseNotification}
-          severity={notification.severity}
-          sx={{ width: "100%" }}
-        >
-          {notification.message}
-        </Alert>
-      </Snackbar>
+      <WEConfirmDelete
+        open={deleteConfirmOpen}
+        title="Delete TOEIC Test"
+        resourceName={testToDeleteName || "this TOEIC test"}
+        description="This action cannot be undone. All associated data, questions, and results will be permanently removed."
+        onCancel={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isSubmitting}
+      />
 
-      {/* Global loading overlay for submissions */}
-      <Backdrop
-        sx={{
-          color: "#fff",
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-        }}
-        open={isSubmitting}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      {isSubmitting && (
+        <Backdrop sx={{ color: '#fff', zIndex: theme.zIndex.drawer + 1 }} open>
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      )}
     </Box>
   );
 }

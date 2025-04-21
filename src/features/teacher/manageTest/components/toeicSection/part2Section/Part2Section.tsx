@@ -6,7 +6,14 @@ import {
   Box, 
   Chip,
   Fade,
-  Zoom
+  Zoom,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button
 } from '@mui/material';
 import { ToeicPart2, AnswerEnum } from 'interfaces';
 import {
@@ -26,17 +33,20 @@ interface Part2SectionProps {
   questions: ToeicPart2[];
   onUpdateQuestion?: (updatedQuestion: ToeicPart2) => void;
   onAddQuestion?: (newQuestion: ToeicPart2) => void;
+  onDeleteQuestion?: (questionId: number) => void;
 }
 
 export default function Part2Section({
   questions,
   onUpdateQuestion,
-  onAddQuestion
+  onAddQuestion,
+  onDeleteQuestion
 }: Part2SectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<'edit' | 'add'>('edit');
 
   const currentQuestion = questions.length > 0 ? questions[currentQuestionIndex] : null;
@@ -71,6 +81,14 @@ export default function Part2Section({
     setIsEditDialogOpen(false);
   };
 
+  const handleOpenDeleteDialog = () => {
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setIsDeleteDialogOpen(false);
+  };
+
   const handleSaveQuestion = (updatedQuestion: ToeicPart2) => {
     if (dialogMode === 'edit' && onUpdateQuestion) {
       onUpdateQuestion(updatedQuestion);
@@ -80,7 +98,18 @@ export default function Part2Section({
     handleCloseEditDialog();
   };
 
-  // Create empty question for add mode
+  const handleDeleteQuestion = () => {
+    if (currentQuestion && onDeleteQuestion) {
+      onDeleteQuestion(currentQuestion.id);
+      
+      if (currentQuestionIndex > 0) {
+        setCurrentQuestionIndex(currentQuestionIndex - 1);
+      } else if (questions.length > 1) {
+      }
+    }
+    handleCloseDeleteDialog();
+  };
+
   const createEmptyQuestion = (): ToeicPart2 => {
     return {
       id: 0,
@@ -94,16 +123,49 @@ export default function Part2Section({
   };
 
   if (!currentQuestion && questions.length === 0 && dialogMode !== 'add') {
-    return null;
+    return (
+      <Container maxWidth="lg">
+        <PartContainer
+          id="part2-section-empty"
+          title="Part 2: Question-Response"
+          subtitle="No questions available. Please add a question to get started."
+          currentIndex={0}
+          totalItems={0}
+          onSelectQuestion={() => {}}
+          onPrevious={() => {}}
+          onNext={() => {}}
+          onEditQuestion={undefined}
+          onAddQuestion={handleOpenAddDialog}
+          onDeleteQuestion={undefined}
+          showNavigation={false}
+        >
+          <Box sx={{ 
+            textAlign: 'center', 
+            py: 6,
+            color: isDarkMode ? color.gray400 : color.gray600
+          }}>
+            <HeadphonesIcon sx={{ fontSize: 64, mb: 2, opacity: 0.6 }} />
+            <Typography variant="h6">No questions available</Typography>
+            <Typography sx={{ mt: 1 }}>Click the "Add Question" button to create your first question.</Typography>
+          </Box>
+        </PartContainer>
+        
+        <Part2EditDialog
+          open={isEditDialogOpen}
+          question={createEmptyQuestion()}
+          onClose={handleCloseEditDialog}
+          onSave={handleSaveQuestion}
+          mode={dialogMode}
+        />
+      </Container>
+    );
   }
 
-  // Styling
   const accentColor = isDarkMode ? color.teal300 : color.teal600;
   const borderColor = isDarkMode ? color.gray700 : color.gray300;
   const bgColor = isDarkMode ? color.gray800 : color.white;
   const cardBgColor = isDarkMode ? color.gray900 : color.gray50;
 
-  // Map string correctAnswer to AnswerEnum
   const getCorrectAnswerEnum = (answer: string): AnswerEnum => {
     switch (answer) {
       case 'A': return AnswerEnum.A;
@@ -127,6 +189,7 @@ export default function Part2Section({
         onNext={onNavigateNext}
         onEditQuestion={handleOpenEditDialog}
         onAddQuestion={handleOpenAddDialog}
+        onDeleteQuestion={onDeleteQuestion ? handleOpenDeleteDialog : undefined}
       >
         {currentQuestion && (
           <Fade in={true} timeout={300}>
@@ -161,7 +224,6 @@ export default function Part2Section({
               </Zoom>
 
               <Grid container spacing={4}>
-                {/* Audio Player */}
                 <Grid item xs={12}>
                   <Typography 
                     variant="h6" 
@@ -191,7 +253,6 @@ export default function Part2Section({
                   </Box>
                 </Grid>
 
-                {/* Answer Options */}
                 <Grid item xs={12} md={7}>
                   <Typography 
                     variant="h6" 
@@ -223,7 +284,6 @@ export default function Part2Section({
                   </Box>
                 </Grid>
 
-                {/* Transcript */}
                 <Grid item xs={12} md={5}>
                   {currentQuestion.transcript && (
                     <>
@@ -262,7 +322,6 @@ export default function Part2Section({
         )}
       </PartContainer>
 
-      {/* Edit/Add Dialog */}
       <Part2EditDialog
         open={isEditDialogOpen}
         question={dialogMode === 'edit' ? (currentQuestion || createEmptyQuestion()) : createEmptyQuestion()}
@@ -270,6 +329,40 @@ export default function Part2Section({
         onSave={handleSaveQuestion}
         mode={dialogMode}
       />
+      
+      <Dialog
+        open={isDeleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
+      >
+        <DialogTitle id="delete-dialog-title">
+          Confirm Deletion
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="delete-dialog-description">
+            Are you sure you want to delete this question? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="primary">
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleDeleteQuestion} 
+            color="error" 
+            variant="contained"
+            sx={{
+              backgroundColor: color.delete,
+              '&:hover': {
+                backgroundColor: isDarkMode ? color.red700 : color.red600
+              }
+            }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

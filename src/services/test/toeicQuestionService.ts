@@ -10,6 +10,15 @@ const findById = async (id: number) => {
     throw error;
   }
 };
+const getByIds = async (ids: number[]) => {
+  try {
+    const response = await apiClient.post("/toeic-questions/by-ids", ids);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting ToeicQuestion by ids:", error);
+    throw error;
+  }
+};
 
 const create = async (data: ToeicQuestion) => {
   try {
@@ -54,6 +63,7 @@ const remove = async (id: number) => {
 export const toeicQuestionService = {
   findById,
   create,
+  getByIds,
   update,
   patch,
   remove,

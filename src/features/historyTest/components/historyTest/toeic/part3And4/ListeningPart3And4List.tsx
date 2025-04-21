@@ -32,21 +32,32 @@ const ListeningPart3And4List: React.FC<ListeningPartProps> = ({
       const groups = await testService.getToeicPart3_4ByIds(questions);
       setGroupList(groups);
 
-      const allQuestionIds = groups.flatMap(g => g.questions);
+      // Ensure all question IDs are defined numbers
+      const allQuestionIds = groups
+        .flatMap((g) => g.questions ?? [])
+        .filter((id): id is number => typeof id === 'number');
+
       const allQuestions = await testService.getToeicQuestionsByIds(allQuestionIds);
 
       const grouped: Record<number, ToeicQuestion[]> = {};
-      groups.forEach(group => {
-        grouped[group.id] = allQuestions.filter(q => group.questions.includes(q.id));
+      groups.forEach((group) => {
+        if (group.questions) {
+          grouped[group.id] = allQuestions.filter((q) =>
+            group.questions?.includes(q.id)
+          );
+        } else {
+          grouped[group.id] = [];
+        }
       });
       setQuestionMap(grouped);
+
       const allAnswers = await testService.getToeicAnswersByIds(
         submitToeicPart3_4.map((a) => a.toeicAnswerId)
       );
-      
+
       const answerMap: Record<number, AnswerEnum> = {};
       submitToeicPart3_4.forEach((a) => {
-        const ans = allAnswers.find(ans => ans.id === a.toeicAnswerId);
+        const ans = allAnswers.find((ans) => ans.id === a.toeicAnswerId);
         if (ans) {
           answerMap[a.toeicQuestionId] = ans.content as AnswerEnum;
         }

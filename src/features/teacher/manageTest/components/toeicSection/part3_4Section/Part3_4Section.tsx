@@ -18,7 +18,14 @@ import {
   Zoom,
   Stack,
   Chip,
-  Tooltip
+  Tooltip,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button
 } from '@mui/material';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import HeadphonesIcon from '@mui/icons-material/Headphones';
@@ -42,7 +49,11 @@ interface Part3_4SectionProps {
   partNumber: 3 | 4;
   toeicQuestions: { [partId: number]: ToeicQuestion[] };
   onUpdateQuestion?: (updatedQuestion: ToeicPart3_4) => void;
-  onAddQuestion?: (newQuestion: ToeicPart3_4, newSubQuestions: ToeicQuestion[]) => void;
+  onAddQuestion?: (newQuestion: ToeicPart3_4)  => Promise<ToeicPart3_4>;
+  onDeleteQuestion?: (questionId: number) => void;
+  onAddSubQuestion?: (parentId: number, question: ToeicQuestion) => Promise<ToeicQuestion>;
+  onUpdateSubQuestion?: (question: ToeicQuestion, parentId: number) => Promise<ToeicQuestion>;
+  onDeleteSubQuestion?: (questionId: number, parentId: number) => Promise<void>;
 }
 
 export default function Part3_4Section({
@@ -50,47 +61,46 @@ export default function Part3_4Section({
   partNumber,
   toeicQuestions,
   onUpdateQuestion,
-  onAddQuestion
+  onAddQuestion,
+  onDeleteQuestion,
+  onAddSubQuestion,
+  onUpdateSubQuestion,
+  onDeleteSubQuestion
 }: Part3_4SectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [activeSubQuestion, setActiveSubQuestion] = useState(0);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleteSubQuestionDialogOpen, setIsDeleteSubQuestionDialogOpen] = useState(false);
+  const [subQuestionToDelete, setSubQuestionToDelete] = useState<number | null>(null);
   const [currentSubQuestions, setCurrentSubQuestions] = useState<ToeicQuestion[]>([]);
   const [dialogMode, setDialogMode] = useState<'edit' | 'add'>('edit');
   
-  // Refs to handle scroll and render issues
   const tabsRef = useRef<HTMLDivElement | null>(null);
   const tabContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Memoize current question to prevent unnecessary re-renders
   const currentQuestion = useMemo(() => 
     questions.length > 0 ? questions[currentQuestionIndex] : null, 
     [questions, currentQuestionIndex]
   );
 
-  // Stable effect for loading sub-questions
   useEffect(() => {
     if (currentQuestion) {
       const subQuestions = toeicQuestions[currentQuestion.id] || [];
       setCurrentSubQuestions(subQuestions);
-      
-      // Reset active sub-question when main question changes
       setActiveSubQuestion(0);
     }
   }, [currentQuestion, toeicQuestions]);
 
-  // Effect to handle scroll issues
   useEffect(() => {
     const handleScrollFix = () => {
       try {
         if (tabsRef.current) {
-          // Force reset of scroll position
           tabsRef.current.scrollLeft = 0;
         }
         if (tabContainerRef.current) {
-          // Additional safeguard
           tabContainerRef.current.scrollTop = 0;
         }
       } catch (error) {
@@ -98,14 +108,11 @@ export default function Part3_4Section({
       }
     };
 
-    // Run scroll fix after render
     const timeoutId = setTimeout(handleScrollFix, 100);
 
-    // Cleanup timeout
     return () => clearTimeout(timeoutId);
   }, [activeSubQuestion, currentQuestionIndex]);
 
-  // Memoized navigation handlers to prevent unnecessary re-renders
   const onSelectQuestion = useCallback((index: number) => {
     setCurrentQuestionIndex(index);
     setActiveSubQuestion(0);
@@ -125,7 +132,6 @@ export default function Part3_4Section({
     }
   }, [currentQuestionIndex, questions.length]);
 
-  // Safe tab change handler
   const handleChangeSubQuestion = useCallback(
     (_: React.SyntheticEvent, newValue: number) => {
       try {
@@ -151,16 +157,117 @@ export default function Part3_4Section({
     setIsEditDialogOpen(false);
   }, []);
 
-  const handleSaveQuestion = useCallback((updatedQuestion: ToeicPart3_4, subQuestions?: ToeicQuestion[]) => {
-    if (dialogMode === 'edit' && onUpdateQuestion) {
-      onUpdateQuestion(updatedQuestion);
-    } else if (dialogMode === 'add' && onAddQuestion && subQuestions) {
-      onAddQuestion(updatedQuestion, subQuestions);
-    }
-    handleCloseEditDialog();
-  }, [dialogMode, onUpdateQuestion, onAddQuestion, handleCloseEditDialog]);
+  const handleOpenDeleteDialog = useCallback(() => {
+    setIsDeleteDialogOpen(true);
+  }, []);
 
-  // Create empty question for add mode
+  const handleCloseDeleteDialog = useCallback(() => {
+    setIsDeleteDialogOpen(false);
+  }, []);
+
+  const handleOpenDeleteSubQuestionDialog = useCallback((subQuestionId: number) => {
+    setSubQuestionToDelete(subQuestionId);
+    setIsDeleteSubQuestionDialogOpen(true);
+  }, []);
+
+  const handleCloseDeleteSubQuestionDialog = useCallback(() => {
+    setIsDeleteSubQuestionDialogOpen(false);
+    setSubQuestionToDelete(null);
+  }, []);
+
+  const handleSaveQuestion = useCallback(
+    async (updatedQuestion: ToeicPart3_4 & {
+      _changes?: {
+        toAdd: ToeicQuestion[];
+        toUpdate: ToeicQuestion[];
+        toDelete: number[];
+      };
+      subQuestions?: ToeicQuestion[];
+    }) => {
+      try {
+        const { _changes, subQuestions, ...mainQuestion } = updatedQuestion;
+  
+        if (dialogMode === 'edit' && onUpdateQuestion) {
+          await onUpdateQuestion(mainQuestion);
+  
+          if (_changes && mainQuestion.id > 0) {
+            if (_changes.toUpdate.length > 0 && onUpdateSubQuestion) {
+              await Promise.all(
+                _changes.toUpdate.map(q => onUpdateSubQuestion(q, mainQuestion.id))
+              );
+            }
+  
+            if (_changes.toAdd.length > 0 && onAddSubQuestion) {
+              await Promise.all(
+                _changes.toAdd.map(q => onAddSubQuestion(mainQuestion.id, q))
+              );
+            }
+  
+            if (_changes.toDelete.length > 0 && onDeleteSubQuestion) {
+              await Promise.all(
+                _changes.toDelete.map(id => onDeleteSubQuestion(id, mainQuestion.id))
+              );
+            }
+          }
+        }
+  
+        if (dialogMode === 'add' && onAddQuestion) {
+          const newQuestion = await onAddQuestion(mainQuestion);
+  
+          if (subQuestions && newQuestion?.id && onAddSubQuestion) {
+            await Promise.all(
+              subQuestions.map(q => onAddSubQuestion(newQuestion.id, q))
+            );
+          }
+        }
+  
+        handleCloseEditDialog();
+      } catch (error) {
+        console.error("Error saving question:", error);
+      }
+    },
+    [
+      dialogMode,
+      onUpdateQuestion,
+      onAddQuestion,
+      onAddSubQuestion,
+      onUpdateSubQuestion,
+      onDeleteSubQuestion,
+      handleCloseEditDialog
+    ]
+  );
+  
+  const handleDeleteQuestion = useCallback(() => {
+    if (currentQuestion && onDeleteQuestion) {
+      onDeleteQuestion(currentQuestion.id);
+      
+      if (currentQuestionIndex > 0) {
+        setCurrentQuestionIndex(currentQuestionIndex - 1);
+      } else if (questions.length > 1) {
+        // Stay at index 0 as the next question will shift into position 0
+      }
+    }
+    handleCloseDeleteDialog();
+  }, [currentQuestion, onDeleteQuestion, currentQuestionIndex, questions.length, handleCloseDeleteDialog]);
+
+  const handleDeleteSubQuestion = useCallback(() => {
+    if (subQuestionToDelete !== null && currentQuestion && onDeleteSubQuestion) {
+      onDeleteSubQuestion(subQuestionToDelete, currentQuestion.id)
+        .then(() => {
+          if (activeSubQuestion >= currentSubQuestions.length - 1) {
+            setActiveSubQuestion(Math.max(0, currentSubQuestions.length - 2));
+          }
+          handleCloseDeleteSubQuestionDialog();
+        })
+        .catch(error => {
+          console.error('Error deleting sub-question:', error);
+          handleCloseDeleteSubQuestionDialog();
+        });
+    } else {
+      handleCloseDeleteSubQuestionDialog();
+    }
+  }, [subQuestionToDelete, currentQuestion, onDeleteSubQuestion, activeSubQuestion, currentSubQuestions.length, handleCloseDeleteSubQuestionDialog]);
+
   const createEmptyQuestion = useCallback((): ToeicPart3_4 => {
     return {
       id: 0,
@@ -174,12 +281,6 @@ export default function Part3_4Section({
     };
   }, []);
 
-  // Early return if no current question and not in add mode
-  if (!currentQuestion && questions.length === 0 && dialogMode !== 'add') {
-    return null;
-  }
-
-  // Derive part-specific labels and icons
   const partTitle = partNumber === 3 ? "Part 3: Conversations" : "Part 4: Talks";
   const partSubtitle = partNumber === 3 
     ? "Listen to short conversations and answer questions" 
@@ -191,11 +292,58 @@ export default function Part3_4Section({
     ? `Conversation ${currentQuestionIndex + 1}` 
     : `Talk ${currentQuestionIndex + 1}`;
 
-  // Derive color palette
+  if (!currentQuestion && questions.length === 0 && dialogMode !== 'add') {
+    return (
+      <Container maxWidth="lg">
+        <PartContainer
+          id={`part${partNumber}-section-empty`}
+          title={partTitle}
+          subtitle={`No ${partNumber === 3 ? 'conversations' : 'talks'} available. Please add one to get started.`}
+          currentIndex={0}
+          totalItems={0}
+          onSelectQuestion={() => {}}
+          onPrevious={() => {}}
+          onNext={() => {}}
+          onEditQuestion={undefined}
+          onAddQuestion={handleOpenAddDialog}
+          onDeleteQuestion={undefined}
+          showNavigation={false}
+        >
+          <Box sx={{ 
+            textAlign: 'center', 
+            py: 6,
+            color: isDarkMode ? color.gray400 : color.gray600
+          }}>
+            {partNumber === 3 ? (
+              <RecordVoiceOverIcon sx={{ fontSize: 64, mb: 2, opacity: 0.6 }} />
+            ) : (
+              <CampaignIcon sx={{ fontSize: 64, mb: 2, opacity: 0.6 }} />
+            )}
+            <Typography variant="h6">
+              No {partNumber === 3 ? 'conversations' : 'talks'} available
+            </Typography>
+            <Typography sx={{ mt: 1 }}>
+              Click the "Add Question" button to create your first {partNumber === 3 ? 'conversation' : 'talk'}.
+            </Typography>
+          </Box>
+        </PartContainer>
+        
+        <Part3_4EditDialog
+          open={isEditDialogOpen}
+          question={createEmptyQuestion()}
+          partNumber={partNumber}
+          onClose={handleCloseEditDialog}
+          onSave={handleSaveQuestion}
+          toeicQuestions={{}}
+          mode={dialogMode}
+        />
+      </Container>
+    );
+  }
+
   const accentColor = isDarkMode ? color.teal300 : color.teal600;
   const borderColor = isDarkMode ? color.gray700 : color.gray300;
   const bgColor = isDarkMode ? color.gray800 : color.white;
-  const cardBgColor = isDarkMode ? color.gray900 : color.gray50;
   const tabBgColor = isDarkMode ? color.gray900 : color.gray100;
 
   return (
@@ -211,10 +359,10 @@ export default function Part3_4Section({
         onNext={onNavigateNext}
         onEditQuestion={handleOpenEditDialog}
         onAddQuestion={handleOpenAddDialog}
+        onDeleteQuestion={onDeleteQuestion ? handleOpenDeleteDialog : undefined}
       >
         {currentQuestion && (
           <Grid container spacing={3}>
-            {/* Audio + Transcript Section */}
             <Grid item xs={12}>
               <Paper
                 elevation={3}
@@ -248,7 +396,6 @@ export default function Part3_4Section({
                 </Zoom>
 
                 <Stack spacing={3}>
-                  {/* Audio Player */}
                   <Box>
                     <Typography 
                       variant="h6" 
@@ -269,7 +416,6 @@ export default function Part3_4Section({
                     />
                   </Box>
 
-                  {/* Image (if available) */}
                   {currentQuestion.image && (
                     <Box>
                       <CardMedia
@@ -288,7 +434,6 @@ export default function Part3_4Section({
                     </Box>
                   )}
 
-                  {/* Transcript */}
                   <Box>
                     <Typography 
                       variant="h6" 
@@ -312,7 +457,6 @@ export default function Part3_4Section({
               </Paper>
             </Grid>
 
-            {/* Questions Section */}
             <Grid item xs={12}>
               <Divider sx={{ 
                 my: 2, 
@@ -391,13 +535,39 @@ export default function Part3_4Section({
 
                 <Fade in={true} timeout={300}>
                   <Box sx={{ p: { xs: 2, md: 4 } }}>
-                    {currentSubQuestions[activeSubQuestion] && (
+                    {currentSubQuestions[activeSubQuestion] ? (
                       <>
-                        <QuestionContent
-                          content={currentSubQuestions[activeSubQuestion].content}
-                          questionNumber={activeSubQuestion + 1}
-                        />
-
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                          <QuestionContent
+                            content={currentSubQuestions[activeSubQuestion].content}
+                            questionNumber={activeSubQuestion + 1}
+                          />
+                          
+                          {onDeleteSubQuestion && (
+                            <Tooltip title="Delete this sub-question">
+                              <Button
+                                color="error"
+                                variant="outlined"
+                                size="small"
+                                onClick={() => handleOpenDeleteSubQuestionDialog(currentSubQuestions[activeSubQuestion].id)}
+                                sx={{
+                                  ml: 2,
+                                  minWidth: 32,
+                                  height: 32,
+                                  borderColor: isDarkMode ? color.red400 : color.red600,
+                                  color: isDarkMode ? color.red400 : color.red600,
+                                  '&:hover': {
+                                    backgroundColor: isDarkMode ? `${color.red900}33` : color.red50,
+                                    borderColor: isDarkMode ? color.red300 : color.red500
+                                  }
+                                }}
+                              >
+                                Delete Sub-question
+                              </Button>
+                            </Tooltip>
+                          )}
+                        </Box>
+                        
                         <AnswerOptionsGrid
                           options={currentSubQuestions[activeSubQuestion].toeicAnswers.map((ans, i) => 
                             `(${String.fromCharCode(65 + i)}) ${ans.content}`
@@ -408,8 +578,20 @@ export default function Part3_4Section({
                             currentSubQuestions[activeSubQuestion].toeicAnswers.findIndex(a => a.correct) === 2 ? AnswerEnum.C : 
                             AnswerEnum.D
                           } 
-                        />    
+                        />
                       </>
+                    ) : (
+                      <Box sx={{ 
+                        textAlign: 'center', 
+                        py: 4,
+                        color: isDarkMode ? color.gray400 : color.gray600
+                      }}>
+                        <QuestionAnswerIcon sx={{ fontSize: 48, mb: 2, opacity: 0.5 }} />
+                        <Typography>No questions available for this {partNumber === 3 ? 'conversation' : 'talk'}.</Typography>
+                        <Typography variant="body2" sx={{ mt: 1 }}>
+                          Edit this {partNumber === 3 ? 'conversation' : 'talk'} to add questions.
+                        </Typography>
+                      </Box>
                     )}
                   </Box>
                 </Fade>
@@ -428,6 +610,75 @@ export default function Part3_4Section({
         toeicQuestions={toeicQuestions}
         mode={dialogMode}
       />
+      
+      <Dialog
+        open={isDeleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
+      >
+        <DialogTitle id="delete-dialog-title">
+          Confirm Deletion
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="delete-dialog-description">
+            Are you sure you want to delete this {partNumber === 3 ? 'conversation' : 'talk'}? 
+            This will also delete all associated questions. This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="primary">
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleDeleteQuestion} 
+            color="error" 
+            variant="contained"
+            sx={{
+              backgroundColor: color.delete,
+              '&:hover': {
+                backgroundColor: isDarkMode ? color.red700 : color.red600
+              }
+            }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+      
+      <Dialog
+        open={isDeleteSubQuestionDialogOpen}
+        onClose={handleCloseDeleteSubQuestionDialog}
+        aria-labelledby="delete-subquestion-dialog-title"
+        aria-describedby="delete-subquestion-dialog-description"
+      >
+        <DialogTitle id="delete-subquestion-dialog-title">
+          Confirm Sub-question Deletion
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="delete-subquestion-dialog-description">
+            Are you sure you want to delete this sub-question? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteSubQuestionDialog} color="primary">
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleDeleteSubQuestion} 
+            color="error" 
+            variant="contained"
+            sx={{
+              backgroundColor: color.delete,
+              '&:hover': {
+                backgroundColor: isDarkMode ? color.red700 : color.red600
+              }
+            }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
