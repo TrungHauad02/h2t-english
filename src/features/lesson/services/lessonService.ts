@@ -7,20 +7,35 @@ import {
   writingService,
 } from "services";
 
+/*
+  Find lesson by id and increase the view count
+*/
 const findLessonById = async (id: number, type: string) => {
   switch (type) {
     case "topics":
-      return await topicService.findById(id);
+      const topicData = await topicService.findById(id);
+      topicService.patch(id, { views: topicData.data.views + 1 });
+      return topicData;
     case "grammars":
-      return await grammarService.findById(id);
+      const grammarData = await grammarService.findById(id);
+      grammarService.patch(id, { views: grammarData.data.views + 1 });
+      return grammarData;
     case "readings":
-      return await readingService.findById(id);
+      const readingData = await readingService.findById(id);
+      readingService.patch(id, { views: readingData.data.views + 1 });
+      return readingData;
     case "speakings":
-      return await speakingService.findById(id);
+      const speakingData = await speakingService.findById(id);
+      speakingService.patch(id, { views: speakingData.data.views + 1 });
+      return speakingData;
     case "listenings":
-      return await listeningService.findById(id);
+      const listeningData = await listeningService.findById(id);
+      listeningService.patch(id, { views: listeningData.data.views + 1 });
+      return listeningData;
     default:
-      return await writingService.findById(id);
+      const writingData = await writingService.findById(id);
+      writingService.patch(id, { views: writingData.data.views + 1 });
+      return writingData;
   }
 };
 
