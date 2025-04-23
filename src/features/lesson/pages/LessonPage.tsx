@@ -45,6 +45,7 @@ export default function LessonPage() {
             title: resData.data.title,
           });
         } catch (error) {
+          console.log(error);
           toast.error("Fail to fetch data");
         }
       }
