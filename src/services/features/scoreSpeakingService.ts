@@ -9,6 +9,14 @@ interface SpeakingScoreDTO {
   feedback: string;
 }
 
+interface ConversationScoreDTO {
+  score: string;
+  strengths: string[];
+  areas_to_improve: string[];
+  transcripts: string[];
+  feedback: string;
+}
+
 /**
  * Service for evaluating speaking skills through API calls
  */
@@ -71,7 +79,7 @@ const evaluateSpeechInTopic = async (
 const evaluateMultipleFiles = async (
   audioFiles: File[],
   expectedTexts: string[]
-): Promise<ServiceResponse<SpeakingScoreDTO>> => {
+): Promise<ServiceResponse<ConversationScoreDTO>> => {
   try {
     // Create FormData object to send multipart/form-data
     const formData = new FormData();
