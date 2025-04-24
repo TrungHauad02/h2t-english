@@ -2,8 +2,8 @@ import { Toeic } from "interfaces";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toeicService } from "services/test";
-import { usePartHandlers } from "./useToeicDetailPage/usePartHandlers";
-import { useQuestionSubTypes } from "./useToeicDetailPage/useQuestionSubTypes";
+import { usePartHandlers } from "./ToeicDetailPage/usePartHandlers";
+import { useQuestionSubTypes } from "./ToeicDetailPage/useQuestionSubTypes";
 
 export default function useToeicDetailPage() {
   const { id } = useParams();
@@ -13,12 +13,11 @@ export default function useToeicDetailPage() {
   const [loading, setLoading] = useState(true);
   const [openPublishDialog, setOpenPublishDialog] = useState(false);
   const [openUnpublishDialog, setOpenUnpublishDialog] = useState(false);
-
-  // Hook containing all part-specific data and handlers
-  const partHandlers = usePartHandlers(data, setData);
   
-  // Hook containing all question sub-types data and handlers
+
   const questionHandlers = useQuestionSubTypes(data);
+
+  const partHandlers = usePartHandlers(data, setData, questionHandlers);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,7 +29,7 @@ export default function useToeicDetailPage() {
             setData(toeic.data);
             setEditData({ ...toeic.data });
             
-            // Load all parts data
+            // Load all parts data - sub-questions will now be loaded automatically
             await loadToeicPartsData(toeic.data);
           }
         } catch (e) {
@@ -44,16 +43,19 @@ export default function useToeicDetailPage() {
   }, [id]);
 
   const loadToeicPartsData = async (toeic: Toeic) => {
-    // Load all parts data with separated functions
-    await Promise.all([
-      partHandlers.loadPart1Data(toeic),
-      partHandlers.loadPart2Data(toeic),
-      partHandlers.loadPart3Data(toeic),
-      partHandlers.loadPart4Data(toeic),
-      partHandlers.loadPart5Data(toeic),
-      partHandlers.loadPart6Data(toeic),
-      partHandlers.loadPart7Data(toeic)
-    ]);
+    try {
+      await Promise.all([
+        partHandlers.loadPart1Data(toeic),
+        partHandlers.loadPart2Data(toeic),
+        partHandlers.loadPart3Data(toeic),
+        partHandlers.loadPart4Data(toeic),
+        partHandlers.loadPart5Data(toeic),
+        partHandlers.loadPart6Data(toeic),
+        partHandlers.loadPart7Data(toeic)
+      ]);
+    } catch (error) {
+      console.error("Error loading TOEIC parts and questions:", error);
+    }
   };
 
   const handleEditMode = () => {
@@ -112,25 +114,6 @@ export default function useToeicDetailPage() {
   const handlePublishClick = () => setOpenPublishDialog(true);
   const handleUnpublishClick = () => setOpenUnpublishDialog(true);
 
-  const getTotalQuestions = () => {
-    let total = 0;
-    
-    // Count direct questions (Part 1, 2, 5)
-    total += partHandlers.part1Questions.length;
-    total += partHandlers.part2Questions.length;
-    total += partHandlers.part5Questions.length;
-    
-    // Count sub-questions (Part 3, 4, 6, 7)
-    total += Object.values(questionHandlers.part3ToeicQuestions).reduce((sum, questions) => sum + questions.length, 0);
-    total += Object.values(questionHandlers.part4ToeicQuestions).reduce((sum, questions) => sum + questions.length, 0);
-    total += Object.values(questionHandlers.part6ToeicQuestions).reduce((sum, questions) => sum + questions.length, 0);
-    total += Object.values(questionHandlers.part7ToeicQuestions).reduce((sum, questions) => sum + questions.length, 0);
-    
-    return total > 0 ? total : 200;
-  };
-
-  // Combine all the exported values from both hooks and this one
-  // Use destructuring to avoid duplicated properties
   return {
     // Core data
     data,
@@ -150,7 +133,6 @@ export default function useToeicDetailPage() {
     handleUnpublish,
     handlePublishClick,
     handleUnpublishClick,
-    getTotalQuestions,
 
     ...partHandlers,
     

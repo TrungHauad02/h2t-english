@@ -1,6 +1,6 @@
 import { Toeic, ToeicQuestion } from "interfaces";
 import { useState } from "react";
-import { toeicQuestionService, toeicPart3_4Service, toeicPart6Service, toeicPart7Service } from "services/test";
+import { toeicQuestionService, toeicPart3_4Service, toeicPart6Service, toeicPart7Service, toeicAnswerService } from "services/test";
 
 export function useQuestionSubTypes(data: Toeic | null) {
   const [part3ToeicQuestions, setPart3ToeicQuestions] = useState<{ [partId: number]: ToeicQuestion[] }>({});
@@ -52,7 +52,7 @@ export function useQuestionSubTypes(data: Toeic | null) {
 
     const questions = await toeicQuestionService.getByIds(questionIds);
     const { updateStateFn } = getPartStateAndUpdater(partType, partId);
-    updateStateFn(questions);
+    updateStateFn(questions.data);
   };
 
   const addSubQuestion = async (
@@ -60,12 +60,30 @@ export function useQuestionSubTypes(data: Toeic | null) {
     question: ToeicQuestion,
     partType: "part3" | "part4" | "part6" | "part7"
   ) => {
-    const created = await toeicQuestionService.create(question);
-    const { currentPart, updateStateFn } = getPartStateAndUpdater(partType, parentId);
-    updateStateFn([...currentPart, created]);
+    try {
 
-    await patchQuestionIdsToParent(partType, parentId, [...currentPart.map(q => q.id), created.id]);
-    return created;
+      const created = await toeicQuestionService.create(question);
+      const newQuestion = created.data;
+      
+      if (question.answers && question.answers.length > 0) {
+        await Promise.all(
+          question.answers.map((answer) =>
+            toeicAnswerService.create({
+              ...answer,
+              questionId: newQuestion.id,
+            })
+          )
+        );
+      }
+    
+      const { currentPart, updateStateFn } = getPartStateAndUpdater(partType, parentId);
+      updateStateFn([...currentPart, newQuestion]);
+      
+      return newQuestion;
+    } catch (error) {
+      console.error("Failed to add question", error);
+      throw error;
+    }
   };
 
   const updateSubQuestion = async (
@@ -73,23 +91,50 @@ export function useQuestionSubTypes(data: Toeic | null) {
     partType: "part3" | "part4" | "part6" | "part7",
     parentId: number
   ) => {
-    await toeicQuestionService.update(question.id, question);
-    const { currentPart, updateStateFn } = getPartStateAndUpdater(partType, parentId);
-    const updated = currentPart.map(q => (q.id === question.id ? question : q));
-    updateStateFn(updated);
-    return question;
+    try {
+ 
+      await toeicQuestionService.update(question.id, question);
+  
+      if (question.answers && question.answers.length > 0) {
+        await Promise.all(
+          question.answers.map((answer) =>
+            toeicAnswerService.update(answer.id, {
+              ...answer,
+              questionId: question.id
+            })
+          )
+        );
+      }
+  
+      const { currentPart, updateStateFn } = getPartStateAndUpdater(partType, parentId);
+      const updated = currentPart.map(q => (q.id === question.id ? question : q));
+      updateStateFn(updated);
+  
+      return question;
+    } catch (error) {
+      console.error("Failed to update question", error);
+      throw error;
+    }
   };
+  
 
   const deleteSubQuestion = async (
     questionId: number,
     partType: "part3" | "part4" | "part6" | "part7",
     parentId: number
   ) => {
-    await toeicQuestionService.remove(questionId);
-    const { currentPart, updateStateFn } = getPartStateAndUpdater(partType, parentId);
-    const updated = currentPart.filter(q => q.id !== questionId);
-    updateStateFn(updated);
-    await patchQuestionIdsToParent(partType, parentId, updated.map(q => q.id));
+    try {
+
+      await toeicQuestionService.remove(questionId);
+ 
+      const { currentPart, updateStateFn } = getPartStateAndUpdater(partType, parentId);
+      const updated = currentPart.filter(q => q.id !== questionId);
+      updateStateFn(updated);
+      
+    } catch (error) {
+      console.error("Failed to delete question", error);
+      throw error;
+    }
   };
 
   const patchQuestionIdsToParent = async (
@@ -113,6 +158,8 @@ export function useQuestionSubTypes(data: Toeic | null) {
     }
   };
 
+
+
   return {
     part3ToeicQuestions,
     part4ToeicQuestions,
@@ -121,6 +168,7 @@ export function useQuestionSubTypes(data: Toeic | null) {
     loadQuestionsForPart,
     addSubQuestion,
     updateSubQuestion,
-    deleteSubQuestion
+    deleteSubQuestion,
+    patchQuestionIdsToParent,
   };
 }

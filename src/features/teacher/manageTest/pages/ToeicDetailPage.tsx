@@ -136,6 +136,8 @@ export default function ToeicDetailPage() {
         onAddSubQuestion={(parentId, question) => hooks.addSubQuestion(parentId, question, "part3")}
         onUpdateSubQuestion={(question, parentId) => hooks.updateSubQuestion(question, "part3", parentId)}
         onDeleteSubQuestion={(questionId, parentId) => hooks.deleteSubQuestion(questionId, "part3", parentId)}
+       
+        
       />
 
       <Part4Section
