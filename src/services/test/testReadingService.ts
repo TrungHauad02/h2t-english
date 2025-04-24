@@ -1,5 +1,6 @@
 import { TestReading } from "interfaces";
 import apiClient from "services/apiClient";
+import { fileHandlerService } from "services/features";
 
 const findById = async (id: number) => {
   try {
@@ -21,9 +22,28 @@ const getByIds = async (ids: number[]) => {
   }
 };
 
+const handleFile = async (data: any, idOrTemp: string, existing?: any) => {
+  const result = { ...data };
+
+  if (data.file) {
+    const fileResult = await fileHandlerService.handleFileUpdate({
+      base64: data.file,
+      path: "test/reading",
+      fileName: idOrTemp,
+      randomName: "YES",
+      oldFilePath: existing?.file,
+    });
+
+    result.file = fileResult.data;
+  }
+
+  return result;
+};
+
 const create = async (data: TestReading) => {
   try {
-    const response = await apiClient.post("/test-readings", data);
+    const processedData = await handleFile(data, "test-reading-temp");
+    const response = await apiClient.post("/test-readings", processedData);
     return response.data;
   } catch (error) {
     console.error("Error creating TestReading:", error);
@@ -33,7 +53,9 @@ const create = async (data: TestReading) => {
 
 const update = async (id: number, data: TestReading) => {
   try {
-    const response = await apiClient.put(`/test-readings/${id}`, data);
+    const existing = await findById(id);
+    const processedData = await handleFile(data, id.toString(), existing.data);
+    const response = await apiClient.put(`/test-readings/${id}`, processedData);
     return response.data;
   } catch (error) {
     console.error("Error updating TestReading:", error);
@@ -43,7 +65,9 @@ const update = async (id: number, data: TestReading) => {
 
 const patch = async (id: number, data: Partial<TestReading>) => {
   try {
-    const response = await apiClient.patch(`/test-readings/${id}`, data);
+    const existing = await findById(id);
+    const processedData = await handleFile(data, id.toString(), existing.data);
+    const response = await apiClient.patch(`/test-readings/${id}`, processedData);
     return response.data;
   } catch (error) {
     console.error("Error patching TestReading:", error);

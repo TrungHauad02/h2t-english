@@ -15,7 +15,7 @@ import {
   DeleteQuestionDialog
 } from '../dialogEdit';
 import { useQuestionEditState } from '../../../hooks/ToeicDetailPage/useQuestionEditState';
-import BasicInfoTab from './part3_4EditDialog/BasicInfoTab';
+import BasicInfoTab from './components/BasicInfoTab';
 
 interface Part3_4EditDialogProps {
   open: boolean;
