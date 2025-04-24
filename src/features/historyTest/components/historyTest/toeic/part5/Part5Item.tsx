@@ -23,7 +23,7 @@ const Part5Item: React.FC<Props> = ({
   selectedAnswer,
 }) => {
   const { isDarkMode } = useDarkMode();
-  const correctAnswer = question.toeicAnswers.find((a) => a.correct)?.content as AnswerEnum;
+  const correctAnswer = question.answers.find((a) => a.correct)?.content as AnswerEnum;
 
   return (
     <Box
@@ -49,7 +49,7 @@ const Part5Item: React.FC<Props> = ({
             name={`question-${questionNumber}`}
             value={selectedAnswer || ''}
           >
-            {question.toeicAnswers.map((ans, index) => {
+            {question.answers.map((ans, index) => {
               const isCorrect = ans.content === correctAnswer;
               const isWrong = selectedAnswer === ans.content && !ans.correct;
 

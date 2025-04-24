@@ -138,7 +138,7 @@ export default function Part1Section({
     };
   };
 
-  if (!currentQuestion && questions.length === 0 && dialogMode !== 'add') {
+  if (questions.length === 0) {
     return (
       <Container maxWidth="lg">
         <PartContainer
@@ -430,6 +430,7 @@ export default function Part1Section({
 
       {/* Edit/Add Dialog */}
       <Part1EditDialog
+        key={dialogMode === 'edit' ? `edit-${currentQuestion?.id ?? 'new'}` : `add-${Date.now()}`}
         open={isEditDialogOpen}
         question={dialogMode === 'edit' ? (currentQuestion || createEmptyQuestion()) : createEmptyQuestion()}
         onClose={handleCloseEditDialog}

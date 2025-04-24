@@ -4,7 +4,6 @@ import {
   ToeicQuestion,
   SubmitToeicAnswer,
   AnswerEnum,
-  ToeicAnswer,
 } from 'interfaces/TestInterfaces';
 import { testService } from '../../../../../test/services/testServices';
 import Part5Item from './Part5Item';
@@ -34,7 +33,7 @@ const Part5List: React.FC<Props> = ({
       const answerMap: Record<number, AnswerEnum> = {};
       submitToeicPart5.forEach((a) => {
         const question = data.find((q) => q.id === a.toeicQuestionId);
-        const answer = question?.toeicAnswers.find((ans) => ans.id === a.toeicAnswerId);
+        const answer = question?.answers.find((ans) => ans.id === a.toeicAnswerId);
         if (answer) {
           answerMap[a.toeicQuestionId] = answer.content as AnswerEnum;
         }

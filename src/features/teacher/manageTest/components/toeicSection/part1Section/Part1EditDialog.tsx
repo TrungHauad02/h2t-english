@@ -4,7 +4,6 @@ import { ToeicPart1 } from 'interfaces';
 import useColor from 'theme/useColor';
 import { useDarkMode } from 'hooks/useDarkMode';
 import { WETextField } from 'components/input';
-import { base64ToBlobUrl } from 'utils/convert';
 import ImageIcon from '@mui/icons-material/Image';
 import HeadphonesIcon from '@mui/icons-material/Headphones';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
@@ -44,15 +43,6 @@ export default function Part1EditDialog({
   }, [open, question]);
 
   const handleChange = (field: keyof ToeicPart1, value: any) => {
-    if (field === "image" || field === "audio") {
-      setEditedQuestion({
-        ...editedQuestion,
-        [field]: base64ToBlobUrl(value, field === "image" ? "image/png" : "audio/mpeg"),
-      });
-      return;
-    }
-  
-    
     setEditedQuestion({ ...editedQuestion, [field]: value });
   };
 

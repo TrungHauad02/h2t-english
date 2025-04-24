@@ -513,7 +513,7 @@ const toeicQuestions: ToeicQuestion[] = [
     id: 1,
     content: "What is the man planning to do?",
     explanation: "The conversation reveals the man is thinking about taking a vacation next month.",
-    toeicAnswers: [
+    answers: [
       { 
         id: 1, 
         content: "Change his job", 
@@ -558,7 +558,7 @@ const toeicQuestions: ToeicQuestion[] = [
 ];
 
 // TOEIC Answers
-const toeicAnswers: ToeicAnswer[] = toeicQuestions.flatMap(q => q.toeicAnswers);
+const toeicAnswers: ToeicAnswer[] = toeicQuestions.flatMap(q => q.answers);
 
 
 

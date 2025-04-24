@@ -44,7 +44,7 @@ const Part5Item: React.FC<Props> = ({
           value={selectedAnswer || ''}
           onChange={(e) => onChange(e.target.value as AnswerEnum)}
         >
-          {question.toeicAnswers.map((answer, idx) => (
+          {question.answers.map((answer, idx) => (
             <FormControlLabel
               key={answer.id}
               value={(['A', 'B', 'C', 'D'][idx]) as AnswerEnum}

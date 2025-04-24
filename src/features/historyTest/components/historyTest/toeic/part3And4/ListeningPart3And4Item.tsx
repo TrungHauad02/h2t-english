@@ -59,7 +59,7 @@ const ListeningPart3And4Item: React.FC<Props> = ({
         }}
       >
         {questions.map((q, idx) => {
-          const correctAnswer = q.toeicAnswers.find(a => a.correct)?.content as AnswerEnum;
+          const correctAnswer = q.answers.find(a => a.correct)?.content as AnswerEnum;
           const userAnswer = selectedAnswers[q.id];
           return (
             <Box key={q.id} mb={3}>
@@ -69,7 +69,7 @@ const ListeningPart3And4Item: React.FC<Props> = ({
 
               <RadioGroup name={`question-${q.id}`} value={userAnswer || ''}>
                 {(['A', 'B', 'C', 'D'] as AnswerEnum[]).map((choice, i) => {
-                  const ansText = q.toeicAnswers[i]?.content;
+                  const ansText = q.answers[i]?.content;
                   const isCorrect = correctAnswer === choice;
                   const isWrong = userAnswer === choice && userAnswer !== correctAnswer;
 

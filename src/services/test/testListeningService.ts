@@ -1,5 +1,6 @@
 import { TestListening } from "interfaces";
 import apiClient from "services/apiClient";
+import { fileHandlerService } from "services/features";
 
 const findById = async (id: number) => {
   try {
@@ -21,9 +22,28 @@ const getByIds = async (ids: number[]) => {
   }
 };
 
+const handleFile = async (data: any, idOrTemp: string, existing?: any) => {
+  const result = { ...data };
+
+  if (data.audio) {
+    const fileResult = await fileHandlerService.handleFileUpdate({
+      base64: data.audio,
+      path: "test/listening/audio",
+      fileName: idOrTemp,
+      randomName: "YES",
+      oldFilePath: existing?.audio,
+    });
+
+    result.audio = fileResult.data;
+  }
+
+  return result;
+};
+
 const create = async (data: TestListening) => {
   try {
-    const response = await apiClient.post("/test-listening", data);
+    const processedData = await handleFile(data, "test-listening-temp");
+    const response = await apiClient.post("/test-listening", processedData);
     return response.data;
   } catch (error) {
     console.error("Error creating TestListening:", error);
@@ -33,7 +53,9 @@ const create = async (data: TestListening) => {
 
 const update = async (id: number, data: TestListening) => {
   try {
-    const response = await apiClient.put(`/test-listening/${id}`, data);
+    const existing = await findById(id);
+    const processedData = await handleFile(data, id.toString(), existing.data);
+    const response = await apiClient.put(`/test-listening/${id}`, processedData);
     return response.data;
   } catch (error) {
     console.error("Error updating TestListening:", error);
@@ -43,7 +65,9 @@ const update = async (id: number, data: TestListening) => {
 
 const patch = async (id: number, data: Partial<TestListening>) => {
   try {
-    const response = await apiClient.patch(`/test-listening/${id}`, data);
+    const existing = await findById(id);
+    const processedData = await handleFile(data, id.toString(), existing.data);
+    const response = await apiClient.patch(`/test-listening/${id}`, processedData);
     return response.data;
   } catch (error) {
     console.error("Error patching TestListening:", error);

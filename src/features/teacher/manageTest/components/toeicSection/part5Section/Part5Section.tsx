@@ -112,7 +112,7 @@ export default function Part5Section({
       if (currentQuestionIndex > 0) {
         setCurrentQuestionIndex(currentQuestionIndex - 1);
       } else if (questions.length > 1) {
-        // Stay at index 0 as the next question will shift into position 0
+
       }
     }
     handleCloseDeleteDialog();
@@ -134,7 +134,7 @@ export default function Part5Section({
       id: 0,
       content: '',
       explanation: '',
-      toeicAnswers: emptyAnswers,
+      answers: emptyAnswers,
       createdAt: new Date(),
       updatedAt: new Date(),
       status: true
@@ -142,7 +142,7 @@ export default function Part5Section({
   };
 
   // Handle empty state
-  if (!currentQuestion && questions.length === 0) {
+  if (questions.length === 0) {
     return (
       <Container maxWidth="lg">
         <PartContainer
@@ -294,11 +294,11 @@ export default function Part5Section({
                     </Typography>
 
                     <AnswerOptionsGrid
-                      options={currentQuestion.toeicAnswers.map((ans, i) => `(${String.fromCharCode(65 + i)}) ${ans.content}`)}
+                      options={currentQuestion.answers.map((ans, i) => `(${String.fromCharCode(65 + i)}) ${ans.content}`)}
                       correctAnswer={
-                        currentQuestion.toeicAnswers.findIndex(a => a.correct) === 0 ? AnswerEnum.A : 
-                        currentQuestion.toeicAnswers.findIndex(a => a.correct) === 1 ? AnswerEnum.B : 
-                        currentQuestion.toeicAnswers.findIndex(a => a.correct) === 2 ? AnswerEnum.C : 
+                        currentQuestion.answers.findIndex(a => a.correct) === 0 ? AnswerEnum.A : 
+                        currentQuestion.answers.findIndex(a => a.correct) === 1 ? AnswerEnum.B : 
+                        currentQuestion.answers.findIndex(a => a.correct) === 2 ? AnswerEnum.C : 
                         AnswerEnum.D
                       } 
                     />
@@ -360,6 +360,7 @@ export default function Part5Section({
       </PartContainer>
 
       <Part5EditDialog
+        key={dialogMode === 'edit' ? `edit-${currentQuestion?.id ?? 'new'}` : `add-${Date.now()}`}
         open={isEditDialogOpen}
         question={dialogMode === 'edit' ? (currentQuestion || createEmptyQuestion()) : createEmptyQuestion()}
         onClose={handleCloseEditDialog}

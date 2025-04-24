@@ -431,7 +431,7 @@ export const toeicQuestions: ToeicQuestion[] = [
     id: 1,
     content: "What is the man doing?",
     explanation: "He is writing.",
-    toeicAnswers: [
+    answers: [
       { id: 101, content: "Reading", correct: false, questionId: 1, createdAt: new Date(), updatedAt: new Date(), status: true },
       { id: 102, content: "Sleeping", correct: false, questionId: 1, createdAt: new Date(), updatedAt: new Date(), status: true },
       { id: 103, content: "Writing", correct: true, questionId: 1, createdAt: new Date(), updatedAt: new Date(), status: true },
@@ -445,7 +445,7 @@ export const toeicQuestions: ToeicQuestion[] = [
     id: 2,
     content: "Where are they?",
     explanation: "They are in an office.",
-    toeicAnswers: [
+    answers: [
       { id: 105, content: "In a restaurant", correct: false, questionId: 2, createdAt: new Date(), updatedAt: new Date(), status: true },
       { id: 106, content: "In an office", correct: true, questionId: 2, createdAt: new Date(), updatedAt: new Date(), status: true },
       { id: 107, content: "At home", correct: false, questionId: 2, createdAt: new Date(), updatedAt: new Date(), status: true },
@@ -459,7 +459,7 @@ export const toeicQuestions: ToeicQuestion[] = [
     id: 3,
     content: "What will happen next?",
     explanation: "The meeting ends.",
-    toeicAnswers: [
+    answers: [
       { id: 109, content: "He will leave", correct: false, questionId: 3, createdAt: new Date(), updatedAt: new Date(), status: true },
       { id: 110, content: "She will call", correct: false, questionId: 3, createdAt: new Date(), updatedAt: new Date(), status: true },
       { id: 111, content: "They will meet", correct: false, questionId: 3, createdAt: new Date(), updatedAt: new Date(), status: true },
@@ -473,7 +473,7 @@ export const toeicQuestions: ToeicQuestion[] = [
     id: 15,
     content: "What is the topic of the passage?",
     explanation: "It's an email.",
-    toeicAnswers: [
+    answers: [
       { id: 113, content: "A letter", correct: false, questionId: 15, createdAt: new Date(), updatedAt: new Date(), status: true },
       { id: 114, content: "A memo", correct: false, questionId: 15, createdAt: new Date(), updatedAt: new Date(), status: true },
       { id: 115, content: "An email", correct: true, questionId: 15, createdAt: new Date(), updatedAt: new Date(), status: true },
@@ -487,7 +487,7 @@ export const toeicQuestions: ToeicQuestion[] = [
     id: 16,
     content: "Who is the author?",
     explanation: "The employee.",
-    toeicAnswers: [
+    answers: [
       { id: 117, content: "The boss", correct: false, questionId: 16, createdAt: new Date(), updatedAt: new Date(), status: true },
       { id: 118, content: "The client", correct: false, questionId: 16, createdAt: new Date(), updatedAt: new Date(), status: true },
       { id: 119, content: "The supplier", correct: false, questionId: 16, createdAt: new Date(), updatedAt: new Date(), status: true },
@@ -498,7 +498,7 @@ export const toeicQuestions: ToeicQuestion[] = [
     status: true
   }
 ];
-const toeicAnswers: ToeicAnswer[] = toeicQuestions.flatMap(q => q.toeicAnswers);
+const toeicAnswers: ToeicAnswer[] = toeicQuestions.flatMap(q => q.answers);
 
 
 

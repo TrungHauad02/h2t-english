@@ -7,3 +7,6 @@ export { default as AnswerOptionsEditor } from './AnswerOptionsEditor';
 export { default as MediaFileSelector } from './MediaFileSelector';
 export { default as QuestionEditor } from './QuestionEditor';
 export { default as EnhanceAnswerOptionsEditor } from './EnhanceAnswerOptionsEditor';
+export { default as DeleteQuestionDialog } from './DeleteQuestionDialog';
+export { default as QuestionTab } from './QuestionTab';
+export { default as DocumentTab } from './DocumentTab';

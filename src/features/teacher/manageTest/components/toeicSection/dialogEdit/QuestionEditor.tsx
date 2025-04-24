@@ -1,4 +1,3 @@
-import React from 'react';
 import { Grid } from '@mui/material';
 import { ToeicQuestion } from 'interfaces';
 import useColor from 'theme/useColor';
@@ -27,26 +26,26 @@ export default function QuestionEditor({
     if (onAnswerChange) {
       onAnswerChange(index, value);
     } else {
-      const updatedAnswers = [...question.toeicAnswers];
+      const updatedAnswers = [...question.answers];
       updatedAnswers[index] = {
         ...updatedAnswers[index],
         content: value
       };
-      onChange('toeicAnswers', updatedAnswers);
+      onChange('answers', updatedAnswers);
     }
   };
 
-  const handleCorrectAnswerChange = (id: number) => {
+  const handleCorrectAnswerChange = (index: number) => {
     if (onCorrectAnswerChange) {
-      // Nếu có prop onCorrectAnswerChange, sử dụng nó
-      onCorrectAnswerChange(id);
+      // Sử dụng index nhất quán từ component cha
+      onCorrectAnswerChange(index);
     } else {
-      // Nếu không, sử dụng cách cũ (dựa trên answer.id)
-      const updatedAnswers = question.toeicAnswers.map(answer => ({
+      // Sử dụng index để cập nhật trạng thái đúng/sai
+      const updatedAnswers = question.answers.map((answer, idx) => ({
         ...answer,
-        correct: answer.id === id
+        correct: idx === index
       }));
-      onChange('toeicAnswers', updatedAnswers);
+      onChange('answers', updatedAnswers);
     }
   };
 
@@ -90,7 +89,7 @@ export default function QuestionEditor({
       <Grid item xs={12}>
         <FormSectionCard title="Answer Options">
           <EnhanceAnswerOptionsEditor 
-            answers={question.toeicAnswers}
+            answers={question.answers}
             onAnswerChange={handleAnswerChange}
             onCorrectAnswerChange={handleCorrectAnswerChange}
           />

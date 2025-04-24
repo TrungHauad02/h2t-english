@@ -1,4 +1,3 @@
-import React from 'react';
 import { 
   Box, 
   Typography, 
@@ -16,28 +15,27 @@ import { ToeicAnswer } from 'interfaces';
 import { WETextField } from 'components/input';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
-interface AnswerOptionsEditorProps {
+interface EnhanceAnswerOptionsEditorProps {
   answers: ToeicAnswer[];
   onAnswerChange: (index: number, value: string) => void;
-  onCorrectAnswerChange: (id: number) => void;
+  onCorrectAnswerChange: (answerIndex: number) => void;
 }
 
-export default function AnswerOptionsEditor({
+export default function EnhanceAnswerOptionsEditor({
   answers,
   onAnswerChange,
   onCorrectAnswerChange
-}: AnswerOptionsEditorProps) {
+}: EnhanceAnswerOptionsEditorProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
   const answerLabels = ['A', 'B', 'C', 'D'];
-  const correctAnswerId = answers.find(answer => answer.correct)?.id ?? -1;
+  const correctAnswerIndex = answers.findIndex(answer => answer.correct);
 
   return (
     <Box sx={{ width: '100%' }}>
-
       <RadioGroup
-        value={correctAnswerId}
+        value={correctAnswerIndex}
         onChange={(e) => onCorrectAnswerChange(Number(e.target.value))}
       >
         <Grid container spacing={2}>
@@ -83,7 +81,7 @@ export default function AnswerOptionsEditor({
                     </Typography>
                     
                     <FormControlLabel
-                      value={answer.id}
+                      value={index}
                       control={
                         <Radio 
                           sx={{
