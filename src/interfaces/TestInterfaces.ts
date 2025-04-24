@@ -124,7 +124,7 @@ export interface ToeicPart7 extends BaseEntity {
 export interface ToeicQuestion extends BaseEntity {
   content: string;
   explanation: string;
-  toeicAnswers: ToeicAnswer[];
+  answers: ToeicAnswer[];
 }
 
 export interface ToeicAnswer extends BaseEntity {

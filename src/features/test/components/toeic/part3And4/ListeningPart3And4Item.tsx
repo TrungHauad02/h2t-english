@@ -56,7 +56,7 @@ const ListeningPart3And4Item: React.FC<Props> = ({
               value={selectedAnswers[questionKey] || ''}
               onChange={(e) => onChange(questionKey, e.target.value as AnswerEnum)}
             >
-              {question.toeicAnswers.map((answer, idx) => (
+              {question.answers.map((answer, idx) => (
                 <FormControlLabel
                   key={answer.id}
                   value={(['A', 'B', 'C', 'D'][idx]) as AnswerEnum}

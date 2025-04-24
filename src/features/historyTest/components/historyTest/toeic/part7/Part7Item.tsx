@@ -52,7 +52,7 @@ const Part7Item: React.FC<Props> = ({
         <Box flex={1} sx={{ overflowY: 'auto', maxHeight: '60vh' }}>
           {questions.map((q, idx) => {
             const number = questionNumberStart + idx;
-            const correctAnswer = q.toeicAnswers.find(a => a.correct)?.content as AnswerEnum;
+            const correctAnswer = q.answers.find(a => a.correct)?.content as AnswerEnum;
             const selected = selectedAnswers[q.id];
 
             return (
@@ -63,7 +63,7 @@ const Part7Item: React.FC<Props> = ({
 
                 <RadioGroup name={`question-${q.id}`} value={selected || ''}>
                   {(['A', 'B', 'C', 'D'] as AnswerEnum[]).map((choice, i) => {
-                    const ansText = q.toeicAnswers[i]?.content;
+                    const ansText = q.answers[i]?.content;
                     const isCorrect = correctAnswer === choice;
                     const isWrong = selected === choice && selected !== correctAnswer;
 
