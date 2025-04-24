@@ -1,4 +1,4 @@
-import { FC, RefObject } from 'react';
+import {  RefObject } from 'react';
 import { Tabs, Tab, Tooltip, Box, Paper, Fade } from '@mui/material';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import useColor from 'theme/useColor';

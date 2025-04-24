@@ -4,7 +4,6 @@ import {
   ToeicQuestion,
   SubmitToeicAnswer,
   AnswerEnum,
-  ToeicAnswer,
 } from 'interfaces/TestInterfaces';
 import { testService } from '../../../../../test/services/testServices';
 import Part5Item from './Part5Item';
