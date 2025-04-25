@@ -1,13 +1,13 @@
-import {  RefObject } from 'react';
-import { Tabs, Tab, Tooltip, Box, Paper, Fade } from '@mui/material';
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import useColor from 'theme/useColor';
-import { useDarkMode } from 'hooks/useDarkMode';
-import { ToeicQuestion } from 'interfaces';
+import { RefObject } from "react";
+import { Tabs, Tab, Tooltip, Box, Paper, Fade } from "@mui/material";
+import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
+import { ToeicQuestion } from "interfaces";
 
 interface QuestionTabsProps {
-  tabsRef: RefObject<HTMLDivElement>;
-  containerRef: RefObject<HTMLDivElement>;
+  tabsRef: RefObject<HTMLDivElement | null>;
+  containerRef: RefObject<HTMLDivElement | null>;
   questions: ToeicQuestion[];
   activeQuestion: number;
   onChangeQuestion: (event: React.SyntheticEvent, newValue: number) => void;
@@ -20,7 +20,7 @@ export default function QuestionTabs({
   questions,
   activeQuestion,
   onChangeQuestion,
-  children
+  children,
 }: QuestionTabsProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -36,10 +36,10 @@ export default function QuestionTabs({
       elevation={3}
       sx={{
         backgroundColor: bgColor,
-        borderRadius: '1rem',
+        borderRadius: "1rem",
         border: `1px solid ${borderColor}`,
-        overflow: 'hidden',
-        mb: 3
+        overflow: "hidden",
+        mb: 3,
       }}
     >
       <Tabs
@@ -52,27 +52,27 @@ export default function QuestionTabs({
         sx={{
           backgroundColor: tabBgColor,
           borderBottom: `1px solid ${borderColor}`,
-          '& .MuiTabs-indicator': {
+          "& .MuiTabs-indicator": {
             backgroundColor: accentColor,
-            height: 3
+            height: 3,
           },
-          '& .MuiTab-root': {
+          "& .MuiTab-root": {
             color: isDarkMode ? color.gray400 : color.gray600,
-            fontWeight: 'bold',
+            fontWeight: "bold",
             py: 2,
-            transition: 'all 0.2s ease-in-out',
-            '&.Mui-selected': {
-              color: accentColor
+            transition: "all 0.2s ease-in-out",
+            "&.Mui-selected": {
+              color: accentColor,
             },
-            '&:hover': {
+            "&:hover": {
               backgroundColor: isDarkMode ? color.gray800 : color.gray200,
-            }
-          }
+            },
+          },
         }}
       >
         {questions.map((question, index) => (
-          <Tab 
-            key={index} 
+          <Tab
+            key={index}
             label={`Question ${index + 1}`}
             icon={
               <Tooltip title={question?.content?.substring(0, 30) + "..."}>
@@ -85,9 +85,7 @@ export default function QuestionTabs({
       </Tabs>
 
       <Fade in={true} timeout={300}>
-        <Box sx={{ p: { xs: 2, md: 4 } }}>
-          {children}
-        </Box>
+        <Box sx={{ p: { xs: 2, md: 4 } }}>{children}</Box>
       </Fade>
     </Paper>
   );
