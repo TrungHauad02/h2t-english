@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { routeService, routeNodeService, createLessonFactory } from "services";
+import { routeService, routeNodeService, createLessonFactory,testService} from "services";
 import {
   Grammar,
   Listening,
@@ -12,6 +12,7 @@ import {
   Test,
   Topic,
   Writing,
+  TestTypeEnum
 } from "interfaces";
 import { toast } from "react-toastify";
 
@@ -171,19 +172,26 @@ export default function useDetailRoutePage() {
         RouteNodeEnum.WRITING_TEST,
       ].includes(newNode.type);
 
-      if (isTestNode) {
-        console.log("TODO: Add test to database");
-        return;
-      }
-      console.log("New lesson: ", newLesson);
+
+      let createdId: number;
       // Tạo bài học trước
-      const lessonService = createLessonFactory(newNode.type);
-      const lessonRes = await lessonService.createLesson(newLesson);
+      if (isTestNode) {
+        const test = newLesson as Test;
+        const testRes = await testService.create(test);
+        createdId = testRes.data.id;
+      } else {
+        const lessonService = createLessonFactory(newNode.type);
+        const lessonRes = await lessonService.createLesson(newLesson);
+        createdId = lessonRes.data.id;
+      }
+
+      console.log("New lesson: ", newLesson);
+
 
       // Cập nhật nodeId từ bài học vừa tạo
       const updatedNode = {
         ...newNode,
-        nodeId: lessonRes.data.id,
+        nodeId: createdId,
       };
 
       // Tạo RouteNode
