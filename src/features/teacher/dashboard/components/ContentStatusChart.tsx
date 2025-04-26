@@ -10,12 +10,14 @@ import {
 } from "recharts";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import { ContentStatusChartProps } from "../types";
 
 export default function ContentStatusChart({
   active,
   inactive,
-}: ContentStatusChartProps) {
+}: {
+  active: number;
+  inactive: number;
+}) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
@@ -59,8 +61,8 @@ export default function ContentStatusChart({
               color: isDarkMode ? color.gray200 : color.gray800,
             }}
             formatter={(value: number) => [
-              `${value} lessons`,
-              "Number of lessons",
+              `${value} contents`,
+              "Number of contents",
             ]}
           />
           <Legend

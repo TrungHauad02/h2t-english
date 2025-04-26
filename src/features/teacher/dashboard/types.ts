@@ -1,42 +1,31 @@
 import { ReactNode } from "react";
 
-export interface StatsData {
+export interface TeacherDashboardData {
   totalRoutes: number;
+  totalLessons: number;
+  totalTests: number;
+  totalViews: number;
+  activeContent: number;
+  inactiveContent: number;
+  lessonData: LessonData;
+  testData: TestData;
+}
+
+export interface LessonData {
   totalTopics: number;
   totalGrammars: number;
   totalReadings: number;
   totalListenings: number;
   totalSpeakings: number;
   totalWritings: number;
+}
+
+export interface TestData {
   totalMixingTests: number;
   totalReadingTests: number;
   totalWritingTests: number;
   totalSpeakingTests: number;
   totalListeningTests: number;
-  totalViews: number;
-  activeContent: number;
-  inactiveContent: number;
-}
-
-export interface DashboardData {
-  stats: Partial<StatsData>;
-}
-
-export interface StatsCardProps {
-  icon: ReactNode;
-  title: string;
-  value: number | string;
-  bgColor: string;
-  changePercentage?: number;
-}
-
-export interface ContentTypeDistributionProps {
-  data: Partial<StatsData> | undefined;
-}
-
-export interface ContentStatusChartProps {
-  active: number;
-  inactive: number;
 }
 
 export interface SectionHeaderProps {

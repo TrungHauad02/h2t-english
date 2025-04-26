@@ -10,76 +10,41 @@ import {
   TestTypeDistribution,
 } from "../components";
 import { teacherDashboardService } from "../services/teacherDashboardService";
-import { DashboardData } from "../types";
-import { ServiceResponse } from "interfaces";
+import { TeacherDashboardData } from "../types";
 
 export default function TeacherDashboardPage() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const [dashboardData, setDashboardData] = useState<Partial<DashboardData>>(
-    {}
-  );
-  const [numberLessons, setNumberLessons] = useState(0);
-  const [numberTests, setNumberTests] = useState(0);
+  const [dashboardData, setDashboardData] = useState<TeacherDashboardData>({
+    totalLessons: 0,
+    totalRoutes: 0,
+    totalTests: 0,
+    totalViews: 0,
+    activeContent: 0,
+    inactiveContent: 0,
+    lessonData: {
+      totalTopics: 0,
+      totalGrammars: 0,
+      totalReadings: 0,
+      totalListenings: 0,
+      totalSpeakings: 0,
+      totalWritings: 0,
+    },
+    testData: {
+      totalMixingTests: 0,
+      totalReadingTests: 0,
+      totalListeningTests: 0,
+      totalSpeakingTests: 0,
+      totalWritingTests: 0,
+    },
+  });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const allPromises: Promise<ServiceResponse<number>>[] = [
-          teacherDashboardService.getTotalRouteByTeacherId(1),
-          teacherDashboardService.getTotalTopicByTeacherId(1),
-          teacherDashboardService.getTotalGrammarByTeacherId(1),
-          teacherDashboardService.getTotalReadingByTeacherId(1),
-          teacherDashboardService.getTotalWritingByTeacherId(1),
-          teacherDashboardService.getTotalListeningByTeacherId(1),
-          teacherDashboardService.getTotalSpeakingByTeacherId(1),
-          teacherDashboardService.getTotalMixingTestByTeacherId(1),
-          teacherDashboardService.getTotalReadingTestByTeacherId(1),
-          teacherDashboardService.getTotalListeningTestByTeacherId(1),
-          teacherDashboardService.getTotalSpeakingTestByTeacherId(1),
-          teacherDashboardService.getTotalWritingTestByTeacherId(1),
-          teacherDashboardService.getViewsByTeacherId(1),
-          teacherDashboardService.getActiveContentByTeacherId(1),
-          teacherDashboardService.getInactiveContentByTeacherId(1),
-        ];
-
-        const resData = await Promise.all(allPromises);
-
-        setDashboardData({
-          stats: {
-            totalRoutes: resData[0].data,
-            totalTopics: resData[1].data,
-            totalGrammars: resData[2].data,
-            totalReadings: resData[3].data,
-            totalWritings: resData[4].data,
-            totalListenings: resData[5].data,
-            totalSpeakings: resData[6].data,
-            totalMixingTests: resData[7].data,
-            totalReadingTests: resData[8].data,
-            totalListeningTests: resData[9].data,
-            totalSpeakingTests: resData[10].data,
-            totalWritingTests: resData[11].data,
-            totalViews: resData[12].data,
-            activeContent: resData[13].data,
-            inactiveContent: resData[14].data,
-          },
-        });
-        const numberOfLessons =
-          resData[1].data +
-          resData[2].data +
-          resData[3].data +
-          resData[4].data +
-          resData[5].data +
-          resData[6].data;
-
-        const numberOfTests =
-          resData[7].data +
-          resData[8].data +
-          resData[9].data +
-          resData[10].data +
-          resData[11].data;
-        setNumberLessons(numberOfLessons);
-        setNumberTests(numberOfTests);
+        // TODO: Replace with actual teacher ID
+        const resData = await teacherDashboardService.getTeacherDashboard(1);
+        setDashboardData(resData.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -113,10 +78,10 @@ export default function TeacherDashboardPage() {
 
         {/* Stats Cards */}
         <StatsCardSection
-          totalRoutes={dashboardData.stats?.totalRoutes ?? 0}
-          numberLessons={numberLessons}
-          totalTests={numberTests}
-          totalViews={dashboardData.stats?.totalViews ?? 0}
+          totalRoutes={dashboardData.totalRoutes}
+          numberLessons={dashboardData.totalLessons}
+          totalTests={dashboardData.totalTests}
+          totalViews={dashboardData.totalViews}
         />
 
         {/* Main Content Grid */}
@@ -143,8 +108,8 @@ export default function TeacherDashboardPage() {
                 subtitle="Ratio of published and unpublished content."
               />
               <ContentStatusChart
-                active={dashboardData.stats?.activeContent ?? 0}
-                inactive={dashboardData.stats?.inactiveContent ?? 0}
+                active={dashboardData.activeContent}
+                inactive={dashboardData.inactiveContent}
               />
             </Paper>
           </Grid>
@@ -169,7 +134,7 @@ export default function TeacherDashboardPage() {
                 title="Content Type Distribution"
                 subtitle="Distribution of content types."
               />
-              <ContentTypeDistribution data={dashboardData.stats} />
+              <ContentTypeDistribution data={dashboardData.lessonData} />
             </Paper>
           </Grid>
           <Grid item xs={12} sm={12} md={4}>
@@ -193,7 +158,7 @@ export default function TeacherDashboardPage() {
                 title="Test  Distribution"
                 subtitle="Distribution of test types."
               />
-              <TestTypeDistribution data={dashboardData.stats} />
+              <TestTypeDistribution data={dashboardData.testData} />
             </Paper>
           </Grid>
         </Grid>
