@@ -6,8 +6,15 @@ import {
   ShowChart as ShowChartIcon,
   Timeline as TimelineIcon,
 } from "@mui/icons-material";
-import { StatsCardProps } from "../types";
 import CountUp from "react-countup";
+
+interface StatsCardProps {
+  icon: React.ReactNode;
+  title: string;
+  value: number | string;
+  bgColor: string;
+  changePercentage: number;
+}
 
 export default function StatsCard({
   icon,

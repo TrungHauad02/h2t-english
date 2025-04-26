@@ -2,14 +2,16 @@ import React from "react";
 import { alpha } from "@mui/material";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import { ContentTypeDistributionProps } from "../types";
 import GeneralizedDistributionChart, {
   ChartItem,
 } from "./GeneralizedDistributionChart";
+import { LessonData } from "../types";
 
 export default function ContentTypeDistribution({
   data,
-}: ContentTypeDistributionProps) {
+}: {
+  data: LessonData;
+}) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 

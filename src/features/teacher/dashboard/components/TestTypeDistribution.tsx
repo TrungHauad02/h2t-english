@@ -5,11 +5,9 @@ import { useDarkMode } from "hooks/useDarkMode";
 import GeneralizedDistributionChart, {
   ChartItem,
 } from "./GeneralizedDistributionChart";
-import { ContentTypeDistributionProps } from "../types";
+import { TestData } from "../types";
 
-export default function TestTypeDistribution({
-  data,
-}: ContentTypeDistributionProps) {
+export default function TestTypeDistribution({ data }: { data: TestData }) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
