@@ -1,52 +1,56 @@
-import { Toeic } from "interfaces";
+import { Toeic, ToeicFilter } from "interfaces";
 import { useEffect, useState } from "react";
 import { toeicService } from "services/test/toeicService";
 import { toast } from "react-toastify";
-import { ToeicFilter } from "interfaces/FilterInterfaces";
 
 export default function useManageToeicPage() {
-  const [searchText, setSearchText] = useState("");
-  const [statusFilter, setStatusFilter] = useState<boolean | null>(null);
-  const [scoreRange, setScoreRange] = useState<{
-    minScore?: number;
-    maxScore?: number;
-  }>({});
+  const [filter, setFilter] = useState<ToeicFilter>({
+    status: null,
+    title: "",
+    sortBy: "-createdAt",
+  });
+
   const [toeicTests, setToeicTests] = useState<Toeic[]>([]);
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchToeicTests = async () => {
-      try {
-        setLoading(true);
-        const filter: ToeicFilter = {
-          title: searchText, 
-          ...(statusFilter !== null ? { status: statusFilter } : {})
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      const response = await toeicService.searchWithFilters(
+        page - 1, // API expects 0-based indexing
+        itemsPerPage,
+        '',
+        '',
+      );
+      
+      setToeicTests(response.data.content || []);
+      setTotalPages(response.data.totalPages || 1);
+    } catch (error) {
+      console.error("Error fetching TOEIC tests:", error);
+      toast.error("Failed to load TOEIC tests");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        };
-  
-        const response = await toeicService.searchWithFilters(
-          page - 1,
-          itemsPerPage,
-          '',
-          '',
-          filter
-        );
-  
-        setToeicTests(response.data.content || []);
-      } catch (error) {
-        toast.error("Failed to load TOEIC tests");
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    fetchToeicTests();
-  }, [page, itemsPerPage, statusFilter, searchText,]);
-  
+  useEffect(() => {
+    fetchData();
+  }, [itemsPerPage, page]);
+
   const handleSearch = async () => {
     setPage(1);
+    await fetchData();
+  };
+
+  const updateFilter = (updates: Partial<ToeicFilter>) => {
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      ...updates,
+    }));
   };
 
   const handleChangePage = (e: React.ChangeEvent<unknown>, newPage: number) => {
@@ -60,26 +64,19 @@ export default function useManageToeicPage() {
 
   const handleStatusFilterChange = (status: string) => {
     if (status === "all") {
-      setStatusFilter(null);
+      updateFilter({ status: null });
     } else if (status === "published") {
-      setStatusFilter(true);
+      updateFilter({ status: true });
     } else if (status === "unpublished") {
-      setStatusFilter(false);
+      updateFilter({ status: false });
     }
   };
 
-  const handleScoreRangeChange = (newScoreRange: {
-    minScore?: number;
-    maxScore?: number;
-  }) => {
-    setScoreRange(newScoreRange);
-  };
-
-  const createToeicTest = async (toeicData: Toeic) => {
+  const createToeicTest = async (toeicData: Partial<Toeic>) => {
     try {
-      const newToeic = await toeicService.create(toeicData);
+      const newToeic = await toeicService.create(toeicData as Toeic);
       
-      setToeicTests(prev => [...prev, newToeic.data]);
+      await fetchData(); // Refresh data instead of manually updating state
       toast.success("TOEIC test created successfully");
       return newToeic;
     } catch (error) {
@@ -91,9 +88,12 @@ export default function useManageToeicPage() {
   const updateToeicTest = async (id: number, data: Partial<Toeic>) => {
     try {
       const updatedToeic = await toeicService.patch(id, data);
+      
+      // Update in the current list
       setToeicTests(prev => 
         prev.map(toeic => toeic.id === id ? updatedToeic : toeic)
       );
+      
       toast.success("TOEIC test updated successfully");
       return updatedToeic;
     } catch (error) {
@@ -105,7 +105,15 @@ export default function useManageToeicPage() {
   const deleteToeicTest = async (id: number) => {
     try {
       await toeicService.remove(id);
-      setToeicTests(prev => prev.filter(toeic => toeic.id !== id));
+      
+      // If current page is empty after deletion, go to previous page
+      if (toeicTests.length === 1 && page > 1) {
+        setPage(prev => prev - 1);
+      } else {
+        // Otherwise refresh the current page
+        await fetchData();
+      }
+      
       toast.success("TOEIC test deleted successfully");
       return true;
     } catch (error) {
@@ -114,71 +122,42 @@ export default function useManageToeicPage() {
     }
   };
 
-  const updateToeicScore = async (id: number, score: number) => {
-    try {
-      const updatedToeic = await toeicService.patch(id, { scoreLastOfTest: score });
-      setToeicTests(prev => 
-        prev.map(toeic => toeic.id === id ? updatedToeic : toeic)
-      );
-      toast.success("TOEIC test score updated successfully");
-      return updatedToeic;
-    } catch (error) {
-      toast.error("Failed to update TOEIC test score");
-      throw error;
-    }
-  };
-
   const publishToeicTest = (id: number, publish: boolean = true) => {
     return updateToeicTest(id, { status: publish });
   };
 
-
-  const totalPages = Math.ceil(
-    toeicTests.length / itemsPerPage
-  );
-
-
+  // Derive properties for backward compatibility with components
+  const searchText = filter.title || "";
+  const statusFilter = filter.status;
+  const setSearchText = (text: string) => updateFilter({ title: text });
   const displayedToeicTests = toeicTests;
 
-  // Calculate statistics
-  const testsWithScores = toeicTests.filter(test => test.scoreLastOfTest !== null);
-  const averageScore = testsWithScores.length > 0 
-    ? testsWithScores.reduce((sum, test) => sum + (test.scoreLastOfTest || 0), 0) / testsWithScores.length 
-    : 0;
-  const highestScore = testsWithScores.length > 0
-    ? Math.max(...testsWithScores.map(test => test.scoreLastOfTest || 0))
-    : 0;
-  const lowestScore = testsWithScores.length > 0
-    ? Math.min(...testsWithScores.map(test => test.scoreLastOfTest || 0))
-    : 0;
-
   return {
+    // New API (similar to useManageRoutePage)
+    filter,
+    toeicTests,
+    loading,
+    itemsPerPage,
+    totalPages,
+    page,
+    setPage,
+    setItemsPerPage,
+    fetchData,
+    updateFilter,
+    setToeicTests,
+    
+    // For backward compatibility
     searchText,
     setSearchText,
     statusFilter,
-    scoreRange,
-    toeicTests,
-    loading,
-    page,
-    itemsPerPage,
+    displayedToeicTests,
     handleSearch,
     handleChangePage,
     handleItemsPerPageChange,
     handleStatusFilterChange,
-    handleScoreRangeChange,
     createToeicTest,
     updateToeicTest,
     deleteToeicTest,
-    updateToeicScore,
-    publishToeicTest,
-    totalPages,
-    displayedToeicTests,
-    statistics: {
-      total: toeicTests.length,
-      withScores: testsWithScores.length,
-      averageScore,
-      highestScore,
-      lowestScore
-    }
+    publishToeicTest
   };
 }

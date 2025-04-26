@@ -11,7 +11,7 @@ import { PartContainer, EmptyState ,QuestionTabs,QuestionSection,QuestionExplana
 import { AudioSection, ImageSection, TranscriptSection } from './components';
 import Part3_4EditDialog from './Part3_4EditDialog';
 import DialogConfirm from '../common/DialogConfirm';
-import { useSubQuestionManagement,useQuestionManagement,useDialogManagement }  from '../../../hooks/ToeicDetailPage/index';
+import { useSubQuestionManagement,useQuestionManagement,useDialogManagement }  from '../../../hooks/toeicDetailPage/index';
 
 
 interface Part3_4SectionProps {
