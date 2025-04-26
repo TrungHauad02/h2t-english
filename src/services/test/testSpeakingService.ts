@@ -3,7 +3,7 @@ import apiClient from "services/apiClient";
 
 const findById = async (id: number) => {
   try {
-    const response = await apiClient.get(`/test-speaking/${id}`);
+    const response = await apiClient.get(`/test-speakings/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error getting TestSpeaking by id:", error);
@@ -13,7 +13,7 @@ const findById = async (id: number) => {
 
 const getByIds = async (ids: number[]) => {
   try {
-    const response = await apiClient.post("/test-speaking/by-ids", ids);
+    const response = await apiClient.post("/test-speakings/by-ids", ids);
     return response.data;
   } catch (error) {
     console.error("Error getting TestSpeaking by ids:", error);
@@ -23,7 +23,7 @@ const getByIds = async (ids: number[]) => {
 
 const create = async (data: TestSpeaking) => {
   try {
-    const response = await apiClient.post("/test-speaking", data);
+    const response = await apiClient.post("/test-speakings", data);
     return response.data;
   } catch (error) {
     console.error("Error creating TestSpeaking:", error);
@@ -33,7 +33,7 @@ const create = async (data: TestSpeaking) => {
 
 const update = async (id: number, data: TestSpeaking) => {
   try {
-    const response = await apiClient.put(`/test-speaking/${id}`, data);
+    const response = await apiClient.put(`/test-speakings/${id}`, data);
     return response.data;
   } catch (error) {
     console.error("Error updating TestSpeaking:", error);
@@ -43,7 +43,7 @@ const update = async (id: number, data: TestSpeaking) => {
 
 const patch = async (id: number, data: Partial<TestSpeaking>) => {
   try {
-    const response = await apiClient.patch(`/test-speaking/${id}`, data);
+    const response = await apiClient.patch(`/test-speakings/${id}`, data);
     return response.data;
   } catch (error) {
     console.error("Error patching TestSpeaking:", error);
@@ -53,7 +53,7 @@ const patch = async (id: number, data: Partial<TestSpeaking>) => {
 
 const remove = async (id: number) => {
   try {
-    const response = await apiClient.delete(`/test-speaking/${id}`);
+    const response = await apiClient.delete(`/test-speakings/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error deleting TestSpeaking:", error);

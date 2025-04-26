@@ -15,6 +15,11 @@ export type QuestionSupportType =
   | "grammars"
   | "listenings"
   | "readings";
+export type QuestionSupportTestType =
+  | "test-listenings"
+  | "test-readings"
+  | "test-speakings"
+  | "test-parts";
 
 export interface ServiceResponse<T> {
   status: string;
