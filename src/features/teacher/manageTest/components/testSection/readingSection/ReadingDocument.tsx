@@ -1,49 +1,35 @@
-import React, { useState } from "react";
-import { Box, Paper, Typography, Stack } from "@mui/material";
-import { useDarkMode } from "hooks/useDarkMode";
-import useColor from "theme/useColor";
+import React from 'react';
+import { Box, Typography, Stack, Paper } from '@mui/material';
+import DescriptionIcon from '@mui/icons-material/Description';
+import SectionHeader from '../common/SectionHeader';
+import useColor from 'theme/useColor';
+import { useDarkMode } from 'hooks/useDarkMode';
 import { WEDocumentInput } from "components/input";
-import DescriptionIcon from "@mui/icons-material/Description";
 import WEDocumentViewer from "components/display/document/WEDocumentViewer";
-import SectionHeader from "../common/SectionHeader";
 
-interface ReadingDocumentSectionProps {
-  documentUrl: string;
-  onDocumentChange: (base64: string) => void;
+interface ReadingDocumentProps {
+  file?: string;
+  isEditingDocument: boolean;
+  tempDocument: string;
+  handleEditDocument: () => void;
+  handleDocumentChange: (base64: string) => void;
+  handleSaveDocument: () => void;
+  handleCancelEdit: () => void;
 }
 
-export default function ReadingDocumentSection({
-  documentUrl,
-  onDocumentChange,
-}: ReadingDocumentSectionProps) {
+export default function ReadingDocument({
+  file,
+  isEditingDocument,
+  tempDocument,
+  handleEditDocument,
+  handleDocumentChange,
+  handleSaveDocument,
+  handleCancelEdit
+}: ReadingDocumentProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [tempDocument, setTempDocument] = useState<string>("");
-
-  const cardBgColor = isDarkMode ? color.gray800 : color.gray50;
-  const borderColor = isDarkMode ? color.gray700 : color.gray200;
   const secondaryBgColor = isDarkMode ? color.gray900 : color.gray100;
-  const secondaryTextColor = isDarkMode ? color.gray400 : color.gray600;
-
-  const handleEditMode = () => {
-    setIsEditMode(true);
-    setTempDocument("");
-  };
-
-  const handleDocumentChange = (base64: string) => {
-    setTempDocument(base64);
-  };
-
-  const handleSaveChanges = () => {
-    onDocumentChange(tempDocument);
-    setIsEditMode(false);
-  };
-
-  const handleCancelEdit = () => {
-    setIsEditMode(false);
-    setTempDocument("");
-  };
+  const secondaryTextColor = isDarkMode ? color.gray300 : color.gray600;
 
   return (
     <Box
@@ -52,23 +38,21 @@ export default function ReadingDocumentSection({
       sx={{
         p: 3,
         borderRadius: "1rem",
-        backgroundColor: cardBgColor,
-        mb: 4,
-        border: `1px solid ${borderColor}`,
+        backgroundColor: isDarkMode ? color.gray800 : color.gray50,
       }}
     >
       <SectionHeader
         title="Reading Document"
         editText="Edit Document"
         icon={<DescriptionIcon />}
-        isEditMode={isEditMode}
-        handleSaveChanges={handleSaveChanges}
-        handleEditMode={handleEditMode}
+        isEditMode={isEditingDocument}
+        handleSaveChanges={handleSaveDocument}
+        handleEditMode={handleEditDocument}
         handleCancelEdit={handleCancelEdit}
       />
 
       <Stack spacing={2}>
-        {isEditMode ? (
+        {isEditingDocument ? (
           <WEDocumentInput
             value={tempDocument}
             onChange={handleDocumentChange}
@@ -78,9 +62,9 @@ export default function ReadingDocumentSection({
             errorMessage="Cannot load document. Please try a different file."
             returnType="base64"
           />
-        ) : documentUrl ? (
+        ) : file ? (
           <WEDocumentViewer
-            fileUrl={documentUrl}
+            fileUrl={file}
             maxHeight="400px"
             padding="16px"
             errorMessage="Cannot load document. Please try again later."

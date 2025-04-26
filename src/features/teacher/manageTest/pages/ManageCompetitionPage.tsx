@@ -1,140 +1,29 @@
-import React, { useState } from "react";
+import React, {  } from "react";
 import {
   Box,
+  Stack,
+  Skeleton,
+  LinearProgress,
+  CircularProgress,
   Typography,
-  Container,
-  Button,
-  Paper,
-  useTheme,
-  useMediaQuery,
   Fade,
+  Container,
+  Paper,
 } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+
+import { WEPaginationSelect } from "components/pagination";
 import useManageCompetitionsPage from "../hooks/useManageCompetitionsPage";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import { CompetitionTest } from "interfaces";
-import {
-  SearchFilterSection,
-  TabsNavigation,
-  CompetitionsGrid,
-  PaginationSection,
-} from "../components/manageCompetition";
-import CreateCompetitionDialog from "../components/CreateCompetitionDialog";
+import { CompetitionsList, CompetitionsHeader } from "../components/manageCompetition";
 
 export default function ManageCompetitionsPage() {
+  const hooks = useManageCompetitionsPage();
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [tabValue, setTabValue] = React.useState(0);
-
-  // State for create dialog
-  const [isOpenCreateDialog, setIsOpenCreateDialog] = useState(false);
-  const [newCompetition, setNewCompetition] = useState<Partial<CompetitionTest>>({
-    title: "",
-    duration: 60,
-    totalQuestions: null,
-    status: true,
-    startTime: new Date(new Date().setHours(new Date().getHours() + 1)),
-    endTime: new Date(new Date().setHours(new Date().getHours() + 3)),
-  });
-
-  const {
-    searchText,
-    setSearchText,
-    statusFilter,
-    handleStatusFilterChange,
-    competitions,
-    page,
-    itemsPerPage,
-    handleSearch,
-    handleChangePage,
-    handleItemsPerPageChange,
-    totalPages,
-    displayedCompetitions,
-    upcomingCompetitions,
-    activeCompetitions,
-    pastCompetitions,
-    createCompetition,
-  } = useManageCompetitionsPage();
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
-
-  // Dialog handlers
-  const handleOpenCreateDialog = () => {
-    setIsOpenCreateDialog(!isOpenCreateDialog);
-  };
-
-  const handleChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewCompetition({
-      ...newCompetition,
-      title: event.target.value,
-    });
-  };
-
-  const handleChangeDuration = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewCompetition({
-      ...newCompetition,
-      duration: Number(event.target.value),
-    });
-  };
-
-  const handleChangeTotalQuestions = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewCompetition({
-      ...newCompetition,
-      totalQuestions: event.target.value === "" ? null : Number(event.target.value),
-    });
-  };
-
-  const handleChangeStartTime = (date: Date | null) => {
-    if (date) {
-      setNewCompetition({
-        ...newCompetition,
-        startTime: date,
-      });
-    }
-  };
-
-  const handleChangeEndTime = (date: Date | null) => {
-    if (date) {
-      setNewCompetition({
-        ...newCompetition,
-        endTime: date,
-      });
-    }
-  };
-
-  const handleCreateCompetition = () => {
-    // Basic validation
-    if (!newCompetition.title || !newCompetition.duration || !newCompetition.startTime || !newCompetition.endTime) {
-      alert("Please fill in all required fields");
-      return;
-    }
-
-    if (newCompetition.startTime >= newCompetition.endTime) {
-      alert("End time must be after start time");
-      return;
-    }
-
-    // Create the competition
-    createCompetition(newCompetition as CompetitionTest);
-    
-    // Reset form and close dialog
-    setNewCompetition({
-      title: "",
-      duration: 60,
-      totalQuestions: null,
-      status: true,
-      startTime: new Date(new Date().setHours(new Date().getHours() + 1)),
-      endTime: new Date(new Date().setHours(new Date().getHours() + 3)),
-    });
-    handleOpenCreateDialog();
-  };
+  const skeletonColor = isDarkMode ? color.gray700 : color.gray200;
+  const loadingBarColor = isDarkMode ? color.teal400 : color.teal600;
 
   const backgroundGradient = isDarkMode
     ? `linear-gradient(135deg, ${color.gray900}, ${color.gray800})`
@@ -147,8 +36,27 @@ export default function ManageCompetitionsPage() {
         background: backgroundGradient,
         pt: { xs: 2, md: 4 },
         pb: { xs: 4, md: 6 },
+        position: "relative",
       }}
     >
+      {/* Top Loading Bar - appears during loading */}
+      {hooks.isLoading && (
+        <LinearProgress
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            borderRadius: 1,
+            "& .MuiLinearProgress-bar": {
+              backgroundColor: loadingBarColor,
+            },
+            zIndex: 5,
+          }}
+        />
+      )}
+
       <Container maxWidth="xl">
         <Fade in={true} timeout={800}>
           <Paper
@@ -173,104 +81,178 @@ export default function ManageCompetitionsPage() {
               },
             }}
           >
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: { xs: "column", sm: "row" },
-                alignItems: { xs: "flex-start", sm: "center" },
-                justifyContent: "space-between",
-                mb: { xs: 3, md: 4 },
-                gap: 2,
-              }}
-            >
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                <EmojiEventsIcon
-                  sx={{
-                    fontSize: { xs: 28, sm: 32 },
-                    color: isDarkMode ? color.teal300 : color.teal600,
-                  }}
-                />
-                <Typography
-                  variant={isMobile ? "h5" : "h4"}
-                  fontWeight="bold"
-                  sx={{
-                    background: isDarkMode
-                      ? `linear-gradient(90deg, ${color.teal300}, ${color.emerald300})`
-                      : `linear-gradient(90deg, ${color.teal600}, ${color.emerald600})`,
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    letterSpacing: "-0.5px",
-                  }}
-                >
-                  Manage Competitions
-                </Typography>
-              </Box>
+            <Stack direction={"column"} sx={{ minHeight: "80vh" }}>
+              {/* Header */}
+              <CompetitionsHeader
+                searchText={hooks.searchText}
+                setSearchText={hooks.setSearchText}
+                statusFilter={hooks.statusFilter}
+                handleStatusFilterChange={hooks.handleStatusFilterChange}
+                handleSearch={hooks.handleSearch}
+                createCompetition={hooks.createCompetition}
+              />
 
-              <Button
-                variant="contained"
-                startIcon={<AddCircleOutlineIcon />}
-                onClick={handleOpenCreateDialog}
+              {/* Loading State */}
+              {hooks.isLoading ? (
+                <Fade in={hooks.isLoading} timeout={300}>
+                  <Box sx={{ py: 4 }}>
+                    <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
+                      <CircularProgress
+                        size={32}
+                        sx={{
+                          color: loadingBarColor,
+                        }}
+                      />
+                    </Box>
+
+                    <Typography
+                      variant="body2"
+                      align="center"
+                      sx={{
+                        mb: 4,
+                        color: isDarkMode ? color.gray400 : color.gray600,
+                        fontStyle: "italic",
+                      }}
+                    >
+                      Loading competitions...
+                    </Typography>
+
+                    {/* Skeleton competitions */}
+                    <Stack spacing={2} sx={{ px: 2 }}>
+                      {[1, 2, 3, 4].map((item) => (
+                        <Box
+                          key={item}
+                          sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 2,
+                            justifyContent: "center",
+                          }}
+                        >
+                          {[1, 2, 3].map((card) => (
+                            <Box
+                              key={`${item}-${card}`}
+                              sx={{
+                                width: 345,
+                                height: 200,
+                                borderRadius: 2,
+                                overflow: "hidden",
+                                backgroundColor: isDarkMode
+                                  ? color.gray800
+                                  : color.white,
+                                boxShadow: `0 4px 12px rgba(0,0,0,${
+                                  isDarkMode ? 0.3 : 0.08
+                                })`,
+                                border: `1px solid ${
+                                  isDarkMode ? color.gray700 : color.gray200
+                                }`,
+                              }}
+                            >
+                              {/* Title Skeleton */}
+                              <Box sx={{ p: 2 }}>
+                                <Skeleton
+                                  variant="text"
+                                  width="70%"
+                                  height={32}
+                                  sx={{
+                                    backgroundColor: skeletonColor,
+                                  }}
+                                />
+
+                                {/* Details Skeleton */}
+                                <Skeleton
+                                  variant="text"
+                                  width="100%"
+                                  height={20}
+                                  sx={{
+                                    backgroundColor: skeletonColor,
+                                    mt: 1,
+                                  }}
+                                />
+                                <Skeleton
+                                  variant="text"
+                                  width="90%"
+                                  height={20}
+                                  sx={{
+                                    backgroundColor: skeletonColor,
+                                    mb: 1,
+                                  }}
+                                />
+
+                                {/* Divider Skeleton */}
+                                <Skeleton
+                                  variant="rectangular"
+                                  width="100%"
+                                  height={1}
+                                  sx={{
+                                    backgroundColor: skeletonColor,
+                                    my: 2,
+                                  }}
+                                />
+
+                                {/* Action buttons Skeleton */}
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <Skeleton
+                                    variant="rectangular"
+                                    width={120}
+                                    height={36}
+                                    sx={{
+                                      backgroundColor: skeletonColor,
+                                      borderRadius: 1,
+                                    }}
+                                  />
+                                  <Skeleton
+                                    variant="circular"
+                                    width={36}
+                                    height={36}
+                                    sx={{
+                                      backgroundColor: skeletonColor,
+                                    }}
+                                  />
+                                </Box>
+                              </Box>
+                            </Box>
+                          ))}
+                        </Box>
+                      ))}
+                    </Stack>
+                  </Box>
+                </Fade>
+              ) : (
+                /* List Competitions - shown when not loading */
+                <CompetitionsList 
+                  competitions={hooks.displayedCompetitions}
+                  fetchData={hooks.fetchData}
+                  deleteCompetition={hooks.deleteCompetition}
+                  updateCompetition={hooks.updateCompetition}
+                />
+              )}
+
+              <Box
                 sx={{
-                  backgroundColor: color.btnSubmitBg,
-                  "&:hover": {
-                    backgroundColor: color.btnSubmitHoverBg,
-                  },
-                  px: { xs: 2, md: 3 },
-                  py: 1,
-                  borderRadius: "8px",
-                  fontWeight: "600",
-                  boxShadow: isDarkMode
-                    ? "0 4px 10px rgba(16, 185, 129, 0.3)"
-                    : "0 4px 10px rgba(16, 185, 129, 0.2)",
+                  mt: "auto",
+                  opacity: hooks.isLoading ? 0.5 : 1,
+                  pointerEvents: hooks.isLoading ? "none" : "auto",
                 }}
               >
-                Create New Competition
-              </Button>
-            </Box>
-
-            <SearchFilterSection
-              searchText={searchText}
-              setSearchText={setSearchText}
-              statusFilter={statusFilter}
-              handleStatusFilterChange={handleStatusFilterChange}
-              handleSearch={handleSearch}
-            />
-
-            <TabsNavigation
-              tabValue={tabValue}
-              handleTabChange={handleTabChange}
-              competitions={competitions}
-              activeCompetitions={activeCompetitions}
-              upcomingCompetitions={upcomingCompetitions}
-              pastCompetitions={pastCompetitions}
-            />
-
-            <CompetitionsGrid displayedCompetitions={displayedCompetitions} />
-
-            <PaginationSection
-              totalPages={totalPages}
-              page={page}
-              itemsPerPage={itemsPerPage}
-              handleChangePage={handleChangePage}
-              handleItemsPerPageChange={handleItemsPerPageChange}
-              displayedCompetitions={displayedCompetitions}
-            />
+                <WEPaginationSelect
+                  page={hooks.page}
+                  totalPage={hooks.totalPages}
+                  itemsPerPage={hooks.itemsPerPage}
+                  onPageChange={hooks.handleChangePage}
+                  onItemsPerPageChange={hooks.handleItemsPerPageChange}
+                />
+              </Box>
+            </Stack>
           </Paper>
         </Fade>
       </Container>
-
-      {/* Create Competition Dialog */}
-      <CreateCompetitionDialog
-        isOpenCreateDialog={isOpenCreateDialog}
-        handleOpenCreateDialog={handleOpenCreateDialog}
-        data={newCompetition}
-        onChangeTitle={handleChangeTitle}
-        onChangeDuration={handleChangeDuration}
-        onChangeTotalQuestions={handleChangeTotalQuestions}
-        onChangeStartTime={handleChangeStartTime}
-        onChangeEndTime={handleChangeEndTime}
-        onCreateCompetition={handleCreateCompetition}
-      />
     </Box>
   );
 }
