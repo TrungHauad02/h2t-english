@@ -14,7 +14,7 @@ import {
   QuestionTab,
   DeleteQuestionDialog
 } from '../dialogEdit';
-import { useQuestionEditState } from 'features/teacher/manageTest/hooks/toeicDetailPage/useQuestionEditState';
+import { useQuestionEditState } from 'features/teacher/manageTest/hooks/useToeicDetailsPage/useQuestionEditState';
 
 import BasicInfoTab from './components/BasicInfoTab';
 

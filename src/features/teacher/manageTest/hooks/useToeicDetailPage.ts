@@ -2,8 +2,8 @@ import { Toeic } from "interfaces";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toeicService } from "services/test";
-import { useQuestionSubTypes } from "./ToeicDetailPage/useQuestionSubTypes";
-import { usePartHandlers } from "./ToeicDetailPage/usePartHandlers";
+import { useQuestionSubTypes } from "./useToeicDetailsPage/useQuestionSubTypes";
+import { usePartHandlers } from "./useToeicDetailsPage/usePartHandlers";
 
 export default function useToeicDetailPage() {
   const { id } = useParams();
