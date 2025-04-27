@@ -13,7 +13,7 @@ import {
   DeleteQuestionDialog,
   DocumentTab
 } from '../dialogEdit';
-import { useQuestionEditState } from '../../../hooks/toeicDetailPage/useQuestionEditState';
+import { useQuestionEditState } from 'features/teacher/manageTest/hooks/toeicDetailPage/useQuestionEditState';
 
 interface Part7EditDialogProps {
   open: boolean;
@@ -41,7 +41,7 @@ export default function Part7EditDialog({
 }: Part7EditDialogProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  
+
   const {
     editedQuestion,
     activeTab,
@@ -74,7 +74,7 @@ export default function Part7EditDialog({
       id: "document",
       icon: <ListAltIcon fontSize="small" />
     },
-    ...subQuestions.map((q, index) => ({
+    ...subQuestions.map((q: ToeicQuestion, index: number) => ({
       label: `Question ${index + 1}${q.id < 0 ? ' (New)' : ''}`,
       id: `question-${index + 1}`,
       icon: <QuestionAnswerIcon fontSize="small" />
@@ -84,6 +84,7 @@ export default function Part7EditDialog({
   const dialogTitle = mode === 'edit'
     ? "Edit Part 7: Reading Comprehension"
     : "Add Part 7: Reading Comprehension";
+
   return (
     <>
       <ToeicEditDialogBase
@@ -153,7 +154,7 @@ export default function Part7EditDialog({
           />
         </QuestionTabPanel>
 
-        {subQuestions.map((subQuestion, index) => (
+        {subQuestions.map((subQuestion: ToeicQuestion, index: number) => (
           <QuestionTabPanel
             key={index}
             value={activeTab}

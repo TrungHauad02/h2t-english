@@ -13,7 +13,7 @@ import {
   DeleteQuestionDialog,
   DocumentTab
 } from '../dialogEdit';
-import { useQuestionEditState } from '../../../hooks/toeicDetailPage/useQuestionEditState';
+import { useQuestionEditState } from 'features/teacher/manageTest/hooks/toeicDetailPage/useQuestionEditState';
 
 interface Part6EditDialogProps {
   open: boolean;

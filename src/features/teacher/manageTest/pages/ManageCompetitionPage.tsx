@@ -1,28 +1,31 @@
-import React, {  } from "react";
+import React from "react";
 import {
   Box,
   Stack,
-  Skeleton,
   LinearProgress,
-  CircularProgress,
-  Typography,
-  Fade,
   Container,
   Paper,
+  Fade,
+  Typography,
 } from "@mui/material";
 
 import { WEPaginationSelect } from "components/pagination";
 import useManageCompetitionsPage from "../hooks/useManageCompetitionsPage";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import { CompetitionsList, CompetitionsHeader } from "../components/manageCompetition";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import { 
+  CompetitionsList, 
+  CompetitionsHeader, 
+} from  "../components/manageCompetition";
+  
+import LoadingSkeleton from "../components/common/LoadingSkeleton";
 
 export default function ManageCompetitionsPage() {
   const hooks = useManageCompetitionsPage();
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
-  const skeletonColor = isDarkMode ? color.gray700 : color.gray200;
   const loadingBarColor = isDarkMode ? color.teal400 : color.teal600;
 
   const backgroundGradient = isDarkMode
@@ -79,153 +82,48 @@ export default function ManageCompetitionsPage() {
                 height: "5px",
                 background: `linear-gradient(90deg, ${color.teal500}, ${color.emerald400})`,
               },
+              transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+              "&:hover": {
+                transform: "translateY(-2px)",
+                boxShadow: isDarkMode
+                  ? "0 8px 28px rgba(0,0,0,0.5)"
+                  : "0 8px 28px rgba(0,0,0,0.12)",
+              },
             }}
           >
             <Stack direction={"column"} sx={{ minHeight: "80vh" }}>
+              {/* Title */}
+              <Box sx={{ mb: 3, display: "flex", alignItems: "center", gap: 1.5 }}>
+                <EmojiEventsIcon
+                  sx={{
+                    fontSize: { xs: 28, sm: 36 },
+                    color: isDarkMode ? color.teal300 : color.teal600,
+                  }}
+                />
+                <Typography
+                  variant="h4"
+                  fontWeight="bold"
+                  sx={{
+                    color: isDarkMode ? color.white : color.gray900,
+                  }}
+                >
+                  Manage Competitions
+                </Typography>
+              </Box>
+
               {/* Header */}
               <CompetitionsHeader
-                searchText={hooks.searchText}
-                setSearchText={hooks.setSearchText}
-                statusFilter={hooks.statusFilter}
-                handleStatusFilterChange={hooks.handleStatusFilterChange}
+                filter={hooks.filter}
+                updateFilter={hooks.updateFilter}
                 handleSearch={hooks.handleSearch}
                 createCompetition={hooks.createCompetition}
               />
 
               {/* Loading State */}
-              {hooks.isLoading ? (
-                <Fade in={hooks.isLoading} timeout={300}>
-                  <Box sx={{ py: 4 }}>
-                    <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
-                      <CircularProgress
-                        size={32}
-                        sx={{
-                          color: loadingBarColor,
-                        }}
-                      />
-                    </Box>
+              <LoadingSkeleton isLoading={hooks.isLoading} />
 
-                    <Typography
-                      variant="body2"
-                      align="center"
-                      sx={{
-                        mb: 4,
-                        color: isDarkMode ? color.gray400 : color.gray600,
-                        fontStyle: "italic",
-                      }}
-                    >
-                      Loading competitions...
-                    </Typography>
-
-                    {/* Skeleton competitions */}
-                    <Stack spacing={2} sx={{ px: 2 }}>
-                      {[1, 2, 3, 4].map((item) => (
-                        <Box
-                          key={item}
-                          sx={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: 2,
-                            justifyContent: "center",
-                          }}
-                        >
-                          {[1, 2, 3].map((card) => (
-                            <Box
-                              key={`${item}-${card}`}
-                              sx={{
-                                width: 345,
-                                height: 200,
-                                borderRadius: 2,
-                                overflow: "hidden",
-                                backgroundColor: isDarkMode
-                                  ? color.gray800
-                                  : color.white,
-                                boxShadow: `0 4px 12px rgba(0,0,0,${
-                                  isDarkMode ? 0.3 : 0.08
-                                })`,
-                                border: `1px solid ${
-                                  isDarkMode ? color.gray700 : color.gray200
-                                }`,
-                              }}
-                            >
-                              {/* Title Skeleton */}
-                              <Box sx={{ p: 2 }}>
-                                <Skeleton
-                                  variant="text"
-                                  width="70%"
-                                  height={32}
-                                  sx={{
-                                    backgroundColor: skeletonColor,
-                                  }}
-                                />
-
-                                {/* Details Skeleton */}
-                                <Skeleton
-                                  variant="text"
-                                  width="100%"
-                                  height={20}
-                                  sx={{
-                                    backgroundColor: skeletonColor,
-                                    mt: 1,
-                                  }}
-                                />
-                                <Skeleton
-                                  variant="text"
-                                  width="90%"
-                                  height={20}
-                                  sx={{
-                                    backgroundColor: skeletonColor,
-                                    mb: 1,
-                                  }}
-                                />
-
-                                {/* Divider Skeleton */}
-                                <Skeleton
-                                  variant="rectangular"
-                                  width="100%"
-                                  height={1}
-                                  sx={{
-                                    backgroundColor: skeletonColor,
-                                    my: 2,
-                                  }}
-                                />
-
-                                {/* Action buttons Skeleton */}
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <Skeleton
-                                    variant="rectangular"
-                                    width={120}
-                                    height={36}
-                                    sx={{
-                                      backgroundColor: skeletonColor,
-                                      borderRadius: 1,
-                                    }}
-                                  />
-                                  <Skeleton
-                                    variant="circular"
-                                    width={36}
-                                    height={36}
-                                    sx={{
-                                      backgroundColor: skeletonColor,
-                                    }}
-                                  />
-                                </Box>
-                              </Box>
-                            </Box>
-                          ))}
-                        </Box>
-                      ))}
-                    </Stack>
-                  </Box>
-                </Fade>
-              ) : (
-                /* List Competitions - shown when not loading */
+              {/* List Competitions - shown when not loading */}
+              {!hooks.isLoading && (
                 <CompetitionsList 
                   competitions={hooks.displayedCompetitions}
                   fetchData={hooks.fetchData}
