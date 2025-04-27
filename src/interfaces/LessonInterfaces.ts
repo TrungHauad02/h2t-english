@@ -76,7 +76,6 @@ export interface Writing extends Lesson {
   file: string;
   tips: string[];
   paragraph: string;
-  questions: number[];
   preparationId: number | null;
 }
 
