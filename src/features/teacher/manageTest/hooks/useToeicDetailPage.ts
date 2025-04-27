@@ -2,8 +2,8 @@ import { Toeic } from "interfaces";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toeicService } from "services/test";
-import { usePartHandlers } from "./toeicDetailPage/usePartHandlers";
-import { useQuestionSubTypes } from "./toeicDetailPage/useQuestionSubTypes";
+import { useQuestionSubTypes } from "./ToeicDetailPage/useQuestionSubTypes";
+import { usePartHandlers } from "./ToeicDetailPage/usePartHandlers";
 
 export default function useToeicDetailPage() {
   const { id } = useParams();
@@ -13,7 +13,6 @@ export default function useToeicDetailPage() {
   const [loading, setLoading] = useState(true);
   const [openPublishDialog, setOpenPublishDialog] = useState(false);
   const [openUnpublishDialog, setOpenUnpublishDialog] = useState(false);
-  
 
   const questionHandlers = useQuestionSubTypes(data);
 
@@ -28,7 +27,7 @@ export default function useToeicDetailPage() {
           if (toeic) {
             setData(toeic.data);
             setEditData({ ...toeic.data });
-            
+
             // Load all parts data - sub-questions will now be loaded automatically
             await loadToeicPartsData(toeic.data);
           }
@@ -51,7 +50,7 @@ export default function useToeicDetailPage() {
         partHandlers.loadPart4Data(toeic),
         partHandlers.loadPart5Data(toeic),
         partHandlers.loadPart6Data(toeic),
-        partHandlers.loadPart7Data(toeic)
+        partHandlers.loadPart7Data(toeic),
       ]);
     } catch (error) {
       console.error("Error loading TOEIC parts and questions:", error);
@@ -122,7 +121,7 @@ export default function useToeicDetailPage() {
     loading,
     openPublishDialog,
     openUnpublishDialog,
-    
+
     // UI handlers
     handleEditMode,
     handleSaveChanges,
@@ -135,8 +134,8 @@ export default function useToeicDetailPage() {
     handleUnpublishClick,
 
     ...partHandlers,
-    
+
     // Question sub-types handlers
-    ...questionHandlers
+    ...questionHandlers,
   };
 }

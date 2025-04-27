@@ -1,37 +1,39 @@
-import { Box, Button, Typography } from '@mui/material';
-import { ToeicPart3_4, ToeicQuestion } from 'interfaces';
-import useColor from 'theme/useColor';
-import { useDarkMode } from 'hooks/useDarkMode';
-import AddIcon from '@mui/icons-material/Add';
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import ListAltIcon from '@mui/icons-material/ListAlt';
-import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
-import CampaignIcon from '@mui/icons-material/Campaign';
+import { Box, Button, Typography } from "@mui/material";
+import { ToeicPart3_4, ToeicQuestion } from "interfaces";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
+import AddIcon from "@mui/icons-material/Add";
+import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import ListAltIcon from "@mui/icons-material/ListAlt";
+import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
+import CampaignIcon from "@mui/icons-material/Campaign";
 import {
   ToeicEditDialogBase,
   EditTabs,
   QuestionTabPanel,
   QuestionTab,
-  DeleteQuestionDialog
-} from '../dialogEdit';
-import { useQuestionEditState } from '../../../hooks/toeicDetailPage/useQuestionEditState';
-import BasicInfoTab from './components/BasicInfoTab';
+  DeleteQuestionDialog,
+} from "../dialogEdit";
+import BasicInfoTab from "./components/BasicInfoTab";
+import { useQuestionEditState } from "features/teacher/manageTest/hooks/ToeicDetailPage";
 
 interface Part3_4EditDialogProps {
   open: boolean;
   question: ToeicPart3_4;
   partNumber: 3 | 4;
   onClose: () => void;
-  onSave: (updatedQuestion: ToeicPart3_4 & {
-    _changes?: {
-      toAdd: ToeicQuestion[];
-      toUpdate: ToeicQuestion[];
-      toDelete: number[];
-    },
-    subQuestions?: ToeicQuestion[]
-  }) => void;
+  onSave: (
+    updatedQuestion: ToeicPart3_4 & {
+      _changes?: {
+        toAdd: ToeicQuestion[];
+        toUpdate: ToeicQuestion[];
+        toDelete: number[];
+      };
+      subQuestions?: ToeicQuestion[];
+    }
+  ) => void;
   toeicQuestions?: { [partId: number]: ToeicQuestion[] };
-  mode?: 'edit' | 'add';
+  mode?: "edit" | "add";
 }
 
 export default function Part3_4EditDialog({
@@ -41,11 +43,11 @@ export default function Part3_4EditDialog({
   onClose,
   onSave,
   toeicQuestions = {},
-  mode = 'edit'
+  mode = "edit",
 }: Part3_4EditDialogProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  
+
   const {
     editedQuestion,
     activeTab,
@@ -62,36 +64,44 @@ export default function Part3_4EditDialog({
     handleSave,
     handleOpenDeleteDialog,
     handleDeleteSubQuestion,
-    setIsDeleteDialogOpen
+    setIsDeleteDialogOpen,
   } = useQuestionEditState<ToeicPart3_4>({
     open,
     question,
     toeicQuestions,
     mode,
     onSave,
-    maxQuestions: 3
+    maxQuestions: 3,
   });
 
   const tabs = [
     {
       label: "Basic Information",
       id: "basic-info",
-      icon: <ListAltIcon fontSize="small" />
+      icon: <ListAltIcon fontSize="small" />,
     },
     ...subQuestions.map((q, index) => ({
-      label: `Question ${index + 1}${q.id < 0 ? ' (New)' : ''}`,
+      label: `Question ${index + 1}${q.id < 0 ? " (New)" : ""}`,
       id: `question-${index + 1}`,
-      icon: <QuestionAnswerIcon fontSize="small" />
-    }))
+      icon: <QuestionAnswerIcon fontSize="small" />,
+    })),
   ];
 
   const partTitle = partNumber === 3 ? "Conversations" : "Talks";
-  const dialogTitle = mode === 'edit'
-    ? `Edit Part ${partNumber}: ${partTitle}`
-    : `Add Part ${partNumber}: ${partTitle}`;
-  const partIcon = partNumber === 3
-    ? <RecordVoiceOverIcon sx={{ color: isDarkMode ? color.teal300 : color.teal600 }} />
-    : <CampaignIcon sx={{ color: isDarkMode ? color.teal300 : color.teal600 }} />;
+  const dialogTitle =
+    mode === "edit"
+      ? `Edit Part ${partNumber}: ${partTitle}`
+      : `Add Part ${partNumber}: ${partTitle}`;
+  const partIcon =
+    partNumber === 3 ? (
+      <RecordVoiceOverIcon
+        sx={{ color: isDarkMode ? color.teal300 : color.teal600 }}
+      />
+    ) : (
+      <CampaignIcon
+        sx={{ color: isDarkMode ? color.teal300 : color.teal600 }}
+      />
+    );
 
   return (
     <>
@@ -107,26 +117,28 @@ export default function Part3_4EditDialog({
             <Typography color="error">{error}</Typography>
           </Box>
         )}
-        
+
         {success && (
           <Box sx={{ mb: 2 }}>
             <Typography color="success.main">{success}</Typography>
           </Box>
         )}
-        
-        <Box sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          mb: 3
-        }}>
+
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+          }}
+        >
           <EditTabs
             tabs={tabs}
             activeTab={activeTab}
             onTabChange={handleTabChange}
             baseId="part3-4-edit"
           />
-          
+
           <Button
             variant="contained"
             startIcon={<AddIcon />}
@@ -134,30 +146,43 @@ export default function Part3_4EditDialog({
             disabled={subQuestions.length >= 3}
             sx={{
               ml: 2,
-              backgroundColor: subQuestions.length >= 3
-                ? (isDarkMode ? color.gray600 : color.gray400)
-                : (isDarkMode ? color.emerald700 : color.emerald600),
-              color: subQuestions.length >= 3
-                ? (isDarkMode ? color.gray400 : color.gray600)
-                : color.white,
-              '&:hover': {
-                backgroundColor: subQuestions.length >= 3
-                  ? (isDarkMode ? color.gray600 : color.gray400)
-                  : (isDarkMode ? color.emerald600 : color.emerald500)
+              backgroundColor:
+                subQuestions.length >= 3
+                  ? isDarkMode
+                    ? color.gray600
+                    : color.gray400
+                  : isDarkMode
+                  ? color.emerald700
+                  : color.emerald600,
+              color:
+                subQuestions.length >= 3
+                  ? isDarkMode
+                    ? color.gray400
+                    : color.gray600
+                  : color.white,
+              "&:hover": {
+                backgroundColor:
+                  subQuestions.length >= 3
+                    ? isDarkMode
+                      ? color.gray600
+                      : color.gray400
+                    : isDarkMode
+                    ? color.emerald600
+                    : color.emerald500,
               },
-              borderRadius: '0.75rem',
+              borderRadius: "0.75rem",
               px: 2,
-              height: '36px'
+              height: "36px",
             }}
           >
-            Add Question {subQuestions.length >= 3 ? '(Max 3)' : ''}
+            Add Question {subQuestions.length >= 3 ? "(Max 3)" : ""}
           </Button>
         </Box>
 
         <QuestionTabPanel value={activeTab} index={0} id="part3-4-edit">
           <BasicInfoTab
             editedQuestion={editedQuestion}
-            onStatusChange={(value) => handleChange('status', value)}
+            onStatusChange={(value) => handleChange("status", value)}
             onAudioChange={(base64) => handleChange("audio", base64)}
             onImageChange={(base64) => handleChange("image", base64)}
             onTranscriptChange={(value) => handleChange("transcript", value)}
@@ -178,9 +203,15 @@ export default function Part3_4EditDialog({
               index={index}
               canDelete={index > 0 || subQuestions.length > 1}
               onDelete={() => handleOpenDeleteDialog(subQuestion.id)}
-              onChange={(field, value) => handleQuestionChange(index, field, value)}
-              onAnswerChange={(answerIndex, value) => handleAnswerChange(index, answerIndex, value)}
-              onCorrectAnswerChange={(answerIndex) => handleCorrectAnswerChange(index, answerIndex)}
+              onChange={(field, value) =>
+                handleQuestionChange(index, field, value)
+              }
+              onAnswerChange={(answerIndex, value) =>
+                handleAnswerChange(index, answerIndex, value)
+              }
+              onCorrectAnswerChange={(answerIndex) =>
+                handleCorrectAnswerChange(index, answerIndex)
+              }
             />
           </QuestionTabPanel>
         ))}
