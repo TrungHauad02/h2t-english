@@ -10,7 +10,7 @@ import DialogConfirm from '../common/DialogConfirm';
 import { PartContainer, EmptyState ,QuestionTabs,QuestionSection,PassageDisplay,QuestionExplanation} from '../common';
 
 
-import { useSubQuestionManagement,useQuestionManagement,useDialogManagement }  from '../../../hooks/ToeicDetailPage/index';
+import { useSubQuestionManagement,useQuestionManagement,useDialogManagement }  from '../../../hooks/toeicDetailPage/index';
 interface Part6SectionProps {
   questions: ToeicPart6[];
   toeicQuestions: { [partId: number]: ToeicQuestion[] };

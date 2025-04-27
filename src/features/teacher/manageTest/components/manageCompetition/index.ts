@@ -1,5 +1,4 @@
-export { default as SearchFilterSection } from "./SearchFilterSection";
-export { default as TabsNavigation } from "./TabsNavigation";
-export { default as CompetitionCard } from "./CompetitionCard";
-export { default as CompetitionsGrid } from "./CompetitionsGrid";
-export { default as PaginationSection } from "./PaginationSection";
+export { default as CompetitionsList } from "./CompetitionsList";
+export { default as CompetitionItem } from "./CompetitionItem";
+export { default as CompetitionsHeader } from "./CompetitionsHeader";
+export { default as CreateCompetitionDialog } from "./CreateCompetitionDialog";

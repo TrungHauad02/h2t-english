@@ -11,7 +11,7 @@ import { Question } from "interfaces";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { Save } from "@mui/icons-material";
-import StyledCard from "../../../StyledCard";
+import StyledCard from "../../common/StyledCard";
 
 interface QuestionDetailsProps {
   editData: Question;

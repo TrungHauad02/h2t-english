@@ -27,3 +27,4 @@ export * from "./toeicPart6Service";
 export * from "./toeicPart7Service";
 export * from "./toeicQuestionService";
 export * from "./toeicService";
+export * from "./testPartQuestionServiceFactory";

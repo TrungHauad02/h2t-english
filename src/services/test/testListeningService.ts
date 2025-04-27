@@ -4,7 +4,7 @@ import { fileHandlerService } from "services/features";
 
 const findById = async (id: number) => {
   try {
-    const response = await apiClient.get(`/test-listening/${id}`);
+    const response = await apiClient.get(`/test-listenings/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error getting TestListening by id:", error);
@@ -14,7 +14,7 @@ const findById = async (id: number) => {
 
 const getByIds = async (ids: number[]) => {
   try {
-    const response = await apiClient.post("/test-listening/by-ids", ids);
+    const response = await apiClient.post("/test-listenings/by-ids", ids);
     return response.data;
   } catch (error) {
     console.error("Error getting TestListening by ids:", error);
@@ -42,8 +42,8 @@ const handleFile = async (data: any, idOrTemp: string, existing?: any) => {
 
 const create = async (data: TestListening) => {
   try {
-    const processedData = await handleFile(data, "test-listening-temp");
-    const response = await apiClient.post("/test-listening", processedData);
+    const processedData = await handleFile(data, "test-listenings-temp");
+    const response = await apiClient.post("/test-listenings", processedData);
     return response.data;
   } catch (error) {
     console.error("Error creating TestListening:", error);
@@ -55,7 +55,7 @@ const update = async (id: number, data: TestListening) => {
   try {
     const existing = await findById(id);
     const processedData = await handleFile(data, id.toString(), existing.data);
-    const response = await apiClient.put(`/test-listening/${id}`, processedData);
+    const response = await apiClient.put(`/test-listenings/${id}`, processedData);
     return response.data;
   } catch (error) {
     console.error("Error updating TestListening:", error);
@@ -67,7 +67,7 @@ const patch = async (id: number, data: Partial<TestListening>) => {
   try {
     const existing = await findById(id);
     const processedData = await handleFile(data, id.toString(), existing.data);
-    const response = await apiClient.patch(`/test-listening/${id}`, processedData);
+    const response = await apiClient.patch(`/test-listenings/${id}`, processedData);
     return response.data;
   } catch (error) {
     console.error("Error patching TestListening:", error);
@@ -77,7 +77,7 @@ const patch = async (id: number, data: Partial<TestListening>) => {
 
 const remove = async (id: number) => {
   try {
-    const response = await apiClient.delete(`/test-listening/${id}`);
+    const response = await apiClient.delete(`/test-listenings/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error deleting TestListening:", error);

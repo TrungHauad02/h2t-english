@@ -30,6 +30,7 @@ export default function QuestionsSection({
 
   const { id } = useParams();
   const [data, setData] = useState<LessonQuestion[]>([]);
+  const [listQuestionId, setListQuestionId] = useState(questions);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const { showError } = useErrors();
@@ -42,6 +43,9 @@ export default function QuestionsSection({
         const resData = await aqService.findByLessonId(parseInt(id), type);
         console.log(resData);
         setData(resData.data);
+
+        const newQuestionIds = resData.data.map((question: LessonQuestion) => question.id);
+        setListQuestionId(newQuestionIds);
       }
     } catch (error) {
       console.error("Error fetching topics");
@@ -152,7 +156,7 @@ export default function QuestionsSection({
 
       <AddQuestionDialog
         type={type}
-        questions={questions}
+        questions={listQuestionId}
         open={isAddDialogOpen}
         onClose={() => setIsAddDialogOpen(false)}
         lessonId={id ? parseInt(id) : 0}

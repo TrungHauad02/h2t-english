@@ -1,120 +1,74 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Box,
-  Typography,
-  Container,
-  Button,
-  Paper,
-  useTheme,
-  useMediaQuery,
-  Fade,
-  Backdrop,
+  Stack,
+  Skeleton,
+  LinearProgress,
   CircularProgress,
+  Typography,
+  Fade,
+  Container,
+  Paper,
 } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+
+import { WEPaginationSelect } from "components/pagination";
 import useManageToeicPage from "../hooks/useManageToeicPage";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import { Toeic } from "interfaces";
-import {
-  SearchFilterBar,
-  ToeicTestCardGrid,
-  PaginationControl,
-} from "../components/manageToeic";
-import CreateToeicDialog from "../components/CreateToeicDialog";
-import WEConfirmDelete from "components/display/WEConfirmDelete";
-import { useNavigate } from "react-router-dom";
+import ToeicsList from "../components/manageToeic/ToeicsList";
+import ToeicsHeader from "../components/manageToeic/ToeicsHeader";
+
 export default function ManageToeicPage() {
+  const hooks = useManageToeicPage();
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [isOpenCreateDialog, setIsOpenCreateDialog] = useState(false);
-  const [newToeic, setNewToeic] = useState<Toeic>({ id: 1, title: "", duration: 120, status: true });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [testToDelete, setTestToDelete] = useState<number | null>(null);
-  const [testToDeleteName, setTestToDeleteName] = useState<string>("");
-  const navigate = useNavigate();
-  const {
-    searchText,
-    setSearchText,
-    statusFilter,
-    loading,
-    page,
-    itemsPerPage,
-    handleSearch,
-    handleChangePage,
-    handleItemsPerPageChange,
-    handleStatusFilterChange,
-    deleteToeicTest,
-    createToeicTest,
-    totalPages,
-    displayedToeicTests,
-  } = useManageToeicPage();
-
-  const handleViewTest = (testId: number) => {
-    navigate(`${testId}`);
-  };
-
-  const handleDeleteTest = (testId: number) => {
-    const test = displayedToeicTests.find(t => t.id === testId);
-    if (test) {
-      setTestToDelete(testId);
-      setTestToDeleteName(test.title);
-      setDeleteConfirmOpen(true);
-    }
-  };
-
-  const handleConfirmDelete = async () => {
-    if (testToDelete === null) return;
-    setIsSubmitting(true);
-    await deleteToeicTest(testToDelete);
-    setIsSubmitting(false);
-    setDeleteConfirmOpen(false);
-    setTestToDelete(null);
-  };
-
-  const handleCancelDelete = () => {
-    setDeleteConfirmOpen(false);
-    setTestToDelete(null);
-  };
-
-  const handleOpenCreateDialog = () => {
-    setIsOpenCreateDialog(prev => !prev);
-  };
-
-  const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewToeic(prev => ({ ...prev, title: e.target.value }));
-  };
-
-  const handleChangeDuration = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewToeic(prev => ({ ...prev, duration: Number(e.target.value) }));
-  };
-
-  const handleCreateToeic = async () => {
-    setIsSubmitting(true);
-    await createToeicTest(newToeic);
-    setIsSubmitting(false);
-    handleOpenCreateDialog();
-  };
+  const skeletonColor = isDarkMode ? color.gray700 : color.gray200;
+  const loadingBarColor = isDarkMode ? color.teal400 : color.teal600;
 
   const backgroundGradient = isDarkMode
-    ? `linear-gradient(120deg, ${color.gray900}, ${color.gray800})`
-    : `linear-gradient(120deg, ${color.emerald50}, ${color.teal50})`;
+    ? `linear-gradient(135deg, ${color.gray900}, ${color.gray800})`
+    : `linear-gradient(135deg, ${color.emerald50}, ${color.teal50})`;
 
   return (
-    <Box sx={{ minHeight: "100vh", background: backgroundGradient, pt: { xs: 2, md: 4 }, pb: { xs: 4, md: 6 } }}>
-      <Container maxWidth="lg">
-        <Fade in timeout={800}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: backgroundGradient,
+        pt: { xs: 2, md: 4 },
+        pb: { xs: 4, md: 6 },
+        position: "relative",
+      }}
+    >
+      {/* Top Loading Bar - appears during loading */}
+      {hooks.loading && (
+        <LinearProgress
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            borderRadius: 1,
+            "& .MuiLinearProgress-bar": {
+              backgroundColor: loadingBarColor,
+            },
+            zIndex: 5,
+          }}
+        />
+      )}
+
+      <Container maxWidth="xl">
+        <Fade in={true} timeout={800}>
           <Paper
-            elevation={isDarkMode ? 2 : 1}
+            elevation={isDarkMode ? 3 : 1}
             sx={{
               p: { xs: 2, sm: 3, md: 4 },
               borderRadius: "1rem",
               backgroundColor: isDarkMode ? color.gray800 : color.white,
-              boxShadow: isDarkMode ? "0 4px 20px rgba(0,0,0,0.4)" : "0 4px 20px rgba(0,0,0,0.08)",
+              boxShadow: isDarkMode
+                ? "0 6px 24px rgba(0,0,0,0.4)"
+                : "0 6px 24px rgba(0,0,0,0.08)",
               overflow: "hidden",
               position: "relative",
               "&::before": {
@@ -124,107 +78,182 @@ export default function ManageToeicPage() {
                 left: 0,
                 width: "100%",
                 height: "5px",
-                background: `linear-gradient(90deg, ${color.teal400}, ${color.emerald400})`,
+                background: `linear-gradient(90deg, ${color.teal500}, ${color.emerald400})`,
               },
             }}
           >
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: { xs: "column", sm: "row" },
-                alignItems: { xs: "flex-start", sm: "center" },
-                justifyContent: "space-between",
-                mb: { xs: 3, md: 4 },
-                gap: 2,
-              }}
-            >
-              <Typography
-                variant={isMobile ? "h5" : "h4"}
-                fontWeight="bold"
+            <Stack direction={"column"} sx={{ minHeight: "80vh" }}>
+              {/* Header */}
+              <ToeicsHeader
+                searchText={hooks.searchText}
+                setSearchText={hooks.setSearchText}
+                statusFilter={hooks.statusFilter}
+                handleStatusFilterChange={hooks.handleStatusFilterChange}
+                handleSearch={hooks.handleSearch}
+                createToeicTest={hooks.createToeicTest}
+              />
+
+              {/* Loading State */}
+              {hooks.loading ? (
+                <Fade in={hooks.loading} timeout={300}>
+                  <Box sx={{ py: 4 }}>
+                    <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
+                      <CircularProgress
+                        size={32}
+                        sx={{
+                          color: loadingBarColor,
+                        }}
+                      />
+                    </Box>
+
+                    <Typography
+                      variant="body2"
+                      align="center"
+                      sx={{
+                        mb: 4,
+                        color: isDarkMode ? color.gray400 : color.gray600,
+                        fontStyle: "italic",
+                      }}
+                    >
+                      Loading TOEIC tests...
+                    </Typography>
+
+                    {/* Skeleton tests */}
+                    <Stack spacing={2} sx={{ px: 2 }}>
+                      {[1, 2, 3, 4].map((item) => (
+                        <Box
+                          key={item}
+                          sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 2,
+                            justifyContent: "center",
+                          }}
+                        >
+                          {[1, 2, 3].map((card) => (
+                            <Box
+                              key={`${item}-${card}`}
+                              sx={{
+                                width: 345,
+                                height: 220,
+                                borderRadius: 2,
+                                overflow: "hidden",
+                                backgroundColor: isDarkMode
+                                  ? color.gray800
+                                  : color.white,
+                                boxShadow: `0 4px 12px rgba(0,0,0,${
+                                  isDarkMode ? 0.3 : 0.08
+                                })`,
+                                border: `1px solid ${
+                                  isDarkMode ? color.gray700 : color.gray200
+                                }`,
+                              }}
+                            >
+                              {/* Title Skeleton */}
+                              <Box sx={{ p: 2 }}>
+                                <Skeleton
+                                  variant="text"
+                                  width="70%"
+                                  height={32}
+                                  sx={{
+                                    backgroundColor: skeletonColor,
+                                  }}
+                                />
+
+                                {/* Details Skeleton */}
+                                <Skeleton
+                                  variant="text"
+                                  width="100%"
+                                  height={20}
+                                  sx={{
+                                    backgroundColor: skeletonColor,
+                                    mt: 1,
+                                  }}
+                                />
+                                <Skeleton
+                                  variant="text"
+                                  width="90%"
+                                  height={20}
+                                  sx={{
+                                    backgroundColor: skeletonColor,
+                                    mb: 1,
+                                  }}
+                                />
+
+                                {/* Divider Skeleton */}
+                                <Skeleton
+                                  variant="rectangular"
+                                  width="100%"
+                                  height={1}
+                                  sx={{
+                                    backgroundColor: skeletonColor,
+                                    my: 2,
+                                  }}
+                                />
+
+                                {/* Action buttons Skeleton */}
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <Skeleton
+                                    variant="rectangular"
+                                    width={120}
+                                    height={36}
+                                    sx={{
+                                      backgroundColor: skeletonColor,
+                                      borderRadius: 1,
+                                    }}
+                                  />
+                                  <Skeleton
+                                    variant="circular"
+                                    width={36}
+                                    height={36}
+                                    sx={{
+                                      backgroundColor: skeletonColor,
+                                    }}
+                                  />
+                                </Box>
+                              </Box>
+                            </Box>
+                          ))}
+                        </Box>
+                      ))}
+                    </Stack>
+                  </Box>
+                </Fade>
+              ) : (
+                /* List TOEIC tests - shown when not loading */
+                <ToeicsList 
+                  toeicTests={hooks.displayedToeicTests}
+                  fetchData={hooks.handleSearch}
+                  deleteToeicTest={hooks.deleteToeicTest}
+                  updateToeicTest={hooks.updateToeicTest}
+                />
+              )}
+
+              <Box
                 sx={{
-                  background: isDarkMode
-                    ? `linear-gradient(90deg, ${color.teal300}, ${color.emerald300})`
-                    : `linear-gradient(90deg, ${color.teal600}, ${color.emerald600})`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  letterSpacing: "-0.5px",
+                  mt: "auto",
+                  opacity: hooks.loading ? 0.5 : 1,
+                  pointerEvents: hooks.loading ? "none" : "auto",
                 }}
               >
-                Manage TOEIC Tests
-              </Typography>
-
-              <Button
-                variant="contained"
-                startIcon={<AddCircleOutlineIcon />}
-                onClick={handleOpenCreateDialog}
-                disabled={loading || isSubmitting}
-                sx={{
-                  backgroundColor: color.btnSubmitBg,
-                  "&:hover": { backgroundColor: color.btnSubmitHoverBg },
-                  px: { xs: 2, md: 3 },
-                  py: 1,
-                  borderRadius: "8px",
-                  fontWeight: 600,
-                  boxShadow: isDarkMode
-                    ? "0 4px 10px rgba(16, 185, 129, 0.3)"
-                    : "0 4px 10px rgba(16, 185, 129, 0.2)",
-                }}
-              >
-                Create New Test
-              </Button>
-            </Box>
-
-            <SearchFilterBar
-              searchText={searchText}
-              setSearchText={setSearchText}
-              statusFilter={statusFilter}
-              handleStatusFilterChange={handleStatusFilterChange}
-              handleSearch={handleSearch}
-            />
-
-            <ToeicTestCardGrid
-              loading={loading}
-              displayedToeicTests={displayedToeicTests}
-              handleViewTest={handleViewTest}
-              handleDeleteTest={handleDeleteTest}
-            />
-
-            <PaginationControl
-              totalPages={totalPages}
-              page={page}
-              itemsPerPage={itemsPerPage}
-              handleChangePage={handleChangePage}
-              handleItemsPerPageChange={handleItemsPerPageChange}
-              displayedToeicTests={displayedToeicTests}
-            />
+                <WEPaginationSelect
+                  page={hooks.page}
+                  totalPage={hooks.totalPages}
+                  itemsPerPage={hooks.itemsPerPage}
+                  onPageChange={hooks.handleChangePage}
+                  onItemsPerPageChange={hooks.handleItemsPerPageChange}
+                />
+              </Box>
+            </Stack>
           </Paper>
         </Fade>
       </Container>
-
-      <CreateToeicDialog
-        isOpenCreateDialog={isOpenCreateDialog}
-        handleOpenCreateDialog={handleOpenCreateDialog}
-        data={newToeic}
-        onChangeTitle={handleChangeTitle}
-        onChangeDuration={handleChangeDuration}
-        onCreateToeic={handleCreateToeic}
-      />
-
-      <WEConfirmDelete
-        open={deleteConfirmOpen}
-        title="Delete TOEIC Test"
-        resourceName={testToDeleteName || "this TOEIC test"}
-        description="This action cannot be undone. All associated data, questions, and results will be permanently removed."
-        onCancel={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
-        isDeleting={isSubmitting}
-      />
-
-      {isSubmitting && (
-        <Backdrop sx={{ color: '#fff', zIndex: theme.zIndex.drawer + 1 }} open>
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      )}
     </Box>
   );
 }

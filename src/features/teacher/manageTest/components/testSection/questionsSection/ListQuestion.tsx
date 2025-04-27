@@ -1,21 +1,47 @@
+import React, { useState } from "react";
 import { Stack, Card } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
-import { Question } from "interfaces";
+import { Question, QuestionSupportTestType } from "interfaces";
 import useColor from "theme/useColor";
-import { useState } from "react";
 import { QuestionEditMode } from "./QuestionEditMode";
 import { QuestionViewMode } from "./QuestionViewMode";
+import { questionService, testPartQuestionServiceFactory } from "services";
+import { useErrors } from "hooks/useErrors";
+import { validateQuestion } from "./validateQuestion";
+import { extractErrorMessages } from "utils/extractErrorMessages";
+import { WEConfirmDelete } from "components/display";
+import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 interface ListQuestionProps {
+  questions: number[];
+  type: QuestionSupportTestType;
+  isEditMode: boolean;
   data: Question[];
-  setData: (data: Question[]) => void;
+  fetchData: () => void;
+  onMoveUp: (index: number) => void;
+  onMoveDown: (index: number) => void;
 }
 
-export default function ListQuestion({ data, setData }: ListQuestionProps) {
+export default function ListQuestion({
+  questions,
+  type,
+  isEditMode,
+  data,
+  fetchData,
+  onMoveUp,
+  onMoveDown,
+}: ListQuestionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const { id } = useParams();
   const [editMode, setEditMode] = useState<number | null>(null);
   const [editData, setEditData] = useState<Question | null>(null);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { showError } = useErrors();
+  const questionServiceUpdate = testPartQuestionServiceFactory(type);
 
   const handleEdit = (questionId: number) => {
     const question = data.find((q) => q.id === questionId);
@@ -30,18 +56,78 @@ export default function ListQuestion({ data, setData }: ListQuestionProps) {
     setEditData(null);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (editData) {
-      const newData = data.map((q) => (q.id === editData.id ? editData : q));
-      setData(newData);
-      setEditMode(null);
-      setEditData(null);
+      // Validate before saving
+      if (!validateQuestion(editData, showError)) {
+        return; // Stop save process if validation fails
+      }
+
+      try {
+        // Save question, answer info
+        await questionService.update(editData.id, editData);
+        fetchData();
+        toast.success("Question updated successfully");
+
+        // Clear edit state
+        setEditMode(null);
+        setEditData(null);
+      } catch (error) {
+        // Display error using our error component
+        showError({
+          message: "Error updating question",
+          severity: "error",
+          details: extractErrorMessages(error),
+        });
+        console.error("Error updating question:", error);
+      }
+    }
+  };
+
+  const handleOpenDeleteDialog = (id: number) => {
+    setDeleteId(id);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+  };
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      setIsDeleting(true);
+
+      // Delete the question
+      await questionService.remove(deleteId);
+
+      // Update the lesson's question list
+      const lessonId = id ? parseInt(id) : 0;
+      const updatedQuestions = questions.filter((id) => id !== deleteId);
+
+      // Use the factory service to update questions
+      await questionServiceUpdate.updateQuestions(lessonId, updatedQuestions);
+
+      setDeleteId(null);
+      fetchData();
+      toast.success("Question deleted successfully");
+    } catch (error) {
+      showError({
+        message: "Error deleting question",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+      console.error("Error deleting question:", error);
+    } finally {
+      handleCloseDeleteDialog();
+      setIsDeleting(false);
     }
   };
 
   return (
     <Stack spacing={3}>
-      {data.map((question) => (
+      {data.map((question, index) => (
         <Card
           key={question.id}
           sx={{
@@ -61,10 +147,26 @@ export default function ListQuestion({ data, setData }: ListQuestionProps) {
               handleCancel={handleCancel}
             />
           ) : (
-            <QuestionViewMode question={question} handleEdit={handleEdit} />
+            <QuestionViewMode
+              index={index}
+              question={question}
+              handleEdit={handleEdit}
+              isEditMode={isEditMode}
+              onMoveUp={onMoveUp}
+              onMoveDown={onMoveDown}
+              handleDeleteDialog={handleOpenDeleteDialog}
+              total={data.length}
+            />
           )}
         </Card>
       ))}
+      <WEConfirmDelete
+        open={openDeleteDialog}
+        onCancel={handleCloseDeleteDialog}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
+        resourceName={data.find((q) => q.id === deleteId)?.content}
+      />
     </Stack>
   );
 }
