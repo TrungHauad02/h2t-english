@@ -6,8 +6,8 @@ import { useDarkMode } from "hooks/useDarkMode";
 import { ToeicQuestion } from "interfaces";
 
 interface QuestionTabsProps {
-  tabsRef: RefObject<HTMLDivElement>;
-  containerRef: RefObject<HTMLDivElement>;
+  tabsRef: RefObject<HTMLDivElement | null>;
+  containerRef: RefObject<HTMLDivElement | null>;
   questions: ToeicQuestion[];
   activeQuestion: number;
   onChangeQuestion: (event: React.SyntheticEvent, newValue: number) => void;
@@ -75,7 +75,9 @@ export default function QuestionTabs({
             key={index}
             label={`Question ${index + 1}`}
             icon={
-              <Tooltip title={(question?.content ?? "").substring(0, 30) + "..."}>
+              <Tooltip
+                title={(question?.content ?? "").substring(0, 30) + "..."}
+              >
                 <QuestionAnswerIcon fontSize="small" />
               </Tooltip>
             }
