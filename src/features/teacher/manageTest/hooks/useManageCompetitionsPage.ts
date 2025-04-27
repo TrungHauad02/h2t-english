@@ -1,17 +1,10 @@
 import { CompetitionTest } from "interfaces";
+import { CompetitionTestFilter } from "interfaces";
 import { useEffect, useState } from "react";
 import { competitionTestService } from "services";
 
-interface CompetitionFilter {
-  status: boolean | null;
-  title: string;
-  sortBy: string;
-  startDate?: string;
-  endDate?: string;
-}
-
 export default function useManageCompetitionsPage() {
-  const [filter, setFilter] = useState<CompetitionFilter>({
+  const [filter, setFilter] = useState<CompetitionTestFilter>({
     status: null,
     title: "",
     sortBy: "-createdAt",
@@ -32,19 +25,10 @@ export default function useManageCompetitionsPage() {
     try {
       setIsLoading(true);
       
-      const filterParams: Record<string, any> = {
-        title: filter.title || undefined,
-        status: filter.status !== null ? filter.status : undefined,
-        startDate: filter.startDate || undefined,
-        endDate: filter.endDate || undefined,
-      };
-      
-      const responseData = await competitionTestService.searchWithFilters(
-        page - 1, // API uses 0-based indexing
+      const responseData = await competitionTestService.getCompetitionTestsByTeacher(
+        page,
         itemsPerPage,
-        // filter.sortBy,
-        "",
-        // filterParams
+        filter
       );
       
       setCompetitions(responseData.data.content);
@@ -56,19 +40,18 @@ export default function useManageCompetitionsPage() {
     }
   };
 
-  // Initial data loading on mount and when pagination/itemsPerPage changes
+
   useEffect(() => {
     fetchData();
   }, [page, itemsPerPage]);
 
-  // Handle search with current filters
   const handleSearch = async () => {
     setPage(1); // Reset to first page on new search
     await fetchData();
   };
 
   // Update filter values
-  const updateFilter = (updates: Partial<CompetitionFilter>) => {
+  const updateFilter = (updates: Partial<CompetitionTestFilter>) => {
     setFilter((prevFilter) => ({
       ...prevFilter,
       ...updates,
@@ -86,16 +69,16 @@ export default function useManageCompetitionsPage() {
       updateFilter({ status: null });
     } else if (status === "published") {
       updateFilter({ status: true });
-    } else if (status === "draft") {
+    } else if (status === "unPublish") {
       updateFilter({ status: false });
     }
   };
 
   // Handle date range changes
-  const handleDateRangeChange = (startDate?: Date, endDate?: Date) => {
+  const handleDateRangeChange = (startStartTime?: Date, endEndTime?: Date) => {
     updateFilter({
-      startDate: startDate ? startDate.toISOString() : undefined,
-      endDate: endDate ? endDate.toISOString() : undefined,
+      startStartTime: startStartTime,
+      endEndTime: endEndTime,
     });
   };
 
@@ -182,27 +165,23 @@ export default function useManageCompetitionsPage() {
       setIsLoading(true);
       
       // Map the status to filter parameters
-      let filterParams: Record<string, any> = {};
+      const filterParams: CompetitionTestFilter = {};
       
-      const now = new Date().toISOString();
+      const now = new Date();
       
       if (status === 'upcoming') {
-        filterParams = { startDate: now }; // Competitions that haven't started
+        filterParams.startStartTime = now; // Competitions that haven't started
       } else if (status === 'active') {
-        filterParams = { 
-          startBeforeDate: now,
-          endAfterDate: now
-        }; // Competitions currently running
+        filterParams.startStartTime = new Date(new Date().setMonth(now.getMonth() - 1));
+        filterParams.endEndTime = new Date(new Date().setMonth(now.getMonth() + 1));
       } else if (status === 'past') {
-        filterParams = { endDate: now }; // Competitions that have ended
+        filterParams.endEndTime = now; // Competitions that have ended
       }
       
-      const responseData = await competitionTestService.searchWithFilters(
-        0, 
-        100, 
-        "", 
-        "",
-        
+      const responseData = await competitionTestService.getCompetitionTestsByTeacher(
+        1,
+        100,
+        filterParams
       );
       
       return responseData.content;

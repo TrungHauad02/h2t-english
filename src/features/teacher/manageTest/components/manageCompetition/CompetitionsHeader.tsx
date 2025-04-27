@@ -27,10 +27,11 @@ import { CompetitionTest } from "interfaces";
 import CreateCompetitionDialog from "./CreateCompetitionDialog";
 import CompetitionAdvancedFilter from "./CompetitionAdvancedFilter";
 import { toast } from "react-toastify";
+
 interface CompetitionsHeaderProps {
-  searchText: string;
+  searchText: string | undefined;
   setSearchText: (text: string) => void;
-  statusFilter: boolean | null ;
+  statusFilter: boolean | null | undefined;
   handleStatusFilterChange: (status: string) => void;
   handleSearch: () => void;
   createCompetition: (data: Partial<CompetitionTest>) => Promise<any>;
@@ -316,13 +317,13 @@ export default function CompetitionsHeader({
           >
             <InputLabel>Status</InputLabel>
             <Select
-              value={statusFilter === null ? "all" : statusFilter ? "published" : "draft"}
+              value={statusFilter === null ? "all" : statusFilter ? "published" : "unPublish"}
               onChange={(e) => handleStatusFilterChange(e.target.value as string)}
               label="Status"
             >
               <MenuItem value="all">All</MenuItem>
               <MenuItem value="published">Published</MenuItem>
-              <MenuItem value="draft">Draft</MenuItem>
+              <MenuItem value="unPublish">Unpublished</MenuItem>
             </Select>
           </FormControl>
 
@@ -394,19 +395,19 @@ export default function CompetitionsHeader({
       {/* Filter Dialog */}
       <CompetitionAdvancedFilter
         filter={{
-          status: statusFilter ?? null, 
+          status: statusFilter,
           title: searchText,
           sortBy: "-createdAt",
         }}
         updateFilter={(updates) => {
           if (updates.title !== undefined) setSearchText(updates.title);
-          if (updates.status !== null) {
+          if (updates.status !== undefined) {
             if (updates.status === null) {
               handleStatusFilterChange("all");
             } else if (updates.status === true) {
               handleStatusFilterChange("published");
             } else {
-              handleStatusFilterChange("draft");
+              handleStatusFilterChange("unPublish");
             }
           }
         }}

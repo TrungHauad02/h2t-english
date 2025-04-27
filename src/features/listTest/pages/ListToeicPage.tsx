@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { MainPictureSection } from "components/sections";
 import ListToeic from "../components/listToeic/ListToeic";
-import TestOverviewSection from "../components/TestOverviewSection";
+import {TestOverviewSection} from "../components/listTest/TestOverviewSection";
 
 export default function LisToeicPage() {
     const siteInfo = {

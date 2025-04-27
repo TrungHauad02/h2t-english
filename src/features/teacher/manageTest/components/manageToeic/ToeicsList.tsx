@@ -4,8 +4,6 @@ import {
   Typography,
   Grid,
   Box,
-  useTheme,
-  useMediaQuery,
 } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import { useErrors } from "hooks/useErrors";
@@ -29,15 +27,12 @@ export default function ToeicsList({
 }: ToeicsListProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const { showError } = useErrors();
 
-  const textColor = isDarkMode ? color.white : color.black;
 
   const handleOpenDeleteDialog = (id: number) => {
     setDeleteId(id);

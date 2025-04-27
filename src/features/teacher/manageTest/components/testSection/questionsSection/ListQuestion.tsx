@@ -64,7 +64,6 @@ export default function ListQuestion({
       }
 
       try {
-        // Save question, answer info
         await questionService.update(editData.id, editData);
         fetchData();
         toast.success("Question updated successfully");
