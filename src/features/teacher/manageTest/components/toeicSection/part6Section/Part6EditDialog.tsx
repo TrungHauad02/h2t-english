@@ -1,34 +1,36 @@
-import { Box, Button, Typography } from '@mui/material';
-import { ToeicPart6, ToeicQuestion } from 'interfaces';
-import useColor from 'theme/useColor';
-import { useDarkMode } from 'hooks/useDarkMode';
-import AddIcon from '@mui/icons-material/Add';
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import ListAltIcon from '@mui/icons-material/ListAlt';
+import { Box, Button, Typography } from "@mui/material";
+import { ToeicPart6, ToeicQuestion } from "interfaces";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
+import AddIcon from "@mui/icons-material/Add";
+import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import ListAltIcon from "@mui/icons-material/ListAlt";
 import {
   ToeicEditDialogBase,
   EditTabs,
   QuestionTabPanel,
   QuestionTab,
   DeleteQuestionDialog,
-  DocumentTab
-} from '../dialogEdit';
-import { useQuestionEditState } from '../../../hooks/toeicDetailPage/useQuestionEditState';
+  DocumentTab,
+} from "../dialogEdit";
+import { useQuestionEditState } from "features/teacher/manageTest/hooks/ToeicDetailPage";
 
 interface Part6EditDialogProps {
   open: boolean;
   question: ToeicPart6 & { questionData?: ToeicQuestion[] };
   onClose: () => void;
-  onSave: (updatedQuestion: ToeicPart6 & {
-    _changes?: {
-      toAdd: ToeicQuestion[];
-      toUpdate: ToeicQuestion[];
-      toDelete: number[];
-    },
-    subQuestions?: ToeicQuestion[]
-  }) => void;
+  onSave: (
+    updatedQuestion: ToeicPart6 & {
+      _changes?: {
+        toAdd: ToeicQuestion[];
+        toUpdate: ToeicQuestion[];
+        toDelete: number[];
+      };
+      subQuestions?: ToeicQuestion[];
+    }
+  ) => void;
   toeicQuestions?: { [partId: number]: ToeicQuestion[] };
-  mode?: 'edit' | 'add';
+  mode?: "edit" | "add";
 }
 
 export default function Part6EditDialog({
@@ -37,11 +39,11 @@ export default function Part6EditDialog({
   onClose,
   onSave,
   toeicQuestions = {},
-  mode = 'edit'
+  mode = "edit",
 }: Part6EditDialogProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  
+
   const {
     editedQuestion,
     activeTab,
@@ -58,32 +60,33 @@ export default function Part6EditDialog({
     handleSave,
     handleOpenDeleteDialog,
     handleDeleteSubQuestion,
-    setIsDeleteDialogOpen
+    setIsDeleteDialogOpen,
   } = useQuestionEditState<ToeicPart6>({
     open,
     question,
     toeicQuestions,
     mode,
     onSave,
-    maxQuestions: 4
+    maxQuestions: 4,
   });
 
   const tabs = [
     {
       label: "Document",
       id: "document",
-      icon: <ListAltIcon fontSize="small" />
+      icon: <ListAltIcon fontSize="small" />,
     },
     ...subQuestions.map((q, index) => ({
-      label: `Question ${index + 1}${q.id < 0 ? ' (New)' : ''}`,
+      label: `Question ${index + 1}${q.id < 0 ? " (New)" : ""}`,
       id: `question-${index + 1}`,
-      icon: <QuestionAnswerIcon fontSize="small" />
-    }))
+      icon: <QuestionAnswerIcon fontSize="small" />,
+    })),
   ];
 
-  const dialogTitle = mode === 'edit'
-    ? "Edit Part 6: Reading Comprehension"
-    : "Add Part 6: Reading Comprehension";
+  const dialogTitle =
+    mode === "edit"
+      ? "Edit Part 6: Reading Comprehension"
+      : "Add Part 6: Reading Comprehension";
 
   return (
     <>
@@ -99,26 +102,28 @@ export default function Part6EditDialog({
             <Typography color="error">{error}</Typography>
           </Box>
         )}
-        
+
         {success && (
           <Box sx={{ mb: 2 }}>
             <Typography color="success.main">{success}</Typography>
           </Box>
         )}
-        
-        <Box sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          mb: 3
-        }}>
+
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+          }}
+        >
           <EditTabs
             tabs={tabs}
             activeTab={activeTab}
             onTabChange={handleTabChange}
             baseId="part6-edit"
           />
-          
+
           <Button
             variant="contained"
             startIcon={<AddIcon />}
@@ -126,30 +131,43 @@ export default function Part6EditDialog({
             disabled={subQuestions.length >= 4}
             sx={{
               ml: 2,
-              backgroundColor: subQuestions.length >= 4
-                ? (isDarkMode ? color.gray600 : color.gray400)
-                : (isDarkMode ? color.emerald700 : color.emerald600),
-              color: subQuestions.length >= 4
-                ? (isDarkMode ? color.gray400 : color.gray600)
-                : color.white,
-              '&:hover': {
-                backgroundColor: subQuestions.length >= 4
-                  ? (isDarkMode ? color.gray600 : color.gray400)
-                  : (isDarkMode ? color.emerald600 : color.emerald500)
+              backgroundColor:
+                subQuestions.length >= 4
+                  ? isDarkMode
+                    ? color.gray600
+                    : color.gray400
+                  : isDarkMode
+                  ? color.emerald700
+                  : color.emerald600,
+              color:
+                subQuestions.length >= 4
+                  ? isDarkMode
+                    ? color.gray400
+                    : color.gray600
+                  : color.white,
+              "&:hover": {
+                backgroundColor:
+                  subQuestions.length >= 4
+                    ? isDarkMode
+                      ? color.gray600
+                      : color.gray400
+                    : isDarkMode
+                    ? color.emerald600
+                    : color.emerald500,
               },
-              borderRadius: '0.75rem',
+              borderRadius: "0.75rem",
               px: 2,
-              height: '36px'
+              height: "36px",
             }}
           >
-            Add Question {subQuestions.length >= 4 ? '(Max 4)' : ''}
+            Add Question {subQuestions.length >= 4 ? "(Max 4)" : ""}
           </Button>
         </Box>
 
         <QuestionTabPanel value={activeTab} index={0} id="part6-edit">
           <DocumentTab
             editedQuestion={editedQuestion}
-            onStatusChange={(value) => handleChange('status', value)}
+            onStatusChange={(value) => handleChange("status", value)}
             onFileChange={(fileValue) => handleChange("file", fileValue)}
           />
         </QuestionTabPanel>
@@ -166,9 +184,15 @@ export default function Part6EditDialog({
               index={index}
               canDelete={index > 0 || subQuestions.length > 1}
               onDelete={() => handleOpenDeleteDialog(subQuestion.id)}
-              onChange={(field, value) => handleQuestionChange(index, field, value)}
-              onAnswerChange={(answerIndex, value) => handleAnswerChange(index, answerIndex, value)}
-              onCorrectAnswerChange={(answerIndex) => handleCorrectAnswerChange(index, answerIndex)}
+              onChange={(field, value) =>
+                handleQuestionChange(index, field, value)
+              }
+              onAnswerChange={(answerIndex, value) =>
+                handleAnswerChange(index, answerIndex, value)
+              }
+              onCorrectAnswerChange={(answerIndex) =>
+                handleCorrectAnswerChange(index, answerIndex)
+              }
             />
           </QuestionTabPanel>
         ))}

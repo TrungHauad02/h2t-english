@@ -1,24 +1,40 @@
-import { useState } from 'react';
-import { Grid, Divider, Chip, Container } from '@mui/material';
-import { ToeicPart7, ToeicQuestion } from 'interfaces';
-import Part7EditDialog from './Part7EditDialog';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import useColor from 'theme/useColor';
-import { useDarkMode } from 'hooks/useDarkMode';
-import DialogConfirm from '../common/DialogConfirm';
-import { PartContainer, EmptyState ,QuestionTabs,QuestionSection,PassageDisplay,QuestionExplanation} from '../common';
+import { useState } from "react";
+import { Grid, Divider, Chip, Container } from "@mui/material";
+import { ToeicPart7, ToeicQuestion } from "interfaces";
+import Part7EditDialog from "./Part7EditDialog";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
+import DialogConfirm from "../common/DialogConfirm";
+import {
+  PartContainer,
+  EmptyState,
+  QuestionTabs,
+  QuestionSection,
+  PassageDisplay,
+  QuestionExplanation,
+} from "../common";
+import {
+  useDialogManagement,
+  useQuestionManagement,
+  useSubQuestionManagement,
+} from "features/teacher/manageTest/hooks/ToeicDetailPage";
 
-
-import { useSubQuestionManagement,useQuestionManagement,useDialogManagement }  from '../../../hooks/toeicDetailPage/index';
 interface Part7SectionProps {
   questions: ToeicPart7[];
   toeicQuestions: { [partId: number]: ToeicQuestion[] };
   onUpdateQuestion?: (updatedQuestion: ToeicPart7) => void;
   onAddQuestion?: (newQuestion: ToeicPart7) => Promise<ToeicPart7>;
   onDeleteQuestion?: (questionId: number) => void;
-  onAddSubQuestion?: (parentId: number, question: ToeicQuestion) => Promise<ToeicQuestion>;
-  onUpdateSubQuestion?: (question: ToeicQuestion, parentId: number) => Promise<ToeicQuestion>;
+  onAddSubQuestion?: (
+    parentId: number,
+    question: ToeicQuestion
+  ) => Promise<ToeicQuestion>;
+  onUpdateSubQuestion?: (
+    question: ToeicQuestion,
+    parentId: number
+  ) => Promise<ToeicQuestion>;
   onDeleteSubQuestion?: (questionId: number, parentId: number) => Promise<void>;
 }
 
@@ -30,11 +46,10 @@ export default function Part7Section({
   onDeleteQuestion,
   onAddSubQuestion,
   onUpdateSubQuestion,
-  onDeleteSubQuestion
+  onDeleteSubQuestion,
 }: Part7SectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  
 
   const [showExplanation, setShowExplanation] = useState(false);
 
@@ -48,13 +63,13 @@ export default function Part7Section({
     handleOpenEditDialog,
     handleOpenAddDialog,
     handleDeleteQuestion,
-    setEmptyQuestion
+    setEmptyQuestion,
   } = useQuestionManagement<ToeicPart7>({
     questions,
     toeicQuestions,
     onUpdateQuestion,
     onAddQuestion,
-    onDeleteQuestion
+    onDeleteQuestion,
   });
 
   const {
@@ -70,9 +85,8 @@ export default function Part7Section({
     toeicQuestions,
     onAddSubQuestion,
     onUpdateSubQuestion,
-    onDeleteSubQuestion
+    onDeleteSubQuestion,
   });
-
 
   const {
     isEditDialogOpen,
@@ -82,22 +96,20 @@ export default function Part7Section({
     handleCloseEditDialog,
     handleOpenDeleteDialog,
     handleCloseDeleteDialog,
-    handleCloseDeleteSubQuestionDialog
+    handleCloseDeleteSubQuestionDialog,
   } = useDialogManagement();
-
 
   const createEmptyQuestion = (): ToeicPart7 => {
     return {
       id: 0,
-      file: '',
+      file: "",
       questions: [],
       status: true,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
   };
 
- 
   const openAddNewDialog = () => {
     handleOpenAddDialog(createEmptyQuestion);
     openEditDialog();
@@ -112,55 +124,56 @@ export default function Part7Section({
     setShowExplanation(!showExplanation);
   };
 
-
-
-  const handleSaveQuestion = async (updatedQuestion: ToeicPart7 & {
-    _changes?: {
-      toAdd: ToeicQuestion[];
-      toUpdate: ToeicQuestion[];
-      toDelete: number[];
-    };
-    subQuestions?: ToeicQuestion[];
-  }) => {
+  const handleSaveQuestion = async (
+    updatedQuestion: ToeicPart7 & {
+      _changes?: {
+        toAdd: ToeicQuestion[];
+        toUpdate: ToeicQuestion[];
+        toDelete: number[];
+      };
+      subQuestions?: ToeicQuestion[];
+    }
+  ) => {
     try {
       const { _changes, subQuestions, ...mainQuestion } = updatedQuestion;
-      
-      if (dialogMode === 'edit') {
-        if (_changes && mainQuestion.id > 0) {
-          const newQuestionIds = await handleSaveSubQuestions(mainQuestion.id, _changes);
-          
-          const existingQuestionIds = (mainQuestion.questions || [])
-            .filter(id => id > 0 && !_changes.toDelete.includes(id));
 
-          mainQuestion.questions = [
-            ...existingQuestionIds,
-            ...newQuestionIds
-          ];
+      if (dialogMode === "edit") {
+        if (_changes && mainQuestion.id > 0) {
+          const newQuestionIds = await handleSaveSubQuestions(
+            mainQuestion.id,
+            _changes
+          );
+
+          const existingQuestionIds = (mainQuestion.questions || []).filter(
+            (id) => id > 0 && !_changes.toDelete.includes(id)
+          );
+
+          mainQuestion.questions = [...existingQuestionIds, ...newQuestionIds];
         }
 
         if (onUpdateQuestion) {
           await onUpdateQuestion(mainQuestion);
         }
-      } else if (dialogMode === 'add') {
+      } else if (dialogMode === "add") {
         let subQuestionIds: number[] = [];
 
         if (subQuestions && subQuestions.length > 0 && onAddSubQuestion) {
-          const tempPartId = -1; 
-          
+          const tempPartId = -1;
+
           const createdQuestions = await Promise.all(
-            subQuestions.map(q => onAddSubQuestion(tempPartId, q))
+            subQuestions.map((q) => onAddSubQuestion(tempPartId, q))
           );
-          
-          subQuestionIds = createdQuestions.map(q => q.id);
+
+          subQuestionIds = createdQuestions.map((q) => q.id);
         }
-        
+
         mainQuestion.questions = subQuestionIds;
 
         if (onAddQuestion) {
           await onAddQuestion(mainQuestion);
         }
       }
-      
+
       handleCloseEditDialog();
       setEmptyQuestion(null);
     } catch (error) {
@@ -168,14 +181,13 @@ export default function Part7Section({
     }
   };
 
-
   if (questions.length === 0) {
     return (
       <Container maxWidth="lg">
-      <PartContainer
-        id="part7-section"
-        title="Part 7: Reading Comprehension"
-        subtitle="This section includes multiple reading passages followed by related questions."
+        <PartContainer
+          id="part7-section"
+          title="Part 7: Reading Comprehension"
+          subtitle="This section includes multiple reading passages followed by related questions."
           currentIndex={0}
           totalItems={0}
           onSelectQuestion={() => {}}
@@ -186,13 +198,13 @@ export default function Part7Section({
           onDeleteQuestion={undefined}
           showNavigation={false}
         >
-          <EmptyState 
+          <EmptyState
             icon={<MenuBookIcon />}
             title="No passages available"
             message="Click the 'Add Question' button to create your first passage."
           />
         </PartContainer>
-        
+
         <Part7EditDialog
           key={`add-${Date.now()}`}
           open={isEditDialogOpen}
@@ -225,54 +237,59 @@ export default function Part7Section({
         {currentQuestion && (
           <Grid container spacing={3}>
             <Grid item xs={12}>
-            <PassageDisplay currentIndex={currentQuestionIndex} fileUrl={currentQuestion.file} />
+              <PassageDisplay
+                currentIndex={currentQuestionIndex}
+                fileUrl={currentQuestion.file}
+              />
             </Grid>
 
             <Grid item xs={12}>
-              <Divider sx={{ 
-                my: 2, 
-                borderColor: isDarkMode ? color.gray700 : color.gray300,
-                '&::before, &::after': {
+              <Divider
+                sx={{
+                  my: 2,
                   borderColor: isDarkMode ? color.gray700 : color.gray300,
-                }
-              }}>
-                <Chip 
+                  "&::before, &::after": {
+                    borderColor: isDarkMode ? color.gray700 : color.gray300,
+                  },
+                }}
+              >
+                <Chip
                   icon={<QuestionAnswerIcon />}
-                  label="Questions" 
-                  sx={{ 
+                  label="Questions"
+                  sx={{
                     backgroundColor: accentColor,
                     color: isDarkMode ? color.gray900 : color.white,
-                    fontWeight: 'bold',
+                    fontWeight: "bold",
                     px: 1,
-                    '& .MuiChip-icon': {
-                      color: isDarkMode ? color.gray900 : color.white
-                    }
+                    "& .MuiChip-icon": {
+                      color: isDarkMode ? color.gray900 : color.white,
+                    },
                   }}
                 />
               </Divider>
 
               {currentSubQuestions.length > 0 ? (
-                   <QuestionTabs
-                   tabsRef={tabsRef}
-                   containerRef={tabContainerRef}
-                   questions={currentSubQuestions}
-                   activeQuestion={activeSubQuestion}
-                   onChangeQuestion={handleChangeSubQuestion}
-                 >
-                   <QuestionSection 
-                     question={currentSubQuestions[activeSubQuestion] || null}
-                     questionNumber={activeSubQuestion + 1}
-                   />
-                     <QuestionExplanation
-                          explanation={currentSubQuestions[activeSubQuestion]?.explanation || ''}
-                          showExplanation={showExplanation}
-                          onToggleExplanation={toggleExplanation}
-                        />
-
-                 </QuestionTabs>
-                 
+                <QuestionTabs
+                  tabsRef={tabsRef}
+                  containerRef={tabContainerRef}
+                  questions={currentSubQuestions}
+                  activeQuestion={activeSubQuestion}
+                  onChangeQuestion={handleChangeSubQuestion}
+                >
+                  <QuestionSection
+                    question={currentSubQuestions[activeSubQuestion] || null}
+                    questionNumber={activeSubQuestion + 1}
+                  />
+                  <QuestionExplanation
+                    explanation={
+                      currentSubQuestions[activeSubQuestion]?.explanation || ""
+                    }
+                    showExplanation={showExplanation}
+                    onToggleExplanation={toggleExplanation}
+                  />
+                </QuestionTabs>
               ) : (
-                <EmptyState 
+                <EmptyState
                   icon={<QuestionAnswerIcon />}
                   title="No questions available"
                   message="Edit this passage to add questions."
@@ -285,17 +302,23 @@ export default function Part7Section({
 
       {/* Dialogs */}
       <Part7EditDialog
-        key={dialogMode === 'edit' ? `edit-${currentQuestion?.id ?? 'new'}` : `add-${Date.now()}`}
+        key={
+          dialogMode === "edit"
+            ? `edit-${currentQuestion?.id ?? "new"}`
+            : `add-${Date.now()}`
+        }
         open={isEditDialogOpen}
         question={{
-          ...(dialogMode === 'edit' ? currentQuestion || createEmptyQuestion() : createEmptyQuestion()),
+          ...(dialogMode === "edit"
+            ? currentQuestion || createEmptyQuestion()
+            : createEmptyQuestion()),
         }}
         onClose={handleCloseEditDialog}
         onSave={handleSaveQuestion}
-        toeicQuestions={dialogMode === 'edit' ? toeicQuestions : {}}
+        toeicQuestions={dialogMode === "edit" ? toeicQuestions : {}}
         mode={dialogMode}
       />
-      
+
       <DialogConfirm
         open={isDeleteDialogOpen}
         title="Confirm Deletion"
@@ -303,7 +326,7 @@ export default function Part7Section({
         onClose={handleCloseDeleteDialog}
         onConfirm={handleDeleteQuestion}
       />
-      
+
       <DialogConfirm
         open={isDeleteSubQuestionDialogOpen}
         title="Confirm Sub-question Deletion"
