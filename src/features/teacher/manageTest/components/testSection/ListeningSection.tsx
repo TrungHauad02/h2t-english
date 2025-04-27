@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Fade, Box, Grid, Paper, Typography, Button, Stack, Tooltip } from '@mui/material';
+import { Fade, Box, Grid, Paper, Typography, Button, Tooltip } from '@mui/material';
 import { TestListening, QuestionSupportTestType } from 'interfaces';
 import HeadphonesIcon from '@mui/icons-material/Headphones';
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';

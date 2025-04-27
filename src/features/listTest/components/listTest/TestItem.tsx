@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 
-export default function TestItem({ test }: { test: Test }) {
+export  function TestItem({ test }: { test: Test }) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const [hovered, setHovered] = useState(false);

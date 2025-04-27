@@ -2,13 +2,10 @@ import React from "react";
 import {
   Box,
   Stack,
-  Skeleton,
   LinearProgress,
-  CircularProgress,
-  Typography,
-  Fade,
   Container,
   Paper,
+  Fade,
 } from "@mui/material";
 
 import { WEPaginationSelect } from "components/pagination";
@@ -17,13 +14,13 @@ import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import ToeicsList from "../components/manageToeic/ToeicsList";
 import ToeicsHeader from "../components/manageToeic/ToeicsHeader";
+import LoadingSkeleton from "../components/common/LoadingSkeleton";
 
 export default function ManageToeicPage() {
   const hooks = useManageToeicPage();
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
-  const skeletonColor = isDarkMode ? color.gray700 : color.gray200;
   const loadingBarColor = isDarkMode ? color.teal400 : color.teal600;
 
   const backgroundGradient = isDarkMode
@@ -80,155 +77,35 @@ export default function ManageToeicPage() {
                 height: "5px",
                 background: `linear-gradient(90deg, ${color.teal500}, ${color.emerald400})`,
               },
+              transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+              "&:hover": {
+                transform: "translateY(-2px)",
+                boxShadow: isDarkMode
+                  ? "0 8px 28px rgba(0,0,0,0.5)"
+                  : "0 8px 28px rgba(0,0,0,0.12)",
+              },
             }}
           >
             <Stack direction={"column"} sx={{ minHeight: "80vh" }}>
               {/* Header */}
               <ToeicsHeader
-                searchText={hooks.searchText}
-                setSearchText={hooks.setSearchText}
-                statusFilter={hooks.statusFilter}
-                handleStatusFilterChange={hooks.handleStatusFilterChange}
+                filter={hooks.filter}
+                updateFilter={hooks.updateFilter}
                 handleSearch={hooks.handleSearch}
                 createToeicTest={hooks.createToeicTest}
               />
 
               {/* Loading State */}
-              {hooks.loading ? (
-                <Fade in={hooks.loading} timeout={300}>
-                  <Box sx={{ py: 4 }}>
-                    <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
-                      <CircularProgress
-                        size={32}
-                        sx={{
-                          color: loadingBarColor,
-                        }}
-                      />
-                    </Box>
+              <LoadingSkeleton 
+                isLoading={hooks.loading}
+                message="Loading TOEIC tests..."
+                cardType="toeic"
+              />
 
-                    <Typography
-                      variant="body2"
-                      align="center"
-                      sx={{
-                        mb: 4,
-                        color: isDarkMode ? color.gray400 : color.gray600,
-                        fontStyle: "italic",
-                      }}
-                    >
-                      Loading TOEIC tests...
-                    </Typography>
-
-                    {/* Skeleton tests */}
-                    <Stack spacing={2} sx={{ px: 2 }}>
-                      {[1, 2, 3, 4].map((item) => (
-                        <Box
-                          key={item}
-                          sx={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: 2,
-                            justifyContent: "center",
-                          }}
-                        >
-                          {[1, 2, 3].map((card) => (
-                            <Box
-                              key={`${item}-${card}`}
-                              sx={{
-                                width: 345,
-                                height: 220,
-                                borderRadius: 2,
-                                overflow: "hidden",
-                                backgroundColor: isDarkMode
-                                  ? color.gray800
-                                  : color.white,
-                                boxShadow: `0 4px 12px rgba(0,0,0,${
-                                  isDarkMode ? 0.3 : 0.08
-                                })`,
-                                border: `1px solid ${
-                                  isDarkMode ? color.gray700 : color.gray200
-                                }`,
-                              }}
-                            >
-                              {/* Title Skeleton */}
-                              <Box sx={{ p: 2 }}>
-                                <Skeleton
-                                  variant="text"
-                                  width="70%"
-                                  height={32}
-                                  sx={{
-                                    backgroundColor: skeletonColor,
-                                  }}
-                                />
-
-                                {/* Details Skeleton */}
-                                <Skeleton
-                                  variant="text"
-                                  width="100%"
-                                  height={20}
-                                  sx={{
-                                    backgroundColor: skeletonColor,
-                                    mt: 1,
-                                  }}
-                                />
-                                <Skeleton
-                                  variant="text"
-                                  width="90%"
-                                  height={20}
-                                  sx={{
-                                    backgroundColor: skeletonColor,
-                                    mb: 1,
-                                  }}
-                                />
-
-                                {/* Divider Skeleton */}
-                                <Skeleton
-                                  variant="rectangular"
-                                  width="100%"
-                                  height={1}
-                                  sx={{
-                                    backgroundColor: skeletonColor,
-                                    my: 2,
-                                  }}
-                                />
-
-                                {/* Action buttons Skeleton */}
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <Skeleton
-                                    variant="rectangular"
-                                    width={120}
-                                    height={36}
-                                    sx={{
-                                      backgroundColor: skeletonColor,
-                                      borderRadius: 1,
-                                    }}
-                                  />
-                                  <Skeleton
-                                    variant="circular"
-                                    width={36}
-                                    height={36}
-                                    sx={{
-                                      backgroundColor: skeletonColor,
-                                    }}
-                                  />
-                                </Box>
-                              </Box>
-                            </Box>
-                          ))}
-                        </Box>
-                      ))}
-                    </Stack>
-                  </Box>
-                </Fade>
-              ) : (
-                /* List TOEIC tests - shown when not loading */
+              {/* List TOEIC tests - shown when not loading */}
+              {!hooks.loading && (
                 <ToeicsList 
-                  toeicTests={hooks.displayedToeicTests}
+                  toeicTests={hooks.toeicTests}
                   fetchData={hooks.handleSearch}
                   deleteToeicTest={hooks.deleteToeicTest}
                   updateToeicTest={hooks.updateToeicTest}

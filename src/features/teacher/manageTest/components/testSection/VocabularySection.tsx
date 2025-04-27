@@ -29,7 +29,7 @@ export function VocabularySection({ partId, questionIds }: VocabularySectionProp
   const [data, setData] = useState<Question[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [listQuestionId, setListQuestionId] = useState(questionIds);
+  const [listQuestionId, setListQuestionId] = useState<number[]>([]);
 
   const type = "test-parts" as QuestionSupportTestType;
   const questionServiceUpdate = testPartQuestionServiceFactory(type);
@@ -148,7 +148,7 @@ export function VocabularySection({ partId, questionIds }: VocabularySectionProp
                 onMoveUp={onMoveUp}
                 onMoveDown={onMoveDown}
                 type={type}
-                questions={questionIds}
+                questions={listQuestionId}
               />
             ) : (
               <NoQuestionSection secondaryTextColor={secondaryTextColor} />
