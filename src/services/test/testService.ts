@@ -1,4 +1,5 @@
 import { Test } from "interfaces";
+import { TestFilter } from "interfaces";
 import apiClient from "services/apiClient";
 
 const findById = async (id: number) => {
@@ -51,26 +52,90 @@ const remove = async (id: number) => {
   }
 };
 
-const searchWithFilters = async (
-  page = 0,
-  size = 10,
-  sortFields = "",
-  userId = "",
-  filter: Record<string, any> = {}
+// === TÁCH RA 2 HÀM ===
+
+// Lấy tests cho HỌC SINH (phải có userId)
+const getTestsForStudent = async (
+  page: number,
+  itemsPerPage: number,
+  userId: number,
+  filter?: TestFilter
 ) => {
   try {
-    const queryParams = new URLSearchParams({
-      page: page.toString(),
-      size: size.toString(),
-      sortFields,
-      userId,
-      ...filter,
-    });
+    let url = `/tests?page=${page - 1}&size=${itemsPerPage}&userId=${userId}&status=true`;
 
-    const response = await apiClient.get(`/tests?${queryParams}`);
+    if (filter) {
+      if (filter.title) {
+        url += `&title=${encodeURIComponent(filter.title)}`;
+      }
+      if (filter.type) {
+        url += `&type=${encodeURIComponent(filter.type)}`;
+      }
+      if (filter.sortBy) {
+        url += `&sortFields=${encodeURIComponent(filter.sortBy)}`;
+      }
+      if (filter.startCreatedAt) {
+        url += `&startCreatedAt=${filter.startCreatedAt.toISOString().slice(0, -1)}`;
+      }
+      if (filter.endCreatedAt) {
+        url += `&endCreatedAt=${filter.endCreatedAt.toISOString().slice(0, -1)}`;
+      }
+      if (filter.startUpdatedAt) {
+        url += `&startUpdatedAt=${filter.startUpdatedAt.toISOString().slice(0, -1)}`;
+      }
+      if (filter.endUpdatedAt) {
+        url += `&endUpdatedAt=${filter.endUpdatedAt.toISOString().slice(0, -1)}`;
+      }
+    }
+
+    const response = await apiClient.get(url);
     return response.data;
   } catch (error) {
-    console.error("Error searching tests with filters:", error);
+    console.error("Error fetching tests for student:", error);
+    throw error;
+  }
+};
+
+// Lấy tests cho GIÁO VIÊN (không cần userId)
+const getTestsByTeacher = async (
+  page: number,
+  itemsPerPage: number,
+  filter?: TestFilter
+) => {
+  try {
+    let url = `/tests?page=${page - 1}&size=${itemsPerPage}`;
+
+    if (filter) {
+      if (filter.status !== undefined && filter.status !== null) {
+        url += `&status=${filter.status}`;
+      }
+      if (filter.title) {
+        url += `&title=${encodeURIComponent(filter.title)}`;
+      }
+      if (filter.type) {
+        url += `&type=${encodeURIComponent(filter.type)}`;
+      }
+      if (filter.sortBy) {
+        url += `&sortFields=${encodeURIComponent(filter.sortBy)}`;
+      }
+      if (filter.startCreatedAt) {
+        url += `&startCreatedAt=${filter.startCreatedAt.toISOString().slice(0, -1)}`;
+      }
+      if (filter.endCreatedAt) {
+        url += `&endCreatedAt=${filter.endCreatedAt.toISOString().slice(0, -1)}`;
+      }
+      if (filter.startUpdatedAt) {
+        url += `&startUpdatedAt=${filter.startUpdatedAt.toISOString().slice(0, -1)}`;
+      }
+      if (filter.endUpdatedAt) {
+        url += `&endUpdatedAt=${filter.endUpdatedAt.toISOString().slice(0, -1)}`;
+      }
+    }
+
+    const response = await apiClient.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching tests for teacher:", error);
     throw error;
   }
 };
@@ -81,5 +146,6 @@ export const testService = {
   update,
   patch,
   remove,
-  searchWithFilters,
+  getTestsForStudent,
+  getTestsByTeacher,
 };
