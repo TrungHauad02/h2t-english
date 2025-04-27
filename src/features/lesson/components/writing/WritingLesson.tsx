@@ -4,12 +4,27 @@ import PreparationSection from "../common/preparation/PreparationSection";
 import { Box } from "@mui/material";
 import WEDocumentViewer from "components/display/document/WEDocumentViewer";
 import WritingTips from "./WritingTips";
-import WritingParagraph from "./writingParagraph/WritingParagraph";
-import { mockData } from "features/listLesson/services/mockData";
+import WritingParagraph from "./paragraph/WritingParagraph";
 import WritingTopicSection from "./WritingTopicSection";
+import { writingAnswerService } from "services";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export default function WritingLesson({ lesson }: { lesson: Writing }) {
-  const writingAnswer: WritingAnswer[] = mockData.writingAnswers;
+  const [writingAnswer, setWritingAnswer] = useState<WritingAnswer[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const resData = await writingAnswerService.findByWritingId(lesson.id);
+        setWritingAnswer(resData.data);
+      } catch (error) {
+        console.error("Error fetching writing answer data");
+        toast.error("Error fetching writing answer data");
+      }
+    };
+    fetchData();
+  }, [lesson.id]);
 
   return (
     <Box sx={{ mx: 8, my: 4 }}>
@@ -25,9 +40,7 @@ export default function WritingLesson({ lesson }: { lesson: Writing }) {
       <CollapsibleSection text="Writing Paragraph">
         <WritingParagraph
           paragraph={lesson.paragraph}
-          writingAnswer={writingAnswer.filter(
-            (answer) => answer.writingId === 1
-          )}
+          writingAnswers={writingAnswer}
         />
       </CollapsibleSection>
       <CollapsibleSection text="Writing Topic">
