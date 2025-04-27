@@ -10,11 +10,11 @@ import { useErrors } from "hooks/useErrors";
 import { validateQuestion } from "./validateQuestion";
 import { extractErrorMessages } from "utils/extractErrorMessages";
 import { WEConfirmDelete } from "components/display";
-import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 interface ListQuestionProps {
   questions: number[];
+  partId: number;
   type: QuestionSupportTestType;
   isEditMode: boolean;
   data: Question[];
@@ -26,6 +26,7 @@ interface ListQuestionProps {
 export default function ListQuestion({
   questions,
   type,
+  partId,
   isEditMode,
   data,
   fetchData,
@@ -34,7 +35,6 @@ export default function ListQuestion({
 }: ListQuestionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const { id } = useParams();
   const [editMode, setEditMode] = useState<number | null>(null);
   const [editData, setEditData] = useState<Question | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -98,18 +98,14 @@ export default function ListQuestion({
     try {
       setIsDeleting(true);
 
-      // Delete the question
+
       await questionService.remove(deleteId);
 
-      // Update the lesson's question list
-      const lessonId = id ? parseInt(id) : 0;
       const updatedQuestions = questions.filter((id) => id !== deleteId);
 
-      // Use the factory service to update questions
-      await questionServiceUpdate.updateQuestions(lessonId, updatedQuestions);
-
+      await questionServiceUpdate.updateQuestions(partId, updatedQuestions);
       setDeleteId(null);
-      fetchData();
+
       toast.success("Question deleted successfully");
     } catch (error) {
       showError({
@@ -121,6 +117,7 @@ export default function ListQuestion({
     } finally {
       handleCloseDeleteDialog();
       setIsDeleting(false);
+      fetchData();
     }
   };
 

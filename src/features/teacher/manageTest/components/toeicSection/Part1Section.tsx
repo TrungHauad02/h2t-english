@@ -27,8 +27,8 @@ import {
   AudioPlayer,
   AnswerOptionsGrid,
   TranscriptBox
-} from '../common';
-import Part1EditDialog from './Part1EditDialog';
+} from './common';
+import Part1EditDialog from './part1Section/Part1EditDialog';
 import HeadphonesIcon from '@mui/icons-material/Headphones';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';

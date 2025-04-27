@@ -142,6 +142,7 @@ export default function QuestionsSection({
       {data.length > 0 ? (
         <ListQuestion
           data={data}
+          partId={parentId}
           isEditMode={isEditMode}
           fetchData={fetchData}
           onMoveUp={onMoveUp}

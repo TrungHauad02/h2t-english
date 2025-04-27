@@ -87,6 +87,7 @@ export default function AddReadingDialog({
       });
     } finally {
       setIsSubmitting(false);
+      fetchReadings()
     }
   };
 

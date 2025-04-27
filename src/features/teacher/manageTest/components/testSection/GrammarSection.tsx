@@ -113,7 +113,7 @@ export function GrammarSection({ partId, questionIds }: GrammarSectionProps) {
       id="grammar-section"
       title="Grammar Section"
       icon={<SpellcheckIcon />}
-      isEmpty={questionIds.length === 0}
+      isEmpty={data.length === 0}
       isEditMode={isEditMode}
       onAdd={handleAddQuestion}
       emptyState={{
@@ -145,6 +145,7 @@ export function GrammarSection({ partId, questionIds }: GrammarSectionProps) {
             {data.length > 0 ? (
               <ListQuestion
                 data={data}
+                partId={partId}
                 isEditMode={isEditMode}
                 fetchData={fetchData}
                 onMoveUp={onMoveUp}

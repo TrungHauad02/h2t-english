@@ -38,10 +38,13 @@ export function VocabularySection({ partId, questionIds }: VocabularySectionProp
     try {
       if (partId) {
         const resData = await questionService.findByTestId(partId, type);
-        console.log(resData);
+        console.log(partId);
+        
+        console.log(resData+"tan");
         setData(resData.data);
         const newQuestionIds = resData.data.map((question: Question) => question.id);
         setListQuestionId(newQuestionIds);
+        console.log(newQuestionIds+"cap");
     
       }
     } catch (error) {
@@ -54,7 +57,6 @@ export function VocabularySection({ partId, questionIds }: VocabularySectionProp
   }, [type,partId]);
 
   const handleAddQuestion = () => {
-    console.log("Opening dialog");
     setIsAddDialogOpen(true);
   };
 
@@ -111,7 +113,7 @@ export function VocabularySection({ partId, questionIds }: VocabularySectionProp
       id="vocabulary-section"
       title="Vocabulary Section"
       icon={<SpellcheckIcon />}
-      isEmpty={questionIds.length === 0}
+      isEmpty={data.length === 0}
       isEditMode={isEditMode}
       onAdd={handleAddQuestion}
       emptyState={{
@@ -143,6 +145,7 @@ export function VocabularySection({ partId, questionIds }: VocabularySectionProp
             {data.length > 0 ? (
               <ListQuestion
                 data={data}
+                partId={partId}
                 isEditMode={isEditMode}
                 fetchData={fetchData}
                 onMoveUp={onMoveUp}

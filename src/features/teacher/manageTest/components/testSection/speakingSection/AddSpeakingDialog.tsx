@@ -29,7 +29,7 @@ interface AddSpeakingDialogProps {
   onClose: () => void;
   partId: number;
   fetchSpeakings: () => void;
-  setListTestIds: React.Dispatch<React.SetStateAction<number[]>>;
+  setListTestIds: (newTestIds: number[]) => void;
 
 }
 
@@ -131,7 +131,7 @@ export default function AddSpeakingDialog({
       });
       setListTestIds(newTestItemIds)
       
-      
+      fetchSpeakings()
       toast.success("Speaking added successfully");
       resetForm();
       onClose();

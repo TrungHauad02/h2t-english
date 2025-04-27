@@ -33,11 +33,13 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
   const leftColumnRef = useRef<HTMLDivElement>(null);
   const rightColumnRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Ref to store test item ids instead of state
+  const listTestIdsRef = useRef<number[]>(testItemIds);
 
   // State management
   const [listenings, setListenings] = useState<TestListening[]>([]);
   const [selectedListeningId, setSelectedListeningId] = useState<number | null>(null);
-  const [listTestIds, setListTestIds] = useState(testItemIds);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isEditingAudio, setIsEditingAudio] = useState(false);
   const [tempAudio, setTempAudio] = useState<string>("");
@@ -56,14 +58,11 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
   const fetchListenings = async () => {
     try {
       if (partId) {
-        const resData = await testListeningService.getByIds(listTestIds);
+        const resData = await testListeningService.getByIds(listTestIdsRef.current);
         setListenings(resData.data);
-       
         
         const newTestListeningIds = resData.data.map((testListening: TestListening) => testListening.id);
-        
-        setListTestIds(newTestListeningIds);
-      
+        listTestIdsRef.current = newTestListeningIds;
         
         if (resData.data.length > 0 && !selectedListeningId) {
           setSelectedListeningId(resData.data[0].id);
@@ -101,7 +100,7 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
 
   useEffect(() => {
     fetchListenings();
-  }, [partId]);
+  }, [partId, testItemIds]);
 
   const handleSelectListening = (listeningId: number) => {
     setSelectedListeningId(listeningId);
@@ -124,7 +123,7 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
         await testPartService.patch(partId, {
           questions: newTestListeningIds,
         });
-        setListTestIds(newTestListeningIds);
+        listTestIdsRef.current = newTestListeningIds;
       }
       
       // Save status changes if needed
@@ -219,12 +218,12 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
       
       await testListeningService.remove(deleteId);
       
-      const updatedListeningIds = listTestIds.filter(id => id !== deleteId);
+      const updatedListeningIds = listTestIdsRef.current.filter(id => id !== deleteId);
       await testPartService.patch(partId, {
         questions: updatedListeningIds,
       });
       
-      setListTestIds(updatedListeningIds);
+      listTestIdsRef.current = updatedListeningIds;
       
       if (selectedListeningId === deleteId) {
         const remainingListenings = listenings.filter(l => l.id !== deleteId);
@@ -236,6 +235,7 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
       }
       
       toast.success("Listening topic deleted successfully");
+      fetchListenings();
     } catch (error) {
       console.error("Error deleting listening:", error);
       showError({
@@ -425,9 +425,11 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
       open={isAddDialogOpen}
       onClose={() => setIsAddDialogOpen(false)}
       partId={partId}
-      setListTestIds={setListTestIds}
       fetchListenings={fetchListenings}
-      testItemIds={listTestIds}
+      testItemIds={listTestIdsRef.current}
+      setListTestIds={(newTestIds: number[]) => {
+        listTestIdsRef.current = newTestIds;
+      }}
     />
 
     {/* Delete Confirmation Dialog */}

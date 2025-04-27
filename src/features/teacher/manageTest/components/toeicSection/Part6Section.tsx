@@ -1,7 +1,8 @@
+<<<<<<< HEAD:src/features/teacher/manageTest/components/toeicSection/part6Section/Part6Section.tsx
 import { useState } from "react";
 import { Grid, Divider, Chip, Container } from "@mui/material";
-import { ToeicPart7, ToeicQuestion } from "interfaces";
-import Part7EditDialog from "./Part7EditDialog";
+import { ToeicPart6, ToeicQuestion } from "interfaces";
+import Part6EditDialog from "./Part6EditDialog";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import useColor from "theme/useColor";
@@ -21,11 +22,26 @@ import {
   useSubQuestionManagement,
 } from "features/teacher/manageTest/hooks/ToeicDetailPage";
 
-interface Part7SectionProps {
-  questions: ToeicPart7[];
+=======
+import { useState } from 'react';
+import { Grid, Divider, Chip, Container } from '@mui/material';
+import { ToeicPart6, ToeicQuestion } from 'interfaces';
+import Part6EditDialog from './part6Section/Part6EditDialog';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import useColor from 'theme/useColor';
+import { useDarkMode } from 'hooks/useDarkMode';
+import DialogConfirm from './common/DialogConfirm';
+import { PartContainer, EmptyState ,QuestionTabs,QuestionSection,PassageDisplay,QuestionExplanation} from './common';
+
+
+import { useSubQuestionManagement,useQuestionManagement,useDialogManagement }  from '../../hooks/toeicDetailPage/index';
+>>>>>>> ff5be51 (U(ManageTestDetails) fix loi them xoa cac part khong load lai):src/features/teacher/manageTest/components/toeicSection/Part6Section.tsx
+interface Part6SectionProps {
+  questions: ToeicPart6[];
   toeicQuestions: { [partId: number]: ToeicQuestion[] };
-  onUpdateQuestion?: (updatedQuestion: ToeicPart7) => void;
-  onAddQuestion?: (newQuestion: ToeicPart7) => Promise<ToeicPart7>;
+  onUpdateQuestion?: (updatedQuestion: ToeicPart6) => void;
+  onAddQuestion?: (newQuestion: ToeicPart6) => Promise<ToeicPart6>;
   onDeleteQuestion?: (questionId: number) => void;
   onAddSubQuestion?: (
     parentId: number,
@@ -38,7 +54,7 @@ interface Part7SectionProps {
   onDeleteSubQuestion?: (questionId: number, parentId: number) => Promise<void>;
 }
 
-export default function Part7Section({
+export default function Part6Section({
   questions,
   toeicQuestions,
   onUpdateQuestion,
@@ -47,7 +63,7 @@ export default function Part7Section({
   onAddSubQuestion,
   onUpdateSubQuestion,
   onDeleteSubQuestion,
-}: Part7SectionProps) {
+}: Part6SectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
@@ -64,7 +80,7 @@ export default function Part7Section({
     handleOpenAddDialog,
     handleDeleteQuestion,
     setEmptyQuestion,
-  } = useQuestionManagement<ToeicPart7>({
+  } = useQuestionManagement<ToeicPart6>({
     questions,
     toeicQuestions,
     onUpdateQuestion,
@@ -88,6 +104,7 @@ export default function Part7Section({
     onDeleteSubQuestion,
   });
 
+  // Hooks for managing dialogs
   const {
     isEditDialogOpen,
     isDeleteDialogOpen,
@@ -99,7 +116,7 @@ export default function Part7Section({
     handleCloseDeleteSubQuestionDialog,
   } = useDialogManagement();
 
-  const createEmptyQuestion = (): ToeicPart7 => {
+  const createEmptyQuestion = (): ToeicPart6 => {
     return {
       id: 0,
       file: "",
@@ -125,7 +142,7 @@ export default function Part7Section({
   };
 
   const handleSaveQuestion = async (
-    updatedQuestion: ToeicPart7 & {
+    updatedQuestion: ToeicPart6 & {
       _changes?: {
         toAdd: ToeicQuestion[];
         toUpdate: ToeicQuestion[];
@@ -185,9 +202,9 @@ export default function Part7Section({
     return (
       <Container maxWidth="lg">
         <PartContainer
-          id="part7-section"
-          title="Part 7: Reading Comprehension"
-          subtitle="This section includes multiple reading passages followed by related questions."
+          id="part6-section-empty"
+          title="Part 6: Text Completion"
+          subtitle="No passages available. Please add a passage to get started."
           currentIndex={0}
           totalItems={0}
           onSelectQuestion={() => {}}
@@ -205,7 +222,7 @@ export default function Part7Section({
           />
         </PartContainer>
 
-        <Part7EditDialog
+        <Part6EditDialog
           key={`add-${Date.now()}`}
           open={isEditDialogOpen}
           question={createEmptyQuestion()}
@@ -222,9 +239,9 @@ export default function Part7Section({
   return (
     <>
       <PartContainer
-        id="part7-section"
-        title="Part 7: Reading Comprehension"
-        subtitle="This section includes multiple reading passages followed by related questions."
+        id="part6-section"
+        title="Part 6: Text Completion"
+        subtitle="Read the text and choose the best word or phrase for each blank"
         currentIndex={currentQuestionIndex}
         totalItems={questions.length}
         onSelectQuestion={onSelectQuestion}
@@ -301,7 +318,7 @@ export default function Part7Section({
       </PartContainer>
 
       {/* Dialogs */}
-      <Part7EditDialog
+      <Part6EditDialog
         key={
           dialogMode === "edit"
             ? `edit-${currentQuestion?.id ?? "new"}`

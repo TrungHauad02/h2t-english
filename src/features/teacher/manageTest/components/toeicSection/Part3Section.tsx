@@ -1,8 +1,8 @@
 import React from 'react';
 import { ToeicPart3_4, ToeicQuestion } from 'interfaces';
-import Part3_4Section from '../Part3_4Section';
+import Part3_4Section from './Part3_4Section';
 
-interface Part4SectionProps {
+interface Part3SectionProps {
   questions: ToeicPart3_4[];
   onUpdateQuestion?: (updatedQuestion: ToeicPart3_4) => void;
   onAddQuestion?: (newQuestion: ToeicPart3_4) => Promise<ToeicPart3_4>;
@@ -13,7 +13,7 @@ interface Part4SectionProps {
   toeicQuestions: { [partId: number]: ToeicQuestion[] };
 }
 
-export default function Part4Section({
+export default function Part3Section({
   questions,
   toeicQuestions,
   onUpdateQuestion,
@@ -22,11 +22,11 @@ export default function Part4Section({
   onAddSubQuestion,
   onUpdateSubQuestion,
   onDeleteSubQuestion
-}: Part4SectionProps) {
+}: Part3SectionProps) {
   return (
     <Part3_4Section
       questions={questions}
-      partNumber={4}
+      partNumber={3}
       toeicQuestions={toeicQuestions}
       onUpdateQuestion={onUpdateQuestion}
       onAddQuestion={onAddQuestion}

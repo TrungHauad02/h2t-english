@@ -4,13 +4,9 @@ import {
   Typography, 
   TextField, 
   Box, 
-  FormControl, 
-  Select, 
-  MenuItem,
   Divider,
   Paper,
   alpha,
-  SelectChangeEvent
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -21,7 +17,6 @@ import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import TuneIcon from "@mui/icons-material/Tune";
-import SortIcon from "@mui/icons-material/Sort";
 import { CompetitionTestFilter } from "interfaces";
 
 interface CompetitionAdvancedFilterProps {
@@ -50,11 +45,6 @@ export default function CompetitionAdvancedFilter({
     return isDarkMode ? color.gray700 : color.gray300;
   };
 
-  // Fixed type for SelectChangeEvent
-  const handleSortChange = (event: SelectChangeEvent<string>) => {
-    updateFilter({ sortBy: event.target.value as "-createdAt" | "createdAt" | "-updatedAt" | "updatedAt" });
-  };
-
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <WEDialog
@@ -67,113 +57,38 @@ export default function CompetitionAdvancedFilter({
         }}
       >
         <Stack spacing={3}>
-          {/* Sort options */}
-          <Paper
-            elevation={0}
-            sx={{
-              p: 2,
-              backgroundColor: isDarkMode ? alpha(color.gray800, 0.6) : alpha(color.gray50, 0.6),
-              borderRadius: 2,
-              border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-              <SortIcon color="primary" sx={{ color: isDarkMode ? color.teal400 : color.teal600 }} />
-              <Typography variant="subtitle1" fontWeight="bold">
-                Sort Options
-              </Typography>
-            </Box>
-
-            <Box sx={{ mb: 1 }}>
-              <Typography 
-                variant="body2" 
-                color={isDarkMode ? color.gray300 : color.gray600}
-                sx={{ mb: 1, ml: 0.5, fontWeight: 500 }}
-              >
-                Sort By
-              </Typography>
-              <FormControl fullWidth variant="outlined" size="small">
-                <Select
-                  value={filter.sortBy || "-createdAt"}
-                  onChange={handleSortChange}
-                  displayEmpty
-                  sx={{
-                    backgroundColor: getInputBackground(),
-                    borderRadius: "8px",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: getBorderColor(),
-                      borderWidth: "1px",
-                    },
-                    "& .MuiSelect-select": {
-                      py: 1.5,
-                      fontSize: "1rem",
-                    },
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: isDarkMode ? color.gray600 : color.gray400,
-                    },
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: color.teal500,
-                      borderWidth: "1px",
-                    },
-                    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                  }}
-                  MenuProps={{
-                    PaperProps: {
-                      sx: {
-                        backgroundColor: isDarkMode ? color.gray800 : color.white,
-                        borderRadius: "8px",
-                        boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-                        border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
-                        mt: 0.5,
-                        "& .MuiMenuItem-root": {
-                          py: 1.2,
-                          "&:hover": {
-                            backgroundColor: isDarkMode 
-                              ? alpha(color.gray700, 0.7) 
-                              : alpha(color.gray100, 0.7),
-                          },
-                          "&.Mui-selected": {
-                            backgroundColor: isDarkMode 
-                              ? alpha(color.teal700, 0.2)
-                              : alpha(color.teal100, 0.7),
-                            "&:hover": {
-                              backgroundColor: isDarkMode 
-                                ? alpha(color.teal700, 0.3)
-                                : alpha(color.teal100, 0.9),
-                            },
-                          },
-                        },
-                      },
-                    },
-                  }}
-                >
-                  <MenuItem value="-createdAt">Newest First</MenuItem>
-                  <MenuItem value="createdAt">Oldest First</MenuItem>
-                  <MenuItem value="-updatedAt">Last Updated</MenuItem>
-                  <MenuItem value="updatedAt">First Updated</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-          </Paper>
-
           {/* Competition date filters */}
           <Paper
             elevation={0}
             sx={{
-              p: 2,
+              p: 2.5,
               backgroundColor: isDarkMode ? alpha(color.gray800, 0.6) : alpha(color.gray50, 0.6),
               borderRadius: 2,
               border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+              boxShadow: isDarkMode 
+                ? '0 4px 12px rgba(0, 0, 0, 0.2)' 
+                : '0 4px 12px rgba(0, 0, 0, 0.05)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                boxShadow: isDarkMode 
+                  ? '0 6px 16px rgba(0, 0, 0, 0.25)' 
+                  : '0 6px 16px rgba(0, 0, 0, 0.08)',
+              },
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-              <CalendarTodayIcon color="primary" />
-              <Typography variant="subtitle1" fontWeight="bold">
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2.5 }}>
+              <CalendarTodayIcon 
+                sx={{ 
+                  color: isDarkMode ? color.teal400 : color.teal600,
+                  fontSize: 24
+                }} 
+              />
+              <Typography variant="subtitle1" fontWeight="bold" fontSize="1.1rem">
                 Competition Dates
               </Typography>
             </Box>
 
-            <Stack spacing={2}>
+            <Stack spacing={2.5}>
               <DateTimePicker
                 label="Start Time (From)"
                 value={filter.startStartTime || null}
@@ -190,7 +105,7 @@ export default function CompetitionAdvancedFilter({
                     sx: {
                       "& .MuiOutlinedInput-root": {
                         backgroundColor: getInputBackground(),
-                        borderRadius: 1,
+                        borderRadius: 1.5,
                         borderColor: getBorderColor(),
                         transition: 'all 0.2s ease-in-out',
                         '&:hover': {
@@ -199,6 +114,8 @@ export default function CompetitionAdvancedFilter({
                         },
                         '&.Mui-focused': {
                           transform: 'translateY(-2px)',
+                          borderColor: isDarkMode ? color.teal400 : color.teal600,
+                          borderWidth: 2,
                         }
                       },
                       "& .MuiInputLabel-root": {
@@ -228,7 +145,7 @@ export default function CompetitionAdvancedFilter({
                     sx: {
                       "& .MuiOutlinedInput-root": {
                         backgroundColor: getInputBackground(),
-                        borderRadius: 1,
+                        borderRadius: 1.5,
                         borderColor: getBorderColor(),
                         transition: 'all 0.2s ease-in-out',
                         '&:hover': {
@@ -237,6 +154,8 @@ export default function CompetitionAdvancedFilter({
                         },
                         '&.Mui-focused': {
                           transform: 'translateY(-2px)',
+                          borderColor: isDarkMode ? color.teal400 : color.teal600,
+                          borderWidth: 2,
                         }
                       },
                       "& .MuiInputLabel-root": {
@@ -266,7 +185,7 @@ export default function CompetitionAdvancedFilter({
                     sx: {
                       "& .MuiOutlinedInput-root": {
                         backgroundColor: getInputBackground(),
-                        borderRadius: 1,
+                        borderRadius: 1.5,
                         borderColor: getBorderColor(),
                         transition: 'all 0.2s ease-in-out',
                         '&:hover': {
@@ -275,6 +194,8 @@ export default function CompetitionAdvancedFilter({
                         },
                         '&.Mui-focused': {
                           transform: 'translateY(-2px)',
+                          borderColor: isDarkMode ? color.teal400 : color.teal600,
+                          borderWidth: 2,
                         }
                       },
                       "& .MuiInputLabel-root": {
@@ -304,7 +225,7 @@ export default function CompetitionAdvancedFilter({
                     sx: {
                       "& .MuiOutlinedInput-root": {
                         backgroundColor: getInputBackground(),
-                        borderRadius: 1,
+                        borderRadius: 1.5,
                         borderColor: getBorderColor(),
                         transition: 'all 0.2s ease-in-out',
                         '&:hover': {
@@ -313,6 +234,8 @@ export default function CompetitionAdvancedFilter({
                         },
                         '&.Mui-focused': {
                           transform: 'translateY(-2px)',
+                          borderColor: isDarkMode ? color.teal400 : color.teal600,
+                          borderWidth: 2,
                         }
                       },
                       "& .MuiInputLabel-root": {
@@ -332,29 +255,53 @@ export default function CompetitionAdvancedFilter({
           <Paper
             elevation={0}
             sx={{
-              p: 2,
+              p: 2.5,
               backgroundColor: isDarkMode ? alpha(color.gray800, 0.6) : alpha(color.gray50, 0.6),
               borderRadius: 2,
               border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+              boxShadow: isDarkMode 
+                ? '0 4px 12px rgba(0, 0, 0, 0.2)' 
+                : '0 4px 12px rgba(0, 0, 0, 0.05)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                boxShadow: isDarkMode 
+                  ? '0 6px 16px rgba(0, 0, 0, 0.25)' 
+                  : '0 6px 16px rgba(0, 0, 0, 0.08)',
+              },
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-              <TuneIcon color="primary" />
-              <Typography variant="subtitle1" fontWeight="bold">
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2.5 }}>
+              <TuneIcon 
+                sx={{ 
+                  color: isDarkMode ? color.teal400 : color.teal600,
+                  fontSize: 24
+                }} 
+              />
+              <Typography variant="subtitle1" fontWeight="bold" fontSize="1.1rem">
                 Additional Filters
               </Typography>
             </Box>
 
             <Divider sx={{ 
-              mb: 2, 
+              mb: 2.5, 
               mt: 1,
               borderColor: isDarkMode ? color.gray700 : color.gray300,
             }} />
             
-            <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
+            <Typography 
+              variant="subtitle2" 
+              sx={{ 
+                mb: 1.5, 
+                color: isDarkMode ? color.teal200 : color.teal700,
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5
+              }}
+            >
               Created At
             </Typography>
-            <Stack spacing={2} sx={{ mb: 3 }}>
+            <Stack spacing={2.5} sx={{ mb: 3 }}>
               <TextField
                 label="Start Date"
                 type="date"
@@ -375,7 +322,7 @@ export default function CompetitionAdvancedFilter({
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     backgroundColor: getInputBackground(),
-                    borderRadius: 1,
+                    borderRadius: 1.5,
                     transition: 'all 0.2s ease-in-out',
                     '&:hover': {
                       transform: 'translateY(-2px)',
@@ -383,6 +330,8 @@ export default function CompetitionAdvancedFilter({
                     },
                     '&.Mui-focused': {
                       transform: 'translateY(-2px)',
+                      borderColor: isDarkMode ? color.teal400 : color.teal600,
+                      borderWidth: 2,
                     }
                   },
                   "& .MuiInputLabel-root": {
@@ -413,7 +362,7 @@ export default function CompetitionAdvancedFilter({
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     backgroundColor: getInputBackground(),
-                    borderRadius: 1,
+                    borderRadius: 1.5,
                     transition: 'all 0.2s ease-in-out',
                     '&:hover': {
                       transform: 'translateY(-2px)',
@@ -421,6 +370,8 @@ export default function CompetitionAdvancedFilter({
                     },
                     '&.Mui-focused': {
                       transform: 'translateY(-2px)',
+                      borderColor: isDarkMode ? color.teal400 : color.teal600,
+                      borderWidth: 2,
                     }
                   },
                   "& .MuiInputLabel-root": {
@@ -434,14 +385,24 @@ export default function CompetitionAdvancedFilter({
             </Stack>
 
             <Divider sx={{ 
-              mb: 2,
+              mb: 2.5,
               borderColor: isDarkMode ? color.gray700 : color.gray300,
             }} />
             
-            <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
+            <Typography 
+              variant="subtitle2" 
+              sx={{ 
+                mb: 1.5, 
+                color: isDarkMode ? color.teal200 : color.teal700,
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5
+              }}
+            >
               Updated At
             </Typography>
-            <Stack spacing={2}>
+            <Stack spacing={2.5}>
               <TextField
                 label="Start Date"
                 type="date"
@@ -462,7 +423,7 @@ export default function CompetitionAdvancedFilter({
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     backgroundColor: getInputBackground(),
-                    borderRadius: 1,
+                    borderRadius: 1.5,
                     transition: 'all 0.2s ease-in-out',
                     '&:hover': {
                       transform: 'translateY(-2px)',
@@ -470,6 +431,8 @@ export default function CompetitionAdvancedFilter({
                     },
                     '&.Mui-focused': {
                       transform: 'translateY(-2px)',
+                      borderColor: isDarkMode ? color.teal400 : color.teal600,
+                      borderWidth: 2,
                     }
                   },
                   "& .MuiInputLabel-root": {
@@ -500,7 +463,7 @@ export default function CompetitionAdvancedFilter({
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     backgroundColor: getInputBackground(),
-                    borderRadius: 1,
+                    borderRadius: 1.5,
                     transition: 'all 0.2s ease-in-out',
                     '&:hover': {
                       transform: 'translateY(-2px)',
@@ -508,6 +471,8 @@ export default function CompetitionAdvancedFilter({
                     },
                     '&.Mui-focused': {
                       transform: 'translateY(-2px)',
+                      borderColor: isDarkMode ? color.teal400 : color.teal600,
+                      borderWidth: 2,
                     }
                   },
                   "& .MuiInputLabel-root": {
