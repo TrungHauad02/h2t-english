@@ -1,13 +1,12 @@
-<<<<<<< HEAD:src/features/teacher/manageTest/components/toeicSection/part6Section/Part6Section.tsx
 import { useState } from "react";
 import { Grid, Divider, Chip, Container } from "@mui/material";
 import { ToeicPart6, ToeicQuestion } from "interfaces";
-import Part6EditDialog from "./Part6EditDialog";
+import Part6EditDialog from "./part6Section/Part6EditDialog";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import DialogConfirm from "../common/DialogConfirm";
+import DialogConfirm from "./common/DialogConfirm";
 import {
   PartContainer,
   EmptyState,
@@ -15,28 +14,13 @@ import {
   QuestionSection,
   PassageDisplay,
   QuestionExplanation,
-} from "../common";
+} from "./common";
 import {
   useDialogManagement,
   useQuestionManagement,
   useSubQuestionManagement,
-} from "features/teacher/manageTest/hooks/ToeicDetailPage";
+} from "features/teacher/manageTest/hooks/useToeicDetailsPage";
 
-=======
-import { useState } from 'react';
-import { Grid, Divider, Chip, Container } from '@mui/material';
-import { ToeicPart6, ToeicQuestion } from 'interfaces';
-import Part6EditDialog from './part6Section/Part6EditDialog';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import useColor from 'theme/useColor';
-import { useDarkMode } from 'hooks/useDarkMode';
-import DialogConfirm from './common/DialogConfirm';
-import { PartContainer, EmptyState ,QuestionTabs,QuestionSection,PassageDisplay,QuestionExplanation} from './common';
-
-
-import { useSubQuestionManagement,useQuestionManagement,useDialogManagement }  from '../../hooks/toeicDetailPage/index';
->>>>>>> ff5be51 (U(ManageTestDetails) fix loi them xoa cac part khong load lai):src/features/teacher/manageTest/components/toeicSection/Part6Section.tsx
 interface Part6SectionProps {
   questions: ToeicPart6[];
   toeicQuestions: { [partId: number]: ToeicQuestion[] };

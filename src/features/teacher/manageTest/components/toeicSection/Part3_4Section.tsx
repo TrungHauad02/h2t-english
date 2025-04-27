@@ -1,4 +1,3 @@
-<<<<<<< HEAD:src/features/teacher/manageTest/components/toeicSection/part3_4Section/Part3_4Section.tsx
 import { Grid, Divider, Chip, Paper, Stack, Container } from "@mui/material";
 import { useState } from "react";
 import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
@@ -13,32 +12,16 @@ import {
   QuestionTabs,
   QuestionSection,
   QuestionExplanation,
-} from "../common";
-=======
-import { Grid, Divider, Chip, Paper, Stack, Container } from '@mui/material';
-import { useState } from 'react';
-import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
-import CampaignIcon from '@mui/icons-material/Campaign';
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import useColor from 'theme/useColor';
-import { useDarkMode } from 'hooks/useDarkMode';
-import { ToeicPart3_4, ToeicQuestion } from 'interfaces';
-import { PartContainer, EmptyState ,QuestionTabs,QuestionSection,QuestionExplanation} from './common';
+} from "./common";
 
-import { AudioSection, ImageSection, TranscriptSection } from './part3_4Section/components';
-import Part3_4EditDialog from './part3_4Section/Part3_4EditDialog';
-import DialogConfirm from './common/DialogConfirm';
-import { useSubQuestionManagement,useQuestionManagement,useDialogManagement }  from '../../hooks/toeicDetailPage/index';
->>>>>>> ff5be51 (U(ManageTestDetails) fix loi them xoa cac part khong load lai):src/features/teacher/manageTest/components/toeicSection/Part3_4Section.tsx
-
-import { AudioSection, ImageSection, TranscriptSection } from "./components";
-import Part3_4EditDialog from "./Part3_4EditDialog";
-import DialogConfirm from "../common/DialogConfirm";
+import { AudioSection, ImageSection, TranscriptSection } from "./part3_4Section/components";
+import Part3_4EditDialog from "./part3_4Section/Part3_4EditDialog";
+import DialogConfirm from "./common/DialogConfirm";
 import {
   useDialogManagement,
   useQuestionManagement,
   useSubQuestionManagement,
-} from "features/teacher/manageTest/hooks/ToeicDetailPage";
+} from "features/teacher/manageTest/hooks/useToeicDetailsPage";
 
 interface Part3_4SectionProps {
   questions: ToeicPart3_4[];
