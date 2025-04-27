@@ -19,8 +19,8 @@ import { ToeicQuestion, AnswerEnum, ToeicAnswer } from 'interfaces';
 import {
   PartContainer,
   AnswerOptionsGrid
-} from '../common';
-import Part5EditDialog from './Part5EditDialog';
+} from './common';
+import Part5EditDialog from './part5Section/Part5EditDialog';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import SubjectIcon from '@mui/icons-material/Subject';
 import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';

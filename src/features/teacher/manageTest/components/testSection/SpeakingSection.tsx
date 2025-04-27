@@ -31,11 +31,15 @@ export function SpeakingSection({ partId, testItemIds }: SpeakingSectionProps) {
   const rightColumnRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // State
-  const [pendingStatusChanges, setPendingStatusChanges] = useState<Record<number, boolean>>({});
+  // Ref to store test item ids instead of state
+  const listTestIdsRef = useRef<number[]>(testItemIds);
+
+  // Ref to track pending status changes
+  const pendingStatusChangesRef = useRef<Record<number, boolean>>({});
+
+  // State management
   const [speakings, setSpeakings] = useState<TestSpeaking[]>([]);
   const [selectedSpeakingId, setSelectedSpeakingId] = useState<number | null>(null);
-  const [listTestIds, setListTestIds] = useState(testItemIds);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [questionsRanges, setQuestionsRanges] = useState<Record<number, string>>({});
@@ -50,15 +54,18 @@ export function SpeakingSection({ partId, testItemIds }: SpeakingSectionProps) {
   const fetchSpeakings = async () => {
     try {
       if (partId) {
-        const resData = await testSpeakingService.getByIds(listTestIds);
+        const resData = await testSpeakingService.getByIds(listTestIdsRef.current);
         setSpeakings(resData.data);
         
         const newTestSpeakingIds = resData.data.map((testSpeaking: TestSpeaking) => testSpeaking.id);
-        setListTestIds(newTestSpeakingIds);
+        listTestIdsRef.current = newTestSpeakingIds;
         
         if (resData.data.length > 0 && !selectedSpeakingId) {
           setSelectedSpeakingId(resData.data[0].id);
         }
+        
+        // Reset pending status changes
+        pendingStatusChangesRef.current = {};
         
         // Calculate question ranges for all speakings
         calculateQuestionRanges(resData.data);
@@ -78,10 +85,7 @@ export function SpeakingSection({ partId, testItemIds }: SpeakingSectionProps) {
     const speakingToUpdate = speakings.find(s => s.id === speakingId);
     if (!speakingToUpdate) return;
     
-    setPendingStatusChanges(prev => ({
-      ...prev,
-      [speakingId]: !speakingToUpdate.status
-    }));
+    pendingStatusChangesRef.current[speakingId] = !speakingToUpdate.status;
     
     setHasMadeChanges(true);
     
@@ -134,11 +138,11 @@ export function SpeakingSection({ partId, testItemIds }: SpeakingSectionProps) {
         await testPartService.patch(partId, {
           questions: newTestSpeakingIds,
         });
-        setListTestIds(newTestSpeakingIds);
+        listTestIdsRef.current = newTestSpeakingIds;
       }
       
       // Save status changes
-      const statusKeys = Object.keys(pendingStatusChanges);
+      const statusKeys = Object.keys(pendingStatusChangesRef.current);
       if (statusKeys.length > 0) {
         for (const idStr of statusKeys) {
           const id = parseInt(idStr);
@@ -146,7 +150,7 @@ export function SpeakingSection({ partId, testItemIds }: SpeakingSectionProps) {
           if (speakingToUpdate) {
             await testSpeakingService.update(id, {
               ...speakingToUpdate,
-              status: pendingStatusChanges[id]
+              status: pendingStatusChangesRef.current[id]
             });
           }
         }
@@ -154,7 +158,7 @@ export function SpeakingSection({ partId, testItemIds }: SpeakingSectionProps) {
       
       // Reset change trackers
       setHasMadeChanges(false);
-      setPendingStatusChanges({});
+      pendingStatusChangesRef.current = {};
       
       // Show success message
       toast.success("Changes saved successfully");
@@ -175,14 +179,13 @@ export function SpeakingSection({ partId, testItemIds }: SpeakingSectionProps) {
   };
 
   const handleCancelEdit = () => {
-    if (hasMadeChanges || Object.keys(pendingStatusChanges).length > 0) {
+    if (hasMadeChanges || Object.keys(pendingStatusChangesRef.current).length > 0) {
       fetchSpeakings();
     }
     setIsEditMode(false);
     setHasMadeChanges(false);
-    setPendingStatusChanges({});
+    pendingStatusChangesRef.current = {};
   };
-
   const onMoveLeft = (index: number) => {
     if (index <= 0) return;
     const updatedSpeakings = [...speakings];
@@ -226,12 +229,12 @@ export function SpeakingSection({ partId, testItemIds }: SpeakingSectionProps) {
       
       await testSpeakingService.remove(deleteId);
       
-      const updatedSpeakingIds = listTestIds.filter(id => id !== deleteId);
+      const updatedSpeakingIds = listTestIdsRef.current.filter(id => id !== deleteId);
       await testPartService.patch(partId, {
         questions: updatedSpeakingIds,
       });
       
-      setListTestIds(updatedSpeakingIds);
+      listTestIdsRef.current = updatedSpeakingIds;
       
       // If the deleted speaking was selected, select another one
       if (selectedSpeakingId === deleteId) {
@@ -294,7 +297,7 @@ export function SpeakingSection({ partId, testItemIds }: SpeakingSectionProps) {
                 onMoveRight={onMoveRight}
                 questionsRanges={questionsRanges}
                 onToggleStatus={handleToggleStatus}
-                hasChanges={hasMadeChanges || Object.keys(pendingStatusChanges).length > 0}
+                hasChanges={hasMadeChanges || Object.keys(pendingStatusChangesRef.current).length > 0}
               />
             </Grid>
             
@@ -323,10 +326,11 @@ export function SpeakingSection({ partId, testItemIds }: SpeakingSectionProps) {
         open={isAddDialogOpen}
         onClose={() => setIsAddDialogOpen(false)}
         partId={partId}
-        testItems={listTestIds}
+        testItems={listTestIdsRef.current}
         fetchSpeakings={fetchSpeakings}
-        setListTestIds={setListTestIds}
-        
+        setListTestIds={(newTestIds: number[]) => {
+          listTestIdsRef.current = newTestIds;
+        }}
       />
       
       {/* Delete Confirmation Dialog */}
@@ -340,3 +344,5 @@ export function SpeakingSection({ partId, testItemIds }: SpeakingSectionProps) {
     </>
   );
 }
+
+export default SpeakingSection;

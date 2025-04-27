@@ -1,6 +1,6 @@
 import React from 'react';
 import { ToeicPart3_4, ToeicQuestion } from 'interfaces';
-import Part3_4Section from '../Part3_4Section';
+import Part3_4Section from './Part3_4Section';
 
 interface Part4SectionProps {
   questions: ToeicPart3_4[];

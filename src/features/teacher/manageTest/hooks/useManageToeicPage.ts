@@ -5,9 +5,9 @@ import { toast } from "react-toastify";
 
 export default function useManageToeicPage() {
   const [filter, setFilter] = useState<ToeicFilter>({
-    status: null,
     title: "",
     sortBy: "-createdAt",
+    status: true,
   });
 
   const [toeicTests, setToeicTests] = useState<Toeic[]>([]);
@@ -20,11 +20,10 @@ export default function useManageToeicPage() {
     try {
       setLoading(true);
       
-      const response = await toeicService.searchWithFilters(
-        page - 1, // API expects 0-based indexing
+      const response = await toeicService.getToeicsByTeacher(
+        page , 
         itemsPerPage,
-        '',
-        '',
+        filter,
       );
       
       setToeicTests(response.data.content || []);

@@ -34,7 +34,7 @@ interface AddListeningDialogProps {
   partId: number;
   fetchListenings: () => void;
   testItemIds: number[];
-  setListTestIds: React.Dispatch<React.SetStateAction<number[]>>;
+  setListTestIds: (newTestIds: number[]) => void;
 
 }
 

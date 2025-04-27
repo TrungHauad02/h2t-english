@@ -4,14 +4,9 @@ import {
   Typography, 
   TextField, 
   Box, 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  MenuItem,
   Divider,
   Paper,
   alpha,
-  SelectChangeEvent
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -22,23 +17,11 @@ import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import TuneIcon from "@mui/icons-material/Tune";
-import SortIcon from "@mui/icons-material/Sort";
-
-interface CompetitionFilter {
-  status: boolean | null;
-  title: string;
-  sortBy: string;
-  startDate?: string;
-  endDate?: string;
-  startCreatedAt?: Date;
-  endCreatedAt?: Date;
-  startUpdatedAt?: Date;
-  endUpdatedAt?: Date;
-}
+import { CompetitionTestFilter } from "interfaces";
 
 interface CompetitionAdvancedFilterProps {
-  filter: CompetitionFilter;
-  updateFilter: (updates: Partial<CompetitionFilter>) => void;
+  filter: CompetitionTestFilter;
+  updateFilter: (updates: Partial<CompetitionTestFilter>) => void;
   open: boolean;
   onClose: () => void;
   onApply: () => void;
@@ -62,11 +45,6 @@ export default function CompetitionAdvancedFilter({
     return isDarkMode ? color.gray700 : color.gray300;
   };
 
-  // Fixed type for SelectChangeEvent
-  const handleSortChange = (event: SelectChangeEvent<string>) => {
-    updateFilter({ sortBy: event.target.value });
-  };
-
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <WEDialog
@@ -79,73 +57,44 @@ export default function CompetitionAdvancedFilter({
         }}
       >
         <Stack spacing={3}>
-          {/* Sort options */}
-          <Paper
-            elevation={0}
-            sx={{
-              p: 2,
-              backgroundColor: isDarkMode ? alpha(color.gray800, 0.6) : alpha(color.gray50, 0.6),
-              borderRadius: 2,
-              border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-              <SortIcon color="primary" />
-              <Typography variant="subtitle1" fontWeight="bold">
-                Sort Options
-              </Typography>
-            </Box>
-
-            <FormControl fullWidth variant="outlined" size="small">
-              <InputLabel id="sort-label">Sort By</InputLabel>
-              <Select
-                labelId="sort-label"
-                value={filter.sortBy}
-                onChange={handleSortChange}
-                label="Sort By"
-                sx={{
-                  backgroundColor: getInputBackground(),
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: getBorderColor(),
-                  },
-                }}
-              >
-                <MenuItem value="-createdAt">Newest First</MenuItem>
-                <MenuItem value="createdAt">Oldest First</MenuItem>
-                <MenuItem value="-startTime">Start Date (Latest)</MenuItem>
-                <MenuItem value="startTime">Start Date (Earliest)</MenuItem>
-                <MenuItem value="-endTime">End Date (Latest)</MenuItem>
-                <MenuItem value="endTime">End Date (Earliest)</MenuItem>
-                <MenuItem value="title">Title (A-Z)</MenuItem>
-                <MenuItem value="-title">Title (Z-A)</MenuItem>
-              </Select>
-            </FormControl>
-          </Paper>
-
           {/* Competition date filters */}
           <Paper
             elevation={0}
             sx={{
-              p: 2,
+              p: 2.5,
               backgroundColor: isDarkMode ? alpha(color.gray800, 0.6) : alpha(color.gray50, 0.6),
               borderRadius: 2,
               border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+              boxShadow: isDarkMode 
+                ? '0 4px 12px rgba(0, 0, 0, 0.2)' 
+                : '0 4px 12px rgba(0, 0, 0, 0.05)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                boxShadow: isDarkMode 
+                  ? '0 6px 16px rgba(0, 0, 0, 0.25)' 
+                  : '0 6px 16px rgba(0, 0, 0, 0.08)',
+              },
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-              <CalendarTodayIcon color="primary" />
-              <Typography variant="subtitle1" fontWeight="bold">
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2.5 }}>
+              <CalendarTodayIcon 
+                sx={{ 
+                  color: isDarkMode ? color.teal400 : color.teal600,
+                  fontSize: 24
+                }} 
+              />
+              <Typography variant="subtitle1" fontWeight="bold" fontSize="1.1rem">
                 Competition Dates
               </Typography>
             </Box>
 
-            <Stack spacing={2}>
+            <Stack spacing={2.5}>
               <DateTimePicker
                 label="Start Time (From)"
-                value={filter.startDate ? new Date(filter.startDate) : null}
+                value={filter.startStartTime || null}
                 onChange={(date) => {
                   updateFilter({
-                    startDate: date ? date.toISOString() : undefined,
+                    startStartTime: date || undefined,
                   });
                 }}
                 slotProps={{
@@ -156,7 +105,7 @@ export default function CompetitionAdvancedFilter({
                     sx: {
                       "& .MuiOutlinedInput-root": {
                         backgroundColor: getInputBackground(),
-                        borderRadius: 1,
+                        borderRadius: 1.5,
                         borderColor: getBorderColor(),
                         transition: 'all 0.2s ease-in-out',
                         '&:hover': {
@@ -165,6 +114,88 @@ export default function CompetitionAdvancedFilter({
                         },
                         '&.Mui-focused': {
                           transform: 'translateY(-2px)',
+                          borderColor: isDarkMode ? color.teal400 : color.teal600,
+                          borderWidth: 2,
+                        }
+                      },
+                      "& .MuiInputLabel-root": {
+                        color: isDarkMode ? color.gray400 : color.gray600,
+                      },
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: getBorderColor(),
+                      },
+                    },
+                  },
+                }}
+              />
+
+              <DateTimePicker
+                label="Start Time (To)"
+                value={filter.endStartTime || null}
+                onChange={(date) => {
+                  updateFilter({
+                    endStartTime: date || undefined,
+                  });
+                }}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    variant: "outlined",
+                    size: "small",
+                    sx: {
+                      "& .MuiOutlinedInput-root": {
+                        backgroundColor: getInputBackground(),
+                        borderRadius: 1.5,
+                        borderColor: getBorderColor(),
+                        transition: 'all 0.2s ease-in-out',
+                        '&:hover': {
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                        },
+                        '&.Mui-focused': {
+                          transform: 'translateY(-2px)',
+                          borderColor: isDarkMode ? color.teal400 : color.teal600,
+                          borderWidth: 2,
+                        }
+                      },
+                      "& .MuiInputLabel-root": {
+                        color: isDarkMode ? color.gray400 : color.gray600,
+                      },
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: getBorderColor(),
+                      },
+                    },
+                  },
+                }}
+              />
+
+              <DateTimePicker
+                label="End Time (From)"
+                value={filter.startEndTime || null}
+                onChange={(date) => {
+                  updateFilter({
+                    startEndTime: date || undefined,
+                  });
+                }}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    variant: "outlined",
+                    size: "small",
+                    sx: {
+                      "& .MuiOutlinedInput-root": {
+                        backgroundColor: getInputBackground(),
+                        borderRadius: 1.5,
+                        borderColor: getBorderColor(),
+                        transition: 'all 0.2s ease-in-out',
+                        '&:hover': {
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                        },
+                        '&.Mui-focused': {
+                          transform: 'translateY(-2px)',
+                          borderColor: isDarkMode ? color.teal400 : color.teal600,
+                          borderWidth: 2,
                         }
                       },
                       "& .MuiInputLabel-root": {
@@ -180,10 +211,10 @@ export default function CompetitionAdvancedFilter({
 
               <DateTimePicker
                 label="End Time (To)"
-                value={filter.endDate ? new Date(filter.endDate) : null}
+                value={filter.endEndTime || null}
                 onChange={(date) => {
                   updateFilter({
-                    endDate: date ? date.toISOString() : undefined,
+                    endEndTime: date || undefined,
                   });
                 }}
                 slotProps={{
@@ -194,7 +225,7 @@ export default function CompetitionAdvancedFilter({
                     sx: {
                       "& .MuiOutlinedInput-root": {
                         backgroundColor: getInputBackground(),
-                        borderRadius: 1,
+                        borderRadius: 1.5,
                         borderColor: getBorderColor(),
                         transition: 'all 0.2s ease-in-out',
                         '&:hover': {
@@ -203,6 +234,8 @@ export default function CompetitionAdvancedFilter({
                         },
                         '&.Mui-focused': {
                           transform: 'translateY(-2px)',
+                          borderColor: isDarkMode ? color.teal400 : color.teal600,
+                          borderWidth: 2,
                         }
                       },
                       "& .MuiInputLabel-root": {
@@ -222,29 +255,53 @@ export default function CompetitionAdvancedFilter({
           <Paper
             elevation={0}
             sx={{
-              p: 2,
+              p: 2.5,
               backgroundColor: isDarkMode ? alpha(color.gray800, 0.6) : alpha(color.gray50, 0.6),
               borderRadius: 2,
               border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+              boxShadow: isDarkMode 
+                ? '0 4px 12px rgba(0, 0, 0, 0.2)' 
+                : '0 4px 12px rgba(0, 0, 0, 0.05)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                boxShadow: isDarkMode 
+                  ? '0 6px 16px rgba(0, 0, 0, 0.25)' 
+                  : '0 6px 16px rgba(0, 0, 0, 0.08)',
+              },
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-              <TuneIcon color="primary" />
-              <Typography variant="subtitle1" fontWeight="bold">
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2.5 }}>
+              <TuneIcon 
+                sx={{ 
+                  color: isDarkMode ? color.teal400 : color.teal600,
+                  fontSize: 24
+                }} 
+              />
+              <Typography variant="subtitle1" fontWeight="bold" fontSize="1.1rem">
                 Additional Filters
               </Typography>
             </Box>
 
             <Divider sx={{ 
-              mb: 2, 
+              mb: 2.5, 
               mt: 1,
               borderColor: isDarkMode ? color.gray700 : color.gray300,
             }} />
             
-            <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
+            <Typography 
+              variant="subtitle2" 
+              sx={{ 
+                mb: 1.5, 
+                color: isDarkMode ? color.teal200 : color.teal700,
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5
+              }}
+            >
               Created At
             </Typography>
-            <Stack spacing={2} sx={{ mb: 3 }}>
+            <Stack spacing={2.5} sx={{ mb: 3 }}>
               <TextField
                 label="Start Date"
                 type="date"
@@ -265,7 +322,7 @@ export default function CompetitionAdvancedFilter({
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     backgroundColor: getInputBackground(),
-                    borderRadius: 1,
+                    borderRadius: 1.5,
                     transition: 'all 0.2s ease-in-out',
                     '&:hover': {
                       transform: 'translateY(-2px)',
@@ -273,6 +330,8 @@ export default function CompetitionAdvancedFilter({
                     },
                     '&.Mui-focused': {
                       transform: 'translateY(-2px)',
+                      borderColor: isDarkMode ? color.teal400 : color.teal600,
+                      borderWidth: 2,
                     }
                   },
                   "& .MuiInputLabel-root": {
@@ -303,7 +362,7 @@ export default function CompetitionAdvancedFilter({
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     backgroundColor: getInputBackground(),
-                    borderRadius: 1,
+                    borderRadius: 1.5,
                     transition: 'all 0.2s ease-in-out',
                     '&:hover': {
                       transform: 'translateY(-2px)',
@@ -311,6 +370,8 @@ export default function CompetitionAdvancedFilter({
                     },
                     '&.Mui-focused': {
                       transform: 'translateY(-2px)',
+                      borderColor: isDarkMode ? color.teal400 : color.teal600,
+                      borderWidth: 2,
                     }
                   },
                   "& .MuiInputLabel-root": {
@@ -324,14 +385,24 @@ export default function CompetitionAdvancedFilter({
             </Stack>
 
             <Divider sx={{ 
-              mb: 2,
+              mb: 2.5,
               borderColor: isDarkMode ? color.gray700 : color.gray300,
             }} />
             
-            <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
+            <Typography 
+              variant="subtitle2" 
+              sx={{ 
+                mb: 1.5, 
+                color: isDarkMode ? color.teal200 : color.teal700,
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5
+              }}
+            >
               Updated At
             </Typography>
-            <Stack spacing={2}>
+            <Stack spacing={2.5}>
               <TextField
                 label="Start Date"
                 type="date"
@@ -352,7 +423,7 @@ export default function CompetitionAdvancedFilter({
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     backgroundColor: getInputBackground(),
-                    borderRadius: 1,
+                    borderRadius: 1.5,
                     transition: 'all 0.2s ease-in-out',
                     '&:hover': {
                       transform: 'translateY(-2px)',
@@ -360,6 +431,8 @@ export default function CompetitionAdvancedFilter({
                     },
                     '&.Mui-focused': {
                       transform: 'translateY(-2px)',
+                      borderColor: isDarkMode ? color.teal400 : color.teal600,
+                      borderWidth: 2,
                     }
                   },
                   "& .MuiInputLabel-root": {
@@ -390,7 +463,7 @@ export default function CompetitionAdvancedFilter({
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     backgroundColor: getInputBackground(),
-                    borderRadius: 1,
+                    borderRadius: 1.5,
                     transition: 'all 0.2s ease-in-out',
                     '&:hover': {
                       transform: 'translateY(-2px)',
@@ -398,6 +471,8 @@ export default function CompetitionAdvancedFilter({
                     },
                     '&.Mui-focused': {
                       transform: 'translateY(-2px)',
+                      borderColor: isDarkMode ? color.teal400 : color.teal600,
+                      borderWidth: 2,
                     }
                   },
                   "& .MuiInputLabel-root": {

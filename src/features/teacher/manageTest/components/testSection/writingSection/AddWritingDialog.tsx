@@ -36,7 +36,7 @@ interface AddWritingDialogProps {
   partId: number;
   fetchWritings: () => void;
   testItemIds: number[];
-  setListTestIds: React.Dispatch<React.SetStateAction<number[]>>;
+  setListTestIds: (newTestIds: number[]) => void;
 }
 
 export default function AddWritingDialog({
@@ -109,6 +109,7 @@ export default function AddWritingDialog({
       });
     } finally {
       setIsSubmitting(false);
+      fetchWritings()
     }
   };
 

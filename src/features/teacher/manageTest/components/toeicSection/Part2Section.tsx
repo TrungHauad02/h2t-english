@@ -21,8 +21,8 @@ import {
   AudioPlayer,
   AnswerOptionsGrid,
   TranscriptBox
-} from '../common';
-import Part2EditDialog from './Part2EditDialog';
+} from './common';
+import Part2EditDialog from './part2Section/Part2EditDialog';
 import useColor from 'theme/useColor';
 import { useDarkMode } from 'hooks/useDarkMode';
 import HeadphonesIcon from '@mui/icons-material/Headphones';

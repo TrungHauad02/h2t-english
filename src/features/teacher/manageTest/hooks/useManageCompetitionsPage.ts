@@ -1,17 +1,10 @@
-import { CompetitionTest } from "interfaces";
+import { CompetitionTest, CompetitionTestFilter } from "interfaces";
 import { useEffect, useState } from "react";
 import { competitionTestService } from "services";
-
-interface CompetitionFilter {
-  status: boolean | null;
-  title: string;
-  sortBy: string;
-  startDate?: string;
-  endDate?: string;
-}
+import { toast } from "react-toastify";
 
 export default function useManageCompetitionsPage() {
-  const [filter, setFilter] = useState<CompetitionFilter>({
+  const [filter, setFilter] = useState<CompetitionTestFilter>({
     status: null,
     title: "",
     sortBy: "-createdAt",
@@ -32,43 +25,33 @@ export default function useManageCompetitionsPage() {
     try {
       setIsLoading(true);
       
-      const filterParams: Record<string, any> = {
-        title: filter.title || undefined,
-        status: filter.status !== null ? filter.status : undefined,
-        startDate: filter.startDate || undefined,
-        endDate: filter.endDate || undefined,
-      };
-      
-      const responseData = await competitionTestService.searchWithFilters(
-        page - 1, // API uses 0-based indexing
+      const responseData = await competitionTestService.getCompetitionTestsByTeacher(
+        page,
         itemsPerPage,
-        // filter.sortBy,
-        "",
-        // filterParams
+        filter
       );
       
-      setCompetitions(responseData.data.content);
-      setTotalPages(responseData.data.totalPages);
+      setCompetitions(responseData.data.content || []);
+      setTotalPages(responseData.data.totalPages || 1);
     } catch (error) {
       console.error("Error fetching competitions:", error);
+      toast.error("Failed to load competitions");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Initial data loading on mount and when pagination/itemsPerPage changes
   useEffect(() => {
     fetchData();
-  }, [page, itemsPerPage]);
+  }, [itemsPerPage, page]);
 
-  // Handle search with current filters
   const handleSearch = async () => {
     setPage(1); // Reset to first page on new search
     await fetchData();
   };
 
   // Update filter values
-  const updateFilter = (updates: Partial<CompetitionFilter>) => {
+  const updateFilter = (updates: Partial<CompetitionTestFilter>) => {
     setFilter((prevFilter) => ({
       ...prevFilter,
       ...updates,
@@ -86,16 +69,16 @@ export default function useManageCompetitionsPage() {
       updateFilter({ status: null });
     } else if (status === "published") {
       updateFilter({ status: true });
-    } else if (status === "draft") {
+    } else if (status === "unpublished") {
       updateFilter({ status: false });
     }
   };
 
   // Handle date range changes
-  const handleDateRangeChange = (startDate?: Date, endDate?: Date) => {
+  const handleDateRangeChange = (startStartTime?: Date, endEndTime?: Date) => {
     updateFilter({
-      startDate: startDate ? startDate.toISOString() : undefined,
-      endDate: endDate ? endDate.toISOString() : undefined,
+      startStartTime: startStartTime,
+      endEndTime: endEndTime,
     });
   };
 
@@ -113,104 +96,58 @@ export default function useManageCompetitionsPage() {
   // Create a new competition
   const createCompetition = async (data: Partial<CompetitionTest>) => {
     try {
-      setIsLoading(true);
       const response = await competitionTestService.create(data as CompetitionTest);
       
       // Refresh the data to include the new competition
       await fetchData();
+      toast.success("Competition created successfully");
       
       return response;
     } catch (error) {
       console.error("Error creating competition:", error);
+      toast.error("Failed to create competition");
       throw error;
-    } finally {
-      setIsLoading(false);
     }
   };
 
   // Update an existing competition
   const updateCompetition = async (id: number, data: Partial<CompetitionTest>) => {
     try {
-      setIsLoading(true);
-      const response = await competitionTestService.patch(id, data);
+      const updatedCompetition = await competitionTestService.patch(id, data);
       
       // Update the list of competitions
       setCompetitions(prevCompetitions => 
         prevCompetitions.map(comp => comp.id === id ? { ...comp, ...data } : comp)
       );
       
-      return response;
+      toast.success("Competition updated successfully");
+      return updatedCompetition;
     } catch (error) {
       console.error("Error updating competition:", error);
+      toast.error("Failed to update competition");
       throw error;
-    } finally {
-      setIsLoading(false);
     }
   };
 
   // Delete a competition
   const deleteCompetition = async (id: number) => {
     try {
-      setIsLoading(true);
       await competitionTestService.remove(id);
       
-      // Remove the deleted competition from the list
-      setCompetitions(prevCompetitions => 
-        prevCompetitions.filter(comp => comp.id !== id)
-      );
-      
       // If current page is empty after deletion, go to previous page
-      if (displayedCompetitions.length === 1 && page > 1) {
+      if (competitions.length === 1 && page > 1) {
         setPage(prev => prev - 1);
       } else {
         // Otherwise refresh the current page
         await fetchData();
       }
       
+      toast.success("Competition deleted successfully");
       return true;
     } catch (error) {
       console.error("Error deleting competition:", error);
+      toast.error("Failed to delete competition");
       return false;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Load competitions by status (for tab filtering)
-  const loadCompetitionsByStatus = async (status: 'upcoming' | 'active' | 'past' | 'all') => {
-    try {
-      setIsLoading(true);
-      
-      // Map the status to filter parameters
-      let filterParams: Record<string, any> = {};
-      
-      const now = new Date().toISOString();
-      
-      if (status === 'upcoming') {
-        filterParams = { startDate: now }; // Competitions that haven't started
-      } else if (status === 'active') {
-        filterParams = { 
-          startBeforeDate: now,
-          endAfterDate: now
-        }; // Competitions currently running
-      } else if (status === 'past') {
-        filterParams = { endDate: now }; // Competitions that have ended
-      }
-      
-      const responseData = await competitionTestService.searchWithFilters(
-        0, 
-        100, 
-        "", 
-        "",
-        
-      );
-      
-      return responseData.content;
-    } catch (error) {
-      console.error(`Error loading ${status} competitions:`, error);
-      return [];
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -222,35 +159,22 @@ export default function useManageCompetitionsPage() {
   // Calculate displayed competitions for current page
   const displayedCompetitions = competitions;
 
-  // Load categorized competitions for tabs
-  const [upcomingCompetitions, setUpcomingCompetitions] = useState<CompetitionTest[]>([]);
-  const [activeCompetitions, setActiveCompetitions] = useState<CompetitionTest[]>([]);
-  const [pastCompetitions, setPastCompetitions] = useState<CompetitionTest[]>([]);
-
-  // Load tab data on initial mount
-  useEffect(() => {
-    const loadTabData = async () => {
-      const upcoming = await loadCompetitionsByStatus('upcoming');
-      const active = await loadCompetitionsByStatus('active');
-      const past = await loadCompetitionsByStatus('past');
-      
-      setUpcomingCompetitions(upcoming);
-      setActiveCompetitions(active);
-      setPastCompetitions(past);
-    };
-    
-    loadTabData();
-  }, []);
-
   return {
+    // New API
+    filter,
+    competitions,
+    isLoading,
+    itemsPerPage,
+    totalPages,
+    page,
+    fetchData,
+    updateFilter,
+    setCompetitions,
+    
+    // For backward compatibility
     searchText,
     setSearchText,
     statusFilter,
-    competitions,
-    isLoading,
-    page,
-    itemsPerPage,
-    totalPages,
     handleSearch,
     handleChangePage,
     handleItemsPerPageChange,
@@ -260,12 +184,10 @@ export default function useManageCompetitionsPage() {
     updateCompetition,
     deleteCompetition,
     publishCompetition,
-    loadCompetitionsByStatus,
-    fetchData,
-    updateFilter,
     displayedCompetitions,
-    upcomingCompetitions,
-    activeCompetitions,
-    pastCompetitions
+    
+    // Control UI elements
+    setPage,
+    setItemsPerPage
   };
 }

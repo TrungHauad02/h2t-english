@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Fade, Box, Button, Paper } from '@mui/material';
+import { Fade, Box, Paper } from '@mui/material';
 import { Question, QuestionSupportTestType } from 'interfaces';
 import SpellcheckIcon from '@mui/icons-material/Spellcheck';
 import QuizIcon from "@mui/icons-material/Quiz";
-import AddIcon from "@mui/icons-material/Add";
 import TestSectionContainer from './common/TestSectionContainer';
 import SectionHeader from './common/SectionHeader';
 import NoQuestionSection from './questionsSection/NoQuestionSection';
@@ -114,7 +113,7 @@ export function GrammarSection({ partId, questionIds }: GrammarSectionProps) {
       id="grammar-section"
       title="Grammar Section"
       icon={<SpellcheckIcon />}
-      isEmpty={questionIds.length === 0}
+      isEmpty={data.length === 0}
       isEditMode={isEditMode}
       onAdd={handleAddQuestion}
       emptyState={{
@@ -146,6 +145,7 @@ export function GrammarSection({ partId, questionIds }: GrammarSectionProps) {
             {data.length > 0 ? (
               <ListQuestion
                 data={data}
+                partId={partId}
                 isEditMode={isEditMode}
                 fetchData={fetchData}
                 onMoveUp={onMoveUp}

@@ -98,7 +98,6 @@ export default function AddQuestionDialog({
       const resData = await questionService.create(newQuestion);
 
       const newQuestions = [...questions, resData.data.id];
-      console.log(partId);
       
       await questionServiceUpdate.updateQuestions(partId, newQuestions);
 

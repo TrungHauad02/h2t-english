@@ -30,14 +30,18 @@ export function WritingSection({ partId, testItemIds }: WritingSectionProps) {
   const leftColumnRef = useRef<HTMLDivElement>(null);
   const rightColumnRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Ref to store test item ids instead of state
+  const listTestIdsRef = useRef<number[]>(testItemIds);
+
+  // Ref to track pending status changes
+  const pendingStatusChangesRef = useRef<Record<number, boolean>>({});
 
   // State management
   const [writings, setWritings] = useState<TestWriting[]>([]);
   const [selectedWritingId, setSelectedWritingId] = useState<number | null>(null);
-  const [listTestIds, setListTestIds] = useState(testItemIds);
   const [isEditMode, setIsEditMode] = useState(false);
   const [hasMadeChanges, setHasMadeChanges] = useState(false);
-  const [pendingStatusChanges, setPendingStatusChanges] = useState<Record<number, boolean>>({});
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   // Delete state
@@ -48,15 +52,18 @@ export function WritingSection({ partId, testItemIds }: WritingSectionProps) {
   const fetchWritings = async () => {
     try {
       if (partId) {
-        const resData = await testWritingService.getByIds(listTestIds);
+        const resData = await testWritingService.getByIds(listTestIdsRef.current);
         setWritings(resData.data);
         
         const newTestWritingIds = resData.data.map((testWriting: TestWriting) => testWriting.id);
-        setListTestIds(newTestWritingIds);
+        listTestIdsRef.current = newTestWritingIds;
         
         if (resData.data.length > 0 && !selectedWritingId) {
           setSelectedWritingId(resData.data[0].id);
         }
+
+        // Reset pending status changes
+        pendingStatusChangesRef.current = {};
       }
     } catch (error) {
       console.error("Error fetching writings:", error);
@@ -93,11 +100,11 @@ export function WritingSection({ partId, testItemIds }: WritingSectionProps) {
         await testPartService.patch(partId, {
           questions: newTestWritingIds,
         });
-        setListTestIds(newTestWritingIds);
+        listTestIdsRef.current = newTestWritingIds;
       }
       
       // Save status changes
-      const statusKeys = Object.keys(pendingStatusChanges);
+      const statusKeys = Object.keys(pendingStatusChangesRef.current);
       if (statusKeys.length > 0) {
         for (const idStr of statusKeys) {
           const id = parseInt(idStr);
@@ -105,7 +112,7 @@ export function WritingSection({ partId, testItemIds }: WritingSectionProps) {
           if (writingToUpdate) {
             await testWritingService.update(id, {
               ...writingToUpdate,
-              status: pendingStatusChanges[id]
+              status: pendingStatusChangesRef.current[id]
             });
           }
         }
@@ -113,7 +120,7 @@ export function WritingSection({ partId, testItemIds }: WritingSectionProps) {
       
       // Reset change trackers
       setHasMadeChanges(false);
-      setPendingStatusChanges({});
+      pendingStatusChangesRef.current = {};
       
       // Show success message
       toast.success("Changes saved successfully");
@@ -134,13 +141,13 @@ export function WritingSection({ partId, testItemIds }: WritingSectionProps) {
   };
 
   const handleCancelEdit = () => {
-    if (hasMadeChanges || Object.keys(pendingStatusChanges).length > 0) {
+    if (hasMadeChanges || Object.keys(pendingStatusChangesRef.current).length > 0) {
       // Revert changes by fetching original data
       fetchWritings();
     }
     setIsEditMode(false);
     setHasMadeChanges(false);
-    setPendingStatusChanges({});
+    pendingStatusChangesRef.current = {};
   };
 
   // Toggle writing status
@@ -149,11 +156,8 @@ export function WritingSection({ partId, testItemIds }: WritingSectionProps) {
     const writingToUpdate = writings.find(w => w.id === writingId);
     if (!writingToUpdate) return;
     
-    // Update the pending status changes
-    setPendingStatusChanges(prev => ({
-      ...prev,
-      [writingId]: !writingToUpdate.status
-    }));
+    // Update the pending status changes ref
+    pendingStatusChangesRef.current[writingId] = !writingToUpdate.status;
     
     // Mark that changes have been made
     setHasMadeChanges(true);
@@ -165,9 +169,7 @@ export function WritingSection({ partId, testItemIds }: WritingSectionProps) {
         : w
     );
     setWritings(updatedWritings);
-  };
-
-  // Move items handlers
+  };// Move items handlers
   const onMoveLeft = (index: number) => {
     if (index <= 0) return;
     const updatedWritings = [...writings];
@@ -209,12 +211,12 @@ export function WritingSection({ partId, testItemIds }: WritingSectionProps) {
       
       await testWritingService.remove(deleteId);
       
-      const updatedWritingIds = listTestIds.filter(id => id !== deleteId);
+      const updatedWritingIds = listTestIdsRef.current.filter(id => id !== deleteId);
       await testPartService.patch(partId, {
         questions: updatedWritingIds,
       });
       
-      setListTestIds(updatedWritingIds);
+      listTestIdsRef.current = updatedWritingIds;
       
       // If the deleted writing was selected, select another one
       if (selectedWritingId === deleteId) {
@@ -303,7 +305,7 @@ export function WritingSection({ partId, testItemIds }: WritingSectionProps) {
                 onMoveLeft={onMoveLeft}
                 onMoveRight={onMoveRight}
                 onToggleStatus={handleToggleStatus}
-                hasChanges={hasMadeChanges || Object.keys(pendingStatusChanges).length > 0}
+                hasChanges={hasMadeChanges || Object.keys(pendingStatusChangesRef.current).length > 0}
               />
             </Grid>
             
@@ -324,7 +326,6 @@ export function WritingSection({ partId, testItemIds }: WritingSectionProps) {
                     isEditMode={isEditMode}
                     onSave={handleSaveTaskDetails}
                   />
-                  
                 </Box>
               ) : (
                 <SelectWritingPrompt
@@ -342,8 +343,10 @@ export function WritingSection({ partId, testItemIds }: WritingSectionProps) {
         onClose={() => setIsAddDialogOpen(false)}
         partId={partId}
         fetchWritings={fetchWritings}
-        testItemIds={listTestIds}
-        setListTestIds={setListTestIds}
+        testItemIds={listTestIdsRef.current}
+        setListTestIds={(newTestIds: number[]) => {
+          listTestIdsRef.current = newTestIds;
+        }}
       />
   
       {/* Delete Confirmation Dialog */}
@@ -357,3 +360,5 @@ export function WritingSection({ partId, testItemIds }: WritingSectionProps) {
     </>
   );
 }
+
+export default WritingSection;
