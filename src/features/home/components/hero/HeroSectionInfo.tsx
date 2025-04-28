@@ -42,10 +42,26 @@ export default function HeroSectionInfo() {
   }, []);
 
   const statistics: Statistic[] = [
-    { label: "Students", value: data.students, suffix: "+" },
-    { label: "Teachers", value: data.teachers, suffix: "+" },
-    { label: "Lessons", value: data.lessons, suffix: "+" },
-    { label: "Tests", value: data.tests, suffix: "+" },
+    {
+      label: "Students",
+      value: data.students,
+      suffix: data.students < 10 ? "" : "+",
+    },
+    {
+      label: "Teachers",
+      value: data.teachers,
+      suffix: data.teachers < 10 ? "" : "+",
+    },
+    {
+      label: "Lessons",
+      value: data.lessons,
+      suffix: data.lessons < 10 ? "" : "+",
+    },
+    {
+      label: "Tests",
+      value: data.tests,
+      suffix: data.tests < 10 ? "" : "+",
+    },
   ];
 
   return (
