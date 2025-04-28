@@ -19,6 +19,8 @@ import HeadphonesIcon from "@mui/icons-material/Headphones";
 import CreateIcon from "@mui/icons-material/Create";
 import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
 import QuizIcon from "@mui/icons-material/Quiz";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 import { RouteNode, RouteNodeEnum } from "interfaces";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
@@ -146,6 +148,22 @@ export default function RouteNodeCard({
     ? color.gray700
     : color.gray200;
 
+  const statusColor = node.status
+    ? isDarkMode
+      ? color.green400
+      : color.green600
+    : isDarkMode
+    ? color.gray400
+    : color.gray600;
+
+  const statusBgColor = node.status
+    ? isDarkMode
+      ? `${color.green400}22`
+      : `${color.green600}22`
+    : isDarkMode
+    ? `${color.gray400}22`
+    : `${color.gray600}22`;
+
   const handleClick = () => {
     let prefix = "";
     switch (node.type) {
@@ -225,6 +243,58 @@ export default function RouteNodeCard({
       }}
       onClick={isEditMode ? undefined : handleClick}
     >
+      {/* Status badge - top right corner with pulsating animation for active */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 8,
+          right: isEditMode ? 40 : 8,
+          zIndex: 10,
+          transition: "all 0.3s ease",
+        }}
+      >
+        <Chip
+          icon={
+            node.status ? (
+              <CheckCircleIcon fontSize="small" />
+            ) : (
+              <CancelIcon fontSize="small" />
+            )
+          }
+          label={node.status ? "Active" : "Inactive"}
+          size="small"
+          sx={{
+            backgroundColor: statusBgColor,
+            color: statusColor,
+            fontWeight: 600,
+            borderRadius: "6px",
+            fontSize: "0.7rem",
+            height: "24px",
+            border: `1px solid ${statusColor}33`,
+            boxShadow:
+              node.status && isHovered ? `0 0 8px ${statusColor}88` : "none",
+            animation: node.status ? "pulse 2s infinite ease-in-out" : "none",
+            "@keyframes pulse": {
+              "0%": {
+                boxShadow: `0 0 0 0 ${statusColor}88`,
+              },
+              "70%": {
+                boxShadow: `0 0 0 6px ${statusColor}00`,
+              },
+              "100%": {
+                boxShadow: `0 0 0 0 ${statusColor}00`,
+              },
+            },
+            "& .MuiChip-label": {
+              px: 1,
+            },
+            "& .MuiChip-icon": {
+              color: statusColor,
+            },
+          }}
+        />
+      </Box>
+
       {/* Header with accent color */}
       <Box
         sx={{
@@ -268,9 +338,7 @@ export default function RouteNodeCard({
             size="small"
             sx={{
               mt: 0.5,
-              backgroundColor: isDarkMode
-                ? `${nodeColor}33` // 20% opacity
-                : `${nodeColor}22`, // 13% opacity
+              backgroundColor: isDarkMode ? `${nodeColor}33` : `${nodeColor}22`,
               color: nodeColor,
               fontWeight: 600,
               borderRadius: "6px",
@@ -348,23 +416,25 @@ export default function RouteNodeCard({
             alignItems: "center",
           }}
         >
-          <Typography
-            variant="body2"
-            sx={{
-              color: isDarkMode ? color.gray400 : color.gray600,
-              fontSize: "0.875rem",
-              fontWeight: 500,
-              display: "flex",
-              alignItems: "center",
-              "& span": {
-                color: nodeColor,
-                fontWeight: 700,
-                ml: 0.5,
-              },
-            }}
-          >
-            Serial: <span>{node.serial}</span>
-          </Typography>
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Typography
+              variant="body2"
+              sx={{
+                color: isDarkMode ? color.gray400 : color.gray600,
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                display: "flex",
+                alignItems: "center",
+                "& span": {
+                  color: nodeColor,
+                  fontWeight: 700,
+                  ml: 0.5,
+                },
+              }}
+            >
+              Serial: <span>{node.serial}</span>
+            </Typography>
+          </Stack>
 
           {isEditMode ? (
             <Stack
