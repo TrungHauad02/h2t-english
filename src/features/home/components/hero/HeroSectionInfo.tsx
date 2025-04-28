@@ -2,22 +2,66 @@ import { Box, Grid, Typography } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import CountUp from "react-countup";
+import { useEffect, useState } from "react";
+import { heroInfoService } from "services";
+import { toast } from "react-toastify";
 
+interface HeroInfo {
+  students: number;
+  teachers: number;
+  lessons: number;
+  tests: number;
+}
+interface Statistic {
+  label: string;
+  value: number;
+  suffix?: string;
+}
 export default function HeroSectionInfo() {
   const { isDarkMode } = useDarkMode();
   const colors = useColor();
+  const [data, setData] = useState<HeroInfo>({
+    students: 0,
+    teachers: 0,
+    lessons: 0,
+    tests: 0,
+  });
 
-  interface Statistic {
-    label: string;
-    value: number;
-    suffix?: string;
-  }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const resData = await heroInfoService.getHeroInfo();
+        setData(resData.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Failed to fetch hero info data");
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const statistics: Statistic[] = [
-    { label: "Students", value: 1200, suffix: "+" },
-    { label: "Lessons", value: 800, suffix: "+" },
-    { label: "Teachers", value: 500, suffix: "+" },
-    { label: "Average Improvement", value: 35, suffix: "%" },
+    {
+      label: "Students",
+      value: data.students,
+      suffix: data.students < 10 ? "" : "+",
+    },
+    {
+      label: "Teachers",
+      value: data.teachers,
+      suffix: data.teachers < 10 ? "" : "+",
+    },
+    {
+      label: "Lessons",
+      value: data.lessons,
+      suffix: data.lessons < 10 ? "" : "+",
+    },
+    {
+      label: "Tests",
+      value: data.tests,
+      suffix: data.tests < 10 ? "" : "+",
+    },
   ];
 
   return (
