@@ -1,11 +1,8 @@
 import React from "react";
-import { Box, Card, Typography, Chip } from "@mui/material";
+import { Box, Card, Typography } from "@mui/material";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import {
-  ShowChart as ShowChartIcon,
-  Timeline as TimelineIcon,
-} from "@mui/icons-material";
+
 import CountUp from "react-countup";
 
 interface StatsCardProps {
@@ -13,7 +10,6 @@ interface StatsCardProps {
   title: string;
   value: number | string;
   bgColor: string;
-  changePercentage: number;
 }
 
 export default function StatsCard({
@@ -21,7 +17,6 @@ export default function StatsCard({
   title,
   value,
   bgColor,
-  changePercentage,
 }: StatsCardProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -82,40 +77,6 @@ export default function StatsCard({
           >
             <CountUp end={displayValue} separator="," />
           </Typography>
-          {changePercentage !== undefined && (
-            <Chip
-              size="small"
-              icon={
-                changePercentage >= 0 ? (
-                  <ShowChartIcon fontSize="small" />
-                ) : (
-                  <TimelineIcon fontSize="small" />
-                )
-              }
-              label={`${
-                changePercentage >= 0 ? "+" : ""
-              }${changePercentage}% than last month`}
-              sx={{
-                backgroundColor:
-                  changePercentage >= 0
-                    ? isDarkMode
-                      ? color.green700
-                      : color.green100
-                    : isDarkMode
-                    ? color.red700
-                    : color.red100,
-                color:
-                  changePercentage >= 0
-                    ? isDarkMode
-                      ? color.green200
-                      : color.green800
-                    : isDarkMode
-                    ? color.red200
-                    : color.red800,
-                fontWeight: 500,
-              }}
-            />
-          )}
         </Box>
       </Box>
     </Card>
