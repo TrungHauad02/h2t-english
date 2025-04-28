@@ -1,7 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Card, CardActionArea, Divider, Fade, Typography, Zoom } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Divider,
+  Fade,
+  Typography,
+  Zoom,
+} from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { HexagonWrapper, HexagonInner, HexagonBefore, HexagonAfter } from "./FeatureCardStyles";
+import {
+  HexagonWrapper,
+  HexagonInner,
+  HexagonBefore,
+  HexagonAfter,
+} from "./FeatureCardStyles";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 
@@ -11,15 +25,17 @@ interface FeatureCardProps {
   icon: React.ReactNode;
   index: number;
   delay: number;
+  onClick: () => void;
 }
 
-const FeatureCard: React.FC<FeatureCardProps> = ({
+export default function FeatureCard({
   title,
   description,
   icon,
   index,
   delay,
-}) => {
+  onClick,
+}: FeatureCardProps) {
   const { isDarkMode } = useDarkMode();
   const colors = useColor();
   const [showCard, setShowCard] = useState(false);
@@ -48,11 +64,23 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
 
   const colorPattern = getColorPattern(index);
 
+  // Xử lý khi nhấp vào thẻ
+  const handleCardClick = () => {
+    onClick();
+  };
+
+  // Xử lý khi nhấp vào nút "Learn more"
+  const handleLearnMoreClick = (event: React.MouseEvent) => {
+    event.stopPropagation(); // Ngăn sự kiện lan truyền lên thẻ cha
+    onClick();
+  };
+
   return (
     <Zoom in={showCard} style={{ transitionDelay: showCard ? "0ms" : "0ms" }}>
       <Card
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onClick={handleCardClick}
         sx={{
           height: "100%",
           display: "flex",
@@ -66,6 +94,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
             : "0 6px 16px rgba(0,0,0,0.1)",
           transition: "all 0.3s ease-in-out",
           transform: isHovered ? "translateY(-8px)" : "translateY(0)",
+          cursor: "pointer",
         }}
       >
         {/* Góc trang trí */}
@@ -82,13 +111,14 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
           }}
         />
 
-        <CardActionArea
+        <CardContent
           sx={{
             flexGrow: 1,
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-start",
             padding: 3,
+            "&:last-child": { paddingBottom: 3 },
             "&:hover": {
               backgroundColor: isDarkMode
                 ? "rgba(255,255,255,0.03)"
@@ -193,15 +223,14 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
                   },
                 }}
                 endIcon={<ArrowForwardIcon />}
+                onClick={handleLearnMoreClick}
               >
                 Learn more
               </Button>
             </Box>
           </Fade>
-        </CardActionArea>
+        </CardContent>
       </Card>
     </Zoom>
   );
-};
-
-export default FeatureCard;
+}
