@@ -1,7 +1,13 @@
 import { Box, Container, Grid, Fade } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import { LessonCard, useLessonsSection, LessonTitle, LessonButtonView, LessonFilter } from "./lesson";
+import {
+  LessonCard,
+  useLessonsSection,
+  LessonTitle,
+  LessonButtonView,
+  LessonFilter,
+} from "./lesson";
 
 export default function LessonsSection() {
   const { isDarkMode } = useDarkMode();
@@ -53,7 +59,6 @@ export default function LessonsSection() {
             </Box>
 
             <LessonFilter
-              animate={hooks.animate}
               filter={hooks.filter}
               handleFilterChange={hooks.handleFilterChange}
             />
@@ -61,7 +66,7 @@ export default function LessonsSection() {
         </Fade>
 
         <Grid container spacing={3}>
-          {hooks.sortedLessons.map((lesson, index) => (
+          {hooks.lessons.map((lesson, index) => (
             <Grid item key={lesson.id} xs={12} sm={6} md={3}>
               <LessonCard
                 lesson={lesson}

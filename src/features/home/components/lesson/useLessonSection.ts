@@ -1,50 +1,75 @@
-// hooks/useLessonsSection.ts
-import { useState, useEffect, useMemo } from "react";
-import { featuredLessons } from "../../services/mockData";
 import { Lesson } from "interfaces";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { featureLessonService } from "services";
+
+type FilterType = "popular" | "recent";
 
 export default function useLessonsSection() {
   const [selectedLessonId, setSelectedLessonId] = useState<number>(0);
-  const [filter, setFilter] = useState<string>("popular");
-  const [animate, setAnimate] = useState(false);
-
-  const lessons = featuredLessons as unknown as Lesson[];
+  const [filter, setFilter] = useState<FilterType>("popular");
+  const [animate, setAnimate] = useState<boolean>(false);
+  const [lessonsData, setLessonsData] = useState<{
+    popular: Lesson[];
+    recent: Lesson[];
+  }>({
+    popular: [],
+    recent: [],
+  });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     setAnimate(true);
-    if (lessons.length > 0) {
-      setSelectedLessonId(featuredLessons[0].id);
-    }
-  }, [lessons]);
+  }, []);
 
-  const handleFilterChange = (event: React.SyntheticEvent, newValue: string) => {
-    setFilter(newValue);
-  };
+  // Memoize current lessons based on filter
+  const lessons = useMemo(() => {
+    return lessonsData[filter] || [];
+  }, [lessonsData, filter]);
 
-  const sortedLessons = useMemo(() => {
-    let sorted = [...lessons];
-    switch (filter) {
-      case "popular":
-        sorted.sort((a, b) => b.views - a.views);
-        break;
-      case "newest":
-        sorted.sort((a, b) => {
-          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-          return dateB - dateA;
-        });
-        break;
-    }
-    return sorted.slice(0, 4); // Chỉ lấy top 4 bài học
-  }, [filter, lessons]);
+  // Fetch lessons whenever filter changes
+  useEffect(() => {
+    const fetchLessons = async () => {
+      // Skip loading if we already have data for this filter
+      if (lessonsData[filter].length > 0) {
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const resData =
+          filter === "popular"
+            ? await featureLessonService.getMostViewedLessons()
+            : await featureLessonService.getMostRecentLessons();
+
+        // Update only the specific filter data, keeping other data intact
+        setLessonsData((prev) => ({
+          ...prev,
+          [filter]: resData.data,
+        }));
+      } catch (error) {
+        console.error("Error fetching lessons:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLessons();
+  }, [filter, lessonsData]);
+
+  const handleFilterChange = useCallback(
+    (_event: React.SyntheticEvent, newValue: string) => {
+      setFilter(newValue === "popular" ? "popular" : "recent");
+    },
+    []
+  );
 
   return {
     selectedLessonId,
     setSelectedLessonId,
     filter,
-    setFilter,
     animate,
-    sortedLessons,
+    lessons,
+    isLoading,
     handleFilterChange,
   };
 }
