@@ -4,7 +4,7 @@ import useColor from "theme/useColor";
 
 interface VisualDisplayProps {
   timerSize: number;
-  svgRef: React.RefObject<SVGSVGElement | null>;
+  svgRef: React.RefObject<SVGSVGElement>;  
   getCirclePoints: () => Array<{ x: number; y: number; visible: boolean }>;
   getTimerColor: () => string;
   minutes: number;

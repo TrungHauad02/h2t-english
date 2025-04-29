@@ -6,7 +6,7 @@ import { RefObject } from "react";
 interface UserRecordingSectionProps {
   itemId: number;
   userRecordings: Record<number, string>;
-  audioRef: RefObject<HTMLAudioElement | null>;
+  audioRef: RefObject<HTMLAudioElement>; 
   playingAudio: number | null;
   togglePlayAudio: (id: number, url: string) => void;
 }
@@ -53,7 +53,6 @@ export default function UserRecordingSection({
           backgroundColor: isDarkMode ? color.gray700 : color.white,
         }}
         onEnded={() => {
-          // Handle playback ended
           if (playingAudio === itemId) {
             togglePlayAudio(itemId, userRecordings[itemId]);
           }

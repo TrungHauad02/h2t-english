@@ -6,7 +6,7 @@ import SendIcon from "@mui/icons-material/Send";
 
 interface AudioPlayerSubmissionProps {
   audioUrl: string;
-  audioRef: React.RefObject<HTMLAudioElement | null>;
+  audioRef: React.RefObject<HTMLAudioElement>; 
   isSubmitting: boolean;
   resetRecording: () => void;
   submitRecording: () => void;

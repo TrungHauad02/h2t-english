@@ -6,8 +6,8 @@ import { useDarkMode } from "hooks/useDarkMode";
 import { ToeicQuestion } from "interfaces";
 
 interface QuestionTabsProps {
-  tabsRef: RefObject<HTMLDivElement | null>;
-  containerRef: RefObject<HTMLDivElement | null>;
+  tabsRef: RefObject<HTMLDivElement>;  
+  containerRef: RefObject<HTMLDivElement>; 
   questions: ToeicQuestion[];
   activeQuestion: number;
   onChangeQuestion: (event: React.SyntheticEvent, newValue: number) => void;

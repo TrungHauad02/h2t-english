@@ -11,12 +11,17 @@ interface ConversationTimelineProps {
   isRecording: number | null;
   playingAudio: number | null;
   userRecordings: Record<number, string>;
-  audioRefs: RefObject<Record<number, HTMLAudioElement | null>>;
+  audioRefs: RefObject<Record<number, HTMLAudioElement>>;
   setIsRecording: (id: number | null) => void;
   setPlayingAudio: (id: number | null) => void;
   setUserRecordings: (recordings: Record<number, string>) => void;
   mediaRecorderRef: RefObject<MediaRecorder | null>;
   audioChunksRef: RefObject<Blob[]>;
+}
+
+// Hàm helper để set ref.current an toàn
+function setRefCurrent<T>(ref: RefObject<T>, value: T) {
+  (ref as any).current = value;
 }
 
 export default function ConversationTimeline({
@@ -35,84 +40,63 @@ export default function ConversationTimeline({
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
-  // Define theme-specific colors
   const titleColor = isDarkMode ? color.teal300 : color.teal700;
   const dividerColor = isDarkMode ? color.gray700 : color.gray200;
   const subtitleColor = isDarkMode ? color.gray400 : color.gray600;
 
-  // Function to request microphone access and setup recording
   const setupRecording = async (id: number) => {
     try {
-      // Request access to the microphone
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-      // Create new MediaRecorder instance
       const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
 
-      // Clear previous audio chunks
+      setRefCurrent(mediaRecorderRef, mediaRecorder);
+
       if (audioChunksRef.current) {
-        audioChunksRef.current = [];
+        setRefCurrent(audioChunksRef, []);
       }
 
-      // Setup event handlers
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0 && audioChunksRef.current) {
           audioChunksRef.current.push(event.data);
         }
       };
 
-      // Handle recording completion
       mediaRecorder.onstop = () => {
         if (audioChunksRef.current && audioChunksRef.current.length > 0) {
-          const audioBlob = new Blob(audioChunksRef.current, {
-            type: "audio/webm",
-          });
+          const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
           const audioUrl = URL.createObjectURL(audioBlob);
 
-          // Save the recording URL
           setUserRecordings({
             ...userRecordings,
             [id]: audioUrl,
           });
 
-          // Clean up
           stream.getTracks().forEach((track) => track.stop());
         }
       };
 
-      // Start recording
       mediaRecorder.start();
       setIsRecording(id);
       console.log(`Started recording for line ${id}`);
     } catch (error) {
       console.error("Error accessing microphone:", error);
-      alert(
-        "Failed to access microphone. Please check your browser permissions."
-      );
+      alert("Failed to access microphone. Please check your browser permissions.");
     }
   };
 
-  // Function to start recording
   const startRecording = (id: number) => {
     setupRecording(id);
   };
 
-  // Function to stop recording
   const stopRecording = (id: number) => {
-    if (
-      mediaRecorderRef.current &&
-      mediaRecorderRef.current.state !== "inactive"
-    ) {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
       mediaRecorderRef.current.stop();
       setIsRecording(null);
       console.log(`Stopped recording for line ${id}`);
     }
   };
 
-  // Function to delete recording
   const deleteRecording = (id: number) => {
-    // Revoke object URL to avoid memory leaks
     if (userRecordings[id]) {
       URL.revokeObjectURL(userRecordings[id]);
     }
@@ -123,53 +107,45 @@ export default function ConversationTimeline({
     console.log(`Deleted recording for line ${id}`);
   };
 
-  // Function to play/pause audio
   const togglePlayAudio = (id: number, url: string) => {
     if (playingAudio === id) {
       audioRefs.current?.[id]?.pause();
       setPlayingAudio(null);
     } else {
-      // Pause any currently playing audio
       if (playingAudio !== null && audioRefs.current?.[playingAudio]) {
         audioRefs.current?.[playingAudio]?.pause();
       }
-      // Play the new audio
+
       if (!audioRefs.current?.[id]) {
         if (audioRefs.current) {
-          audioRefs.current[id] = new Audio(url);
-          audioRefs.current[id]?.addEventListener("ended", () => {
+          const audio = new Audio(url);
+          audio.addEventListener("ended", () => {
             setPlayingAudio(null);
           });
+          audioRefs.current[id] = audio;
         }
       }
+
       audioRefs.current?.[id]?.play();
       setPlayingAudio(id);
     }
   };
 
-  // Cleanup function to stop any ongoing recordings when component unmounts
   useEffect(() => {
     return () => {
-      if (
-        mediaRecorderRef.current &&
-        mediaRecorderRef.current.state !== "inactive"
-      ) {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
         mediaRecorderRef.current.stop();
       }
-
-      // Revoke all object URLs to prevent memory leaks
       Object.values(userRecordings).forEach((url) => {
         URL.revokeObjectURL(url);
       });
     };
   }, [userRecordings, mediaRecorderRef]);
 
-  // Count how many lines are for the selected character
   const selectedCharacterLines = initialData.filter(
     (item) => item.name === selectedCharacter
   ).length;
 
-  // Count how many recordings have been made
   const recordingsCount = Object.keys(userRecordings).length;
 
   return (
@@ -197,12 +173,9 @@ export default function ConversationTimeline({
         >
           <Typography
             variant="body2"
-            sx={{
-              color: subtitleColor,
-            }}
+            sx={{ color: subtitleColor }}
           >
-            {selectedCharacterLines} lines for {selectedCharacter} ·{" "}
-            {recordingsCount} recorded
+            {selectedCharacterLines} lines for {selectedCharacter} · {recordingsCount} recorded
           </Typography>
         </Box>
 
