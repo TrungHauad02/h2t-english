@@ -1,7 +1,7 @@
 import { Box, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import { TestPart, TestPartTypeEnum } from "interfaces";
-import AnswerQuestionSection from "../../common/answerQuestion/AnswerQuestionSection";
+import AnswerQuestionSection from "../common/answerQuestion/AnswerQuestionSection";
 import { testService } from "features/test/services/testServices";
 
 interface ListeningPartProps {
@@ -58,7 +58,7 @@ export default function ListeningPart({ testParts, startSerial }: ListeningPartP
               </audio>
             </Stack>
 
-            <AnswerQuestionSection questions={questions} startSerial={startSerialForSection} />
+     
           </Box>
         );
       })}
