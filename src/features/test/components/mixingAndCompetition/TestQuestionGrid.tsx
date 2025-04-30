@@ -3,16 +3,40 @@ import { Box, Typography, Grid, Stack } from "@mui/material";
 import { TestPartTypeEnum } from "interfaces";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import SubmitTestButton from "../common/SubmitTestButton"; 
+import SubmitTestButton from "../common/SubmitTestButton";
 
-interface TestQuestionGridProps {
-  questionCounts: Record<TestPartTypeEnum, number>;
+interface QuestionItem {
+  serialNumber: number;
+  questionId: number;
+  partType: TestPartTypeEnum;
+  isAnswered: boolean;
 }
 
-const TestQuestionGrid: React.FC<TestQuestionGridProps> = ({ questionCounts }) => {
+interface TestQuestionGridProps {
+  questionItems: QuestionItem[];
+  onQuestionSelect: (questionItem: QuestionItem) => void;
+}
+
+const TestQuestionGrid: React.FC<TestQuestionGridProps> = ({ questionItems, onQuestionSelect }) => {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
-  let serial = 1;
+
+  const questionsByType = React.useMemo(() => {
+    const grouped: Record<TestPartTypeEnum, QuestionItem[]> = {
+      [TestPartTypeEnum.VOCABULARY]: [],
+      [TestPartTypeEnum.GRAMMAR]: [],
+      [TestPartTypeEnum.READING]: [],
+      [TestPartTypeEnum.LISTENING]: [],
+      [TestPartTypeEnum.SPEAKING]: [],
+      [TestPartTypeEnum.WRITING]: [],
+    };
+
+    questionItems.forEach(item => {
+      grouped[item.partType].push(item);
+    });
+
+    return grouped;
+  }, [questionItems]);
 
   return (
     <Box
@@ -28,53 +52,73 @@ const TestQuestionGrid: React.FC<TestQuestionGridProps> = ({ questionCounts }) =
         fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
       }}
     >
-      {Object.entries(questionCounts).map(([section, count]) => (
-        <Box key={section} sx={{ mb: { xs: 1.5, sm: 2 } }}>
-          <Typography
-            variant="subtitle1"
-            sx={{
-              fontWeight: "bold",
-              textAlign: "center",
-              mb: { xs: 1, sm: 1.5 },
-              fontSize: { xs: "0.7rem", sm: "0.9rem", md: "1rem" },
-              color: isDarkMode ? color.gray200 : "black",
-            }}
-          >
-            {section.charAt(0).toUpperCase() + section.slice(1).toLowerCase()}
-          </Typography>
-          <Grid container spacing={{ xs: 0.5, sm: 1 }} justifyContent="flex-start">
-            {Array.from({ length: count }, () => (
-              <Grid
-                item
-                key={serial}
-                sx={{
-                  flexBasis: { xs: "15%", sm: "18%", md: "16%" },
-                  display: "flex",
-                  justifyContent: "center",
-                }}
-              >
-                <Stack
+      {Object.entries(questionsByType).map(([section, items]) => {
+        if (items.length === 0) return null;
+        
+        const sectionName = section.charAt(0).toUpperCase() + section.slice(1).toLowerCase();
+        
+        return (
+          <Box key={section} sx={{ mb: { xs: 1.5, sm: 2 } }}>
+            <Typography
+              variant="subtitle1"
+              sx={{
+                fontWeight: "bold",
+                textAlign: "center",
+                mb: { xs: 1, sm: 1.5 },
+                fontSize: { xs: "0.7rem", sm: "0.9rem", md: "1rem" },
+                color: isDarkMode ? color.gray200 : "black",
+              }}
+            >
+              {sectionName} 
+            </Typography>
+            <Grid container spacing={{ xs: 0.5, sm: 1 }} justifyContent="flex-start">
+              {items.map((item) => (
+                <Grid
+                  item
+                  key={item.questionId}
                   sx={{
-                    border: "1px solid",
-                    borderColor: isDarkMode ? color.gray600 : "black",
-                    padding: { xs: 0.1, sm: 0.6 },
-                    minWidth: { xs: 15, sm: 24, md: 28 },
-                    minHeight: { xs: 15, sm: 24, md: 28 },
-                    alignItems: "center",
+                    flexBasis: { xs: "15%", sm: "18%", md: "16%" },
+                    display: "flex",
                     justifyContent: "center",
-                    fontSize: { xs: "0.75rem", sm: "0.85rem" },
-                    borderRadius: "4px",
-                    bgcolor: isDarkMode ? color.gray800 : "white",
-                    boxShadow: "1px 1px 2px rgba(0,0,0,0.2)",
                   }}
+                  onClick={() => onQuestionSelect(item)}
                 >
-                  {serial++}
-                </Stack>
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-      ))}
+                  <Stack
+                    sx={{
+                      border: "1px solid",
+                      borderColor: isDarkMode ? 
+                        (item.isAnswered ? color.teal600 : color.gray600) : 
+                        (item.isAnswered ? color.teal500 : "black"),
+                      padding: { xs: 0.1, sm: 0.6 },
+                      minWidth: { xs: 15, sm: 24, md: 28 },
+                      minHeight: { xs: 15, sm: 24, md: 28 },
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: { xs: "0.75rem", sm: "0.85rem" },
+                      borderRadius: "4px",
+                      bgcolor: isDarkMode ? 
+                        (item.isAnswered ? color.teal800 : color.gray800) : 
+                        (item.isAnswered ? color.teal50 : "white"),
+                      boxShadow: "1px 1px 2px rgba(0,0,0,0.2)",
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                      "&:hover": {
+                        transform: "scale(1.1)",
+                        boxShadow: "2px 2px 4px rgba(0,0,0,0.3)",
+                        bgcolor: isDarkMode ? 
+                          (item.isAnswered ? color.teal700 : color.gray700) : 
+                          (item.isAnswered ? color.teal100 : color.gray100),
+                      },
+                    }}
+                  >
+                    {item.serialNumber}
+                  </Stack>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        );
+      })}
       <SubmitTestButton />
     </Box>
   );

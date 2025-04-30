@@ -1,7 +1,7 @@
 import { Box, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import { TestPart, TestPartTypeEnum } from "interfaces";
-import AnswerQuestionSection from "../../common/answerQuestion/AnswerQuestionSection";
+import AnswerQuestionSection from "../common/answerQuestion/AnswerQuestionSection";
 import { testService } from "features/test/services/testServices";
 import WEDocumentViewer from "components/display/document/WEDocumentViewer";
 
@@ -52,7 +52,6 @@ export default function ReadingPart({ testParts, startSerial }: ReadingPartProps
               <WEDocumentViewer fileUrl={file} lineHeight="2" sx={{ my: 2 }} />
             </Stack>
 
-            <AnswerQuestionSection questions={questions} startSerial={startSerialForSection} />
           </Box>
         );
       })}

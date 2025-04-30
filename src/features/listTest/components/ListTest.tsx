@@ -12,7 +12,7 @@ interface ListTestProps {
 }
 
 export default function ListTest({ type, searchQuery = "" }: ListTestProps) {
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [testsPerPage, setTestsPerPage] = useState(8);
   const [tests, setTests] = useState<Test[]>([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -32,7 +32,7 @@ export default function ListTest({ type, searchQuery = "" }: ListTestProps) {
 
   const handleItemsPerPageChange = (itemsPerPage: number) => {
     setTestsPerPage(itemsPerPage);
-    setPage(0);
+    setPage(1);
   };
 
   useEffect(() => {
@@ -72,8 +72,10 @@ export default function ListTest({ type, searchQuery = "" }: ListTestProps) {
 
         if (response && response.data) {
           setTests(response.data.content);
-          setTotalPages(response.data.totalPages);
+          setTotalPages(response.data.totalPages || 1);
         }
+        console.log(response.data);
+        
       } catch (error) {
         console.error("Error fetching tests:", error);
       } finally {

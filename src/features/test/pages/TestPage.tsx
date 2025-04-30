@@ -1,82 +1,146 @@
-import { Box } from "@mui/material";
+import { Box, Container, Typography, Paper, CircularProgress, Alert } from "@mui/material";
 import { MainPictureSection } from "components/sections";
 import { SiteInfo } from "components/sections/types";
-import { useParams } from "react-router-dom";
-import { testService } from "../services/testServices";
+import { TestTypeEnum } from "interfaces";
 import {
-  TestTypeEnum,
-  TestPartTypeEnum,
-} from "interfaces";
-import {
-  ReadingTest,
-  SpeakingTest,
-  WritingTest,
-  ListeningTest,
-  MixingTest,
-} from "../components";
+  ReadingSection,
+  ListeningSection,
+  SpeakingSection,
+  WritingSection,
+  VocabularySection,
+  GrammarSection
+} from "../components/mixingAndCompetition/";
+import MixingTest from "../components/mixingAndCompetition/MixingTest";
+import useStudentTest from "../hooks/useStudentTest";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
 
 export default function TestPage() {
-  const { type, id } = useParams();
-  const testType = type?.toUpperCase().slice(0, -1) as keyof typeof TestTypeEnum;
-  const testId = Number(id);
+  const color = useColor();
+  const { isDarkMode } = useDarkMode();
+  
+  const {
+    test,
+    testParts,
+    vocabularyPart,
+    grammarPart,
+    readingPart,
+    listeningPart,
+    speakingPart,
+    writingPart,
+    submitTest,
+    loading,
+    error
+  } = useStudentTest();
 
-  if (isNaN(testId)) {
-    return <Box sx={{ textAlign: "center", mt: 4 }}>Invalid Test ID</Box>;
+  if (loading) {
+    return (
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center',
+          height: '80vh',
+          backgroundColor: isDarkMode ? color.gray900 : color.gray50
+        }}
+      >
+        <CircularProgress sx={{ color: isDarkMode ? color.teal400 : color.teal600 }} />
+      </Box>
+    );
   }
 
-  const test = testService.getTestByIdAndType(testId, testType);
-  if (!test) {
-    return <Box sx={{ textAlign: "center", mt: 4 }}>Test not found.</Box>;
+  if (error || !test) {
+    return (
+      <Box 
+        component={Paper} 
+        elevation={3}
+        sx={{ 
+          p: 4, 
+          textAlign: "center", 
+          mt: 4,
+          maxWidth: '600px',
+          mx: 'auto',
+          borderRadius: '1rem',
+          backgroundColor: isDarkMode ? color.gray800 : color.white,
+          color: isDarkMode ? color.gray100 : color.gray900
+        }}
+      >
+        <Typography variant="h5" gutterBottom>
+          {error || "Test not found"}
+        </Typography>
+        <Typography variant="body1">
+          Please check the test ID and try again.
+        </Typography>
+      </Box>
+    );
   }
 
-  const testParts = testService.getTestPartsByIds(test.parts);
-
-  const testReadings = testService.getTestReadingsByIds(
-    testParts.filter((p) => p.type === TestPartTypeEnum.READING).map((p) => p.id)
-  );
-
-  const testListenings = testService.getTestListeningsByIds(
-    testParts.filter((p) => p.type === TestPartTypeEnum.LISTENING).map((p) => p.id)
-  );
-
-  const testSpeakings = testService.getTestSpeakingsByIds(
-    testParts.filter((p) => p.type === TestPartTypeEnum.SPEAKING).map((p) => p.id)
-  );
-
-  const testWritings = testService.getTestWritingsByIds(
-    testParts.filter((p) => p.type === TestPartTypeEnum.WRITING).map((p) => p.id)
-  );
+  if (!submitTest) {
+    return (
+      <Box 
+        component={Paper} 
+        elevation={3}
+        sx={{ 
+          p: 4, 
+          textAlign: "center", 
+          mt: 4,
+          maxWidth: '600px',
+          mx: 'auto',
+          borderRadius: '1rem',
+          backgroundColor: isDarkMode ? color.gray800 : color.white,
+          color: isDarkMode ? color.gray100 : color.gray900
+        }}
+      >
+        <Alert severity="error" sx={{ mb: 2 }}>
+          Unable to create test submission. Please try again.
+        </Alert>
+        <Typography variant="body1">
+          There was an error preparing your test submission. Please refresh or contact support.
+        </Typography>
+      </Box>
+    );
+  }
 
   const siteInfo: SiteInfo = {
     bgUrl:
       "https://firebasestorage.googleapis.com/v0/b/englishweb-5a6ce.appspot.com/o/static%2Fbg_test.png?alt=media",
-    title: test?.title || "Test",
+    title: test.title || "Test",
   };
 
-  const renderTest = () => {
-    switch (test.type) {
-      case TestTypeEnum.MIXING:
-        return <MixingTest mixingTestParts={testParts} />;
-      case TestTypeEnum.READING:
-        return <ReadingTest testReadings={testReadings} />;
-      case TestTypeEnum.LISTENING:
-        return <ListeningTest testListenings={testListenings} />;
-      case TestTypeEnum.SPEAKING:
-        return <SpeakingTest testSpeakings={testSpeakings} />;
-      case TestTypeEnum.WRITING:
-        return <WritingTest testWritings={testWritings} />;
-      default:
-        return <Box sx={{ textAlign: "center", mt: 4 }}>Invalid test type.</Box>;
+  const renderMixingTest = () => {
+    if (test.type === TestTypeEnum.MIXING && testParts && testParts.length > 0 && submitTest) {
+      return (
+        <MixingTest 
+          mixingTestParts={testParts}
+          submitTestId={submitTest.id}
+        />
+      );
     }
+    return null;
   };
+
 
   return (
-    <Box sx={{ mt: 8 ,width:"100%",marginBottom:'1rem' }}>
-      <MainPictureSection  siteInfo={siteInfo} />
-      <Box sx={{ marginTop:'2rem' }}>
-      {renderTest()}
-      </Box>
-
+    <Box 
+      sx={{ 
+        width: "100%",
+        minHeight: '100vh',
+        pt: 8,
+        pb: 6,
+        backgroundColor: isDarkMode ? color.gray900 : color.gray50,
+        transition: 'background-color 0.3s ease'
+      }}
+    >
+      <MainPictureSection siteInfo={siteInfo} />
+      
+      <Box 
+          sx={{ 
+            mt: 4, 
+            mb: 6
+          }}
+        >
+          {renderMixingTest()}
+        </Box>
     </Box>
   );
 }

@@ -1,5 +1,8 @@
 import { Box, Stack, Button } from "@mui/material";
 import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 interface NavigationControlsProps {
   currentIndex: number;
@@ -15,8 +18,7 @@ export default function NavigationControls({
   onNext,
 }: NavigationControlsProps) {
   const color = useColor();
-
-  const disabledColor = "#ccc";
+  const { isDarkMode } = useDarkMode();
 
   return (
     <Stack
@@ -30,22 +32,27 @@ export default function NavigationControls({
         variant="contained"
         onClick={onPrevious}
         disabled={currentIndex === 0}
+        startIcon={<ArrowBackIcon />}
         sx={{
-          backgroundColor:
-            currentIndex === 0 ? disabledColor : color.emerald400,
-          color: "white",
+          backgroundColor: currentIndex === 0 
+            ? (isDarkMode ? color.gray700 : color.gray300) 
+            : (isDarkMode ? color.teal700 : color.teal500),
+          color: currentIndex === 0
+            ? (isDarkMode ? color.gray500 : color.gray500)
+            : 'white',
           fontWeight: "bold",
           minWidth: { xs: "90px", sm: "120px", md: "140px" },
           fontSize: { xs: "0.7rem", sm: "0.9rem" },
           py: { xs: 0.6, sm: 1 },
           borderRadius: "8px",
           "&:hover": {
-            backgroundColor:
-              currentIndex === 0 ? disabledColor : color.emerald500,
+            backgroundColor: currentIndex === 0 
+              ? (isDarkMode ? color.gray700 : color.gray300) 
+              : (isDarkMode ? color.teal600 : color.teal400),
           },
         }}
       >
-        &lt; Previous
+        Previous
       </Button>
 
       <Box
@@ -53,14 +60,16 @@ export default function NavigationControls({
           px: { xs: 2, sm: 3 },
           py: { xs: 0.6, sm: 1 },
           fontSize: { xs: "0.8rem", sm: "1rem" },
-          bgcolor: "#EFEFEF",
-          color: "#333",
+          bgcolor: isDarkMode ? color.gray700 : color.gray200,
+          color: isDarkMode ? color.gray200 : color.gray800,
           borderRadius: "6px",
           fontWeight: "bold",
           textAlign: "center",
           minWidth: "65px",
-          border: `1px solid #A1887F`,
-          boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+          border: `1px solid ${isDarkMode ? color.gray600 : color.gray300}`,
+          boxShadow: isDarkMode 
+            ? "0px 2px 4px rgba(0, 0, 0, 0.3)" 
+            : "0px 2px 4px rgba(0, 0, 0, 0.1)",
         }}
       >
         {`${currentIndex + 1}/${totalItems}`}
@@ -70,26 +79,27 @@ export default function NavigationControls({
         variant="contained"
         onClick={onNext}
         disabled={currentIndex === totalItems - 1}
+        endIcon={<ArrowForwardIcon />}
         sx={{
-          backgroundColor:
-            currentIndex === totalItems - 1
-              ? disabledColor
-              : color.emerald400,
-          color: "white",
+          backgroundColor: currentIndex === totalItems - 1 
+            ? (isDarkMode ? color.gray700 : color.gray300) 
+            : (isDarkMode ? color.teal700 : color.teal500),
+          color: currentIndex === totalItems - 1
+            ? (isDarkMode ? color.gray500 : color.gray500)
+            : 'white',
           fontWeight: "bold",
           minWidth: { xs: "90px", sm: "120px", md: "140px" },
           fontSize: { xs: "0.7rem", sm: "0.9rem" },
           py: { xs: 0.6, sm: 1 },
           borderRadius: "8px",
           "&:hover": {
-            backgroundColor:
-              currentIndex === totalItems - 1
-                ? disabledColor
-                : color.emerald500,
+            backgroundColor: currentIndex === totalItems - 1 
+              ? (isDarkMode ? color.gray700 : color.gray300) 
+              : (isDarkMode ? color.teal600 : color.teal400),
           },
         }}
       >
-        Next &gt;
+        Next
       </Button>
     </Stack>
   );
