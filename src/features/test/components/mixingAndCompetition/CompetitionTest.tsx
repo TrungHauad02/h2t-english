@@ -2,13 +2,13 @@ import React, { useState, useMemo } from "react";
 import { Grid, useMediaQuery, useTheme,Box } from "@mui/material";
 import TestTabs from "./TestTabs";
 import { TestPart, TestPartTypeEnum } from "interfaces";
-import VocabularyAndGrammarPart from "./VocabularyAndGrammarPart";
+
 import ReadingPart from "./ReadingPart";
 import ListeningPart from "./ListeningPart";
 import SpeakingPart from "./SpeakingPart";
 import WritingPart from "./WritingPart";
 import { testService } from "features/test/services/testServices";
-import TestQuestionGrid from "./TestQuestionGrid";
+
 import IntroducePartTest from "./InroducePartTest";
 import TimeRemaining from "./TimeRemaining";
 import SubmitTestButton from "../common/SubmitTestButton";
@@ -78,36 +78,12 @@ const CompetitionTest: React.FC<CompetitionTestProps> = ({ competitionTestParts 
         </Box>
       )}
 
-      <Grid item xs={12} sm={12} md={9} lg={8}>
-        <TestTabs
-          activeTab={activeTab.toLowerCase()}
-          onTabChange={(newTab) => setActiveTab(newTab.toUpperCase() as TestPartTypeEnum)}
-        />
-        <IntroducePartTest type={activeTab} />
-        {activeTab === TestPartTypeEnum.VOCABULARY || activeTab === TestPartTypeEnum.GRAMMAR ? (
-          <VocabularyAndGrammarPart testParts={competitionTestParts} startSerial={startSerial} type={activeTab} />
-        ) : activeTab === TestPartTypeEnum.READING ? (
-          <ReadingPart testParts={competitionTestParts} startSerial={startSerial} />
-        ) : activeTab === TestPartTypeEnum.LISTENING ? (
-          <ListeningPart testParts={competitionTestParts} startSerial={startSerial} />
-        ) : activeTab === TestPartTypeEnum.SPEAKING ? (
-          <SpeakingPart testParts={competitionTestParts} startSerial={startSerial} />
-        ) : activeTab === TestPartTypeEnum.WRITING ? (
-          <WritingPart testParts={competitionTestParts} startSerial={startSerial} />
-        ) : null}
-          {isSmallScreen && (
-           <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
-           <Box sx={{ width: { xs: "50%", sm: "20%" },}}>
-             <SubmitTestButton />
-           </Box>
-         </Box>
-              )}
-      </Grid>
+     
 
       {!isSmallScreen && (
         <Grid item sm={4} md={3} lg={4}>
           <TimeRemaining  />
-          <TestQuestionGrid questionCounts={questionCounts} />
+         
         </Grid>
       )}
     </Grid>

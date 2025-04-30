@@ -3,17 +3,17 @@ import { Box, Typography, Slider, IconButton, Button } from '@mui/material';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import { useDispatch } from 'react-redux';
-import { hideLayout, showLayout } from '../../../../redux/slices/layoutSlice';
+import { hideLayout, showLayout } from '../../../redux/slices/layoutSlice';
 
-import VolumeTestStep from './introduce/VolumeTestStep';
-import DirectionsStep from './introduce/DirectionsStep';
-import ListeningPart1Step from './part1/ListeningPart1Step';
-import ListeningPart1List from './part1/ListeningPart1List';
-import ListeningPart2List from './part2/ListeningPart2List';
-import ListeningPart3And4List from './part3And4/ListeningPart3And4List';
-import Part5List from './part5/Part5List';
-import Part6List from './part6/Part6List';
-import Part7List from './part7/Part7List';
+import VolumeTestStep from './toeic/introduce/VolumeTestStep';
+import DirectionsStep from './toeic/introduce/DirectionsStep';
+import ListeningPart1Step from './toeic/part1/ListeningPart1Step';
+import ListeningPart1List from './toeic/part1/ListeningPart1List';
+import ListeningPart2List from './toeic/part2/ListeningPart2List';
+import ListeningPart3And4List from './toeic/part3And4/ListeningPart3And4List';
+import Part5List from './toeic/part5/Part5List';
+import Part6List from './toeic/part6/Part6List';
+import Part7List from './toeic/part7/Part7List';
 
 import { Toeic } from 'interfaces/TestInterfaces';
 
