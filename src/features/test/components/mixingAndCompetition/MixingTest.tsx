@@ -1,105 +1,267 @@
-import React, { useState, useMemo } from "react";
-import {Grid, useMediaQuery, useTheme ,Box} from "@mui/material";
+import React, { useState, useCallback } from "react";
+import { Grid, useMediaQuery, useTheme, Box } from "@mui/material";
 import TestTabs from "./TestTabs";
 import { TestPart, TestPartTypeEnum } from "interfaces";
-import VocabularyAndGrammarPart from "./vocabularyAndGrammarPart/VocabularyAndGrammarPart";
-import ReadingPart from "./readingPart/ReadingPart";
-import ListeningPart from "./listeningPart/ListeningPart";
-import SpeakingPart from "./speakingPart/SpeakingPart";
-import WritingPart from "./writingPart/WritingPart";
-import { testService } from "features/test/services/testServices";
+import {
+  VocabularySection,
+  GrammarSection,
+  ReadingSection,
+  ListeningSection,
+  SpeakingSection,
+  WritingSection
+} from "./";
 import TestQuestionGrid from "./TestQuestionGrid";
 import IntroducePartTest from "./InroducePartTest";
 import TimeRemaining from "./TimeRemaining";
-import SubmitTestButton from "../common/SubmitTestButton"; 
+import SubmitTestDialog from "./SubmitTestDialog";
+import ConfirmSubmitDialog from "./ConfirmSubmitDialog";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
+import useMixingTest from "../../hooks/useMixingTest";
+
 interface MixingTestProps {
   mixingTestParts: TestPart[];
+  submitTestId: number;
 }
 
-const tabOrder: TestPartTypeEnum[] = [
-  TestPartTypeEnum.VOCABULARY,
-  TestPartTypeEnum.GRAMMAR,
-  TestPartTypeEnum.READING,
-  TestPartTypeEnum.LISTENING,
-  TestPartTypeEnum.SPEAKING,
-  TestPartTypeEnum.WRITING,
-];
-
-const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts }) => {
+const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const color = useColor();
+  const { isDarkMode } = useDarkMode();
+  
+  // State for managing submit flow
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [timeUsed, setTimeUsed] = useState(0); // In seconds
+  
+  const {
+    allQuestions,
+    startSerials,
+    activeTab,
+    selectedQuestionId,
+    isSubmitting,
+    isSubmitDialogOpen,
+    submissionResult,
+    setActiveTab,
+    setSelectedQuestionId,
+    handleQuestionSelect,
+    handleUpdateAnsweredQuestions,
+    handleSubmitTest,
+    closeSubmitDialog,
+    vocabularyPart,
+    grammarPart,
+    readingPart,
+    listeningPart,
+    speakingPart,
+    writingPart
+  } = useMixingTest(mixingTestParts, submitTestId);
 
-  const [activeTab, setActiveTab] = useState<TestPartTypeEnum>(TestPartTypeEnum.VOCABULARY);
+  // Callbacks for submit flow
+  const handleOpenConfirmDialog = useCallback(() => {
+    setIsConfirmDialogOpen(true);
+  }, []);
 
-  const questionCounts = useMemo(() => {
-    const counts: Record<TestPartTypeEnum, number> = {
-      [TestPartTypeEnum.VOCABULARY]: 0,
-      [TestPartTypeEnum.GRAMMAR]: 0,
-      [TestPartTypeEnum.READING]: 0,
-      [TestPartTypeEnum.LISTENING]: 0,
-      [TestPartTypeEnum.SPEAKING]: 0,
-      [TestPartTypeEnum.WRITING]: 0,
-    };
+  const handleCloseConfirmDialog = useCallback(() => {
+    setIsConfirmDialogOpen(false);
+  }, []);
 
-    mixingTestParts.forEach((part) => {
-      if (part.type === TestPartTypeEnum.READING) {
-        const fetchedTests = testService.getTestReadingsByIds(part.questions as number[]);
-        counts[part.type] += fetchedTests.reduce((total, test) => total + test.questions.length, 0);
-      } else if (part.type === TestPartTypeEnum.LISTENING) {
-        const fetchedTests = testService.getTestListeningsByIds(part.questions as number[]);
-        counts[part.type] += fetchedTests.reduce((total, test) => total + test.questions.length, 0);
-      } else if (part.type === TestPartTypeEnum.SPEAKING) {
-        const fetchedTests = testService.getTestSpeakingsByIds(part.questions as number[]);
-        counts[part.type] += fetchedTests.reduce((total, test) => total + test.questions.length, 0);
-      } else {
-        counts[part.type] += part.questions.length;
-      }
-    });
-    return counts;
-  }, [mixingTestParts]);
+  const handleConfirmSubmit = useCallback(() => {
+    setIsConfirmDialogOpen(false);
+    handleSubmitTest();
+  }, [handleSubmitTest]);
 
-  const startSerial = tabOrder
-    .slice(0, tabOrder.indexOf(activeTab))
-    .reduce((sum, type) => sum + questionCounts[type], 1);
+  // Stats for confirm dialog
+  const totalQuestions = allQuestions.length;
+  const answeredQuestions = allQuestions.filter(q => q.isAnswered).length;
+
+  // Function to render appropriate section component
+  const renderSection = useCallback(() => {
+    switch (activeTab) {
+      case TestPartTypeEnum.VOCABULARY:
+        return vocabularyPart ? (
+          <VocabularySection 
+            partId={vocabularyPart.id}
+            questionIds={vocabularyPart.questions || []}
+            submitTestId={submitTestId}
+            selectedQuestionId={selectedQuestionId}
+            startSerial={startSerials[TestPartTypeEnum.VOCABULARY]}
+            setAnsweredQuestions={handleUpdateAnsweredQuestions}
+          />
+        ) : null;
+        
+      case TestPartTypeEnum.GRAMMAR:
+        return grammarPart ? (
+          <GrammarSection 
+            partId={grammarPart.id}
+            questionIds={grammarPart.questions || []}
+            submitTestId={submitTestId}
+            selectedQuestionId={selectedQuestionId}
+            startSerial={startSerials[TestPartTypeEnum.GRAMMAR]}
+            setAnsweredQuestions={handleUpdateAnsweredQuestions}
+          />
+        ) : null;
+        
+      case TestPartTypeEnum.READING:
+        return readingPart ? (
+          <ReadingSection 
+            partId={readingPart.id}
+            testItemIds={readingPart.questions || []}
+            submitTestId={submitTestId}
+            selectedQuestionId={selectedQuestionId}
+            startSerial={startSerials[TestPartTypeEnum.READING]}
+            setAnsweredQuestions={handleUpdateAnsweredQuestions}
+          />
+        ) : null;
+        
+      case TestPartTypeEnum.LISTENING:
+        return listeningPart ? (
+          <ListeningSection 
+            partId={listeningPart.id}
+            testItemIds={listeningPart.questions || []}
+            submitTestId={submitTestId}
+            selectedQuestionId={selectedQuestionId}
+            startSerial={startSerials[TestPartTypeEnum.LISTENING]}
+            setAnsweredQuestions={handleUpdateAnsweredQuestions}
+          />
+        ) : null;
+        
+      case TestPartTypeEnum.SPEAKING:
+        return speakingPart ? (
+          <SpeakingSection 
+            partId={speakingPart.id}
+            testItemIds={speakingPart.questions || []}
+            submitTestId={submitTestId}
+            selectedQuestionId={selectedQuestionId}
+            startSerial={startSerials[TestPartTypeEnum.SPEAKING]}
+            setAnsweredQuestions={handleUpdateAnsweredQuestions}
+          />
+        ) : null;
+        
+      case TestPartTypeEnum.WRITING:
+        return writingPart ? (
+          <WritingSection 
+            partId={writingPart.id}
+            testItemIds={writingPart.questions || []}
+            submitTestId={submitTestId}
+            selectedQuestionId={selectedQuestionId}
+            startSerial={startSerials[TestPartTypeEnum.WRITING]}
+            setAnsweredQuestions={handleUpdateAnsweredQuestions}
+          />
+        ) : null;
+        
+      default:
+        return null;
+    }
+  }, [
+    activeTab,
+    vocabularyPart,
+    grammarPart,
+    readingPart,
+    listeningPart,
+    speakingPart,
+    writingPart,
+    submitTestId,
+    selectedQuestionId,
+    startSerials,
+    handleUpdateAnsweredQuestions
+  ]);
+
+  // Update time used (would be connected to a timer in real implementation)
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeUsed(prev => prev + 1);
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, []);
 
   return (
-    <Grid container spacing={2}>
-      {isSmallScreen && (
-       <TimeRemaining />
-      )}
+    <Box 
+      sx={{
+        backgroundColor: isDarkMode ? color.gray900 : color.gray50,
+        borderRadius: '1rem',
+        width: "100%",
+        p: { xs: 1, sm: 2 },
+      }}
+    >
+      <Grid container spacing={2}>
+        {isSmallScreen && (
+          <Grid item xs={12}>
+            <TimeRemaining timeUsed={timeUsed} />
+          </Grid>
+        )}
 
-      <Grid item xs={12} sm={12} md={9} lg={8}>
-        <TestTabs
-          activeTab={activeTab.toLowerCase()}
-          onTabChange={(newTab) => setActiveTab(newTab.toUpperCase() as TestPartTypeEnum)}
-        />
-        <IntroducePartTest type={activeTab} />
-        {activeTab === TestPartTypeEnum.VOCABULARY || activeTab === TestPartTypeEnum.GRAMMAR ? (
-          <VocabularyAndGrammarPart testParts={mixingTestParts} startSerial={startSerial} type={activeTab} />
-        ) : activeTab === TestPartTypeEnum.READING ? (
-          <ReadingPart testParts={mixingTestParts} startSerial={startSerial} />
-        ) : activeTab === TestPartTypeEnum.LISTENING ? (
-          <ListeningPart testParts={mixingTestParts} startSerial={startSerial} />
-        ) : activeTab === TestPartTypeEnum.SPEAKING ? (
-          <SpeakingPart testParts={mixingTestParts} startSerial={startSerial} />
-        ) : activeTab === TestPartTypeEnum.WRITING ? (
-          <WritingPart testParts={mixingTestParts} startSerial={startSerial} />
-        ) : null}
+        <Grid item xs={12} sm={12} md={9} lg={8}>
+          <TestTabs
+            activeTab={activeTab.toLowerCase()}
+            onTabChange={(newTab) => {
+              setActiveTab(newTab.toUpperCase() as TestPartTypeEnum);
+              setSelectedQuestionId(null);
+            }}
+          />
+          
+          <Box sx={{ mt: 2, mb: 3 }}>
+            <IntroducePartTest type={activeTab} />
+          </Box>
+          
+          <Box 
+            sx={{ 
+              mb: 4,
+              p: { xs: 1, sm: 2 },
+              bgcolor: isDarkMode ? color.gray800 : color.white, 
+              borderRadius: '1rem',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}
+          >
+            {renderSection()}
+          </Box>
+
           {isSmallScreen && (
-           <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
-           <Box sx={{ width: { xs: "50%", sm: "20%" },}}>
-             <SubmitTestButton />
-           </Box>
-         </Box>
-      )}
-      </Grid>
-      {!isSmallScreen && (
-        <Grid item sm={4} md={3} lg={4}>
-           <TimeRemaining />
-          <TestQuestionGrid questionCounts={questionCounts} />
+            <Box sx={{  display: "flex", justifyContent: "center", mt: 3, mb: 2 }}>
+              <Box sx={{ width: { xs: "80%", sm: "50%" } }}>
+                <TestQuestionGrid 
+                  questionItems={allQuestions}
+                  onQuestionSelect={handleQuestionSelect}
+                  onSubmitTest={handleOpenConfirmDialog}
+                />
+              </Box>
+            </Box>
+          )}
+          
         </Grid>
-      )}
-    </Grid>
+        
+        {!isSmallScreen && (
+          <Grid item md={3} lg={4}>
+            <TimeRemaining timeUsed={timeUsed} />
+            <Box sx={{ mt: 3 }}>
+              <TestQuestionGrid 
+                questionItems={allQuestions}
+                onQuestionSelect={handleQuestionSelect}
+                onSubmitTest={handleOpenConfirmDialog}
+              />
+            </Box>
+          </Grid>
+        )}
+      </Grid>
+
+      {/* Submit Test Dialog */}
+      <SubmitTestDialog 
+        open={isSubmitDialogOpen}
+        onClose={closeSubmitDialog}
+        isLoading={isSubmitting}
+        result={submissionResult}
+      />
+
+      {/* Confirm Submit Dialog */}
+      <ConfirmSubmitDialog
+        open={isConfirmDialogOpen}
+        onClose={handleCloseConfirmDialog}
+        onConfirm={handleConfirmSubmit}
+        totalQuestions={totalQuestions}
+        answeredQuestions={answeredQuestions}
+        isSubmitting={isSubmitting}
+      />
+    </Box>
   );
 };
 

@@ -51,10 +51,32 @@ const remove = async (id: number) => {
   }
 };
 
+const findBySubmitTestIdAndQuestionId = async (submitTestId: number, questionId: number) => {
+  try {
+    const response = await apiClient.get(`/submit-test-answers/by-submit-test/${submitTestId}/question/${questionId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching by submitTestId and questionId:", error);
+    throw error;
+  }
+};
+
+const findBySubmitTestIdAndQuestionIds = async (submitTestId: number, questionIds: number[]) => {
+  try {
+    const response = await apiClient.post(`/submit-test-answers/by-submit-test/${submitTestId}/questions`, questionIds);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching by submitTestId and questionIds:", error);
+    throw error;
+  }
+};
+
 export const submitTestAnswerService = {
   findById,
   create,
   update,
   patch,
   remove,
+  findBySubmitTestIdAndQuestionId,
+  findBySubmitTestIdAndQuestionIds,
 };

@@ -95,7 +95,7 @@ export default function ListeningTest({ testListenings }: ListeningTestProps) {
             </Box>
 
             <Box sx={{ width: "100%", p: 2, overflowY: "auto" }}>
-              <AnswerQuestionSection questions={currentListening.questions} startSerial={currentListening.startSerial} />
+   
               <SubmitTestButton />
             </Box>
           </Stack>

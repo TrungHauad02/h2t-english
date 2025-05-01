@@ -114,7 +114,7 @@ export default function ReadingTest({ testReadings }: ReadingTestProps) {
             {!isMobile && <Divider orientation="vertical" flexItem sx={{ bgcolor: "#ccc" }} />}
 
             <Box sx={{ width: isMobile ? "100%" : "50%", p: 2, overflowY: "auto" }}>
-              <AnswerQuestionSection questions={currentReading.questions} startSerial={currentReading.startSerial} />
+       
              
             </Box>
           </Stack>

@@ -11,7 +11,7 @@ const findById = async (id: number): Promise<SubmitTest> => {
   }
 };
 
-const create = async (data: SubmitTest): Promise<SubmitTest> => {
+const create = async (data: SubmitTest): Promise<{ data: SubmitTest }> => {
   try {
     const response = await apiClient.post("/submit-tests", data);
     return response.data;
@@ -21,7 +21,8 @@ const create = async (data: SubmitTest): Promise<SubmitTest> => {
   }
 };
 
-const update = async (id: number, data: SubmitTest): Promise<SubmitTest> => {
+
+const update = async (id: number, data: SubmitTest): Promise<{ data: SubmitTest }> => {
   try {
     const response = await apiClient.put(`/submit-tests/${id}`, data);
     return response.data;
@@ -31,7 +32,7 @@ const update = async (id: number, data: SubmitTest): Promise<SubmitTest> => {
   }
 };
 
-const patch = async (id: number, data: Partial<SubmitTest>): Promise<SubmitTest> => {
+const patch = async (id: number, data: Partial<SubmitTest>): Promise<{ data: SubmitTest }> => {
   try {
     const response = await apiClient.patch(`/submit-tests/${id}`, data);
     return response.data;
@@ -51,7 +52,7 @@ const remove = async (id: number): Promise<any> => {
   }
 };
 
-const getTestStats = async (userId: number): Promise<SubmitTestStats> => {
+const getTestStats = async (userId: number): Promise<{ data: SubmitTestStats }> => {
   try {
     const response = await apiClient.get(`/submit-tests/stats?userId=${userId}`);
     return response.data;
@@ -60,6 +61,17 @@ const getTestStats = async (userId: number): Promise<SubmitTestStats> => {
     throw error;
   }
 };
+const findByIdAndUserIdAndStatusFalse = async (testId: number, userId: number): Promise<{ data: SubmitTest }> => {
+  try {
+    const response = await apiClient.get(`/submit-tests/by-test-and-user?testId=${testId}&userId=${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error finding SubmitTest:", error);
+    throw error;
+  }
+};
+
+
 
 export const submitTestService = {
   findById,
@@ -68,4 +80,5 @@ export const submitTestService = {
   patch,
   remove,
   getTestStats,
+  findByIdAndUserIdAndStatusFalse,
 };
