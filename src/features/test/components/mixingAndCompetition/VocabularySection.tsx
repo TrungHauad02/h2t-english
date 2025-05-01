@@ -11,6 +11,7 @@ interface VocabularySectionProps {
   submitTestId: number;
   selectedQuestionId?: number | null;
   startSerial: number;
+  setAnsweredQuestions: (questionId: number, isAnswered: boolean) => void;
 }
 
 export default function VocabularySection({
@@ -18,7 +19,8 @@ export default function VocabularySection({
   questionIds,
   submitTestId,
   selectedQuestionId,
-  startSerial
+  startSerial,
+  setAnsweredQuestions
 }: VocabularySectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -39,7 +41,7 @@ export default function VocabularySection({
         setLoading(false);
       }
     }
-
+    
     if (questionIds && questionIds.length > 0) {
       fetchQuestions();
     }
@@ -59,9 +61,7 @@ export default function VocabularySection({
   }, [selectedQuestionId, loading]);
 
   return (
-    <Box
-
-    >
+    <Box>
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
           <CircularProgress sx={{ color: isDarkMode ? color.teal400 : color.teal600 }} />
@@ -74,6 +74,7 @@ export default function VocabularySection({
           partId={partId}
           selectedQuestionId={selectedQuestionId}
           setQuestionRef={setQuestionRef}
+          setAnsweredQuestions={setAnsweredQuestions}
         />
       )}
     </Box>

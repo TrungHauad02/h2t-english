@@ -14,6 +14,7 @@ interface AnswerQuestionSectionProps {
   partId: number;
   selectedQuestionId?: number | null;
   setQuestionRef?: (id: number, element: HTMLDivElement | null) => void;
+  setAnsweredQuestions: (questionId: number, isAnswered: boolean) => void;
 }
 
 export default function AnswerQuestionSection({
@@ -22,7 +23,8 @@ export default function AnswerQuestionSection({
   submitTestId,
   partId,
   selectedQuestionId,
-  setQuestionRef
+  setQuestionRef,
+  setAnsweredQuestions
 }: AnswerQuestionSectionProps) {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
@@ -44,6 +46,8 @@ export default function AnswerQuestionSection({
         if (response && response.data) {
           response.data.forEach((answer: SubmitTestAnswer) => {
             answersMap[answer.question_id] = answer.answer_id;
+            // Update parent component's state for each answered question
+            setAnsweredQuestions(answer.question_id, true);
           });
         }
         
@@ -56,13 +60,16 @@ export default function AnswerQuestionSection({
     };
     
     fetchExistingAnswers();
-  }, [submitTestId, questions]);
+  }, [submitTestId, questions, setAnsweredQuestions]);
   
   const handleAnswerChange = async (questionId: string, answerId: number) => {
     setSelectedAnswers(prev => ({
       ...prev,
       [questionId]: answerId
     }));
+    
+    // Update parent component's state
+    setAnsweredQuestions(Number(questionId), true);
     
     try {
       const existingAnswers = await submitTestAnswerService.findBySubmitTestIdAndQuestionId(submitTestId, Number(questionId));

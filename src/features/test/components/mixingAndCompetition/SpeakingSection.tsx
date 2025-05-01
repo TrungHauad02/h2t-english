@@ -27,6 +27,7 @@ interface SpeakingSectionProps {
   submitTestId: number;
   selectedQuestionId?: number | null;
   startSerial: number;
+  setAnsweredQuestions: (questionId: number, isAnswered: boolean) => void;
 }
 
 export default function SpeakingSection({ 
@@ -34,11 +35,11 @@ export default function SpeakingSection({
   testItemIds, 
   submitTestId,
   selectedQuestionId,
-  startSerial
+  startSerial,
+  setAnsweredQuestions
 }: SpeakingSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  console.log(startSerial);
   
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [speakingQuestions, setSpeakingQuestions] = useState<any[]>([]);
@@ -117,6 +118,9 @@ export default function SpeakingSection({
                     // Store the file/audio data
                     recordingsMap[questionIndex] = recording.file;
                     audioUrlsMap[questionIndex] = recording.file;
+                    
+                    // Mark question as answered in the parent component
+                    setAnsweredQuestions(recording.question_id, true);
                   }
                   submissionIdsMap[questionIndex] = recording.id;
                 }
@@ -165,7 +169,7 @@ export default function SpeakingSection({
         clearInterval(timerRef.current);
       }
     };
-  }, [testItemIds, submitTestId, startSerial, selectedQuestionId]);
+  }, [testItemIds, submitTestId, startSerial, selectedQuestionId, setAnsweredQuestions]);
 
   const startRecording = async () => {
     try {
@@ -255,6 +259,9 @@ export default function SpeakingSection({
           ...prev,
           [currentIndex]: base64data
         }));
+        
+        // Mark this question as answered in the parent component
+        setAnsweredQuestions(questionId, true);
         
         setSaving(false);
       };
@@ -389,8 +396,6 @@ export default function SpeakingSection({
             }}
           />
         </Box>
-        
-
       </Box>
       
       <Container 

@@ -13,6 +13,7 @@ interface ReadingSectionProps {
   submitTestId: number;
   selectedQuestionId?: number | null;
   startSerial: number;
+  setAnsweredQuestions: (questionId: number, isAnswered: boolean) => void;
 }
 
 export default function ReadingSection({ 
@@ -20,7 +21,8 @@ export default function ReadingSection({
   testItemIds, 
   submitTestId,
   selectedQuestionId,
-  startSerial
+  startSerial,
+  setAnsweredQuestions
 }: ReadingSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -44,7 +46,6 @@ export default function ReadingSection({
             if (item.questions && item.questions.length > 0) {
               const questionsResponse = await questionService.getByIds(item.questions);
               
-  
               const itemStartSerial = currentSerial;
              
               currentSerial += item.questions.length;
@@ -160,6 +161,7 @@ export default function ReadingSection({
                 partId={readingItem.id}
                 selectedQuestionId={selectedQuestionId}
                 setQuestionRef={setQuestionRef}
+                setAnsweredQuestions={setAnsweredQuestions}
               />
             </Box>
           </Paper>

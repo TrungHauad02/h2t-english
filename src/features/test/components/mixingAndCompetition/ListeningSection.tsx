@@ -13,6 +13,7 @@ interface ListeningSectionProps {
   submitTestId: number;
   selectedQuestionId?: number | null;
   startSerial: number;
+  setAnsweredQuestions: (questionId: number, isAnswered: boolean) => void;
 }
 
 export default function ListeningSection({ 
@@ -20,7 +21,8 @@ export default function ListeningSection({
   testItemIds, 
   submitTestId,
   selectedQuestionId,
-  startSerial
+  startSerial,
+  setAnsweredQuestions
 }: ListeningSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -213,6 +215,7 @@ export default function ListeningSection({
                 partId={partId}
                 selectedQuestionId={selectedQuestionId}
                 setQuestionRef={setQuestionRef}
+                setAnsweredQuestions={setAnsweredQuestions}
               />
             </Box>
           </Paper>

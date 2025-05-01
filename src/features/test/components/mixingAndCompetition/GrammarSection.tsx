@@ -11,14 +11,16 @@ interface GrammarSectionProps {
   submitTestId: number;
   selectedQuestionId?: number | null;
   startSerial: number;
+  setAnsweredQuestions: (questionId: number, isAnswered: boolean) => void;
 }
 
-export default function GrammarSection({ 
-  partId, 
-  questionIds, 
+export default function GrammarSection({
+  partId,
+  questionIds,
   submitTestId,
   selectedQuestionId,
-  startSerial
+  startSerial,
+  setAnsweredQuestions
 }: GrammarSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -40,7 +42,7 @@ export default function GrammarSection({
         setLoading(false);
       }
     }
-
+    
     if (questionIds && questionIds.length > 0) {
       fetchQuestions();
     }
@@ -62,8 +64,7 @@ export default function GrammarSection({
   }, [selectedQuestionId, loading]);
 
   return (
-    <Box
-    >
+    <Box>
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
           <CircularProgress sx={{ color: isDarkMode ? color.teal400 : color.teal600 }} />
@@ -76,6 +77,7 @@ export default function GrammarSection({
           partId={partId}
           selectedQuestionId={selectedQuestionId}
           setQuestionRef={setQuestionRef}
+          setAnsweredQuestions={setAnsweredQuestions}
         />
       )}
     </Box>

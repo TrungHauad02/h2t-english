@@ -8,7 +8,10 @@ import {
   CircularProgress,
   useMediaQuery,
   useTheme,
-  alpha
+  alpha,
+  Grid,
+  Card,
+  Divider
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -17,7 +20,6 @@ import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { TestWriting, SubmitTestWriting } from "interfaces";
 import { submitTestWritingService } from "services";
-import debounce from 'lodash/debounce';
 
 interface WritingSectionProps {
   partId: number;
@@ -25,6 +27,7 @@ interface WritingSectionProps {
   submitTestId: number;
   selectedQuestionId?: number | null;
   startSerial: number;
+  setAnsweredQuestions: (questionId: number, isAnswered: boolean) => void;
 }
 
 export default function WritingSection({ 
@@ -32,13 +35,14 @@ export default function WritingSection({
   testItemIds, 
   submitTestId,
   selectedQuestionId,
-  startSerial 
+  startSerial,
+  setAnsweredQuestions
 }: WritingSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
+  const isMediumScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [writingPrompts, setWritingPrompts] = useState<TestWriting[]>([]);
@@ -68,6 +72,11 @@ export default function WritingSection({
           if (writingIndex !== -1) {
             savedEssays[writingIndex] = essay.content;
             savedEssayIds[writingIndex] = essay.id;
+            
+            // Mark as answered if content exists
+            if (essay.content && essay.content.trim() !== '') {
+              setAnsweredQuestions(items[writingIndex].id, true);
+            }
           }
         });
 
@@ -88,23 +97,21 @@ export default function WritingSection({
     if (testItemIds.length > 0) {
       loadInitialData();
     }
-  }, [testItemIds, submitTestId, selectedQuestionId, startSerial]);
+  }, [testItemIds, submitTestId, selectedQuestionId, startSerial, setAnsweredQuestions]);
 
   const debouncedSaveEssay = useCallback(
-    debounce(async (index: number, content: string) => {
-      if (!content || !writingPrompts[index]) return;
+    async (index: number, content: string) => {
+      if (!writingPrompts[index]) return;
 
       const writingId = writingPrompts[index].id;
       
       setSaving(true);
       try {
         if (essayIds[index]) {
-    
           await submitTestWritingService.patch(essayIds[index], {
             content: content
           });
         } else {
-
           const newEssay = await submitTestWritingService.create({
             id: Date.now(),
             submitTest_id: submitTestId,
@@ -115,19 +122,25 @@ export default function WritingSection({
             status: true
           });
           
-  
           setEssayIds(prev => ({
             ...prev,
             [index]: newEssay.id
           }));
+        }
+        
+        // Mark question as answered if content exists
+        if (content && content.trim() !== '') {
+          setAnsweredQuestions(writingId, true);
+        } else {
+          setAnsweredQuestions(writingId, false);
         }
       } catch (error) {
         console.error("Error saving essay:", error);
       } finally {
         setSaving(false);
       }
-    }, 800),
-    [writingPrompts, essayIds, submitTestId]
+    },
+    [writingPrompts, essayIds, submitTestId, setAnsweredQuestions]
   );
 
   const handleEssayChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -137,7 +150,6 @@ export default function WritingSection({
       [currentIndex]: newContent
     });
     
-
     debouncedSaveEssay(currentIndex, newContent);
   };
 
@@ -207,7 +219,6 @@ export default function WritingSection({
   const isUnderMinimum = wordCount < minWords;
   const isOverMaximum = maxWords && wordCount > maxWords;
 
-
   const getWordCountColor = () => {
     if (isUnderMinimum) return isDarkMode ? color.warningDarkMode : color.warning;
     if (isOverMaximum) return isDarkMode ? color.errorDarkMode : color.error;
@@ -219,193 +230,252 @@ export default function WritingSection({
   return (
     <Box sx={{ 
       bgcolor: isDarkMode ? color.gray900 : color.gray50,
-      borderRadius: '8px',
+      borderRadius: '12px',
       p: { xs: 2, sm: 3 },
       mx: 'auto',
-
+      boxShadow: isDarkMode ? '0 4px 20px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.1)',
     }}>
-      <Box sx={{ 
-        display: 'flex', 
-        flexDirection: { xs: 'column', md: 'row' },
-        gap: 3
-      }}>
-
-        <Box 
-          sx={{ 
-            borderRadius: '8px',
-            overflow: 'hidden',
-            flex: { xs: '100%', md: '35%' },
-            bgcolor: 'white',
-            display: 'flex',
-            flexDirection: 'column',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-            position: 'relative',
-            borderLeft: '4px solid',
-            borderLeftColor: color.teal500,
-            p: 0
-          }}
-        >
-
-          <Typography 
-            variant="h6" 
+      <Grid container spacing={3}>
+        {/* Writing Prompt Section */}
+        <Grid item xs={12} md={6}>
+          <Card 
+            elevation={3}
             sx={{ 
-              color: color.teal700,
-              fontWeight: 600,
-              py: 2,
-              px: 3,
-              borderBottom: `1px solid ${color.gray200}`
+              borderRadius: '12px',
+              overflow: 'hidden',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.08)',
+              position: 'relative',
+              bgcolor: isDarkMode ? color.gray800 : color.white,
+              borderLeft: '5px solid',
+              borderLeftColor: color.teal500,
             }}
           >
-            {`Question ${startSerial + currentIndex}`}
-          </Typography>
-          
+            <Box sx={{ 
+              p: 2,
+              bgcolor: isDarkMode ? color.gray700 : color.teal50, 
+              borderBottom: '1px solid',
+              borderBottomColor: isDarkMode ? color.gray600 : color.teal100,
+            }}>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  color: isDarkMode ? color.teal200 : color.teal700,
+                  fontWeight: 600,
+                }}
+              >
+                {`Question ${startSerial + currentIndex}`}
+              </Typography>
+            </Box>
 
-          <Box sx={{ 
-            p: 3,
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
+            <Box sx={{ 
+              p: 3,
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column'
+            }}>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  color: isDarkMode ? color.gray200 : color.gray800,
+                  fontSize: { xs: "0.95rem", sm: "1.1rem" },
+                  lineHeight: 1.8,
+                  mb: 2,
+                  flex: 1,
+                  fontWeight: 500,
+                }}
+              >
+                {currentPrompt?.topic || "No topic available"}
+              </Typography>
+              
+              <Divider sx={{ 
+                my: 2,
+                borderColor: isDarkMode ? color.gray600 : color.gray200,
+              }} />
+              
+              <Box sx={{ mt: 'auto' }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    mb: 1,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: '10px',
+                      height: '10px',
+                      borderRadius: '50%',
+                      bgcolor: isDarkMode ? color.teal400 : color.teal500,
+                      mr: 1.5,
+                      display: 'inline-block'
+                    }}
+                  />
+                  <Typography 
+                    variant="subtitle2" 
+                    sx={{ 
+                      fontWeight: 500,
+                      color: isDarkMode ? color.gray300 : color.gray700
+                    }}
+                  >
+                    Requirements:
+                  </Typography>
+                </Box>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    ml: 3,
+                    color: isDarkMode ? color.gray400 : color.gray600,
+                    fontWeight: 400,
+                    lineHeight: 1.6,
+                  }}
+                >
+                  {`You should write at least ${minWords} words and at most ${maxWords} words.`}
+                </Typography>
+              </Box>
+            </Box>
+          </Card>
+        </Grid>
+
+        {/* Essay Section */}
+        <Grid item xs={12} md={6}>
+          <Box 
+            sx={{ 
+              display: 'flex',
+              flexDirection: 'column',
+              height: '100%',
+              minHeight: isMediumScreen ? 'auto' : '400px'
+            }}
+          >
             <Typography 
-              variant="body1" 
+              variant="subtitle1" 
               sx={{ 
-                color: color.gray800,
-                fontSize: { xs: "0.95rem", sm: "1rem" },
-                lineHeight: 1.7,
-                mb: 2,
-                flex: 1
+                fontWeight: 600,
+                mb: 1.5,
+                color: isDarkMode ? color.gray300 : color.gray700,
               }}
             >
-              {currentPrompt?.topic || "No topic available"}
+              Your Response
             </Typography>
+            
+            <TextField 
+              fullWidth 
+              multiline 
+              rows={isMobile ? 10 : 16}
+              value={essays[currentIndex] || ''} 
+              onChange={handleEssayChange} 
+              placeholder="Start writing your response here..." 
+              variant="outlined"
+              sx={{ 
+                flex: 1,
+                backgroundColor: isDarkMode ? color.gray800 : 'white',
+                borderRadius: '8px',
+                '& .MuiOutlinedInput-root': { 
+                  borderRadius: '8px',
+                  color: isDarkMode ? color.gray200 : 'inherit',
+                  '& fieldset': { 
+                    borderColor: isDarkMode ? color.gray600 : color.gray300,
+                    borderWidth: '1px',
+                  }, 
+                  '&:hover fieldset': { 
+                    borderColor: isDarkMode ? color.teal300 : color.teal400,
+                    borderWidth: '1px',
+                  }, 
+                  '&.Mui-focused fieldset': { 
+                    borderColor: isDarkMode ? color.teal400 : color.teal500,
+                    borderWidth: '2px',
+                  },
+                },
+                '& .MuiInputBase-input': {
+                  fontSize: '1rem',
+                  lineHeight: 1.6,
+                  padding: '16px',
+                } 
+              }} 
+            />
             
             <Box 
               sx={{ 
-                mt: 'auto',
-                pt: 2,
-                borderTop: `1px solid ${color.gray200}`,
-                display: 'flex',
-                alignItems: 'center'
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                mt: 2, 
+                mb: 1
               }}
             >
-              <Box
-                sx={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  bgcolor: color.teal500,
-                  mr: 1,
-                  display: 'inline-block'
-                }}
-              />
               <Typography 
                 variant="body2" 
                 sx={{ 
-                  fontWeight: 500,
-                  color: color.gray700
+                  fontWeight: isUnderMinimum || isOverMaximum ? 600 : 400,
+                  color: getWordCountColor(),
+                  display: 'flex',
+                  alignItems: 'center',
                 }}
               >
-                {`You should write at least ${minWords} words and at most ${maxWords} words.`}
+                <Box sx={{ 
+                  display: 'inline-block',
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  mr: 1,
+                  bgcolor: getWordCountColor(),
+                }}/>
+                {`Word Count: ${wordCount}`}
+                {isUnderMinimum && (
+                  <Box component="span" sx={{ 
+                    ml: 1, 
+                    color: isDarkMode ? color.warningDarkMode : color.warning,
+                    fontWeight: 600,
+                  }}>
+                    {`(${minWords - wordCount} more needed)`}
+                  </Box>
+                )}
+                {isOverMaximum && (
+                  <Box component="span" sx={{ 
+                    ml: 1, 
+                    color: isDarkMode ? color.errorDarkMode : color.error,
+                    fontWeight: 600,
+                  }}>
+                    {`(${wordCount - maxWords} over limit)`}
+                  </Box>
+                )}
               </Typography>
+              
+              {saving && (
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <CircularProgress 
+                    size={16} 
+                    thickness={6}
+                    sx={{ 
+                      color: isDarkMode ? color.teal400 : color.teal600,
+                      mr: 1
+                    }} 
+                  />
+                  <Typography 
+                    variant="caption" 
+                    sx={{ 
+                      color: isDarkMode ? color.teal300 : color.teal700,
+                    }}
+                  >
+                    Saving...
+                  </Typography>
+                </Box>
+              )}
             </Box>
           </Box>
-        </Box>
-
-        <Box 
-          sx={{ 
-            flex: { xs: '100%', md: '65%' },
-            display: 'flex',
-            flexDirection: 'column'
-          }}
-        >
-          <TextField 
-            fullWidth 
-            multiline 
-            rows={isMobile ? 12 : 16}
-            value={essays[currentIndex] || ''} 
-            onChange={handleEssayChange} 
-            placeholder="Type your essay here..." 
-            variant="outlined"
-            sx={{ 
-              backgroundColor: 'white',
-              borderRadius: '8px',
-              '& .MuiOutlinedInput-root': { 
-                borderRadius: '8px',
-                '& fieldset': { 
-                  borderColor: color.gray300,
-                  borderWidth: '1px',
-                }, 
-                '&:hover fieldset': { 
-                  borderColor: color.teal400,
-                  borderWidth: '1px',
-                }, 
-                '&.Mui-focused fieldset': { 
-                  borderColor: color.teal500,
-                  borderWidth: '2px',
-                },
-              } 
-            }} 
-          />
-          
-          <Box 
-            sx={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              mt: 2, 
-              mb: 4
-            }}
-          >
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                fontStyle: "italic", 
-                color: getWordCountColor(),
-                fontWeight: isUnderMinimum || isOverMaximum ? 600 : 400,
-              }}
-            >
-              {`Word Count: ${wordCount}`}
-              {isUnderMinimum && (
-                <Box component="span" sx={{ ml: 1, color: color.warning }}>
-                  {`(${minWords - wordCount} more needed)`}
-                </Box>
-              )}
-              {isOverMaximum && (
-                <Box component="span" sx={{ ml: 1, color: color.error }}>
-                  {`(${wordCount - maxWords} over limit)`}
-                </Box>
-              )}
-            </Typography>
-            
-            {saving && (
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <CircularProgress 
-                  size={16} 
-                  thickness={6}
-                  sx={{ 
-                    color: isDarkMode ? color.teal400 : color.teal600,
-                    mr: 1
-                  }} 
-                />
-                <Typography 
-                  variant="caption" 
-                  sx={{ 
-                    color: isDarkMode ? color.teal300 : color.teal700,
-                    fontStyle: 'italic'
-                  }}
-                >
-                  Saving...
-                </Typography>
-              </Box>
-            )}
-          </Box>
-        </Box>
-      </Box>
+        </Grid>
+      </Grid>
 
       <Box 
         sx={{ 
           display: 'flex',
           justifyContent: 'space-between',
-          mt: 2
+          mt: 3,
+          pt: 2,
+          borderTop: '1px solid',
+          borderTopColor: isDarkMode ? color.gray700 : color.gray200,
         }}
       >
         <Button
@@ -415,16 +485,16 @@ export default function WritingSection({
           disabled={currentIndex === 0}
           sx={{
             borderRadius: '8px',
-            borderColor: color.gray300,
-            color: color.gray600,
-            bgcolor: 'white',
+            borderColor: isDarkMode ? color.gray600 : color.gray300,
+            color: isDarkMode ? color.gray300 : color.gray600,
+            bgcolor: isDarkMode ? 'transparent' : 'white',
             '&:hover': {
-              bgcolor: alpha(color.gray100, 0.8),
-              borderColor: color.gray400,
+              bgcolor: isDarkMode ? alpha(color.gray700, 0.8) : alpha(color.gray100, 0.8),
+              borderColor: isDarkMode ? color.gray500 : color.gray400,
             },
             '&.Mui-disabled': {
-              borderColor: color.gray200,
-              color: color.gray400,
+              borderColor: isDarkMode ? color.gray700 : color.gray200,
+              color: isDarkMode ? color.gray600 : color.gray400,
             },
             px: 3,
             py: 1
@@ -440,18 +510,20 @@ export default function WritingSection({
           disabled={currentIndex === writingPrompts.length - 1}
           sx={{
             borderRadius: '8px',
-            bgcolor: color.teal500,
+            bgcolor: isDarkMode ? color.teal600 : color.teal500,
             color: 'white',
             '&:hover': {
-              bgcolor: color.teal600,
+              bgcolor: isDarkMode ? color.teal700 : color.teal600,
             },
             '&.Mui-disabled': {
-              bgcolor: color.gray300,
-              color: color.gray500,
+              bgcolor: isDarkMode ? color.gray700 : color.gray300,
+              color: isDarkMode ? color.gray500 : color.gray500,
             },
             px: 4,
             py: 1,
-            boxShadow: '0 4px 8px rgba(20, 184, 166, 0.2)'
+            boxShadow: isDarkMode ? 
+              '0 4px 12px rgba(20, 184, 166, 0.3)' : 
+              '0 4px 12px rgba(20, 184, 166, 0.2)'
           }}
         >
           Next
