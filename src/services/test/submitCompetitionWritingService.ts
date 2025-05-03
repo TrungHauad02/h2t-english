@@ -50,6 +50,26 @@ const remove = async (id: number) => {
     throw error;
   }
 };
+const findBySubmitCompetitionIdAndTestWritingIds = async (
+  submitCompetitionId: number,
+  testWritingIds: number[]
+) => {
+  const response = await apiClient.post(
+    `/submit-competition-writing/by-submit-competition/${submitCompetitionId}/testwritings`,
+    testWritingIds
+  );
+  return response.data;
+};
+const findBySubmitCompetitionIdAndTestWritingId = async (
+  submitCompetitionId: number,
+  testWritingId: number
+) => {
+  const response = await apiClient.get(
+    `/submit-competition-writing/by-submit-competition/${submitCompetitionId}/testwriting/${testWritingId}`
+  );
+  return response.data;
+};
+
 
 export const submitCompetitionWritingService = {
   findById,
@@ -57,4 +77,6 @@ export const submitCompetitionWritingService = {
   update,
   patch,
   remove,
+  findBySubmitCompetitionIdAndTestWritingId,
+  findBySubmitCompetitionIdAndTestWritingIds
 };
