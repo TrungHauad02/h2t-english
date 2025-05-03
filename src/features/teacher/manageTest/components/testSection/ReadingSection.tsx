@@ -282,7 +282,6 @@ export function ReadingSection({ partId, testItemIds }: ReadingSectionProps) {
               isEditMode={isEditMode}
               onMoveLeft={onMoveLeft}
               onMoveRight={onMoveRight}
-              handleAddReading={handleAddReading}
               questionsRanges={questionsRanges}
               onToggleStatus={handleToggleStatus}
               hasChanges={hasMadeChanges}

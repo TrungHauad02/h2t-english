@@ -70,12 +70,12 @@ export default function AddReadingDialog({
         questions: [],
         status: false,
       });
-      const newtestItemIds = [...testItemIds, resData.data.id];
+      const newTestItemIds = [...testItemIds, resData.data.id];
    
       await testPartService.patch(partId, {
-        questions: newtestItemIds,
+        questions: newTestItemIds,
       });
-      setListTestIds(newtestItemIds);
+      setListTestIds(newTestItemIds);
 
       toast.success('Reading added successfully');
       handleClose();

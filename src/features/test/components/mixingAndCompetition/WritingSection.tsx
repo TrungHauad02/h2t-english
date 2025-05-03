@@ -18,8 +18,8 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { testWritingService } from "services/test";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import { TestWriting, SubmitTestWriting } from "interfaces";
-import { submitTestWritingService } from "services";
+import { TestWriting } from "interfaces";
+import { submitTestWritingService, submitCompetitionWritingService } from "services";
 
 interface WritingSectionProps {
   partId: number;
@@ -28,6 +28,7 @@ interface WritingSectionProps {
   selectedQuestionId?: number | null;
   startSerial: number;
   setAnsweredQuestions: (questionId: number, isAnswered: boolean) => void;
+  isCompetitionTest?: boolean;
 }
 
 export default function WritingSection({ 
@@ -36,7 +37,8 @@ export default function WritingSection({
   submitTestId,
   selectedQuestionId,
   startSerial,
-  setAnsweredQuestions
+  setAnsweredQuestions,
+  isCompetitionTest = false
 }: WritingSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -62,18 +64,22 @@ export default function WritingSection({
         setWritingPrompts(withSerial);
 
         const writingIds = items.map(item => item.id);
-        const existingSubmits = await submitTestWritingService.findBySubmitTestIdAndTestWritingIds(submitTestId, writingIds);
+        
+        const existingSubmits = isCompetitionTest
+          ? await submitCompetitionWritingService.findBySubmitCompetitionIdAndTestWritingIds(submitTestId, writingIds)
+          : await submitTestWritingService.findBySubmitTestIdAndTestWritingIds(submitTestId, writingIds);
 
         const savedEssays: Record<number, string> = {};
         const savedEssayIds: Record<number, number> = {};
         
-        existingSubmits.data.forEach((essay: SubmitTestWriting) => {
-          const writingIndex = items.findIndex(item => item.id === essay.testWriting_id);
+        existingSubmits.data.forEach((essay: any) => {
+          const writingId = isCompetitionTest ? essay.CompetitionWriting_id : essay.testWriting_id;
+          const writingIndex = items.findIndex(item => item.id === writingId);
+          
           if (writingIndex !== -1) {
             savedEssays[writingIndex] = essay.content;
             savedEssayIds[writingIndex] = essay.id;
             
-            // Mark as answered if content exists
             if (essay.content && essay.content.trim() !== '') {
               setAnsweredQuestions(items[writingIndex].id, true);
             }
@@ -97,7 +103,7 @@ export default function WritingSection({
     if (testItemIds.length > 0) {
       loadInitialData();
     }
-  }, [testItemIds, submitTestId, selectedQuestionId, startSerial, setAnsweredQuestions]);
+  }, [testItemIds, submitTestId, selectedQuestionId, startSerial, setAnsweredQuestions, isCompetitionTest]);
 
   const debouncedSaveEssay = useCallback(
     async (index: number, content: string) => {
@@ -107,28 +113,49 @@ export default function WritingSection({
       
       setSaving(true);
       try {
-        if (essayIds[index]) {
-          await submitTestWritingService.patch(essayIds[index], {
-            content: content
-          });
+        if (isCompetitionTest) {
+          if (essayIds[index]) {
+            await submitCompetitionWritingService.patch(essayIds[index], {
+              content: content
+            });
+          } else {
+            const newEssay = await submitCompetitionWritingService.create({
+              id: Date.now(),
+              submitCompetition_id: submitTestId,
+              CompetitionWriting_id: writingId,
+              content: content,
+              score: 0,
+              status: true
+            });
+            
+            setEssayIds(prev => ({
+              ...prev,
+              [index]: newEssay.id
+            }));
+          }
         } else {
-          const newEssay = await submitTestWritingService.create({
-            id: Date.now(),
-            submitTest_id: submitTestId,
-            testWriting_id: writingId,
-            content: content,
-            comment: "not submitted",
-            score: 0,
-            status: true
-          });
-          
-          setEssayIds(prev => ({
-            ...prev,
-            [index]: newEssay.id
-          }));
+          if (essayIds[index]) {
+            await submitTestWritingService.patch(essayIds[index], {
+              content: content
+            });
+          } else {
+            const newEssay = await submitTestWritingService.create({
+              id: Date.now(),
+              submitTest_id: submitTestId,
+              testWriting_id: writingId,
+              content: content,
+              comment: "not submitted",
+              score: 0,
+              status: true
+            });
+            
+            setEssayIds(prev => ({
+              ...prev,
+              [index]: newEssay.id
+            }));
+          }
         }
         
-        // Mark question as answered if content exists
         if (content && content.trim() !== '') {
           setAnsweredQuestions(writingId, true);
         } else {
@@ -140,7 +167,7 @@ export default function WritingSection({
         setSaving(false);
       }
     },
-    [writingPrompts, essayIds, submitTestId, setAnsweredQuestions]
+    [writingPrompts, essayIds, submitTestId, setAnsweredQuestions, isCompetitionTest]
   );
 
   const handleEssayChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -236,7 +263,6 @@ export default function WritingSection({
       boxShadow: isDarkMode ? '0 4px 20px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.1)',
     }}>
       <Grid container spacing={3}>
-        {/* Writing Prompt Section */}
         <Grid item xs={12} md={6}>
           <Card 
             elevation={3}
@@ -339,7 +365,6 @@ export default function WritingSection({
           </Card>
         </Grid>
 
-        {/* Essay Section */}
         <Grid item xs={12} md={6}>
           <Box 
             sx={{ 

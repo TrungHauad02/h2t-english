@@ -1,11 +1,11 @@
 import { Stack, Box } from "@mui/material";
 import { ListComponent } from "components/list";
-import { Question, SubmitTestAnswer } from "interfaces";
+import { Question } from "interfaces";
 import WEQuestion from "./QuestionTest";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { useEffect, useState } from "react";
-import { submitTestAnswerService } from "services";
+import { submitTestAnswerService, submitCompetitionAnswerService } from "services";
 
 interface AnswerQuestionSectionProps {
   questions: Question[];
@@ -15,6 +15,7 @@ interface AnswerQuestionSectionProps {
   selectedQuestionId?: number | null;
   setQuestionRef?: (id: number, element: HTMLDivElement | null) => void;
   setAnsweredQuestions: (questionId: number, isAnswered: boolean) => void;
+  isCompetitionTest?: boolean;
 }
 
 export default function AnswerQuestionSection({
@@ -24,7 +25,8 @@ export default function AnswerQuestionSection({
   partId,
   selectedQuestionId,
   setQuestionRef,
-  setAnsweredQuestions
+  setAnsweredQuestions,
+  isCompetitionTest = false
 }: AnswerQuestionSectionProps) {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
@@ -39,12 +41,15 @@ export default function AnswerQuestionSection({
       setLoading(true);
       try {
         const questionIds = questions.map(q => q.id);
-        const response = await submitTestAnswerService.findBySubmitTestIdAndQuestionIds(submitTestId, questionIds);
+        
+        const response = isCompetitionTest 
+          ? await submitCompetitionAnswerService.findBySubmitCompetitionIdAndQuestionIds(submitTestId, questionIds)
+          : await submitTestAnswerService.findBySubmitTestIdAndQuestionIds(submitTestId, questionIds);
         
         const answersMap: Record<string, number> = {};
         
         if (response && response.data) {
-          response.data.forEach((answer: SubmitTestAnswer) => {
+          response.data.forEach((answer: any) => {
             answersMap[answer.question_id] = answer.answer_id;
             // Update parent component's state for each answered question
             setAnsweredQuestions(answer.question_id, true);
@@ -60,7 +65,7 @@ export default function AnswerQuestionSection({
     };
     
     fetchExistingAnswers();
-  }, [submitTestId, questions, setAnsweredQuestions]);
+  }, [submitTestId, questions, setAnsweredQuestions, isCompetitionTest]);
   
   const handleAnswerChange = async (questionId: string, answerId: number) => {
     setSelectedAnswers(prev => ({
@@ -72,22 +77,46 @@ export default function AnswerQuestionSection({
     setAnsweredQuestions(Number(questionId), true);
     
     try {
-      const existingAnswers = await submitTestAnswerService.findBySubmitTestIdAndQuestionId(submitTestId, Number(questionId));
-      
-      if (existingAnswers && existingAnswers.data && existingAnswers.data.length > 0) {
-        const existingAnswer = existingAnswers.data[0];
-        await submitTestAnswerService.update(existingAnswer.id, {
-          ...existingAnswer,
-          answer_id: answerId
-        });
+      if (isCompetitionTest) {
+        const existingAnswers = await submitCompetitionAnswerService.findBySubmitCompetitionIdAndQuestionId(
+          submitTestId, Number(questionId)
+        );
+        
+        if (existingAnswers && existingAnswers.data && existingAnswers.data.length > 0) {
+          const existingAnswer = existingAnswers.data[0];
+          await submitCompetitionAnswerService.update(existingAnswer.id, {
+            ...existingAnswer,
+            answer_id: answerId
+          });
+        } else {
+          await submitCompetitionAnswerService.create({
+            id: Date.now(),
+            submitCompetition_id: submitTestId,
+            question_id: Number(questionId),
+            answer_id: answerId,
+            status: true,
+          });
+        }
       } else {
-        await submitTestAnswerService.create({
-          id: Date.now(),
-          submitTest_id: submitTestId,
-          question_id: Number(questionId),
-          answer_id: answerId,
-          status: true,
-        });
+        const existingAnswers = await submitTestAnswerService.findBySubmitTestIdAndQuestionId(
+          submitTestId, Number(questionId)
+        );
+        
+        if (existingAnswers && existingAnswers.data && existingAnswers.data.length > 0) {
+          const existingAnswer = existingAnswers.data[0];
+          await submitTestAnswerService.update(existingAnswer.id, {
+            ...existingAnswer,
+            answer_id: answerId
+          });
+        } else {
+          await submitTestAnswerService.create({
+            id: Date.now(),
+            submitTest_id: submitTestId,
+            question_id: Number(questionId),
+            answer_id: answerId,
+            status: true,
+          });
+        }
       }
     } catch (error) {
       console.error("Error saving answer:", error);

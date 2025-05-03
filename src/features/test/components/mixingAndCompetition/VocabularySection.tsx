@@ -12,6 +12,7 @@ interface VocabularySectionProps {
   selectedQuestionId?: number | null;
   startSerial: number;
   setAnsweredQuestions: (questionId: number, isAnswered: boolean) => void;
+  isCompetitionTest?: boolean;
 }
 
 export default function VocabularySection({
@@ -20,7 +21,8 @@ export default function VocabularySection({
   submitTestId,
   selectedQuestionId,
   startSerial,
-  setAnsweredQuestions
+  setAnsweredQuestions,
+  isCompetitionTest = false
 }: VocabularySectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -28,7 +30,7 @@ export default function VocabularySection({
   const [loading, setLoading] = useState<boolean>(true);
   
   const questionRefs = useRef<Record<number, HTMLDivElement | null>>({});
-
+  
   useEffect(() => {
     async function fetchQuestions() {
       try {
@@ -46,11 +48,11 @@ export default function VocabularySection({
       fetchQuestions();
     }
   }, [questionIds]);
-
+  
   const setQuestionRef = (id: number, element: HTMLDivElement | null) => {
     questionRefs.current[id] = element;
   };
-
+  
   useEffect(() => {
     if (selectedQuestionId && questionRefs.current[selectedQuestionId]) {
       questionRefs.current[selectedQuestionId]?.scrollIntoView({
@@ -59,7 +61,7 @@ export default function VocabularySection({
       });
     }
   }, [selectedQuestionId, loading]);
-
+  
   return (
     <Box>
       {loading ? (
@@ -75,6 +77,7 @@ export default function VocabularySection({
           selectedQuestionId={selectedQuestionId}
           setQuestionRef={setQuestionRef}
           setAnsweredQuestions={setAnsweredQuestions}
+          isCompetitionTest={isCompetitionTest}
         />
       )}
     </Box>

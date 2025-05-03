@@ -143,6 +143,7 @@ export default function CompetitionDetailPage() {
           onCancelUnpublish={() => hooks.setOpenUnpublishDialog(false)}
           onConfirmPublish={hooks.handlePublish}
           onConfirmUnpublish={hooks.handleUnpublish}
+          title="Competition Test"
         />
       </Container>
     </Box>

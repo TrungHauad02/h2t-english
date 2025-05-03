@@ -1,7 +1,6 @@
 import React from 'react';
-import { Box, Typography, Stack, Paper, Button } from '@mui/material';
+import { Box, Typography, Stack, Paper } from '@mui/material';
 import BookIcon from '@mui/icons-material/Book';
-import AddIcon from '@mui/icons-material/Add';
 import useColor from 'theme/useColor';
 import { useDarkMode } from 'hooks/useDarkMode';
 import { TestReading } from 'interfaces';
@@ -14,7 +13,6 @@ interface ReadingPassagesPanelProps {
   isEditMode: boolean;
   onMoveLeft: (index: number) => void;
   onMoveRight: (index: number) => void;
-  handleAddReading: () => void;
   questionsRanges: Record<number, string>;
   onToggleStatus?: (id: number) => void;
   hasChanges?: boolean;
@@ -27,7 +25,6 @@ export default function ReadingPassagesPanel({
   isEditMode,
   onMoveLeft,
   onMoveRight,
-  handleAddReading,
   questionsRanges,
   onToggleStatus,
   hasChanges
@@ -73,25 +70,6 @@ export default function ReadingPassagesPanel({
         >
           <BookIcon fontSize="small" /> Reading Passages
         </Typography>
-
-        {isEditMode && (
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleAddReading}
-            size="small"
-            sx={{
-              backgroundColor: isDarkMode ? color.emerald700 : color.emerald600,
-              color: color.white,
-              textTransform: 'none',
-              '&:hover': {
-                backgroundColor: isDarkMode ? color.emerald600 : color.emerald500,
-              }
-            }}
-          >
-            Add
-          </Button>
-        )}
       </Box>
       
       <Box

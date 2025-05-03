@@ -1,0 +1,528 @@
+import React from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+  Box,
+  CircularProgress,
+  Slide,
+  Paper,
+  Chip,
+  Grid
+} from "@mui/material";
+import { TransitionProps } from "@mui/material/transitions";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
+import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
+import EqualizerIcon from '@mui/icons-material/Equalizer';
+import FlagIcon from '@mui/icons-material/Flag';
+
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement;
+  },
+  ref: React.Ref<unknown>,
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
+// Simplified result interface for single test types
+interface SingleTestResult {
+  totalQuestions: number;
+  correctAnswers: number;
+  score: number;
+  answeredQuestions?: number; // Optional for tracking how many questions were attempted
+}
+
+interface SubmitTestDialogSingleProps {
+  open: boolean;
+  onClose: () => void;
+  isLoading: boolean;
+  result: SingleTestResult | null;
+  testName: string; // Tên loại test (Reading, Speaking, Writing, Listening)
+}
+
+const SubmitTestDialogSingle: React.FC<SubmitTestDialogSingleProps> = ({ 
+  open, 
+  onClose, 
+  isLoading, 
+  result,
+  testName
+}) => {
+  const color = useColor();
+  const { isDarkMode } = useDarkMode();
+
+  const getScoreColor = (score: number) => {
+    if (score >= 90) return isDarkMode ? color.green500 : color.green600;
+    if (score >= 80) return isDarkMode ? color.emerald500 : color.emerald600;
+    if (score >= 70) return isDarkMode ? color.teal500 : color.teal600;
+    if (score >= 60) return isDarkMode ? color.teal600 : color.teal700;
+    if (score >= 50) return isDarkMode ? color.teal700 : color.teal800;
+    return isDarkMode ? color.red500 : color.red600;
+  };
+
+  const getFeedback = (score: number) => {
+    if (score >= 90) return "Excellent! You've completed the test with outstanding results.";
+    if (score >= 80) return "Great job! You have a solid understanding of the material.";
+    if (score >= 70) return "Good work! You've grasped the main concepts.";
+    if (score >= 60) return "Fair result! Some areas need improvement.";
+    if (score >= 50) return "Passing grade. Review the areas where you had difficulties.";
+    return "More practice needed. Review the material and try again.";
+  };
+
+  return (
+    <Dialog
+      open={open}
+      TransitionComponent={Transition}
+      keepMounted
+      onClose={isLoading ? undefined : onClose}
+      maxWidth="md"
+      sx={{
+        '& .MuiDialog-paper': {
+          borderRadius: '16px',
+          backgroundColor: isDarkMode ? color.gray800 : color.white,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+          overflow: 'hidden',
+        }
+      }}
+    >
+      {isLoading ? (
+        <Box sx={{ 
+          p: 6, 
+          display: 'flex', 
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '350px',
+          minWidth: { xs: '300px', sm: '500px' },
+          textAlign: 'center'
+        }}>
+          <CircularProgress 
+            size={70} 
+            thickness={4}
+            sx={{ 
+              color: isDarkMode ? color.teal400 : color.teal500,
+              mb: 3
+            }} 
+          />
+          <Typography 
+            variant="h5" 
+            sx={{ 
+              mb: 2,
+              fontWeight: 600,
+              color: isDarkMode ? color.gray100 : color.gray800 
+            }}
+          >
+            Calculating Test Results
+          </Typography>
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              color: isDarkMode ? color.gray300 : color.gray600,
+              maxWidth: '400px'
+            }}
+          >
+            Please wait while we compile your test results...
+          </Typography>
+        </Box>
+      ) : result ? (
+        <>
+          <Box 
+            sx={{ 
+              py: 3, 
+              px: 4, 
+              backgroundColor: isDarkMode ? color.gray700 : color.teal50,
+              borderBottom: '1px solid',
+              borderColor: isDarkMode ? color.gray600 : color.teal100,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2
+            }}
+          >
+            <FlagIcon 
+              sx={{ 
+                fontSize: 28, 
+                color: isDarkMode ? color.teal300 : color.teal600
+              }} 
+            />
+            <Box>
+              <Typography 
+                variant="h5" 
+                sx={{ 
+                  fontWeight: 700, 
+                  color: isDarkMode ? color.gray100 : color.gray900,
+                }}
+              >
+                {testName} Test Completed
+              </Typography>
+              <Typography 
+                variant="subtitle1" 
+                sx={{ 
+                  color: isDarkMode ? color.gray300 : color.gray700,
+                  fontWeight: 400
+                }}
+              >
+                {getFeedback(result.score)}
+              </Typography>
+            </Box>
+          </Box>
+
+          <DialogContent sx={{ p: 0 }}>
+            <Box sx={{ p: 4 }}>
+              <Grid container spacing={3}>
+                {/* Overall Score */}
+                <Grid item xs={12} md={6}>
+                  <Box 
+                    sx={{ 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      p: 3,
+                      bgcolor: isDarkMode ? color.gray700 : color.gray50,
+                      border: '1px solid',
+                      borderColor: isDarkMode ? color.gray600 : color.gray200,
+                      borderRadius: '16px',
+                      height: '100%',
+                      minHeight: '220px'
+                    }}
+                  >
+                    <Box sx={{ position: 'relative', mb: 2 }}>
+                      <CircularProgress
+                        variant="determinate"
+                        value={100}
+                        size={150}
+                        thickness={4}
+                        sx={{ color: isDarkMode ? color.gray600 : color.gray200 }}
+                      />
+                      <CircularProgress
+                        variant="determinate"
+                        value={result.score}
+                        size={150}
+                        thickness={4}
+                        sx={{ 
+                          color: getScoreColor(result.score),
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                        }}
+                      />
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          bottom: 0,
+                          right: 0,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <Typography
+                          variant="h3"
+                          component="div"
+                          sx={{ 
+                            fontWeight: 700, 
+                            color: getScoreColor(result.score)
+                          }}
+                        >
+                          {Math.round(result.score)}
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          component="div"
+                          sx={{ 
+                            fontWeight: 500, 
+                            color: isDarkMode ? color.gray300 : color.gray600
+                          }}
+                        >
+                          points
+                        </Typography>
+                      </Box>
+                    </Box>
+                    
+                    <Typography
+                      variant="body1"
+                      sx={{ 
+                        mt: 2, 
+                        color: isDarkMode ? color.gray300 : color.gray700,
+                        textAlign: 'center'
+                      }}
+                    >
+                      <Box component="span" sx={{ fontWeight: 600 }}>
+                        {result.correctAnswers}
+                      </Box>{" "}
+                      / {result.totalQuestions} correct answers
+                    </Typography>
+                    
+                    {result.answeredQuestions !== undefined && (
+                      <Typography
+                        variant="body2"
+                        sx={{ 
+                          mt: 1, 
+                          color: isDarkMode ? color.gray400 : color.gray600,
+                          textAlign: 'center'
+                        }}
+                      >
+                        {result.answeredQuestions} of {result.totalQuestions} questions attempted
+                      </Typography>
+                    )}
+                  </Box>
+                </Grid>
+
+                {/* Performance Details */}
+                <Grid item xs={12} md={6}>
+                  <Box 
+                    sx={{ 
+                      p: 3,
+                      bgcolor: isDarkMode ? color.gray700 : color.gray50,
+                      border: '1px solid',
+                      borderColor: isDarkMode ? color.gray600 : color.gray200,
+                      borderRadius: '16px',
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <Box sx={{ 
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      mb: 2
+                    }}>
+                      <EqualizerIcon 
+                        sx={{ 
+                          color: isDarkMode ? color.teal300 : color.teal600,
+                          fontSize: 20
+                        }} 
+                      />
+                      <Typography 
+                        variant="h6" 
+                        sx={{ 
+                          fontWeight: 600,
+                          color: isDarkMode ? color.gray200 : color.gray800 
+                        }}
+                      >
+                        {testName} Performance
+                      </Typography>
+                    </Box>
+
+                    <Paper
+                      elevation={0}
+                      sx={{
+                        p: 2,
+                        bgcolor: isDarkMode ? color.gray800 : color.white,
+                        border: '1px solid',
+                        borderColor: isDarkMode ? color.gray600 : color.gray200,
+                        borderRadius: '8px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        mb: 2
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <Box 
+                          sx={{ 
+                            width: 36, 
+                            height: 36,
+                            minWidth: 36,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: '50%',
+                            bgcolor: isDarkMode ? color.gray700 : color.gray100,
+                          }}
+                        >
+                          <Typography sx={{ fontWeight: 600, color: isDarkMode ? color.gray300 : color.gray600 }}>
+                            1
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography
+                            variant="subtitle1"
+                            sx={{ 
+                              fontWeight: 600, 
+                              color: isDarkMode ? color.gray100 : color.gray900,
+                              mb: 0.5
+                            }}
+                          >
+                            {testName}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: isDarkMode ? color.gray400 : color.gray600 }}
+                          >
+                            {result.correctAnswers} / {result.totalQuestions} correct answers
+                          </Typography>
+                        </Box>
+                      </Box>
+                      
+                      <Chip
+                        label={`${Math.round(result.score)}%`}
+                        sx={{
+                          fontWeight: 600,
+                          bgcolor: (() => {
+                            const scoreColor = getScoreColor(result.score);
+                            return isDarkMode 
+                              ? `${scoreColor}33` 
+                              : `${scoreColor}22`;
+                          })(),
+                          color: getScoreColor(result.score),
+                          borderRadius: '8px',
+                        }}
+                      />
+                    </Paper>
+                    
+                    {/* Performance Analysis */}
+                    <Box sx={{ mt: 1 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ 
+                          color: isDarkMode ? color.gray300 : color.gray700,
+                          mb: 1
+                        }}
+                      >
+                        {result.score >= 80 
+                          ? `You showed excellent ${testName.toLowerCase()} skills.` 
+                          : result.score >= 65
+                          ? `Your ${testName.toLowerCase()} skills are good, with some areas for improvement.`
+                          : `You should focus on improving your ${testName.toLowerCase()} skills.`
+                        }
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Grid>
+              </Grid>
+
+              {/* Improvement Suggestions */}
+              <Box
+                sx={{
+                  mt: 3,
+                  p: 3,
+                  bgcolor: isDarkMode ? 'rgba(20, 184, 166, 0.1)' : 'rgba(20, 184, 166, 0.05)',
+                  border: '1px solid',
+                  borderColor: isDarkMode ? 'rgba(20, 184, 166, 0.2)' : 'rgba(20, 184, 166, 0.1)',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 2
+                }}
+              >
+                <TipsAndUpdatesIcon 
+                  sx={{ 
+                    color: isDarkMode ? color.teal400 : color.teal600,
+                    fontSize: 24,
+                    mt: 0.5
+                  }} 
+                />
+                <Box>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{ 
+                      fontWeight: 600, 
+                      color: isDarkMode ? color.teal200 : color.teal700,
+                      mb: 1
+                    }}
+                  >
+                    Improvement Suggestions
+                  </Typography>
+                  
+                  <Typography
+                    variant="body2"
+                    sx={{ color: isDarkMode ? color.gray300 : color.gray700 }}
+                  >
+                    {(() => {
+                      switch(testName) {
+                        case 'Reading':
+                          return result.score < 70 
+                            ? "Practice more reading comprehension exercises and work on expanding your vocabulary. Focus on identifying main ideas and supporting details." 
+                            : "Continue to challenge yourself with various text types and complexity levels to further improve your reading skills.";
+                        case 'Listening':
+                          return result.score < 70
+                            ? "Practice listening to different speakers and accents. Focus on note-taking skills and identifying key information."
+                            : "Continue to expose yourself to diverse audio materials to further enhance your listening comprehension.";
+                        case 'Speaking':
+                          return result.score < 70
+                            ? "Practice pronunciation and fluency. Record yourself speaking and identify areas for improvement."
+                            : "Work on more complex speaking tasks and continue to build your vocabulary for more nuanced expression.";
+                        case 'Writing':
+                          return result.score < 70
+                            ? "Focus on improving your grammar, sentence structure, and organization. Practice writing different types of essays."
+                            : "Continue to refine your writing style and work on more sophisticated vocabulary and sentence structures.";
+                        default:
+                          return result.score >= 80 
+                            ? "You're doing very well! Keep up the good work." 
+                            : "Review the materials and complete more practice exercises to improve your results.";
+                      }
+                    })()}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          </DialogContent>
+
+          <DialogActions 
+            sx={{ 
+              p: 3, 
+              pt: 0,
+              justifyContent: 'center'
+            }}
+          >
+            <Button
+              variant="contained"
+              onClick={onClose}
+              sx={{
+                py: 1.5,
+                px: 4,
+                borderRadius: '8px',
+                backgroundColor: isDarkMode ? color.teal700 : color.teal500,
+                color: 'white',
+                fontWeight: 'bold',
+                textTransform: 'none',
+                fontSize: '1rem',
+                '&:hover': {
+                  backgroundColor: isDarkMode ? color.teal600 : color.teal600,
+                },
+              }}
+            >
+              Review Lessons
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={onClose}
+              sx={{
+                py: 1.5,
+                px: 4,
+                ml: 2,
+                borderRadius: '8px',
+                borderColor: isDarkMode ? color.gray600 : color.gray300,
+                color: isDarkMode ? color.gray300 : color.gray700,
+                fontWeight: 'bold',
+                textTransform: 'none',
+                fontSize: '1rem',
+                '&:hover': {
+                  borderColor: isDarkMode ? color.gray500 : color.gray400,
+                  backgroundColor: 'transparent',
+                },
+              }}
+            >
+              Close
+            </Button>
+          </DialogActions>
+        </>
+      ) : (
+        <Box sx={{ p: 4, textAlign: 'center' }}>
+          <Typography variant="h6">No result data available</Typography>
+        </Box>
+      )}
+    </Dialog>
+  );
+};
+
+export default SubmitTestDialogSingle;

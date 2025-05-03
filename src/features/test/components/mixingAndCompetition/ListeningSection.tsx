@@ -1,10 +1,9 @@
-import { Box, Stack, Typography, CircularProgress, Paper, Collapse, IconButton } from "@mui/material";
+import { Box, Stack, Typography, CircularProgress, Paper } from "@mui/material";
 import { useEffect, useState, useRef } from "react";
 import AnswerQuestionSection from "../common/answerQuestion/AnswerQuestionSection";
 import { testListeningService, questionService } from "services/test";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import TextsmsIcon from "@mui/icons-material/Textsms";
 import { TestListening } from "interfaces";
 
 interface ListeningSectionProps {
@@ -14,6 +13,7 @@ interface ListeningSectionProps {
   selectedQuestionId?: number | null;
   startSerial: number;
   setAnsweredQuestions: (questionId: number, isAnswered: boolean) => void;
+  isCompetitionTest?: boolean;
 }
 
 export default function ListeningSection({ 
@@ -22,23 +22,21 @@ export default function ListeningSection({
   submitTestId,
   selectedQuestionId,
   startSerial,
-  setAnsweredQuestions
+  setAnsweredQuestions,
+  isCompetitionTest= false,
 }: ListeningSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const [listeningItems, setListeningItems] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [expandedTranscripts, setExpandedTranscripts] = useState<Record<number, boolean>>({});
   
-  // Refs để scroll đến câu hỏi được chọn
   const questionRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
   useEffect(() => {
     async function fetchListeningItems() {
       try {
         setLoading(true);
-        
-        // Fetch listening items
+    
         const listeningItemsResponse = await testListeningService.getByIds(testItemIds);
         const items = listeningItemsResponse.data || [];
         
@@ -79,13 +77,6 @@ export default function ListeningSection({
     }
   }, [testItemIds, startSerial]);
 
-  const toggleTranscript = (index: number) => {
-    setExpandedTranscripts(prev => ({
-      ...prev,
-      [index]: !prev[index]
-    }));
-  };
-
   // Function to store references to each question element
   const setQuestionRef = (id: number, element: HTMLDivElement | null) => {
     questionRefs.current[id] = element;
@@ -112,7 +103,7 @@ export default function ListeningSection({
   return (
     <Box>
       {listeningItems.map((listeningItem, index) => {
-        const { audio, transcript, questions, startSerial: itemStartSerial } = listeningItem;
+        const { audio, questions, startSerial: itemStartSerial } = listeningItem;
         
         return (
           <Paper 
@@ -156,43 +147,7 @@ export default function ListeningSection({
                   Your browser does not support the audio element.
                 </audio>
                 
-                <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-                  <IconButton 
-                    onClick={() => toggleTranscript(index)}
-                    sx={{ 
-                      color: isDarkMode ? color.teal400 : color.teal600,
-                      mr: 1,
-                      '&:hover': {
-                        backgroundColor: isDarkMode ? 'rgba(94, 234, 212, 0.1)' : 'rgba(20, 184, 166, 0.1)',
-                      }
-                    }}
-                  >
-                    <TextsmsIcon />
-                  </IconButton>
-                  <Typography 
-                    variant="body2" 
-                    sx={{ color: isDarkMode ? color.gray400 : color.gray600 }}
-                  >
-                    {expandedTranscripts[index] ? 'Hide transcript' : 'Show transcript'}
-                  </Typography>
-                </Box>
-                
-                <Collapse in={expandedTranscripts[index]} timeout="auto" unmountOnExit>
-                  <Box 
-                    sx={{ 
-                      mt: 2, 
-                      p: 2, 
-                      bgcolor: isDarkMode ? color.gray900 : color.gray50,
-                      borderRadius: '0.5rem',
-                      border: '1px solid',
-                      borderColor: isDarkMode ? color.gray700 : color.gray300,
-                    }}
-                  >
-                    <Typography sx={{ whiteSpace: 'pre-line', color: isDarkMode ? color.gray300 : color.gray700 }}>
-                      {transcript}
-                    </Typography>
-                  </Box>
-                </Collapse>
+    
               </Box>
             </Stack>
 
@@ -216,6 +171,7 @@ export default function ListeningSection({
                 selectedQuestionId={selectedQuestionId}
                 setQuestionRef={setQuestionRef}
                 setAnsweredQuestions={setAnsweredQuestions}
+                isCompetitionTest={isCompetitionTest}
               />
             </Box>
           </Paper>

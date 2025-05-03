@@ -190,6 +190,7 @@ export default function ToeicDetailPage() {
         onCancelUnpublish={() => hooks.setOpenUnpublishDialog(false)}
         onConfirmPublish={hooks.handlePublish}
         onConfirmUnpublish={hooks.handleUnpublish}
+        title='Toeic'
       />
     </Container>
   );

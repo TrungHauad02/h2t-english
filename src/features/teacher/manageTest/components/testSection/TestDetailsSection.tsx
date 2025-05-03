@@ -39,6 +39,7 @@ export const TestDetailsSection: React.FC<TestDetailsSectionProps> = ({
               status={testData.status}
               onPublish={handlePublishClick}
               onUnpublish={handleUnpublishClick}
+              title={"Test"}
             />
           </Box>
           

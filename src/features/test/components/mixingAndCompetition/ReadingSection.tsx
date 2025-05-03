@@ -14,6 +14,7 @@ interface ReadingSectionProps {
   selectedQuestionId?: number | null;
   startSerial: number;
   setAnsweredQuestions: (questionId: number, isAnswered: boolean) => void;
+  isCompetitionTest?: boolean;
 }
 
 export default function ReadingSection({ 
@@ -22,7 +23,8 @@ export default function ReadingSection({
   submitTestId,
   selectedQuestionId,
   startSerial,
-  setAnsweredQuestions
+  setAnsweredQuestions,
+  isCompetitionTest = false,
 }: ReadingSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -162,6 +164,7 @@ export default function ReadingSection({
                 selectedQuestionId={selectedQuestionId}
                 setQuestionRef={setQuestionRef}
                 setAnsweredQuestions={setAnsweredQuestions}
+                isCompetitionTest={isCompetitionTest}
               />
             </Box>
           </Paper>
