@@ -676,6 +676,7 @@ const submitCompetitionSpeaking: SubmitCompetitionSpeaking[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     submitCompetition_id: 1,
+    file: "competition_speaking_1.mp4",
     question_id: 801,
     transcript: "Competition speaking transcript",
     score: 9,

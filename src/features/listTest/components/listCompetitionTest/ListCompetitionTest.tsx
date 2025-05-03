@@ -1,72 +1,90 @@
-import { CompetitionTest } from "interfaces";
-import { listCompetitionTestService } from "../../services/listCompetitionTestService";
-import { Box, Grid } from "@mui/material";
-import CompetitionTestItem from "./CompetitionTestItem";
-import { WEPagination } from "components/pagination";
-import { useState } from "react";
-import { WESelect } from "components/input";
+import { useState, useEffect } from "react";
+import { Box } from "@mui/material";
+import { Test, CompetitionTestFilter } from "interfaces";
+import { competitionTestService } from "services";
+import { WEPaginationSelect } from "components/pagination";
+import LoadingSkeleton from "../common/LoadingSkeleton"; 
 
-export default function ListCompetitionTest() {
+interface ListCompetitionTestProps {
+  searchQuery?: string;
+}
+
+export default function ListCompetitionTest({ searchQuery = "" }: ListCompetitionTestProps) {
   const [page, setPage] = useState(1);
   const [testsPerPage, setTestsPerPage] = useState(8);
-  const itemPerPageOptions = [
-    { label: "8", value: 8 },
-    { label: "16", value: 16 },
-    { label: "20", value: 20 },
-  ];
+  const [tests, setTests] = useState<Test[]>([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  const listCompetitionTest: CompetitionTest[] =
-    listCompetitionTestService.getListCompetitionTest() || [];
+  const [filter, setFilter] = useState<CompetitionTestFilter>({
+    title: "",
+    status: true,
+  });
 
-  const handleChangePage = (
-    event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
-    setPage(value);
+  const userId = 1;
+
+  const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value - 1);
   };
 
-  const handleTestsPerPageChange = (value: string | number) => {
-    setTestsPerPage(value as number);
+  const handleItemsPerPageChange = (itemsPerPage: number) => {
+    setTestsPerPage(itemsPerPage);
     setPage(1);
   };
 
-  const paginatedTests = listCompetitionTest.slice(
-    (page - 1) * testsPerPage,
-    page * testsPerPage
-  );
+  useEffect(() => {
+    setFilter((prev) => ({
+      ...prev,
+      title: searchQuery,
+    }));
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const fetchTests = async () => {
+      setLoading(true);
+      try {
+        const response = await competitionTestService.getCompetitionTestsForStudent(
+          page,
+          testsPerPage,
+          userId,
+          filter
+        );
+
+        if (response && response.data) {
+          setTests(response.data.content);
+          setTotalPages(response.data.totalPages || 1);
+        }
+      } catch (error) {
+        console.error("Error fetching competition tests:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTests();
+  }, [page, testsPerPage, filter, userId]);
 
   return (
-    <Box sx={{ mx: 4, mt: 2 }}>
-      <Grid container spacing={3}>
-        {paginatedTests.map((test) => (
-          <CompetitionTestItem test={test} key={test.id} />
-        ))}
-      </Grid>
-      <Box
-        sx={{
-          mt: 4,
-          mb: 2,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 2,
-        }}
-      >
-        <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
-          <WEPagination
-            page={page}
-            totalPage={Math.ceil(listCompetitionTest.length / testsPerPage)}
-            onChange={handleChangePage}
-          />
-        </Box>
-        <Box sx={{ display: { xs: "none", sm: "flex" } }}>
-          <WESelect
-            label="Item per page"
-            value={testsPerPage}
-            options={itemPerPageOptions}
-            onChange={handleTestsPerPageChange}
-          />
-        </Box>
+    <Box>
+
+      <Box sx={{ margin: { xs: "1rem", md: "0 5% 2rem" } }}>
+        {loading ? (
+          <LoadingSkeleton isLoading={true} cardType="route" />
+        ) : (
+          <>
+            {tests.length > 0 && (
+              <Box sx={{ mt: 3, mb: 2, display: "flex", justifyContent: "center" }}>
+                <WEPaginationSelect
+                  page={page + 1}
+                  totalPage={totalPages}
+                  itemsPerPage={testsPerPage}
+                  onPageChange={handleChangePage}
+                  onItemsPerPageChange={handleItemsPerPageChange}
+                />
+              </Box>
+            )}
+          </>
+        )}
       </Box>
     </Box>
   );

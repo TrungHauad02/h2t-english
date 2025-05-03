@@ -39,6 +39,7 @@ export const CompetitionDetailsSection: React.FC<CompetitionDetailsSectionProps>
               status={testData.status}
               onPublish={handlePublishClick}
               onUnpublish={handleUnpublishClick}
+              title="Competition Test"
             />
           </Box>
           
