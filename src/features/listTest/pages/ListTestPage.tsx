@@ -6,10 +6,15 @@ import useColor from "theme/useColor";
 import { MainPictureSection } from "components/sections";
 import useListTestPage from "../hooks/useListTestPage";
 import ListTest from "../components/ListTest";
-import { SearchTests } from "../components/listTest/";
+import SearchTests from "../components/common/SearchTests";
+import { TestTypeEnum } from "interfaces";
 
 export default function ListTestPage() {
   const { type = "" } = useParams<{ type?: string }>();
+  const trimmedType = type.slice(0, -1).toUpperCase();
+  
+
+  
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const listTestPage = useListTestPage();
@@ -38,7 +43,7 @@ export default function ListTestPage() {
         overflow: "hidden",
       }}
     >
-      {/* Abstract background elements */}
+
       <Box
         sx={{
           position: "absolute",
@@ -72,14 +77,14 @@ export default function ListTestPage() {
       />
 
       <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1 }}>
-        {/* Header section with title and description */}
+ 
         <Fade in timeout={1000}>
           <Box>
             <MainPictureSection siteInfo={listTestPage.getSiteInfo(type)} />
           </Box>
         </Fade>
         
-        {/* Search box with improved styling */}
+
         <Fade in timeout={1400}>
           <Box sx={{ mb: 4, mt: 4 }}>
             <SearchTests onSearch={handleSearch} />
@@ -89,7 +94,7 @@ export default function ListTestPage() {
         {/* Tests list component */}
         <Fade in timeout={1800}>
           <Box>
-            <ListTest type={type} searchQuery={searchQuery} />
+            <ListTest type={trimmedType as TestTypeEnum} searchQuery={searchQuery} />
           </Box>
         </Fade>
       </Container>

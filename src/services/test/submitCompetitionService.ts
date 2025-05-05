@@ -60,6 +60,15 @@ const getTestStats = async (userId: number): Promise<SubmitTestStats> => {
     throw error;
   }
 };
+const findByIdAndUserIdAndStatusFalse = async (testId: number, userId: number): Promise<{ data: SubmitCompetition }> => {
+  try {
+    const response = await apiClient.get(`/submit-competitions/by-test-and-user?testId=${testId}&userId=${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error finding SubmitTest:", error);
+    throw error;
+  }
+};
 
 export const submitCompetitionService = {
   findById,
@@ -68,4 +77,5 @@ export const submitCompetitionService = {
   patch,
   remove,
   getTestStats,
+  findByIdAndUserIdAndStatusFalse,
 };

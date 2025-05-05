@@ -1,93 +1,247 @@
-import React, { useState, useMemo } from "react";
-import { Grid, useMediaQuery, useTheme,Box } from "@mui/material";
+import React, { useState, useCallback, useEffect } from "react";
+import { Grid, useMediaQuery, useTheme, Box } from "@mui/material";
 import TestTabs from "./TestTabs";
-import { TestPart, TestPartTypeEnum } from "interfaces";
-
-import ReadingPart from "./ReadingPart";
-import ListeningPart from "./ListeningPart";
-import SpeakingPart from "./SpeakingPart";
-import WritingPart from "./WritingPart";
-import { testService } from "features/test/services/testServices";
-
+import { TestPartTypeEnum } from "interfaces";
+import {
+  VocabularySection,
+  GrammarSection,
+  ReadingSection,
+  ListeningSection,
+  SpeakingSection,
+  WritingSection
+} from "./";
+import TestQuestionGrid from "./TestQuestionGrid";
 import IntroducePartTest from "./InroducePartTest";
 import TimeRemaining from "./TimeRemaining";
-import SubmitTestButton from "../common/SubmitTestButton";
+import SubmitTestDialog from "./SubmitTestDialog";
+import ConfirmSubmitDialog from "./ConfirmSubmitDialog";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
+import useCompetitionTest from "../../hooks/useCompetitionTest";
 
-interface CompetitionTestProps {
-  competitionTestParts: TestPart[];
-}
-
-const tabOrder: TestPartTypeEnum[] = [
-  TestPartTypeEnum.VOCABULARY,
-  TestPartTypeEnum.GRAMMAR,
-  TestPartTypeEnum.READING,
-  TestPartTypeEnum.LISTENING,
-  TestPartTypeEnum.SPEAKING,
-  TestPartTypeEnum.WRITING,
-];
-
-const CompetitionTest: React.FC<CompetitionTestProps> = ({ competitionTestParts }) => {
+export default function CompetitionTest() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const color = useColor();
+  const { isDarkMode } = useDarkMode();
 
-  const [activeTab, setActiveTab] = useState<TestPartTypeEnum>(TestPartTypeEnum.VOCABULARY);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [timeUsed, setTimeUsed] = useState(0);
 
-  const questionCounts = useMemo(() => {
-    const counts: Record<TestPartTypeEnum, number> = {
-      [TestPartTypeEnum.VOCABULARY]: 0,
-      [TestPartTypeEnum.GRAMMAR]: 0,
-      [TestPartTypeEnum.READING]: 0,
-      [TestPartTypeEnum.LISTENING]: 0,
-      [TestPartTypeEnum.SPEAKING]: 0,
-      [TestPartTypeEnum.WRITING]: 0,
+  const {
+    allQuestions,
+    startSerials,
+    activeTab,
+    selectedQuestionId,
+    isSubmitting,
+    isSubmitDialogOpen,
+    submissionResult,
+    setActiveTab,
+    setSelectedQuestionId,
+    handleQuestionSelect,
+    handleUpdateAnsweredQuestions,
+    handleSubmitTest,
+    closeSubmitDialog,
+    vocabularyPart,
+    grammarPart,
+    readingPart,
+    listeningPart,
+    speakingPart,
+    writingPart,
+    submitCompetition,
+    loading,
+    error
+  } = useCompetitionTest();
+
+  const handleOpenConfirmDialog = useCallback(() => {
+    setIsConfirmDialogOpen(true);
+  }, []);
+
+  const handleCloseConfirmDialog = useCallback(() => {
+    setIsConfirmDialogOpen(false);
+  }, []);
+
+  const handleConfirmSubmit = useCallback(() => {
+    setIsConfirmDialogOpen(false);
+    handleSubmitTest();
+  }, [handleSubmitTest]);
+
+  const renderSection = useCallback(() => {
+    const props = {
+      submitTestId: submitCompetition?.id,
+      selectedQuestionId,
+      setAnsweredQuestions: handleUpdateAnsweredQuestions,
+      isCompetitionTest: true,
     };
 
-    competitionTestParts.forEach((part) => {
-      if (part.type === TestPartTypeEnum.READING) {
-        const fetchedTests = testService.getTestReadingsByIds(part.questions as number[]);
-        counts[part.type] += fetchedTests.reduce((total, test) => total + test.questions.length, 0);
-      } else if (part.type === TestPartTypeEnum.LISTENING) {
-        const fetchedTests = testService.getTestListeningsByIds(part.questions as number[]);
-        counts[part.type] += fetchedTests.reduce((total, test) => total + test.questions.length, 0);
-      } else if (part.type === TestPartTypeEnum.SPEAKING) {
-        const fetchedTests = testService.getTestSpeakingsByIds(part.questions as number[]);
-        counts[part.type] += fetchedTests.reduce((total, test) => total + test.questions.length, 0);
-      } else {
-        counts[part.type] += part.questions.length;
-      }
-    });
-    return counts;
-  }, [competitionTestParts]);
+    switch (activeTab) {
+      case TestPartTypeEnum.VOCABULARY:
+        return vocabularyPart && (
+          <VocabularySection
+            partId={vocabularyPart.id}
+            questionIds={vocabularyPart.questions || []}
+            startSerial={startSerials[TestPartTypeEnum.VOCABULARY]}
+            {...props}
+          />
+        );
+      case TestPartTypeEnum.GRAMMAR:
+        return grammarPart && (
+          <GrammarSection
+            partId={grammarPart.id}
+            questionIds={grammarPart.questions || []}
+            startSerial={startSerials[TestPartTypeEnum.GRAMMAR]}
+            {...props}
+          />
+        );
+      case TestPartTypeEnum.READING:
+        return readingPart && (
+          <ReadingSection
+            partId={readingPart.id}
+            testItemIds={readingPart.questions || []}
+            startSerial={startSerials[TestPartTypeEnum.READING]}
+            {...props}
+          />
+        );
+      case TestPartTypeEnum.LISTENING:
+        return listeningPart && (
+          <ListeningSection
+            partId={listeningPart.id}
+            testItemIds={listeningPart.questions || []}
+            startSerial={startSerials[TestPartTypeEnum.LISTENING]}
+            {...props}
+          />
+        );
+      case TestPartTypeEnum.SPEAKING:
+        return speakingPart && (
+          <SpeakingSection
+            partId={speakingPart.id}
+            testItemIds={speakingPart.questions || []}
+            startSerial={startSerials[TestPartTypeEnum.SPEAKING]}
+            {...props}
+          />
+        );
+      case TestPartTypeEnum.WRITING:
+        return writingPart && (
+          <WritingSection
+            partId={writingPart.id}
+            testItemIds={writingPart.questions || []}
+            startSerial={startSerials[TestPartTypeEnum.WRITING]}
+            {...props}
+          />
+        );
+      default:
+        return null;
+    }
+  }, [
+    activeTab,
+    vocabularyPart,
+    grammarPart,
+    readingPart,
+    listeningPart,
+    speakingPart,
+    writingPart,
+    submitCompetition?.id,
+    selectedQuestionId,
+    startSerials,
+    handleUpdateAnsweredQuestions
+  ]);
 
-  const startSerial = tabOrder
-    .slice(0, tabOrder.indexOf(activeTab))
-    .reduce((sum, type) => sum + questionCounts[type], 1);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeUsed(prev => prev + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  if (loading || error || !submitCompetition) return null;
+
+  const totalQuestions = allQuestions.length;
+  const answeredQuestions = allQuestions.filter(q => q.isAnswered).length;
 
   return (
-    <Grid container spacing={2} sx={{ p: 3 }}>
-     {isSmallScreen && (
+    <Box
+      sx={{
+        backgroundColor: isDarkMode ? color.gray900 : color.gray50,
+        borderRadius: '1rem',
+        width: "100%",
+        p: { xs: 1, sm: 2 },
+      }}
+    >
+      <Grid container spacing={2}>
+        {isSmallScreen && (
+          <Grid item xs={12}>
+            <TimeRemaining timeUsed={timeUsed} />
+          </Grid>
+        )}
+
+        <Grid item xs={12} sm={12} md={9} lg={8}>
+          <TestTabs
+            activeTab={activeTab.toLowerCase()}
+            onTabChange={(newTab) => {
+              setActiveTab(newTab.toUpperCase() as TestPartTypeEnum);
+              setSelectedQuestionId(null);
+            }}
+          />
+
+          <Box sx={{ mt: 2, mb: 3 }}>
+            <IntroducePartTest type={activeTab} />
+          </Box>
+
           <Box
-          sx={{
-            display: "flex",
-            marginRight:"2%",
-            px: 2,
-            mt: 2,
-          }}
-        >
-          <TimeRemaining />
-        </Box>
-      )}
+            sx={{
+              mb: 4,
+              p: { xs: 1, sm: 2 },
+              bgcolor: isDarkMode ? color.gray800 : color.white,
+              borderRadius: '1rem',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}
+          >
+            {renderSection()}
+          </Box>
 
-     
-
-      {!isSmallScreen && (
-        <Grid item sm={4} md={3} lg={4}>
-          <TimeRemaining  />
-         
+          {isSmallScreen && (
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 3, mb: 2 }}>
+              <Box sx={{ width: { xs: "80%", sm: "50%" } }}>
+                <TestQuestionGrid
+                  questionItems={allQuestions}
+                  onQuestionSelect={handleQuestionSelect}
+                  onSubmitTest={handleOpenConfirmDialog}
+                />
+              </Box>
+            </Box>
+          )}
         </Grid>
-      )}
-    </Grid>
-  );
-};
 
-export default CompetitionTest;
+        {!isSmallScreen && (
+          <Grid item md={3} lg={4}>
+            <TimeRemaining timeUsed={timeUsed} />
+            <Box sx={{ mt: 3 }}>
+              <TestQuestionGrid
+                questionItems={allQuestions}
+                onQuestionSelect={handleQuestionSelect}
+                onSubmitTest={handleOpenConfirmDialog}
+              />
+            </Box>
+          </Grid>
+        )}
+      </Grid>
+
+
+      <SubmitTestDialog
+        open={isSubmitDialogOpen}
+        onClose={closeSubmitDialog}
+        isLoading={isSubmitting}
+        result={submissionResult}
+      />
+
+      <ConfirmSubmitDialog
+        open={isConfirmDialogOpen}
+        onClose={handleCloseConfirmDialog}
+        onConfirm={handleConfirmSubmit}
+        totalQuestions={totalQuestions}
+        answeredQuestions={answeredQuestions}
+        isSubmitting={isSubmitting}
+      />
+    </Box>
+  );
+}

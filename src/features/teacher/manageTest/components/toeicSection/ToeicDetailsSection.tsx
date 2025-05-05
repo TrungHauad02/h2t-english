@@ -41,6 +41,7 @@ export const ToeicDetailsSection: React.FC<ToeicDetailsSectionProps> = ({
               status={testData.status}
               onPublish={handlePublishClick}
               onUnpublish={handleUnpublishClick}
+              title="Toeic"
             />
           </Box>
 

@@ -163,6 +163,7 @@ export interface SubmitCompetitionAnswer extends BaseEntity {
 export interface SubmitCompetitionSpeaking extends BaseEntity {
   submitCompetition_id: number;
   question_id: number;
+  file: string;
   transcript: string;
   score: number;
 }

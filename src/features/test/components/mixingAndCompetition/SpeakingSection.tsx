@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { testSpeakingService, questionService } from "services/test";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import { TestSpeaking, SubmitTestSpeaking } from "interfaces";
-import { submitTestSpeakingService } from "services";
+import { TestSpeaking } from "interfaces";
+import { submitTestSpeakingService, submitCompetitionSpeakingService } from "services";
 import { 
   Box, 
   Paper,
@@ -28,6 +28,7 @@ interface SpeakingSectionProps {
   selectedQuestionId?: number | null;
   startSerial: number;
   setAnsweredQuestions: (questionId: number, isAnswered: boolean) => void;
+  isCompetitionTest?: boolean;
 }
 
 export default function SpeakingSection({ 
@@ -36,7 +37,8 @@ export default function SpeakingSection({
   submitTestId,
   selectedQuestionId,
   startSerial,
-  setAnsweredQuestions
+  setAnsweredQuestions,
+  isCompetitionTest = false
 }: SpeakingSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -62,7 +64,6 @@ export default function SpeakingSection({
       try {
         setLoading(true);
         
-        // Fetch speaking test items
         const speakingItemsResponse = await testSpeakingService.getByIds(testItemIds);
         const items: TestSpeaking[] = speakingItemsResponse.data || [];
         
@@ -72,7 +73,6 @@ export default function SpeakingSection({
         });
         setSpeakingTests(testMap);
         
-        // Fetch questions for each test item
         const questionsMap: Record<number, any[]> = {};
         const allQuestionsFlat: any[] = [];
         
@@ -98,28 +98,26 @@ export default function SpeakingSection({
         
         setSpeakingQuestions(allQuestionsFlat);
         
-        // Fetch existing recordings if questions are available
         if (allQuestionsFlat.length > 0) {
           const questionIds = allQuestionsFlat.map(q => q.id);
           
           try {
-            // Fetch existing recordings for these questions
-            const response = await submitTestSpeakingService.findBySubmitTestIdAndQuestionIds(submitTestId, questionIds);
+            const response = isCompetitionTest
+              ? await submitCompetitionSpeakingService.findBySubmitCompetitionIdAndQuestionIds(submitTestId, questionIds)
+              : await submitTestSpeakingService.findBySubmitTestIdAndQuestionIds(submitTestId, questionIds);
        
             const recordingsMap: Record<number, string> = {};
             const submissionIdsMap: Record<number, number> = {};
             const audioUrlsMap: Record<number, string> = {};
             
             if (response.data) {
-              response.data.forEach((recording: SubmitTestSpeaking) => {
+              response.data.forEach((recording: any) => {
                 const questionIndex = allQuestionsFlat.findIndex((q: any) => q.id === recording.question_id);
                 if (questionIndex !== -1) {
                   if (recording.file) {
-                    // Store the file/audio data
                     recordingsMap[questionIndex] = recording.file;
                     audioUrlsMap[questionIndex] = recording.file;
                     
-                    // Mark question as answered in the parent component
                     setAnsweredQuestions(recording.question_id, true);
                   }
                   submissionIdsMap[questionIndex] = recording.id;
@@ -169,7 +167,7 @@ export default function SpeakingSection({
         clearInterval(timerRef.current);
       }
     };
-  }, [testItemIds, submitTestId, startSerial, selectedQuestionId, setAnsweredQuestions]);
+  }, [testItemIds, submitTestId, startSerial, selectedQuestionId, setAnsweredQuestions, isCompetitionTest]);
 
   const startRecording = async () => {
     try {
@@ -230,45 +228,93 @@ export default function SpeakingSection({
     try {
       const reader = new FileReader();
       reader.readAsDataURL(audioBlob);
+    
       reader.onloadend = async () => {
         const base64data = reader.result as string;
+    
+        if (isCompetitionTest) {
+          const existingRes = await submitCompetitionSpeakingService.findBySubmitCompetitionIdAndQuestionId(
+            submitTestId,
+            questionId
+          );
+      
+          if (existingRes?.data?.length > 0) {
+            const existing = existingRes.data[0];
         
-        if (submissionIds[currentIndex]) {
-          await submitTestSpeakingService.patch(submissionIds[currentIndex], {
-            file: base64data
-          });
+            await submitCompetitionSpeakingService.update(existing.id, {
+              ...existing,
+              file: base64data
+            });
+        
+            setSubmissionIds((prev) => ({
+              ...prev,
+              [currentIndex]: existing.id
+            }));
+          } else {
+            const newSubmission = await submitCompetitionSpeakingService.create({
+              id: Date.now(),
+              submitCompetition_id: submitTestId,
+              question_id: questionId,
+              file: base64data,
+              transcript: 'not submitted',
+              score: 0,
+              status: true,
+            });
+        
+            setSubmissionIds((prev) => ({
+              ...prev,
+              [currentIndex]: newSubmission.id
+            }));
+          }
         } else {
-          const newSubmission = await submitTestSpeakingService.create({
-            id: Date.now(),
-            submitTest_id: submitTestId,
-            question_id: questionId,
-            file: base64data,
-            transcript: 'not submitted',
-            score: 0,
-            comment: 'not submitted',
-            status: true,
-          });
-          
-          setSubmissionIds(prev => ({
-            ...prev,
-            [currentIndex]: newSubmission.id
-          }));
-        }
+          const existingRes = await submitTestSpeakingService.findBySubmitTestIdAndQuestionId(
+            submitTestId,
+            questionId
+          );
+      
+          if (existingRes?.data?.length > 0) {
+            const existing = existingRes.data[0];
         
-        setSavedRecordings(prev => ({
+            await submitTestSpeakingService.update(existing.id, {
+              ...existing,
+              file: base64data
+            });
+        
+            setSubmissionIds((prev) => ({
+              ...prev,
+              [currentIndex]: existing.id
+            }));
+          } else {
+            const newSubmission = await submitTestSpeakingService.create({
+              id: Date.now(),
+              submitTest_id: submitTestId,
+              question_id: questionId,
+              file: base64data,
+              transcript: 'not submitted',
+              score: 0,
+              comment: 'not submitted',
+              status: true,
+            });
+        
+            setSubmissionIds((prev) => ({
+              ...prev,
+              [currentIndex]: newSubmission.id
+            }));
+          }
+        }
+
+        setSavedRecordings((prev) => ({
           ...prev,
           [currentIndex]: base64data
         }));
-        
-        // Mark this question as answered in the parent component
+    
         setAnsweredQuestions(questionId, true);
-        
         setSaving(false);
       };
     } catch (error) {
       console.error("Error saving recording:", error);
       setSaving(false);
-    }
+    }    
   };
 
   const handleNext = () => {

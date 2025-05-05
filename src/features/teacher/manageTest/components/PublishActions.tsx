@@ -8,12 +8,14 @@ interface PublishActionsProps {
   status: boolean;
   onPublish: () => void;
   onUnpublish: () => void;
+  title: string;
 }
 
 export default function PublishActions({
   status,
   onPublish,
   onUnpublish,
+  title,
 }: PublishActionsProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -51,7 +53,7 @@ export default function PublishActions({
         }}
         onClick={status ? onUnpublish : onPublish}
       >
-        {status ? "Deactivate this Toeic" : "Activate this Toeic"}
+        {status ? "Deactivate this " + title : "Activate this " + title}
       </Button>
     </Box>
   );

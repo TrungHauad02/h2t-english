@@ -50,6 +50,27 @@ const remove = async (id: number) => {
     throw error;
   }
 };
+const findBySubmitCompetitionIdAndQuestionIds = async (
+  submitCompetitionId: number,
+  questionIds: number[]
+) => {
+  const response = await apiClient.post(
+    `/submit-competition-speaking/by-submit-competition/${submitCompetitionId}/questions`,
+    questionIds
+  );
+  return response.data;
+};
+const findBySubmitCompetitionIdAndQuestionId = async (
+  submitCompetitionId: number,
+  questionId: number
+) => {
+  const response = await apiClient.get(
+    `/submit-competition-speaking/by-submit-competition/${submitCompetitionId}/question/${questionId}`
+  );
+  return response.data;
+};
+
+
 
 export const submitCompetitionSpeakingService = {
   findById,
@@ -57,4 +78,6 @@ export const submitCompetitionSpeakingService = {
   update,
   patch,
   remove,
+  findBySubmitCompetitionIdAndQuestionId,
+  findBySubmitCompetitionIdAndQuestionIds,
 };

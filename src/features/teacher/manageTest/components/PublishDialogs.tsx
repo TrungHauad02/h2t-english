@@ -8,6 +8,7 @@ interface LessonPublishDialogsProps {
   onCancelUnpublish: () => void;
   onConfirmPublish: () => void;
   onConfirmUnpublish: () => void;
+  title: string;
 }
 
 export default function LessonPublishDialogs({
@@ -17,12 +18,13 @@ export default function LessonPublishDialogs({
   onCancelUnpublish,
   onConfirmPublish,
   onConfirmUnpublish,
+  title,
 }: LessonPublishDialogsProps) {
   return (
     <>
       <WEDialog
         open={openPublish}
-        title="Publish Toeic"
+        title={"Publish " + {title}}
         onCancel={onCancelPublish}
         onOk={onConfirmPublish}
       >
@@ -34,12 +36,12 @@ export default function LessonPublishDialogs({
 
       <WEDialog
         open={openUnpublish}
-        title="Unpublish Toeic"
+        title={"Unpublish " + {title}}
         onCancel={onCancelUnpublish}
         onOk={onConfirmUnpublish}
       >
         <Typography variant="body1">
-          Are you sure you want to unpublish this toeic? Unpublished toeics
+          Are you sure you want to unpublish this {title} ? Unpublished {title}s 
           will not be visible to students.
         </Typography>
       </WEDialog>

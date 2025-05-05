@@ -60,7 +60,7 @@ export default function useStudentTest() {
           } catch {
             if (!hasCreatedSubmitTestRef.current) {
               hasCreatedSubmitTestRef.current = true;
-              console.warn("Không tìm thấy submitTest, đang tạo mới...");
+         
 
               const newSubmitTest: SubmitTest = {
                 id: 0,

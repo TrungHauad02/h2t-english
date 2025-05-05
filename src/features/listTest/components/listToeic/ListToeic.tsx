@@ -1,72 +1,96 @@
-import { Toeic } from "interfaces";
-import { listToeicService } from "../../services/listToeicService";
+import { useState, useEffect } from "react";
 import { Box, Grid } from "@mui/material";
+import { Toeic, ToeicFilter } from "interfaces";
+import { toeicService } from "services";
+import { WEPaginationSelect } from "components/pagination";
+import LoadingSkeleton from "../common/LoadingSkeleton";
 import ToeicItem from "./ToeicItem";
-import { WEPagination } from "components/pagination";
-import { useState } from "react";
-import { WESelect } from "components/input";
 
-export default function ListToeic() {
-  const [page, setPage] = useState(1);
+interface ListToeicProps {
+  searchQuery?: string;
+}
+
+export default function ListToeic({ searchQuery = "" }: ListToeicProps) {
+  const [page, setPage] = useState(0);
   const [toeicsPerPage, setToeicsPerPage] = useState(8);
+  const [toeics, setToeics] = useState<Toeic[]>([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  const itemPerPageOptions = [
-    { label: "8", value: 8 },
-    { label: "16", value: 16 },
-    { label: "20", value: 20 },
-  ];
+  const [filter, setFilter] = useState<ToeicFilter>({
+    title: "",
+    status: true,
+  });
 
-  const listToeic: Toeic[] = listToeicService.getListToeic() || [];
+  const userId = 1;
 
-  const handleChangePage = (
-    event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
-    setPage(value);
+  const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value - 1);
   };
 
-  const handleToeicsPerPageChange = (value: string | number) => {
-    setToeicsPerPage(value as number);
-    setPage(1);
+  const handleItemsPerPageChange = (itemsPerPage: number) => {
+    setToeicsPerPage(itemsPerPage);
+    setPage(0);
   };
 
-  const paginatedToeics = listToeic.slice(
-    (page - 1) * toeicsPerPage,
-    page * toeicsPerPage
-  );
+  useEffect(() => {
+    setFilter((prev) => ({
+      ...prev,
+      title: searchQuery,
+    }));
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const fetchToeicTests = async () => {
+      setLoading(true);
+      try {
+        const response = await toeicService.getToeicsForStudent(
+          page,
+          toeicsPerPage,
+          userId,
+          filter
+        );
+
+        if (response && response.data) {
+          setToeics(response.data.content || []);
+          setTotalPages(response.data.totalPages || 1);
+        }
+      } catch (error) {
+        console.error("Error fetching TOEIC tests:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchToeicTests();
+  }, [page, toeicsPerPage, filter, userId]);
 
   return (
-    <Box sx={{ mx: 4, mt: 2 }}>
-      <Grid container spacing={3}>
-        {paginatedToeics.map((toeic) => (
-          <ToeicItem toeic={toeic} key={toeic.id} />
-        ))}
-      </Grid>
-      <Box
-        sx={{
-          mt: 4,
-          mb: 2,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 2,
-        }}
-      >
-        <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
-          <WEPagination
-            page={page}
-            totalPage={Math.ceil(listToeic.length / toeicsPerPage)}
-            onChange={handleChangePage}
-          />
-        </Box>
-        <Box sx={{ display: { xs: "none", sm: "flex" } }}>
-          <WESelect
-            label="Item per page"
-            value={toeicsPerPage}
-            options={itemPerPageOptions}
-            onChange={handleToeicsPerPageChange}
-          />
-        </Box>
+    <Box>
+      <Box sx={{ margin: { xs: "1rem", md: "0 5% 2rem" } }}>
+        {loading ? (
+          <LoadingSkeleton isLoading={true} cardType="route" />
+        ) : (
+          <>
+            <Grid container spacing={3}>
+              {toeics.map((toeic) => (
+                <ToeicItem key={toeic.id} toeic={toeic} />
+              ))}
+            </Grid>
+
+            {toeics.length > 0 && (
+              <Box sx={{ mt: 3, mb: 2, display: "flex", justifyContent: "center" }}>
+                <WEPaginationSelect
+                  page={page + 1}
+                  totalPage={totalPages}
+                  itemsPerPage={toeicsPerPage}
+                  onPageChange={handleChangePage}
+                  onItemsPerPageChange={handleItemsPerPageChange}
+                />
+              </Box>
+            )}
+          </>
+        )}
       </Box>
     </Box>
   );

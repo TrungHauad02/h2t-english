@@ -1,175 +1,639 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Box, Typography, Button, Stack, Fab, Grid, useMediaQuery } from "@mui/material";
-import MicNoneIcon from "@mui/icons-material/MicNone";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { TestSpeaking, Question } from "interfaces";
-import { testService } from "features/test/services/testServices";
-import TestSpeakingQuestionGrid from "./TestSpeakingQuestionGrid"; 
-import TestInstruction from "../common/TestInstruction";
+import React, { useEffect, useState, useRef } from "react";
+import {
+  Box,
+  Typography,
+  Paper,
+  CircularProgress,
+  Grid,
+  LinearProgress,
+  Container,
+  Chip,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import TimeRemaining from "../common/TimeRemaining";
+import SubmitTestDialogSingle from "../common/SubmitTestDialog";
+import ConfirmSubmitDialog from "../mixingAndCompetition/ConfirmSubmitDialog";
+import IntroducePartTest from "../mixingAndCompetition/InroducePartTest";
+import TestQuestionGrid from "../mixingAndCompetition/TestQuestionGrid";
+import { TestPartTypeEnum, TestSpeaking } from "interfaces";
+import useSpeakingTest from "../../hooks/useSpeakingTest";
 import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import { 
+  QuestionCard, 
+  RecordingControl, 
+  NavigationFooter, 
+  TestSpeakingHeader 
+} from "../mixingAndCompetition/speakingSection/";
+
 interface SpeakingTestProps {
-  testSpeakings: TestSpeaking[];
+  testSpeakings: number[];
+  submitTestId: number;
 }
 
-export default function SpeakingTest({ testSpeakings }: SpeakingTestProps) {
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [questionsList, setQuestionsList] = useState<Partial<Question>[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<boolean>(false);
+export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTestProps) {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const color = useColor();
+  const { isDarkMode } = useDarkMode();
+  
+  // State cho audios và recording
   const [isRecording, setIsRecording] = useState<boolean>(false);
-  const [audioURL, setAudioURL] = useState<string>("");
+  const [audioURLs, setAudioURLs] = useState<Record<number, string>>({});
+  const [savedRecordings, setSavedRecordings] = useState<Record<number, string>>({});
+  const [submissionIds, setSubmissionIds] = useState<Record<number, number>>({});
+  const [saving, setSaving] = useState<boolean>(false);
+  const [recordingTime, setRecordingTime] = useState<number>(0);
+  const [currentTestId, setCurrentTestId] = useState<number | null>(null);
+  const [speakingTests, setSpeakingTests] = useState<Record<number, TestSpeaking>>({});
+  const [speakingQuestions, setSpeakingQuestions] = useState<any[]>([]);
+  
+  // Refs
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunks = useRef<Blob[]>([]);
-  const isMobile = useMediaQuery((theme: any) => theme.breakpoints.down("sm"));
-  const color = useColor();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Scroll to question if needed
+  const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(null);
+  
+  const {
+    currentIndex,
+    questionsList,
+    loading,
+    error,
+    allQuestions,
+    timeUsed,
+    isSubmitting,
+    isSubmitDialogOpen,
+    isConfirmDialogOpen,
+    submissionResult,
+    handleNext,
+    handlePrevious,
+    handleUpdateAnsweredQuestions,
+    setQuestionRef,
+    setCurrentIndex,
+    questionRefs,
+    handleOpenConfirmDialog,
+    handleCloseConfirmDialog,
+    handleSubmitTest,
+    closeSubmitDialog,
+    getCurrentTest
+  } = useSpeakingTest(testSpeakings, submitTestId);
+
+  const totalQuestions = allQuestions.length;
+  const answeredQuestions = allQuestions.filter(q => q.isAnswered).length;
+
   useEffect(() => {
-    async function fetchQuestions() {
-      try {
-        setLoading(true);
-        setError(false);
+    if (questionsList.length > 0) {
 
-        const fetchedQuestions = await Promise.all(
-          testSpeakings.flatMap(async (speaking) => {
-            const questions = await testService.getQuestionsByIds(speaking.questions);
-            return questions.map((question: Question) => ({
-              content: question.content,
-            }));
-          })
-        );
-
-        setQuestionsList(fetchedQuestions.flat());
-      } catch (error) {
-        setError(true);
-      } finally {
-        setLoading(false);
+      const allQuestionsFlat: any[] = [];
+      const testMap: Record<number, TestSpeaking> = {};
+      
+      questionsList.forEach(item => {
+        if (item.questions) {
+          const testId = item.id;
+     
+          const questionsWithParent = item.questions.map((q: any, qIndex: number) => ({
+            ...q,
+            parentTestId: testId,
+            parentTitle: item.title || 'Speaking Practice',
+            serial: qIndex + 1,
+            totalInParent: item.questions.length
+          }));
+          
+          allQuestionsFlat.push(...questionsWithParent);
+        }
+      });
+      
+      setSpeakingTests(testMap);
+      setSpeakingQuestions(allQuestionsFlat);
+      
+      if (allQuestionsFlat.length > 0 && currentIndex < allQuestionsFlat.length) {
+        setCurrentTestId(allQuestionsFlat[currentIndex].parentTestId);
       }
     }
+  }, [questionsList, currentIndex]);
 
-    fetchQuestions();
-  }, [testSpeakings]);
+  // Handle question selection
+  useEffect(() => {
+    if (selectedQuestionId && questionRefs.current[selectedQuestionId]) {
+      questionRefs.current[selectedQuestionId]?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+      
 
-  const totalSpeakings = questionsList.length;
-  const currentQuestion = questionsList[currentIndex];
+      const questionIndex = allQuestions.findIndex(q => q.id === selectedQuestionId);
+      if (questionIndex !== -1) {
+        setCurrentIndex(questionIndex);
+        
+        // Update currentTestId nếu có speakingQuestions
+        if (speakingQuestions.length > 0 && questionIndex < speakingQuestions.length) {
+          setCurrentTestId(speakingQuestions[questionIndex].parentTestId);
+        }
+      }
+    }
+  }, [selectedQuestionId, questionRefs, allQuestions, speakingQuestions]);
 
-  return (
-    <Box sx={{ margin: "5%", p: 2 }}>
-      <TestInstruction type="speaking" />
-      <Box
+  // Recording functions
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      audioChunks.current = [];
+      setRecordingTime(0);
+
+      mediaRecorder.ondataavailable = (event) => {
+        audioChunks.current.push(event.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunks.current, { type: "audio/wav" });
+        const url = URL.createObjectURL(audioBlob);
+        
+        setAudioURLs(prev => ({
+          ...prev,
+          [currentIndex]: url
+        }));
+        
+        saveRecording(audioBlob);
+      };
+
+      mediaRecorderRef.current = mediaRecorder;
+      mediaRecorder.start();
+      setIsRecording(true);
+
+      timerRef.current = setInterval(() => {
+        setRecordingTime(prev => prev + 1);
+      }, 1000);
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      if (mediaRecorderRef.current.stream) {
+        mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+      }
+      setIsRecording(false);
+
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+  };
+
+  const saveRecording = async (audioBlob: Blob) => {
+    if (!speakingQuestions[currentIndex]) return;
+    
+    const questionId = speakingQuestions[currentIndex].id;
+    setSaving(true);
+    
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(audioBlob);
+    
+      reader.onloadend = async () => {
+        const base64data = reader.result as string;
+        
+        setSavedRecordings((prev) => ({
+          ...prev,
+          [currentIndex]: base64data
+        }));
+    
+        handleUpdateAnsweredQuestions(questionId, true);
+        setSaving(false);
+      };
+    } catch (error) {
+      console.error("Error saving recording:", error);
+      setSaving(false);
+    }    
+  };
+
+  const hasRecording = (index: number) => {
+    return Boolean(savedRecordings[index] || audioURLs[index]);
+  };
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+        mediaRecorderRef.current.stop();
+        if (mediaRecorderRef.current.stream) {
+          mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+        }
+      }
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
+
+  // Navigation with recording cleanup
+  const handleNextQuestion = () => {
+    if (isRecording) {
+      stopRecording();
+    }
+    handleNext();
+    
+    // Update currentTestId when changing question
+    if (speakingQuestions.length > 0 && currentIndex + 1 < speakingQuestions.length) {
+      setCurrentTestId(speakingQuestions[currentIndex + 1].parentTestId);
+    }
+  };
+
+  const handlePreviousQuestion = () => {
+    if (isRecording) {
+      stopRecording();
+    }
+    handlePrevious();
+    
+    // Update currentTestId when changing question
+    if (speakingQuestions.length > 0 && currentIndex - 1 >= 0) {
+      setCurrentTestId(speakingQuestions[currentIndex - 1].parentTestId);
+    }
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <Box sx={{ 
+        display: 'flex', 
+        flexDirection: 'column',
+        justifyContent: 'center', 
+        alignItems: 'center',
+        minHeight: '400px', 
+        p: 4,
+        gap: 2
+      }}>
+        <CircularProgress 
+          size={60}
+          thickness={4}
+          sx={{ 
+            color: isDarkMode ? color.teal400 : color.teal600,
+          }} 
+        />
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            mt: 2, 
+            color: isDarkMode ? color.gray300 : color.gray700,
+            fontWeight: 500
+          }}
+        >
+          Loading speaking test...
+        </Typography>
+      </Box>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <Box 
+        component={Paper}
+        elevation={3}
         sx={{
-          display: "flex",
-          justifyContent: isMobile ? "flex-start" : "flex-end", 
-          marginRight:"2%",
-          px: 2,
-          mt: 2,
+          p: 4,
+          borderRadius: '1rem',
+          backgroundColor: isDarkMode ? color.gray800 : color.white,
+          color: isDarkMode ? color.red500 : color.red600,
+          mb: 4,
+          textAlign: 'center'
         }}
       >
-        <TimeRemaining />
+        <Typography variant="h6">Error loading speaking test data</Typography>
       </Box>
-      <Grid container spacing={2} direction={isMobile ? "column-reverse" : "row"}>
-        <Grid item xs={12} sm={9}>
-          <Stack
-            direction="column"
-            spacing={2}
+    );
+  }
+
+  // Empty state
+  if (speakingQuestions.length === 0 || !speakingQuestions[currentIndex]) {
+    return (
+      <Box 
+        component={Paper}
+        elevation={3}
+        sx={{
+          p: 4,
+          borderRadius: '1rem',
+          backgroundColor: isDarkMode ? color.gray800 : color.white,
+          mb: 4,
+          textAlign: 'center'
+        }}
+      >
+        <Typography variant="h6" sx={{ color: isDarkMode ? color.gray300 : color.gray700 }}>
+          No speaking questions available
+        </Typography>
+      </Box>
+    );
+  }
+
+  // Current data setup
+  const currentQuestion = speakingQuestions[currentIndex];
+  const audioSource = audioURLs[currentIndex] || savedRecordings[currentIndex] || null;
+  const currentTest = getCurrentTest()
+  const progress = ((currentIndex + 1) / speakingQuestions.length) * 100;
+  
+  // Tính toán questionIndex và questionCount cho TestSpeakingHeader
+  const questionCount = speakingQuestions.filter(q => q.parentTestId === currentQuestion.parentTestId).length;
+  const questionIndex = speakingQuestions.filter(q => 
+    q.parentTestId === currentQuestion.parentTestId && 
+    speakingQuestions.indexOf(q) <= currentIndex
+  ).length;
+  
+  return (
+    <Box
+      sx={{
+        backgroundColor: isDarkMode ? color.gray900 : color.gray50,
+        borderRadius: '1rem',
+        width: "100%",
+        p: { xs: 2, sm: 3 },
+        maxWidth: "1200px",
+        mx: "auto",
+      }}
+    >
+      <IntroducePartTest type={TestPartTypeEnum.SPEAKING} />
+      
+      <Grid container spacing={3}>
+        {/* Top section with TimeRemaining and progress for both mobile and desktop */}
+        <Grid item xs={12}>
+          <TimeRemaining timeUsed={timeUsed} />
+        </Grid>
+  
+        {/* Main content */}
+        <Grid item xs={12} md={9} lg={8}>
+          <Box
+            component={Paper} 
+            elevation={3} 
             sx={{
-              padding: "2%",
-              border: "1px solid #ccc",
-              borderRadius: 2,
-              overflow: "hidden",
-              alignItems: "center",
-              justifyContent: "center",
+              bgcolor: isDarkMode ? color.gray800 : color.white,
+              borderRadius: '16px',
+              overflow: 'hidden',
+              mx: 'auto',
+              position: 'relative',
+              border: isDarkMode ? `1px solid ${color.gray700}` : 'none',
+              transition: 'all 0.3s ease',
+              boxShadow: isDarkMode
+                ? '0 8px 24px rgba(0,0,0,0.2)'
+                : '0 8px 24px rgba(0,0,0,0.1)',
             }}
           >
-            {loading ? (
-              <Typography sx={{ textAlign: "center" }}>Loading...</Typography>
-            ) : error ? (
-              <Typography sx={{ textAlign: "center", color: "red" }}>Cannot load data. Try again.</Typography>
-            ) : (
-              <>
-                <Typography variant="h5" sx={{ px: 4, fontWeight: "bold", alignSelf: "flex-start" }}>
-                  Question {currentIndex + 1}
-                </Typography>
-                <Typography variant="h5" sx={{ textAlign: "center", px: 4, fontWeight: "bold" }}>
-                  {currentQuestion?.content || "No content available"}
-                </Typography>
-              </>
+            <LinearProgress 
+              variant="determinate" 
+              value={progress} 
+              sx={{
+                height: 6,
+                bgcolor: isDarkMode ? color.gray700 : color.gray100,
+                '& .MuiLinearProgress-bar': {
+                  bgcolor: color.teal500,
+                  transition: 'transform 0.4s ease',
+                }
+              }} 
+            />
+            
+            {/* Test Speaking Header */}
+            {currentTest && (
+              <TestSpeakingHeader 
+                test={currentTest}
+                currentQuestionNumber={questionIndex}
+                totalQuestions={questionCount}
+              />
             )}
+            
+            <Box
+              sx={{
+                py: 1.5,
+                px: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: 1,
+                backgroundColor: isDarkMode ? color.gray700 : color.gray100,
+                borderBottom: `1px solid ${isDarkMode ? color.gray600 : color.gray200}`,
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 500,
+                    color: isDarkMode ? color.gray300 : color.gray700,
+                  }}
+                >
+                  Question {allQuestions[currentIndex]?.serialNumber || currentIndex + 1}
+                </Typography>
+                
+                <Chip
+                  label={hasRecording(currentIndex) ? "Recorded" : "Not recorded"}
+                  size="small"
+                  sx={{
+                    bgcolor: hasRecording(currentIndex) 
+                      ? (isDarkMode ? color.green800 : color.green100)
+                      : (isDarkMode ? color.gray600 : color.gray200),
+                    color: hasRecording(currentIndex)
+                      ? (isDarkMode ? color.green200 : color.green800)
+                      : (isDarkMode ? color.gray300 : color.gray700),
+                    borderRadius: '12px',
+                    fontWeight: 500,
+                    fontSize: '0.75rem',
+                  }}
+                />
+              </Box>
+            </Box>
+            
+            <Container 
+              maxWidth="md" 
+              sx={{ 
+                py: { xs: 2, sm: 4 },
+                px: { xs: 2, sm: 3, md: 4 },
+              }}
+            >
+              {/* Question display */}
+              <QuestionCard 
+                content={currentQuestion.content || ''} 
+                isDarkMode={isDarkMode} 
+              />
+              
+              {/* Recording controls */}
+              <RecordingControl
+                isRecording={isRecording}
+                startRecording={startRecording}
+                stopRecording={stopRecording}
+                recordingTime={recordingTime}
+                formatTime={formatTime}
+                saving={saving}
+                audioSource={audioSource}
+                isDarkMode={isDarkMode}
+              />
+            </Container>
 
-            <Box sx={{ position: "relative", mt: 3 }}>
-              <Fab
-                color={isRecording ? "secondary" : "error"}
-                aria-label="mic"
-                onClick={isRecording ? () => mediaRecorderRef.current?.stop() : async () => {
-                  try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    const mediaRecorder = new MediaRecorder(stream);
-                    audioChunks.current = [];
-
-                    mediaRecorder.ondataavailable = (event) => {
-                      audioChunks.current.push(event.data);
-                    };
-
-                    mediaRecorder.onstop = () => {
-                      const audioBlob = new Blob(audioChunks.current, { type: "audio/wav" });
-                      const url = URL.createObjectURL(audioBlob);
-                      setAudioURL(url);
-                    };
-
-                    mediaRecorderRef.current = mediaRecorder;
-                    mediaRecorder.start();
-                    setIsRecording(true);
-                  } catch (error) {
-                    console.error("Error accessing microphone:", error);
-                  }
-                }}
-                sx={{
-                  width: isMobile ? 48 : 56,
-                  height: isMobile ? 48 : 56,
-                  boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+            {/* Navigation footer */}
+            <NavigationFooter
+              handlePrevious={handlePreviousQuestion}
+              handleNext={handleNextQuestion}
+              currentIndex={currentIndex}
+              totalQuestions={speakingQuestions.length}
+              isDarkMode={isDarkMode}
+            />
+          </Box>
+        </Grid>
+        
+        {/* Right sidebar with question grid for desktop */}
+        <Grid 
+          item 
+          md={3} 
+          lg={4} 
+          sx={{ 
+            display: { xs: 'none', md: 'block' }, 
+            position: 'sticky', 
+            top: 16, 
+            height: 'fit-content', 
+            alignSelf: 'flex-start' 
+          }}
+        >
+          <Box sx={{ mb: 3 }}>
+            <Paper
+              elevation={2}
+              sx={{
+                p: 2,
+                borderRadius: '1rem',
+                backgroundColor: isDarkMode 
+                  ? 'rgba(31, 41, 55, 0.7)' 
+                  : 'rgba(255, 255, 255, 0.9)',
+                boxShadow: isDarkMode 
+                  ? '0 4px 12px rgba(0, 0, 0, 0.2)' 
+                  : '0 4px 12px rgba(0, 0, 0, 0.1)',
+                mb: 3
+              }}
+            >
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                mb: 1
+              }}>
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    fontWeight: 600,
+                    color: isDarkMode ? color.teal300 : color.teal700,
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
+                >
+                  <HelpOutlineIcon fontSize="small" sx={{ mr: 1 }} />
+                  Navigation
+                </Typography>
+              </Box>
+              
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: isDarkMode ? color.gray300 : color.gray700,
+                  mb: 1
                 }}
               >
-                <MicNoneIcon sx={{ fontSize: isMobile ? "2.5rem" : "3rem" }} />
-              </Fab>
-            </Box>
-
-            {audioURL && (
-              <Box sx={{ mt: 2 }}>
-                <audio controls src={audioURL} />
+                Use the grid below to navigate between questions. Click on a question number to jump to it.
+              </Typography>
+              
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                mt: 2,
+                mb: 1
+              }}>
+                <Box sx={{ 
+                  width: '20px', 
+                  height: '20px', 
+                  borderRadius: '50%', 
+                  bgcolor: isDarkMode ? color.teal700 : color.teal600,
+                  mr: 1
+                }} />
+                <Typography variant="body2" sx={{ mr: 2, color: isDarkMode ? color.gray300 : color.gray600 }}>
+                  Recorded
+                </Typography>
+                
+                <Box sx={{ 
+                  width: '20px', 
+                  height: '20px', 
+                  borderRadius: '50%', 
+                  bgcolor: isDarkMode ? color.gray700 : color.gray300,
+                  mr: 1
+                }} />
+                <Typography variant="body2" sx={{ color: isDarkMode ? color.gray300 : color.gray600 }}>
+                  Not recorded
+                </Typography>
               </Box>
-            )}
-
-            <Stack direction="row" justifyContent="space-between" sx={{ width: "80%", marginTop: "20px" }}>
-              <Button   sx={{
-                    bgcolor: color.emerald400,
-                    "&:hover": {
-                      bgcolor: color.emerald500,
-                    },
-                  }} variant="contained" startIcon={<ArrowBackIcon />} onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))} disabled={currentIndex === 0}>
-                Previous
-              </Button>
-
-              <Button  
-                  sx={{
-                    bgcolor: color.emerald400,
-                    "&:hover": {
-                      bgcolor: color.emerald500,
-                    },
-                  }} variant="contained" endIcon={<ArrowForwardIcon />} onClick={() => setCurrentIndex((prev) => Math.min(prev + 1, totalSpeakings - 1))} disabled={currentIndex === totalSpeakings - 1}>
-                Next
-              </Button>
-            </Stack>
-          </Stack>
+            </Paper>
+            
+            <TestQuestionGrid 
+              questionItems={allQuestions.map(q => ({
+                serialNumber: q.serialNumber,
+                questionId: q.id,
+                partType: TestPartTypeEnum.SPEAKING,
+                isAnswered: q.isAnswered
+              }))}
+              onQuestionSelect={(item) => {
+                setSelectedQuestionId(item.questionId);
+              }}
+              onSubmitTest={handleOpenConfirmDialog}
+              isTitle={true}
+            />
+          </Box>
         </Grid>
-        <Grid item xs={12} sm={3}>
-        <TestSpeakingQuestionGrid
-          testSpeakings={testSpeakings}
-          submitSpeakings={[]} 
-          currentIndex={currentIndex}
-          onSelect={(index) => setCurrentIndex(index)}
-        />
+        
+        {/* Mobile question grid at bottom */}
+        {isSmallScreen && (
+          <Grid item xs={12}>
+            <Box sx={{ mt: 2 }}>
+              <TestQuestionGrid 
+                questionItems={allQuestions.map(q => ({
+                  serialNumber: q.serialNumber,
+                  questionId: q.id,
+                  partType: TestPartTypeEnum.SPEAKING,
+                  isAnswered: q.isAnswered
+                }))}
+                onQuestionSelect={(item) => {
+                  setSelectedQuestionId(item.questionId);
+                }}
+                onSubmitTest={handleOpenConfirmDialog}
+                isTitle={true}
+              />
+            </Box>
+          </Grid>
+        )}
       </Grid>
-      </Grid>
+
+      {/* Sử dụng SubmitTestDialogSingle thay vì SubmitTestDialog */}
+      <SubmitTestDialogSingle 
+        open={isSubmitDialogOpen}
+        onClose={closeSubmitDialog}
+        isLoading={isSubmitting}
+        result={submissionResult}
+        testName="Speaking"
+      />
+
+      {/* Confirm Submit Dialog */}
+      <ConfirmSubmitDialog
+        open={isConfirmDialogOpen}
+        onClose={handleCloseConfirmDialog}
+        onConfirm={handleSubmitTest}
+        totalQuestions={totalQuestions}
+        answeredQuestions={answeredQuestions}
+        isSubmitting={isSubmitting}
+      />
     </Box>
   );
 }

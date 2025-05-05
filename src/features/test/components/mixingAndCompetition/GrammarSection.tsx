@@ -12,6 +12,7 @@ interface GrammarSectionProps {
   selectedQuestionId?: number | null;
   startSerial: number;
   setAnsweredQuestions: (questionId: number, isAnswered: boolean) => void;
+  isCompetitionTest?: boolean;
 }
 
 export default function GrammarSection({
@@ -20,16 +21,16 @@ export default function GrammarSection({
   submitTestId,
   selectedQuestionId,
   startSerial,
-  setAnsweredQuestions
+  setAnsweredQuestions,
+  isCompetitionTest = false
 }: GrammarSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const [questions, setQuestions] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   
-  // Refs để scroll đến câu hỏi được chọn
   const questionRefs = useRef<Record<number, HTMLDivElement | null>>({});
-
+  
   useEffect(() => {
     async function fetchQuestions() {
       try {
@@ -47,13 +48,11 @@ export default function GrammarSection({
       fetchQuestions();
     }
   }, [questionIds]);
-
-  // Lưu reference đến từng câu hỏi
+  
   const setQuestionRef = (id: number, element: HTMLDivElement | null) => {
     questionRefs.current[id] = element;
   };
-
-  // Cuộn đến câu hỏi được chọn khi selectedQuestionId thay đổi
+  
   useEffect(() => {
     if (selectedQuestionId && questionRefs.current[selectedQuestionId]) {
       questionRefs.current[selectedQuestionId]?.scrollIntoView({
@@ -62,7 +61,7 @@ export default function GrammarSection({
       });
     }
   }, [selectedQuestionId, loading]);
-
+  
   return (
     <Box>
       {loading ? (
@@ -78,6 +77,7 @@ export default function GrammarSection({
           selectedQuestionId={selectedQuestionId}
           setQuestionRef={setQuestionRef}
           setAnsweredQuestions={setAnsweredQuestions}
+          isCompetitionTest={isCompetitionTest}
         />
       )}
     </Box>

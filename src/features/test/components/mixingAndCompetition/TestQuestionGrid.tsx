@@ -17,12 +17,14 @@ interface TestQuestionGridProps {
   questionItems: QuestionItem[];
   onQuestionSelect: (questionItem: QuestionItem) => void;
   onSubmitTest: () => void;
+  isTitle?: boolean;
 }
 
 const TestQuestionGrid: React.FC<TestQuestionGridProps> = ({ 
   questionItems, 
   onQuestionSelect,
-  onSubmitTest
+  onSubmitTest,
+  isTitle
 }) => {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
@@ -161,49 +163,52 @@ const TestQuestionGrid: React.FC<TestQuestionGridProps> = ({
           
           return (
             <Box key={section} sx={{ mb: 3 }}>
-              <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'space-between',
-                alignItems: 'center', 
-                mb: 1.5 
-              }}>
-                <Typography
-                  variant="subtitle1"
-                  sx={{
-                    fontWeight: "600",
-                    fontSize: { xs: "0.9rem", sm: "1rem" },
-                    color: isDarkMode ? color.gray200 : color.gray800,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1
-                  }}
-                >
-                  <DescriptionIcon fontSize="small" sx={{ 
-                    color: (() => {
-                      switch(section) {
-                        case 'VOCABULARY': return isDarkMode ? color.teal300 : color.teal500;
-                        case 'GRAMMAR': return isDarkMode ? color.emerald300 : color.emerald500;
-                        case 'READING': return isDarkMode ? color.green300 : color.green500;
-                        case 'LISTENING': return isDarkMode ? color.teal400 : color.teal600;
-                        case 'SPEAKING': return isDarkMode ? color.emerald400 : color.emerald600;
-                        case 'WRITING': return isDarkMode ? color.green400 : color.green600;
-                        default: return isDarkMode ? color.gray300 : color.gray600;
-                      }
-                    })()
-                  }} />
-                  {sectionName}
-                </Typography>
-                
-                <Typography 
-                  variant="caption" 
-                  sx={{ 
-                    color: isDarkMode ? color.gray400 : color.gray600,
-                    fontWeight: 500
-                  }}
-                >
-                  {answeredCount}/{items.length} ({sectionPercentage}%)
-                </Typography>
-              </Box>
+              {!isTitle && (
+                  <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    alignItems: 'center', 
+                    mb: 1.5 
+                  }}>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        fontWeight: "600",
+                        fontSize: { xs: "0.9rem", sm: "1rem" },
+                        color: isDarkMode ? color.gray200 : color.gray800,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1
+                      }}
+                    >
+                      <DescriptionIcon fontSize="small" sx={{ 
+                        color: (() => {
+                          switch(section) {
+                            case 'VOCABULARY': return isDarkMode ? color.teal300 : color.teal500;
+                            case 'GRAMMAR': return isDarkMode ? color.emerald300 : color.emerald500;
+                            case 'READING': return isDarkMode ? color.green300 : color.green500;
+                            case 'LISTENING': return isDarkMode ? color.teal400 : color.teal600;
+                            case 'SPEAKING': return isDarkMode ? color.emerald400 : color.emerald600;
+                            case 'WRITING': return isDarkMode ? color.green400 : color.green600;
+                            default: return isDarkMode ? color.gray300 : color.gray600;
+                          }
+                        })()
+                      }} />
+                      {sectionName}
+                    </Typography>
+                    
+                    <Typography 
+                      variant="caption" 
+                      sx={{ 
+                        color: isDarkMode ? color.gray400 : color.gray600,
+                        fontWeight: 500
+                      }}
+                    >
+                      {answeredCount}/{items.length} ({sectionPercentage}%)
+                    </Typography>
+                  </Box>
+                )}
+
               
               <Grid container spacing={{ xs: 0.5, sm: 1 }} justifyContent="flex-start">
                 {items.map((item) => (
