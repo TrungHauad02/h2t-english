@@ -22,7 +22,6 @@ export const featuredLessons: Lesson[] = [
     description:
       "Learn about the Present Simple tense and when to use it in English.",
     views: 1245,
-    routeNodeId: 1,
   },
   {
     id: 2,
@@ -34,7 +33,6 @@ export const featuredLessons: Lesson[] = [
     description:
       "Essential vocabulary for business meetings and professional settings.",
     views: 987,
-    routeNodeId: 2,
   },
   {
     id: 3,
@@ -46,7 +44,6 @@ export const featuredLessons: Lesson[] = [
     description:
       "Practice reading comprehension with complex scientific texts.",
     views: 756,
-    routeNodeId: 3,
   },
   {
     id: 4,
@@ -58,7 +55,6 @@ export const featuredLessons: Lesson[] = [
     description:
       "Improve your ability to understand natural English conversations.",
     views: 1089,
-    routeNodeId: 4,
   },
 ];
 

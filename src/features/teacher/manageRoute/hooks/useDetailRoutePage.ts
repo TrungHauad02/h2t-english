@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { routeService, routeNodeService, createLessonFactory,testService} from "services";
+import {
+  routeService,
+  routeNodeService,
+  createLessonFactory,
+  testService,
+} from "services";
 import {
   Grammar,
   Listening,
@@ -12,7 +17,6 @@ import {
   Test,
   Topic,
   Writing,
-  TestTypeEnum
 } from "interfaces";
 import { toast } from "react-toastify";
 
@@ -48,7 +52,7 @@ export default function useDetailRoutePage() {
     status: false,
     questions: [],
     views: 0,
-    routeNodeId: -1,
+    routeNode: emptyRouteNode,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -172,7 +176,6 @@ export default function useDetailRoutePage() {
         RouteNodeEnum.WRITING_TEST,
       ].includes(newNode.type);
 
-
       let createdId: number;
       // Tạo bài học trước
       if (isTestNode) {
@@ -186,7 +189,6 @@ export default function useDetailRoutePage() {
       }
 
       console.log("New lesson: ", newLesson);
-
 
       // Cập nhật nodeId từ bài học vừa tạo
       const updatedNode = {

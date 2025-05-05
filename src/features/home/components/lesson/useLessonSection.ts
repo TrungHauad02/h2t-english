@@ -42,6 +42,7 @@ export default function useLessonsSection() {
             : await featureLessonService.getMostRecentLessons();
 
         // Update only the specific filter data, keeping other data intact
+        console.log(resData.data);
         setLessonsData((prev) => ({
           ...prev,
           [filter]: resData.data,

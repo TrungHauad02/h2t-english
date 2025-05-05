@@ -5,7 +5,7 @@ export interface Lesson extends BaseEntity {
   image: string;
   description: string;
   views: number;
-  routeNodeId: number;
+  routeNode?: RouteNode;
 }
 
 export interface Route extends BaseEntity {
