@@ -1,28 +1,52 @@
 import { SelectChangeEvent } from "@mui/material";
+import useAuth from "hooks/useAuth";
 import { LevelsEnum, User } from "interfaces";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { userService } from "services";
 
 export default function useTeacherInformation() {
   const [data, setData] = useState<User | null>(null);
-  const [isEditMode, setIseditMode] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [formData, setFormData] = useState<User | null>(null);
+  const { userId } = useAuth();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (userId) {
+          const resData = await userService.findById(parseInt(userId));
+          setData(resData.data);
+          setFormData(resData.data);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [userId]);
 
   const handleChange = (e: SelectChangeEvent<string>) => {
     if (formData) {
-      setFormData({
-        ...formData,
-        level: e.target.value as LevelsEnum,
-      });
+      if (e.target.name === "level") {
+        setFormData({
+          ...formData,
+          level: e.target.value as LevelsEnum,
+        });
+      } else {
+        setFormData({
+          ...formData,
+          [e.target.name]: e.target.value,
+        });
+      }
     }
   };
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDateChange = (date: Date | null) => {
     if (formData) {
-      const selectedDate = e.target.value;
-      const [year, month, day] = selectedDate.split("-").map(Number);
       setFormData({
         ...formData,
-        dateOfBirth: new Date(year, month - 1, day),
+        dateOfBirth: date as Date,
       });
     }
   };
@@ -36,28 +60,29 @@ export default function useTeacherInformation() {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (formData) {
-      setData(formData);
-      // Here you would normally call an API to save the data
-      setIseditMode(false);
+      try {
+        const resData = await userService.patch(formData.id, formData);
+        setData(resData.data);
+      } catch (error) {
+        console.error("Error updating user:", error);
+      } finally {
+        setIsEditMode(false);
+      }
     }
   };
 
   const handleCancel = () => {
     setFormData(data);
-    setIseditMode(false);
-  };
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-CA");
+    setIsEditMode(false);
   };
 
   return {
     data,
     setData,
     isEditMode,
-    setIseditMode,
+    setIsEditMode,
     formData,
     setFormData,
     handleChange,
@@ -65,6 +90,5 @@ export default function useTeacherInformation() {
     handleAvatarChange,
     handleSave,
     handleCancel,
-    formatDate,
   };
 }

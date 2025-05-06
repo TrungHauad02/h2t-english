@@ -27,3 +27,17 @@ export const formatTime = (seconds: number): string => {
     .toString()
     .padStart(2, "0")}`;
 };
+
+export function formatDateShort(date: Date | undefined): string {
+  if (!date) {
+    return "";
+  }
+  const parsedDate = typeof date === "string" ? new Date(date) : date;
+  if (!(parsedDate instanceof Date) || isNaN(parsedDate.getTime())) {
+    return "";
+  }
+  const day = String(parsedDate.getDate()).padStart(2, "0");
+  const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
+  const year = parsedDate.getFullYear();
+  return `${day}/${month}/${year}`;
+}
