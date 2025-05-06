@@ -20,6 +20,10 @@ import { useDispatch } from "react-redux";
 import { Moon, Sun, Info, LogOut } from "lucide-react";
 import { toggleTheme } from "../../redux/slices/themeSlice";
 import { useNavigate } from "react-router-dom";
+import useAuth from "hooks/useAuth";
+import { userService } from "services";
+import { toast } from "react-toastify";
+import { User } from "interfaces";
 
 export default function TeacherHeader({
   drawerWidth,
@@ -35,6 +39,24 @@ export default function TeacherHeader({
   const dispatch = useDispatch();
   const theme = useTheme();
   const navigate = useNavigate();
+  const { userId, logout } = useAuth();
+  const [teacher, setTeacher] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (userId) {
+          const resData = await userService.findById(parseInt(userId));
+          if (resData.data) {
+            setTeacher(resData.data);
+          }
+        }
+      } catch (error) {
+        toast.error("Error fetching user data!");
+      }
+    };
+    fetchData();
+  }, [userId]);
 
   // Profile menu states
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -48,7 +70,11 @@ export default function TeacherHeader({
     setAnchorEl(null);
   };
 
-  useEffect(() => { }, []);
+  const handleLogout = async () => {
+    handleClose();
+    logout();
+    navigate("/");
+  };
 
   return (
     <AppBar
@@ -128,12 +154,14 @@ export default function TeacherHeader({
                 sx={{
                   ml: 1,
                   padding: 0.5,
-                  border: `2px solid ${isDarkMode ? color.teal700 : color.teal300
-                    }`,
+                  border: `2px solid ${
+                    isDarkMode ? color.teal700 : color.teal300
+                  }`,
                   transition: "all 0.2s ease-in-out",
                   "&:hover": {
-                    border: `2px solid ${isDarkMode ? color.teal500 : color.teal500
-                      }`,
+                    border: `2px solid ${
+                      isDarkMode ? color.teal500 : color.teal500
+                    }`,
                   },
                 }}
                 aria-controls={open ? "account-menu" : undefined}
@@ -148,7 +176,7 @@ export default function TeacherHeader({
                     color: color.white,
                   }}
                 >
-                  T
+                  {teacher?.name.charAt(0).toUpperCase()}
                 </Avatar>
               </IconButton>
             </Tooltip>
@@ -168,8 +196,9 @@ export default function TeacherHeader({
                   mt: 1.5,
                   bgcolor: isDarkMode ? color.gray800 : color.white,
                   color: isDarkMode ? color.white : color.gray900,
-                  border: `1px solid ${isDarkMode ? color.gray700 : color.gray200
-                    }`,
+                  border: `1px solid ${
+                    isDarkMode ? color.gray700 : color.gray200
+                  }`,
                   "& .MuiAvatar-root": {
                     width: 32,
                     height: 32,
@@ -187,10 +216,12 @@ export default function TeacherHeader({
                     bgcolor: isDarkMode ? color.gray800 : color.white,
                     transform: "translateY(-50%) rotate(45deg)",
                     zIndex: 0,
-                    borderTop: `1px solid ${isDarkMode ? color.gray700 : color.gray200
-                      }`,
-                    borderLeft: `1px solid ${isDarkMode ? color.gray700 : color.gray200
-                      }`,
+                    borderTop: `1px solid ${
+                      isDarkMode ? color.gray700 : color.gray200
+                    }`,
+                    borderLeft: `1px solid ${
+                      isDarkMode ? color.gray700 : color.gray200
+                    }`,
                   },
                 },
               }}
@@ -205,7 +236,7 @@ export default function TeacherHeader({
                   variant="body2"
                   sx={{ color: isDarkMode ? color.gray400 : color.gray600 }}
                 >
-                  teacher@h2tenglish.com
+                  {teacher?.email}
                 </Typography>
               </Box>
 
@@ -223,13 +254,14 @@ export default function TeacherHeader({
                     bgcolor: isDarkMode ? color.gray700 : color.gray100,
                   },
                 }}
-                onClick={() => navigate("/teacher/information")} 
+                onClick={() => navigate("/teacher/information")}
               >
                 <Info size={18} style={{ marginRight: 8 }} />
                 Information
               </MenuItem>
 
               <MenuItem
+                onClick={handleLogout}
                 sx={{
                   color: isDarkMode ? color.red400 : color.red600,
                   "&:hover": {

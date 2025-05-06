@@ -17,7 +17,6 @@ import useColor from "theme/useColor";
 import CloseIcon from "@mui/icons-material/Close";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import RouteIcon from "@mui/icons-material/Route";
-import LogoutIcon from "@mui/icons-material/Logout";
 import { NavLink, useLocation } from "react-router-dom";
 
 export default function TeacherSidebar({
@@ -45,11 +44,6 @@ export default function TeacherSidebar({
       label: "Manage Routes",
       path: "/teacher/routes",
       icon: <RouteIcon fontSize="small" />,
-    },
-    {
-      label: "Logout",
-      path: "/logout",
-      icon: <LogoutIcon fontSize="small" />,
     },
   ];
 
