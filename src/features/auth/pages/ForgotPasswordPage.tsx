@@ -5,9 +5,11 @@ import ReactCardFlip from "react-card-flip";
 import { useState } from "react";
 
 export default function ForgotPasswordPage() {
-  const imgForgotPassword = "https://firebasestorage.googleapis.com/v0/b/englishweb-5a6ce.appspot.com/o/static%2Fbg_login.png?alt=media&token=0d295850-05fc-4d8c-973e-04714a05a284";
+  const imgForgotPassword =
+    "https://firebasestorage.googleapis.com/v0/b/englishweb-5a6ce.appspot.com/o/static%2Fbg_login.png?alt=media&token=0d295850-05fc-4d8c-973e-04714a05a284";
 
   const [isFlipped, setIsFlipped] = useState(false);
+  const [email, setEmail] = useState("");
 
   const handleFlip = () => {
     setIsFlipped(true);
@@ -71,7 +73,11 @@ export default function ForgotPasswordPage() {
               justifyContent: "center",
             }}
           >
-            <SendOTPForm onOtpValidated={handleFlip} />
+            <SendOTPForm
+              onOtpValidated={handleFlip}
+              email={email}
+              setEmail={setEmail}
+            />
           </Box>
           <Box
             sx={{
@@ -80,7 +86,7 @@ export default function ForgotPasswordPage() {
               justifyContent: "center",
             }}
           >
-            <ForgotPasswordForm />
+            <ForgotPasswordForm email={email} />
           </Box>
         </ReactCardFlip>
       </Box>

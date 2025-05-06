@@ -4,3 +4,4 @@ export * from "./scoreSpeakingService";
 export * from "./scoreWritingService";
 export * from "./userService";
 export * from "./authService";
+export * from "./emailService";

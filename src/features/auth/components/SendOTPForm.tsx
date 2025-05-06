@@ -10,12 +10,16 @@ import { useSendOTPForm } from "../hooks/useSendOTPForm";
 
 export default function SendOTPForm({
   onOtpValidated,
+  email,
+  setEmail,
 }: {
   onOtpValidated?: () => void;
+  email: string;
+  setEmail: (email: string) => void;
 }) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const useSendOTP = useSendOTPForm(onOtpValidated);
+  const useSendOTP = useSendOTPForm(email, setEmail, onOtpValidated);
   const navigate = useNavigate();
 
   // useEffect để xử lý đếm ngược
