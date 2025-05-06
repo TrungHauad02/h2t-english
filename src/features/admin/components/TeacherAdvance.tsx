@@ -97,10 +97,8 @@ export default function TeacherAdvance() {
           <TextField
             label="Level"
             name="level"
-            value={hooks.user?.levelEnum || ""}
-            onChange={(e) =>
-              hooks.handleInputChange("levelEnum", e.target.value)
-            }
+            value={hooks.user?.level || ""}
+            onChange={(e) => hooks.handleInputChange("level", e.target.value)}
             select
             fullWidth
             disabled={!hooks.isEditing}

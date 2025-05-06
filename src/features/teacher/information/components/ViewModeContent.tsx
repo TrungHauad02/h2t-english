@@ -109,7 +109,7 @@ export const ViewModeContent = ({ data }: ViewModeContentProps) => {
                                 <FormControl fullWidth variant="outlined">
                                     <OutlinedInput
                                         id="email-input"
-                                        value={data?.levelEnum}
+                                        value={data?.level}
                                         disabled
                                         readOnly
                                         startAdornment={

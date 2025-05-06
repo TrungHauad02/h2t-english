@@ -11,16 +11,15 @@ export enum LevelsEnum {
   MASTER = "MASTER",
   DOCTOR = "DOCTOR",
   PROFESSOR = "PROFESSOR",
-  STUDENT = "STUDENT",
 }
 
 export interface User extends BaseEntity {
   avatar: string;
   email: string;
-  levelEnum: LevelsEnum;
   name: string;
   password: string;
-  roleEnum: RolesEnum;
-  phoneNumber: string;
-  dateOfBirth: Date;
+  role: RolesEnum;
+  level?: LevelsEnum;
+  phoneNumber?: string;
+  dateOfBirth?: Date;
 }

@@ -22,7 +22,7 @@ export default function ExpertiseSection({
   const { isDarkMode } = useDarkMode();
 
   const getExperienceText = () => {
-    switch (teacher.levelEnum) {
+    switch (teacher.level) {
       case LevelsEnum.PROFESSOR:
         return "Experienced professor with expertise in teaching language skills.";
       case LevelsEnum.DOCTOR:

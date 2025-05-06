@@ -33,7 +33,7 @@ export default function TeacherInfoCard({ userId }: TeacherInfoCardProps) {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const teacher: User = mockData.teacher;
 
-  const getLevelColor = (level: LevelsEnum) => {
+  const getLevelColor = (level?: LevelsEnum) => {
     switch (level) {
       case LevelsEnum.BACHELOR:
         return {
@@ -59,12 +59,6 @@ export default function TeacherInfoCard({ userId }: TeacherInfoCardProps) {
           secondary: color.teal300,
           text: isDarkMode ? color.gray900 : color.white,
         };
-      case LevelsEnum.STUDENT:
-        return {
-          primary: color.teal300,
-          secondary: color.teal100,
-          text: isDarkMode ? color.gray900 : color.white,
-        };
       default:
         return {
           primary: color.gray500,
@@ -74,7 +68,7 @@ export default function TeacherInfoCard({ userId }: TeacherInfoCardProps) {
     }
   };
 
-  const levelColors = getLevelColor(teacher.levelEnum);
+  const levelColors = getLevelColor(teacher.level);
 
   return (
     <Card
@@ -118,7 +112,7 @@ export default function TeacherInfoCard({ userId }: TeacherInfoCardProps) {
           {teacher.name}
         </Typography>
 
-        <LevelBadge levelEnum={teacher.levelEnum} levelColors={levelColors} />
+        <LevelBadge levelEnum={teacher.level} levelColors={levelColors} />
 
         <Divider
           sx={{

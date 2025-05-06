@@ -4,7 +4,7 @@ import FaceIcon from "@mui/icons-material/Face";
 import { LevelsEnum } from "interfaces";
 
 interface LevelBadgeProps {
-  levelEnum: LevelsEnum;
+  levelEnum?: LevelsEnum;
   levelColors: {
     primary: string;
     secondary: string;

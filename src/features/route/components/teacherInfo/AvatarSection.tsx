@@ -133,7 +133,7 @@ export default function AvatarSection({
               fontSize: 18,
             }}
           />
-          {teacher.levelEnum}
+          {teacher.level}
         </Box>
       </Box>
     </Box>

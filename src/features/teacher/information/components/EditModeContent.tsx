@@ -118,7 +118,7 @@ const EditModeContent = ({
 
                             <Select
                                 name="level"
-                                value={formData?.levelEnum || ""}
+                                value={formData?.level || ""}
                                 onChange={handleChange}
                                 sx={{
                                     "& .MuiOutlinedInput-root fieldset": { borderColor },
