@@ -11,10 +11,12 @@ import {
 } from "../components";
 import { teacherDashboardService } from "../services/teacherDashboardService";
 import { TeacherDashboardData } from "../types";
+import useAuth from "hooks/useAuth";
 
 export default function TeacherDashboardPage() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const { userId } = useAuth();
   const [dashboardData, setDashboardData] = useState<TeacherDashboardData>({
     totalLessons: 0,
     totalRoutes: 0,
@@ -42,8 +44,9 @@ export default function TeacherDashboardPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // TODO: Replace with actual teacher ID
-        const resData = await teacherDashboardService.getTeacherDashboard(1);
+        const resData = await teacherDashboardService.getTeacherDashboard(
+          parseInt(userId || "")
+        );
         setDashboardData(resData.data);
       } catch (error) {
         console.error("Error fetching data:", error);

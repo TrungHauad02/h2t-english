@@ -8,6 +8,8 @@ import { routeService } from "../../../../services/route/routeService";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "./SearchBar";
 import CreateRouteDialog from "./CreateRouteDialog";
+import useAuth from "hooks/useAuth";
+import { toast } from "react-toastify";
 
 interface ListRoutesHeaderProps {
   filter: RouteFilter;
@@ -22,7 +24,7 @@ export default function ListRoutesHeader({
 }: ListRoutesHeaderProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-
+  const { userId } = useAuth();
   const navigate = useNavigate();
 
   const [isOpenCreateDialog, setIsOpenCreateDialog] = useState<boolean>(false);
@@ -33,7 +35,7 @@ export default function ListRoutesHeader({
     description: "",
     status: false,
     image: "",
-    ownerId: 1, // TODO: get teacher id
+    ownerId: parseInt(userId ? userId : ""),
     routeNodes: [],
   });
 
@@ -63,8 +65,9 @@ export default function ListRoutesHeader({
       console.log(responseData);
       setIsOpenCreateDialog(!isOpenCreateDialog);
       navigate(`/teacher/routes/${responseData.data.id}`);
-    } catch {
-      // TODO: show error message
+      toast.success("Create route successfully");
+    } catch (error) {
+      toast.error("Error creating route");
     }
   };
 

@@ -34,17 +34,17 @@ export default function QuestionsSection({
   const [isEditMode, setIsEditMode] = useState(false);
   const { showError } = useErrors();
 
-
-  const questionServiceUpdate = testPartQuestionServiceFactory((type));
+  const questionServiceUpdate = testPartQuestionServiceFactory(type);
 
   const fetchData = async () => {
     try {
       if (parentId) {
-      
-        const resData = await questionService.findByTestId(parentId,type)
+        const resData = await questionService.findByTestId(parentId, type);
         console.log(resData);
         setData(resData.data);
-        const newQuestionIds = resData.data.map((question: Question) => question.id);
+        const newQuestionIds = resData.data.map(
+          (question: Question) => question.id
+        );
         setListQuestionId(newQuestionIds);
       }
     } catch (error) {
@@ -71,7 +71,6 @@ export default function QuestionsSection({
       await questionServiceUpdate.updateQuestions(parentId, newQuestions);
       toast.success("Questions updated successfully");
     } catch (error) {
-      // TODO: Display error
       showError({
         message: "Error updating questions",
         severity: "error",

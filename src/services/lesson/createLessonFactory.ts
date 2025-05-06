@@ -4,7 +4,6 @@ import {
   Reading,
   RouteNodeEnum,
   Speaking,
-  Test,
   Topic,
   Writing,
 } from "interfaces";
@@ -61,16 +60,6 @@ const writingCreationService: LessonCreationService<Writing> = {
     return writingService.create(writing);
   },
 };
-
-// Test creation service - placeholder for future implementation
-const testCreationService: LessonCreationService<Test> = {
-  createLesson: (test: Test) => {
-    // TODO: Implement test creation service
-    console.warn("Test creation not implemented yet");
-    return Promise.resolve({ data: { ...test, id: -1 } });
-  },
-};
-
 // Factory function to get the appropriate service based on node type
 export const createLessonFactory = <T>(
   nodeType: RouteNodeEnum
@@ -88,12 +77,6 @@ export const createLessonFactory = <T>(
       return speakingCreationService as unknown as LessonCreationService<T>;
     case RouteNodeEnum.WRITING:
       return writingCreationService as unknown as LessonCreationService<T>;
-    case RouteNodeEnum.MIXING_TEST:
-    case RouteNodeEnum.READING_TEST:
-    case RouteNodeEnum.LISTENING_TEST:
-    case RouteNodeEnum.SPEAKING_TEST:
-    case RouteNodeEnum.WRITING_TEST:
-      return testCreationService as unknown as LessonCreationService<T>;
     default:
       console.error(`Unknown node type: ${nodeType}`);
       // Provide a default implementation that rejects

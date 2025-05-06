@@ -108,7 +108,7 @@ export default function useDetailRoutePage() {
 
   const handlePublish = async () => {
     if (data) {
-      // TODO: Check valid route before publish
+      // Check valid route before publish
       const verifyData = await routeService.verify(data.id);
       if (verifyData.status === "FAIL") {
         toast.error(verifyData.message);
@@ -167,7 +167,6 @@ export default function useDetailRoutePage() {
     if (!data) return;
 
     try {
-      // TODO: Xử lý bài kiểm tra
       const isTestNode = [
         RouteNodeEnum.MIXING_TEST,
         RouteNodeEnum.READING_TEST,
@@ -208,11 +207,8 @@ export default function useDetailRoutePage() {
       setNewLesson(emptyTopic);
     } catch (error) {
       console.error("Error adding node:", error);
-      // TODO: Show error message
+      toast.error("Error adding node");
     }
-
-    // TODO: Add node to db
-    // TODO: Navigate to edit route node (Lesson / test)
   };
 
   return {

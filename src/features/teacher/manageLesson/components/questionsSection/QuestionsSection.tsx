@@ -44,7 +44,9 @@ export default function QuestionsSection({
         console.log(resData);
         setData(resData.data);
 
-        const newQuestionIds = resData.data.map((question: LessonQuestion) => question.id);
+        const newQuestionIds = resData.data.map(
+          (question: LessonQuestion) => question.id
+        );
         setListQuestionId(newQuestionIds);
       }
     } catch (error) {
@@ -72,7 +74,6 @@ export default function QuestionsSection({
       await questionService.updateQuestions(lessonId, newQuestions);
       toast.success("Questions updated successfully");
     } catch (error) {
-      // TODO: Display error
       showError({
         message: "Error updating questions",
         severity: "error",
