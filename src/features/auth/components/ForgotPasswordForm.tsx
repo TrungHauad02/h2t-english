@@ -4,10 +4,10 @@ import WETextField from "../../../components/input/WETextField";
 import { useDarkMode } from "hooks/useDarkMode";
 import { useForgotPasswordForm } from "../hooks/useForgotPasswordForm";
 
-export default function ForgotPasswordForm() {
+export default function ForgotPasswordForm({ email }: { email: string }) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const useForgotPassword = useForgotPasswordForm();
+  const useForgotPassword = useForgotPasswordForm(email);
 
   return (
     <Box
