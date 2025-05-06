@@ -8,15 +8,30 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import UpdateIcon from "@mui/icons-material/Update";
 import PersonIcon from "@mui/icons-material/Person";
 import { formatDate } from "utils/format";
+import useAuth from "hooks/useAuth";
+import { useEffect, useState } from "react";
+import { userService } from "services";
 
 export default function RouteImageCard({ data }: { data: Route }) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const { userId } = useAuth();
+  const [owner, setOwner] = useState<string>("");
 
   const cardBgColor = isDarkMode ? color.gray700 : color.white;
   const accentColor = isDarkMode ? color.teal300 : color.teal600;
   const borderColor = isDarkMode ? color.gray700 : color.gray200;
   const secondaryTextColor = isDarkMode ? color.gray300 : color.gray600;
+
+  useEffect(() => {
+    const fetchOwner = async () => {
+      if (userId) {
+        const response = await userService.findById(parseInt(userId));
+        setOwner(response.data.name);
+      }
+    };
+    fetchOwner();
+  });
 
   return (
     <Card
@@ -150,7 +165,7 @@ export default function RouteImageCard({ data }: { data: Route }) {
               fontWeight: "medium",
             }}
           >
-            Created by: John Doe
+            Created by: {owner}
           </Typography>
         </Box>
       </Stack>

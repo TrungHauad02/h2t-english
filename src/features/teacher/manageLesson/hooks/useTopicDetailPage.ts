@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Topic } from "interfaces";
 import { topicService, routeService } from "services";
 import { toast } from "react-toastify";
+import useAuth from "hooks/useAuth";
 
 export default function useTopicDetailPage() {
   const { id, routeId } = useParams();
@@ -13,6 +14,8 @@ export default function useTopicDetailPage() {
   const [openPublishDialog, setOpenPublishDialog] = useState<boolean>(false);
   const [openUnpublishDialog, setOpenUnpublishDialog] =
     useState<boolean>(false);
+  const { userId } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,9 +25,11 @@ export default function useTopicDetailPage() {
           //  Check owner id using routeId
           const resRouteData = await routeService.findById(parseInt(routeId));
           if (resRouteData.data) {
-            if (resRouteData.data.ownerId !== 1) {
-              // TODO: Check with real teacher ID
-              // TODO: Display error
+            if (resRouteData.data.ownerId.toString() !== userId) {
+              // Display error
+              toast.error("You don't have permission to this resource");
+              setLoading(false);
+              navigate(-1);
               return;
             }
           }
@@ -74,7 +79,8 @@ export default function useTopicDetailPage() {
         setData(resData.data);
       } catch (error) {
         console.error("Error updating topic");
-        // TODO: Display error
+        // Display error
+        toast.error("Error updating topic");
       }
     }
   };

@@ -1,10 +1,11 @@
 import { Writing } from "interfaces";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { writingService, routeService } from "services";
 import { extractErrorMessages } from "utils/extractErrorMessages";
 import { useErrors } from "hooks/useErrors";
 import { toast } from "react-toastify";
+import useAuth from "hooks/useAuth";
 
 export default function useWritingDetailPage() {
   const { id, routeId } = useParams();
@@ -16,6 +17,8 @@ export default function useWritingDetailPage() {
   const [openUnpublishDialog, setOpenUnpublishDialog] =
     useState<boolean>(false);
   const { showError } = useErrors();
+  const { userId } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
@@ -28,9 +31,11 @@ export default function useWritingDetailPage() {
         //  Check owner id using routeId
         const resRouteData = await routeService.findById(parseInt(routeId));
         if (resRouteData.data) {
-          if (resRouteData.data.ownerId !== 1) {
-            // TODO: Check with real teacher ID
-            // TODO: Display error
+          if (resRouteData.data.ownerId.toString() !== userId) {
+            // Display error
+            toast.error("You don't have permission to this resource");
+            setLoading(false);
+            navigate(-1);
             return;
           }
         }

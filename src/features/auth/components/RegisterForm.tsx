@@ -4,7 +4,7 @@ import { useDarkMode } from "hooks/useDarkMode";
 import { useRegisterForm } from "../hooks/useRegisterForm";
 import { RolesEnum } from "interfaces";
 import "react-toastify/dist/ReactToastify.css";
-import { WETextField } from "components/input";
+import { WEDateField, WETextField } from "components/input";
 
 export default function Register() {
   const useRegister = useRegisterForm();
@@ -77,17 +77,11 @@ export default function Register() {
             onChange={(e) => useRegister.setPhoneNumber(e.target.value)}
             required
           />
-          <WETextField
+          <WEDateField
+            name="dateOfBirth"
             label="Date of Birth"
-            type="date"
-            value={
-              useRegister.dateOfBirth
-                ? useRegister.dateOfBirth.toISOString().split("T")[0]
-                : ""
-            }
-            onChange={(e) =>
-              useRegister.setDateOfBirth(new Date(e.target.value))
-            }
+            value={useRegister.dateOfBirth}
+            onChange={useRegister.handleDateChange}
             required
           />
         </>

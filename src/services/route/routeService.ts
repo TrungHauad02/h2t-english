@@ -9,7 +9,6 @@ const getRoutesForStudent = async (
 ) => {
   try {
     let url = `/routes?page=${page - 1}&size=${itemsPerPage}&status=true`;
-    console.log(url);
     if (filter) {
       if (filter.title) {
         url += `&title=${encodeURIComponent(filter.title)}`;
@@ -60,7 +59,6 @@ const getRoutesByTeacherId = async (
     let url = `/routes?page=${
       page - 1
     }&size=${itemsPerPage}&ownerId=${teacherId}`;
-    console.log(url);
     if (filter) {
       if (filter.status !== undefined && filter.status !== null) {
         url += `&status=${filter.status}`;
@@ -96,7 +94,6 @@ const getRoutesByTeacherId = async (
       }
     }
 
-    console.log(url);
     const response = await apiClient.get(url);
     return response.data;
   } catch (error) {

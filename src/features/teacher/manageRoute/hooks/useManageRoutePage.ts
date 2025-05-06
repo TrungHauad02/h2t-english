@@ -1,3 +1,4 @@
+import useAuth from "hooks/useAuth";
 import { Route, RouteFilter } from "interfaces";
 import { useEffect, useState } from "react";
 import { routeService } from "services";
@@ -14,6 +15,7 @@ export default function useManageRoutePage() {
   const [itemsPerPage, setItemsPerPage] = useState(8);
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const { userId } = useAuth();
 
   const fetchData = async () => {
     try {
@@ -21,15 +23,16 @@ export default function useManageRoutePage() {
       const responseData = await routeService.getRoutesByTeacherId(
         page,
         itemsPerPage,
-        1, // TODO: Teacher ID
+        parseInt(userId ?? ""),
         filter
       );
       const routeData: Route[] = responseData.data.content;
       setTotalPages(responseData.data.totalPages);
       setListRoutes(routeData);
-      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching routes:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -42,7 +45,7 @@ export default function useManageRoutePage() {
       const responseData = await routeService.getRoutesByTeacherId(
         page,
         itemsPerPage,
-        1, // TODO: Teacher ID
+        parseInt(userId ?? ""),
         filter
       );
       const routeData: Route[] = responseData.data.content;

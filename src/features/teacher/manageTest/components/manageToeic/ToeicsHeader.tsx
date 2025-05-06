@@ -6,6 +6,7 @@ import useColor from "theme/useColor";
 import { Toeic, ToeicFilter } from "interfaces";
 import CreateToeicDialog from "./CreateToeicDialog";
 import SearchBar from "../common/SearchBar";
+import { toast } from "react-toastify";
 
 interface ToeicsHeaderProps {
   filter: ToeicFilter;
@@ -65,8 +66,8 @@ export default function ToeicsHeader({
       });
       handleOpenCreateDialog();
     } catch (error) {
-      // TODO: show error message
       console.error("Error creating TOEIC test:", error);
+      toast.error("Error creating TOEIC test");
     }
   };
 

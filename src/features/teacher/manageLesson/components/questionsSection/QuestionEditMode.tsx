@@ -67,7 +67,6 @@ export function QuestionEditMode({
   };
 
   const handleDelete = () => {
-    // TODO: Remove in db
     const newAnswers = [...editData.answers];
     newAnswers.splice(
       newAnswers.findIndex((a) => a.id === deleteId),

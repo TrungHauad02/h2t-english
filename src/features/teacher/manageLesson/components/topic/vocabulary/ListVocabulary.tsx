@@ -90,7 +90,6 @@ export default function ListVocabulary({
       await vocabService.create(newVocabularyData);
       // Load paginated data
       fetchData();
-      // TODO: Display success
       toast.success("Vocab created successfully");
     } catch (error) {
       // Display error
