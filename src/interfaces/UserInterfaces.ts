@@ -17,8 +17,8 @@ export interface User extends BaseEntity {
   avatar: string;
   email: string;
   name: string;
-  password: string;
   role: RolesEnum;
+  password?: string;
   level?: LevelsEnum;
   phoneNumber?: string;
   dateOfBirth?: Date;
