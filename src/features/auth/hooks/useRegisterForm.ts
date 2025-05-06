@@ -77,6 +77,12 @@ export const useRegisterForm = () => {
     }
   };
 
+  const handleDateChange = (date: Date | null) => {
+    if (date) {
+      setDateOfBirth(date);
+    }
+  };
+
   return {
     showPassword,
     setShowPassword,
@@ -99,5 +105,6 @@ export const useRegisterForm = () => {
     handleRegister,
     handleChooseAvatar,
     isLoading,
+    handleDateChange,
   };
 };

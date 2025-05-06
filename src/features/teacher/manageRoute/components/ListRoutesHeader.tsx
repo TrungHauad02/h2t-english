@@ -62,7 +62,6 @@ export default function ListRoutesHeader({
   const onCreateRoute = async () => {
     try {
       const responseData = await routeService.create(data);
-      console.log(responseData);
       setIsOpenCreateDialog(!isOpenCreateDialog);
       navigate(`/teacher/routes/${responseData.data.id}`);
       toast.success("Create route successfully");

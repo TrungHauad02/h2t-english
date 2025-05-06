@@ -31,7 +31,7 @@ export default function useListeningDetailPage() {
         //  Check owner id using routeId
         const resRouteData = await routeService.findById(parseInt(routeId));
         if (resRouteData.data) {
-          if (resRouteData.data.ownerId !== userId) {
+          if (resRouteData.data.ownerId.toString() !== userId) {
             // Display error
             toast.error("You don't have permission to this resource");
             setLoading(false);
