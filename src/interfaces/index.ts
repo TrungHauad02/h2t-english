@@ -34,9 +34,9 @@ export interface Voice {
 }
 
 export enum SeverityEnum {
-  LOW,
-  MEDIUM,
-  HIGH,
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
 }
 
 export interface ErrorLog extends BaseEntity {

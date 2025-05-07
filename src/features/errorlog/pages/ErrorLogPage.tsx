@@ -10,13 +10,18 @@ import {
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { SeverityEnum } from "interfaces";
-import { ErrorLogTable, ErrorLogSearchBar, ErrorLogFilterSection, useErrorLog } from "../components";
+import {
+  ErrorLogTable,
+  ErrorLogSearchBar,
+  ErrorLogFilterSection,
+  useErrorLog,
+} from "../components";
 import WEPaginationSelect from "components/pagination/WEPaginationSelect";
 
 export default function ErrorLogPage() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const hooks = useErrorLog(10);
+  const hooks = useErrorLog();
 
   return (
     <Container maxWidth="xl">
@@ -47,7 +52,6 @@ export default function ErrorLogPage() {
           >
             Monitoring and tracking system errors
           </Typography>
-
           <Stack
             direction="row"
             spacing={2}
@@ -88,21 +92,16 @@ export default function ErrorLogPage() {
             />
           </Stack>
         </Box>
-
         <Divider sx={{ mb: 3 }} />
-
         <ErrorLogSearchBar onSearch={hooks.handleSearchChange} />
-        
-        <ErrorLogFilterSection 
-          filters={hooks.filters} 
-          onFilterChange={hooks.handleFilterChange} 
+        <ErrorLogFilterSection
+          filters={hooks.filters}
+          onFilterChange={hooks.handleFilterChange}
         />
-
-        <ErrorLogTable 
-          errorLogs={hooks.paginatedLogs}
-          onRefresh={hooks.onRefresh} 
+        <ErrorLogTable
+          errorLogs={hooks.errorLogs}
+          onRefresh={hooks.onRefresh}
         />
-
         <WEPaginationSelect
           page={hooks.page}
           totalPage={hooks.totalPages}
