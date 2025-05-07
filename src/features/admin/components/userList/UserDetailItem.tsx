@@ -29,7 +29,7 @@ export default function UserDetailItem({
         padding: "8px 10px",
         borderRadius: "8px",
         backgroundColor: isDarkMode
-          ? "rgba(15, 118, 110, 0.1)"
+          ? `${colors.teal800}`
           : "rgba(20, 184, 166, 0.03)",
         transition: "all 0.2s ease",
         "&:hover": {

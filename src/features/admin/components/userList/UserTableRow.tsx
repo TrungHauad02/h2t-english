@@ -169,8 +169,7 @@ export default function UserTableRow({
 
         <TableCell sx={{ textAlign: "center" }}>
           <Box sx={{ display: "flex", justifyContent: "center", gap: 0.5 }}>
-            {(user.role === RolesEnum.TEACHER ||
-              user.role === RolesEnum.TEACHER_ADVANCE) && (
+            {user.role === RolesEnum.TEACHER_ADVANCE && (
               <IconButton
                 size="small"
                 onClick={() => onEdit(user.name)}

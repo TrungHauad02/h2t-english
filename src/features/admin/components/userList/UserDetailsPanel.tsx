@@ -10,6 +10,7 @@ import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { User, RolesEnum } from "interfaces";
 import UserDetailItem from "./UserDetailItem";
+import { formatDateShort } from "utils/format";
 
 interface UserDetailsPanelProps {
   user: User;
@@ -28,13 +29,29 @@ export default function UserDetailsPanel({ user }: UserDetailsPanelProps) {
         margin: 2,
         padding: 2.5,
         borderRadius: "1rem",
-        bgcolor: isDarkMode
-          ? "rgba(15, 118, 110, 0.2)"
-          : "rgba(20, 184, 166, 0.05)",
-        boxShadow: "inset 0 2px 10px rgba(0,0,0,0.05)",
+        bgcolor: isDarkMode ? `${color.teal900}` : "rgba(20, 184, 166, 0.05)",
+        boxShadow: isDarkMode
+          ? "inset 0 2px 12px rgba(0,0,0,0.2)"
+          : "inset 0 2px 10px rgba(0,0,0,0.05)",
         border: `1px solid ${
-          isDarkMode ? "rgba(94, 234, 212, 0.1)" : "rgba(20, 184, 166, 0.1)"
+          isDarkMode ? "rgba(20, 184, 166, 0.2)" : "rgba(20, 184, 166, 0.1)"
         }`,
+        backdropFilter: isDarkMode ? "blur(4px)" : "none",
+        position: "relative",
+        "&:before": isDarkMode
+          ? {
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              borderRadius: "1rem",
+              background:
+                "linear-gradient(135deg, rgba(13, 148, 136, 0.1) 0%, rgba(5, 150, 105, 0) 100%)",
+              pointerEvents: "none",
+            }
+          : {},
       }}
     >
       <Grid container spacing={2}>
@@ -68,7 +85,7 @@ export default function UserDetailsPanel({ user }: UserDetailsPanelProps) {
               <UserDetailItem
                 icon={<CalendarToday />}
                 label="Date of Birth"
-                value={user.dateOfBirth?.toLocaleDateString() || "N/A"}
+                value={formatDateShort(user.dateOfBirth) || "N/A"}
                 color={isDarkMode ? color.teal200 : color.teal700}
               />
 

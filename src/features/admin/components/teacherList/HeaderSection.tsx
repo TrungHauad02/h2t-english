@@ -1,23 +1,26 @@
+import React from "react";
 import {
-  Box,
   Typography,
+  Box,
   Button,
-  useTheme,
   useMediaQuery,
+  useTheme,
   Paper,
 } from "@mui/material";
+import { FilterAlt, FilterAltOff, Add } from "@mui/icons-material";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import { FilterAlt, FilterAltOff } from "@mui/icons-material";
 
 interface HeaderSectionProps {
   showFilters: boolean;
   toggleFilters: () => void;
+  onAddTeacher?: () => void;
 }
 
 export default function HeaderSection({
   showFilters,
   toggleFilters,
+  onAddTeacher,
 }: HeaderSectionProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -51,7 +54,7 @@ export default function HeaderSection({
             mb: 0.5,
           }}
         >
-          Students Management
+          Teachers Management
         </Typography>
       </Box>
 
@@ -96,6 +99,31 @@ export default function HeaderSection({
         >
           {showFilters ? "Hide Filters" : "Show Filters"}
         </Button>
+
+        {onAddTeacher && (
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={onAddTeacher}
+            sx={{
+              borderRadius: "8px",
+              bgcolor: isDarkMode ? color.teal700 : color.teal600,
+              boxShadow: isDarkMode
+                ? "0 4px 12px rgba(20, 184, 166, 0.3)"
+                : "0 4px 12px rgba(20, 184, 166, 0.2)",
+              "&:hover": {
+                boxShadow: isDarkMode
+                  ? "0 6px 16px rgba(20, 184, 166, 0.4)"
+                  : "0 6px 16px rgba(20, 184, 166, 0.3)",
+                bgcolor: isDarkMode ? color.teal600 : color.teal500,
+              },
+              transition: "all 0.2s ease",
+              minWidth: isMobile ? "100%" : "auto",
+            }}
+          >
+            Add Teacher Advance
+          </Button>
+        )}
       </Box>
     </Paper>
   );
