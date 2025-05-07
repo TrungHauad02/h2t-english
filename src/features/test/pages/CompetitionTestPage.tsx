@@ -79,7 +79,7 @@ export default function CompetitionTestPage() {
 
   const siteInfo: SiteInfo = {
     bgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/englishweb-5a6ce.appspot.com/o/static%2Fbg_test.png?alt=media",
+    "http://138.2.91.94:9000/h2t-english/static%2Fmain_picture_competition.jpg",
     title: competition.title || "Competition",
   };
 

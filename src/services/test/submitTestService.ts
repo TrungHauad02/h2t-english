@@ -1,7 +1,7 @@
 import { SubmitTest, SubmitTestStats } from "interfaces";
 import apiClient from "services/apiClient";
 
-const findById = async (id: number): Promise<SubmitTest> => {
+const findById = async (id: number): Promise<{ data: SubmitTest }> => {
   try {
     const response = await apiClient.get(`/submit-tests/${id}`);
     return response.data;
