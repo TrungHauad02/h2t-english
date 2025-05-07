@@ -40,7 +40,6 @@ const getRoutesForStudent = async (
       }
     }
 
-    console.log(url);
     const response = await apiClient.get(url);
     return response.data;
   } catch (error) {

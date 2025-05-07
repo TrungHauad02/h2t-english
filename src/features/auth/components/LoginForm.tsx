@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { useLoginForm } from "../hooks/useLoginForm";
-import "react-toastify/dist/ReactToastify.css";
 import { WETextField } from "components/input";
 
 export default function Login() {
@@ -60,7 +59,9 @@ export default function Login() {
           color: isDarkMode ? color.black : color.white,
           mt: 1,
         }}
-        onClick={() => useLogin.handleLogin()}
+        onClick={() => {
+          useLogin.handleLogin();
+        }}
       >
         Log in
       </Button>

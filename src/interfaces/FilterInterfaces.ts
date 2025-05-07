@@ -1,5 +1,6 @@
 import { WordType } from "./LessonInterfaces";
-import { TestTypeEnum } from "./TestInterfaces"
+import { TestTypeEnum } from "./TestInterfaces";
+import { LevelsEnum, RolesEnum } from "./UserInterfaces";
 export interface BaseFilter {
   status?: boolean | null;
   sortBy?: "createdAt" | "updatedAt" | "-createdAt" | "-updatedAt";
@@ -7,6 +8,13 @@ export interface BaseFilter {
   endCreatedAt?: Date;
   startUpdatedAt?: Date;
   endUpdatedAt?: Date;
+}
+
+export interface UserFilter extends BaseFilter {
+  name?: string;
+  email?: string;
+  roleList?: RolesEnum[];
+  level?: LevelsEnum;
 }
 
 export interface RouteFilter extends BaseFilter {

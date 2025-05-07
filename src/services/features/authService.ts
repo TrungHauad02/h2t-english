@@ -1,8 +1,18 @@
+import axios from "axios";
 import apiClient from "services/apiClient";
+
+const BASE_URL = "http://localhost:8080/api";
+
+const authClient = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 const login = async (email: string, password: string) => {
   try {
-    const response = await apiClient.post("/auth/login", {
+    const response = await authClient.post("/auth/login", {
       email,
       password,
     });
@@ -15,7 +25,7 @@ const login = async (email: string, password: string) => {
 
 const loginWithGoogle = async (token: string) => {
   try {
-    const response = await apiClient.post("/auth/login-with-google", {
+    const response = await authClient.post("/auth/login-with-google", {
       idToken: token,
     });
     return response.data;
