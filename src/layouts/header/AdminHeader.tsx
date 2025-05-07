@@ -1,5 +1,13 @@
-import { Toolbar, useScrollTrigger, Box, IconButton, Stack, Button, Typography } from "@mui/material";
-import { useLocation } from 'react-router-dom';
+import {
+  Toolbar,
+  useScrollTrigger,
+  Box,
+  IconButton,
+  Stack,
+  Button,
+  Typography,
+} from "@mui/material";
+import { useLocation } from "react-router-dom";
 import { StyledAppBar } from "./common";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
@@ -9,6 +17,7 @@ import { toggleTheme } from "../../redux/slices/themeSlice";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { drawerWidth } from "./common/sidebar/SidebarDrawer";
 import { useNavigate } from "react-router-dom";
+import useAuth from "hooks/useAuth";
 
 export default function AdminHeader() {
   const { isDarkMode } = useDarkMode();
@@ -19,6 +28,7 @@ export default function AdminHeader() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const location = useLocation();
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const getTitle = () => {
     const path = location.pathname;
@@ -65,15 +75,23 @@ export default function AdminHeader() {
         </Box>
         <Stack direction={"row"} spacing={2}>
           {location.pathname.includes("manage-teacher") && (
-            <Button 
-              variant="contained" 
-              sx={{ bgcolor: isDarkMode ? color.btnSubmitBg : color.btnSubmitHoverBg}}
+            <Button
+              variant="contained"
+              sx={{
+                bgcolor: isDarkMode
+                  ? color.btnSubmitBg
+                  : color.btnSubmitHoverBg,
+              }}
               onClick={() => navigate("/admin/manage-teacher/teacher-advance")}
-              >
+            >
               ADD TEACHER ADVANCE
             </Button>
           )}
-          <Button variant="contained" sx={{ bgcolor: color.teal500 }}>
+          <Button
+            variant="contained"
+            sx={{ bgcolor: color.teal500 }}
+            onClick={logout}
+          >
             Logout
           </Button>
           <IconButton

@@ -138,6 +138,7 @@ const AppRoutes = () => {
           element={<Layouts.TeacherAdvanceLayout />}
         >
           <Route index element={<Pages.ManageCompetitionPage />} />
+          <Route path="information" element={<Pages.InformationPage />} />
           <Route
             path="competitions"
             element={<Pages.ManageCompetitionPage />}
