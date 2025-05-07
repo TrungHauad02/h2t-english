@@ -11,20 +11,29 @@ import {
   useMediaQuery,
   useTheme,
   Fade,
-  Alert,
   IconButton,
   Tooltip,
+  Button,
 } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import { ErrorLog } from "interfaces";
-import { ErrorLogTableHead, ErrorLogTableRow, ErrorLogDetailsDialog, ErrorLogEmptyState } from "./table";
+import { ErrorLog, SeverityEnum } from "interfaces";
+import {
+  ErrorLogTableHead,
+  ErrorLogTableRow,
+  ErrorLogDetailsDialog,
+  ErrorLogEmptyState,
+} from "./table";
 import useErrorLog from "./useErrorLogTable";
+import { useState } from "react";
+import DeleteResolvedLogsDialog from "./DeleteResolvedLogsDialog";
+import { errorLogService } from "services";
 
 interface ErrorLogTableProps {
   errorLogs: ErrorLog[];
-  onRefresh?: () => void;
+  onRefresh: () => void;
 }
 
 export default function ErrorLogTable({
@@ -35,12 +44,25 @@ export default function ErrorLogTable({
   const { isDarkMode } = useDarkMode();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const hooks = useErrorLog();
+  const hooks = useErrorLog(onRefresh);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
-  // Get high severity error count
-  const highSeverityCount = errorLogs.filter(
-    (log) => log.severity === 2 && log.status
-  ).length;
+  const handleDeleteDialogOpen = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  const handleDeleteDialogClose = () => {
+    setOpenDeleteDialog(false);
+  };
+
+  const handleConfirmDelete = async (selectedSeverities: SeverityEnum[]) => {
+    try {
+      await errorLogService.bulkDelete(selectedSeverities);
+      onRefresh();
+    } catch (error) {
+      console.error("Error deleting resolved logs:", error);
+    }
+  };
 
   return (
     <Fade in={true} timeout={800}>
@@ -67,6 +89,7 @@ export default function ErrorLogTable({
                 justifyContent: "space-between",
                 alignItems: "center",
                 flexWrap: "wrap",
+                gap: 2,
               }}
             >
               <Typography
@@ -80,34 +103,8 @@ export default function ErrorLogTable({
                 }}
               >
                 System Error Logs
-                {highSeverityCount > 0 && (
-                  <Alert
-                    severity="error"
-                    icon={false}
-                    sx={{
-                      py: 0,
-                      px: 1,
-                      backgroundColor: isDarkMode
-                        ? `${color.red800}90`
-                        : `${color.red100}90`,
-                      color: isDarkMode ? color.red200 : color.red800,
-                      border: `1px solid ${
-                        isDarkMode ? color.red700 : color.red300
-                      }`,
-                      borderRadius: "4px",
-                      "& .MuiAlert-message": {
-                        padding: "2px 0",
-                        fontSize: "0.75rem",
-                        fontWeight: 600,
-                      },
-                    }}
-                  >
-                    {highSeverityCount} active high severity issue
-                    {highSeverityCount > 1 ? "s" : ""}
-                  </Alert>
-                )}
               </Typography>
-              <Box sx={{ display: "flex", gap: 1 }}>
+              <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
                 <Tooltip title="Refresh logs">
                   <IconButton
                     size="small"
@@ -127,6 +124,25 @@ export default function ErrorLogTable({
                     <RefreshIcon fontSize="small" />
                   </IconButton>
                 </Tooltip>
+
+                <Button
+                  variant="outlined"
+                  startIcon={<DeleteOutlineIcon />}
+                  onClick={handleDeleteDialogOpen}
+                  size="small"
+                  sx={{
+                    borderColor: isDarkMode ? color.red700 : color.red300,
+                    color: isDarkMode ? color.red300 : color.red700,
+                    "&:hover": {
+                      borderColor: isDarkMode ? color.red600 : color.red400,
+                      backgroundColor: isDarkMode
+                        ? `${color.red900}50`
+                        : `${color.red50}80`,
+                    },
+                  }}
+                >
+                  Delete resolved logs
+                </Button>
               </Box>
             </Box>
           }
@@ -179,9 +195,15 @@ export default function ErrorLogTable({
           open={hooks.openDialog}
           log={hooks.selectedLog}
           onClose={hooks.handleCloseDialog}
-          onMarkResolved={(log) => {
-            hooks.handleMarkResolved()
-          }}
+          onMarkResolved={hooks.handleMarkResolved}
+          onDeleteLog={hooks.handleDeleteLog}
+        />
+
+        {/* Delete Resolved Logs Dialog */}
+        <DeleteResolvedLogsDialog
+          open={openDeleteDialog}
+          onClose={handleDeleteDialogClose}
+          onConfirm={handleConfirmDelete}
         />
       </Card>
     </Fade>

@@ -1,3 +1,4 @@
+import { SeverityEnum } from "interfaces";
 import { WordType } from "./LessonInterfaces";
 import { TestTypeEnum } from "./TestInterfaces";
 import { LevelsEnum, RolesEnum } from "./UserInterfaces";
@@ -15,6 +16,12 @@ export interface UserFilter extends BaseFilter {
   email?: string;
   roleList?: RolesEnum[];
   level?: LevelsEnum;
+}
+
+export interface ErrorLogFilter extends BaseFilter {
+  message?: string;
+  severity?: SeverityEnum;
+  errorCode?: string;
 }
 
 export interface RouteFilter extends BaseFilter {
