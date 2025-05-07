@@ -89,6 +89,16 @@ const patch = async (id: number, data: Partial<ErrorLog>) => {
   }
 };
 
+const findById = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/error-logs/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting error log by id:", error);
+    throw error;
+  }
+};
+
 const remove = async (id: number) => {
   try {
     const response = await apiClient.delete(`/error-logs/${id}`);
@@ -112,6 +122,7 @@ const bulkDelete = async (severityList: SeverityEnum[]) => {
 };
 
 export const errorLogService = {
+  findById,
   getErrorLogs,
   patch,
   remove,
