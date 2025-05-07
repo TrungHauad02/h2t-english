@@ -70,10 +70,6 @@ const AppRoutes = () => {
           <Route index element={<Pages.ManageUserPage />} />
           <Route path="manage-student" element={<Pages.ManageStudentPage />} />
           <Route path="manage-teacher" element={<Pages.ManageTeacherPage />} />
-          <Route
-            path="manage-teacher/teacher-advance"
-            element={<Pages.ManageTeacherAdvancePage />}
-          />
           <Route path="error-log" element={<Pages.ErrorLogPage />} />
         </Route>
       </Route>

@@ -1,6 +1,7 @@
 import { Stack, Box, Typography } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import enGB from "date-fns/locale/en-GB";
 import { WEPaginationSelect } from "components/pagination";
 import { WEDialog, WEConfirmDelete } from "components/display";
 import useColor from "theme/useColor";
@@ -20,7 +21,7 @@ export default function ListStudent() {
   const hooks = useListStudent();
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
+    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enGB}>
       <Stack spacing={3}>
         {/* Header Section */}
         <HeaderSection
