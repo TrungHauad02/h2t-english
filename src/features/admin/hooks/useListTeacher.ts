@@ -3,10 +3,8 @@ import { toast } from "react-toastify";
 import { RolesEnum, LevelsEnum, User } from "interfaces";
 import { UserFilter } from "interfaces/FilterInterfaces";
 import { userService } from "services";
-import { useNavigate } from "react-router-dom";
 
 export default function useListTeacher() {
-  const navigate = useNavigate();
   // State for teacher data
   const [teachers, setTeachers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -24,6 +22,8 @@ export default function useListTeacher() {
   const [isRemoveDialogOpen, setRemoveDialogOpen] = useState<boolean>(false);
   const [isChangeStatusDialogOpen, setChangeStatusDialogOpen] =
     useState<boolean>(false);
+  const [isTeacherAdvanceDialogOpen, setTeacherAdvanceDialogOpen] =
+    useState<boolean>(false);
 
   // State for filters
   const [showFilters, setShowFilters] = useState<boolean>(false);
@@ -35,7 +35,7 @@ export default function useListTeacher() {
   const [emailFilter, setEmailFilter] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [roleFilter, setRoleFilter] = useState<string>("all"); // "all", "teacher", "teacher_advance"
-  const [levelFilter, setLevelFilter] = useState<string>(""); // Empty for all levels
+  const [levelFilter, setLevelFilter] = useState<string>("");
   const [startCreatedAt, setStartCreatedAt] = useState<Date | null>(null);
   const [endCreatedAt, setEndCreatedAt] = useState<Date | null>(null);
 
@@ -109,12 +109,6 @@ export default function useListTeacher() {
   const handleItemsPerPageChange = (value: string | number) => {
     setItemsPerPage(value as number);
     setPage(1);
-  };
-
-  // Dialog handlers
-  const handleEdit = (name: string) => {
-    toast.info(`Edit user ${name}`);
-    // Navigation logic would go here
   };
 
   const handleChangeStatus = (user: User) => {
@@ -224,8 +218,34 @@ export default function useListTeacher() {
     }));
   };
 
+  // Teacher Advance Dialog handlers
+  const handleEdit = (id: number) => {
+    const userToEdit = teachers.find((teacher) => teacher.id === id);
+    if (userToEdit && userToEdit.role === RolesEnum.TEACHER_ADVANCE) {
+      setSelectedUser(userToEdit);
+      setTeacherAdvanceDialogOpen(true);
+    }
+  };
+
   const onAddTeacher = () => {
-    navigate("teacher-advance");
+    setSelectedUser(null);
+    setTeacherAdvanceDialogOpen(true);
+  };
+
+  const handleTeacherAdvanceDialogClose = () => {
+    setTeacherAdvanceDialogOpen(false);
+    setSelectedUser(null);
+  };
+
+  const handleTeacherAdvanceDialogSave = () => {
+    fetchTeachers(); // Reload the data after saving
+    setTeacherAdvanceDialogOpen(false);
+    setSelectedUser(null);
+    toast.success(
+      selectedUser
+        ? "Teacher advanced updated successfully"
+        : "New teacher advanced added successfully"
+    );
   };
 
   return {
@@ -238,6 +258,7 @@ export default function useListTeacher() {
     selectedUser,
     isRemoveDialogOpen,
     isChangeStatusDialogOpen,
+    isTeacherAdvanceDialogOpen,
     showFilters,
     filter,
     nameFilter,
@@ -270,5 +291,7 @@ export default function useListTeacher() {
     setStartCreatedAt,
     setEndCreatedAt,
     onAddTeacher,
+    handleTeacherAdvanceDialogClose,
+    handleTeacherAdvanceDialogSave,
   };
 }

@@ -15,7 +15,7 @@ interface ListUserProps {
   users: User[];
   openRows: Record<string, boolean>;
   toggleRow: (id: number) => void;
-  handleEdit: (name: string) => void;
+  handleEdit: (id: number) => void;
   handleChangeStatus: (user: User) => void;
   handleRemove: (user: User) => void;
 }
@@ -61,7 +61,7 @@ export default function ListUser({
               user={user}
               isOpen={openRows[user.id]}
               onToggle={() => toggleRow(user.id)}
-              onEdit={handleEdit}
+              onEdit={() => handleEdit(user.id)}
               onChangeStatus={handleChangeStatus}
               onRemove={handleRemove}
             />

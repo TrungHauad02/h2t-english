@@ -53,4 +53,3 @@ export { default as ToeicDetailPage } from "features/teacher/manageTest/pages/To
 export { default as ManageUserPage } from "features/admin/pages/ManageUsersPage";
 export { default as ManageStudentPage } from "features/admin/pages/ManageStudentsPage";
 export { default as ManageTeacherPage } from "features/admin/pages/ManageTeachersPage";
-export { default as ManageTeacherAdvancePage } from "features/admin/pages/ManageTeacherAdvancePage";

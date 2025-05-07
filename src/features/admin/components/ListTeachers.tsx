@@ -2,12 +2,14 @@ import React from "react";
 import { Stack, Box, Typography } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import enGB from "date-fns/locale/en-GB";
 import { WEPaginationSelect } from "components/pagination";
 import { WEDialog, WEConfirmDelete } from "components/display";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import useListTeacher from "../hooks/useListTeacher";
 import ListUser from "./ListUsers";
+import TeacherAdvanceDialog from "./TeacherAdvanceDialog";
 import {
   HeaderSection,
   FilterSection,
@@ -21,7 +23,7 @@ export default function ListTeachers() {
   const hooks = useListTeacher();
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
+    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enGB}>
       <Stack spacing={3}>
         {/* Header Section */}
         <HeaderSection
@@ -157,6 +159,14 @@ export default function ListTeachers() {
           Are you sure you want to change status of {hooks.selectedUser?.name}{" "}
           to {hooks.selectedUser?.status === true ? "Inactive" : "Active"}?
         </WEDialog>
+
+        {/* Teacher Advance Dialog for Add/Edit */}
+        <TeacherAdvanceDialog
+          open={hooks.isTeacherAdvanceDialogOpen}
+          onClose={hooks.handleTeacherAdvanceDialogClose}
+          selectedUser={hooks.selectedUser}
+          onSave={hooks.handleTeacherAdvanceDialogSave}
+        />
       </Stack>
     </LocalizationProvider>
   );
