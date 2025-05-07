@@ -1,10 +1,163 @@
-import { teachers } from "../services/mockData";
+import React from "react";
+import { Stack, Box, Typography } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { WEPaginationSelect } from "components/pagination";
+import { WEDialog, WEConfirmDelete } from "components/display";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
+import useListTeacher from "../hooks/useListTeacher";
 import ListUser from "./ListUsers";
+import {
+  HeaderSection,
+  FilterSection,
+  ActiveFiltersDisplay,
+  EmptyState,
+} from "./teacherList";
 
-const ListTeachers = () => {
-    return(
-        <ListUser users={teachers} />
-    )
+export default function ListTeachers() {
+  const color = useColor();
+  const { isDarkMode } = useDarkMode();
+  const hooks = useListTeacher();
+
+  return (
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <Stack spacing={3}>
+        {/* Header Section */}
+        <HeaderSection
+          showFilters={hooks.showFilters}
+          toggleFilters={hooks.toggleFilters}
+          onAddTeacher={hooks.onAddTeacher}
+        />
+
+        {/* Filters Section */}
+        <FilterSection
+          showFilters={hooks.showFilters}
+          nameFilter={hooks.nameFilter}
+          setNameFilter={hooks.setNameFilter}
+          emailFilter={hooks.emailFilter}
+          setEmailFilter={hooks.setEmailFilter}
+          statusFilter={hooks.statusFilter}
+          setStatusFilter={hooks.setStatusFilter}
+          roleFilter={hooks.roleFilter}
+          setRoleFilter={hooks.setRoleFilter}
+          levelFilter={hooks.levelFilter}
+          setLevelFilter={hooks.setLevelFilter}
+          startCreatedAt={hooks.startCreatedAt}
+          setStartCreatedAt={hooks.setStartCreatedAt}
+          endCreatedAt={hooks.endCreatedAt}
+          setEndCreatedAt={hooks.setEndCreatedAt}
+          filter={hooks.filter}
+          handleSortChange={hooks.handleSortChange}
+          handleResetFilters={hooks.handleResetFilters}
+          handleApplyFilters={hooks.handleApplyFilters}
+        />
+
+        {/* Applied Filters Display */}
+        {(hooks.nameFilter ||
+          hooks.emailFilter ||
+          hooks.statusFilter ||
+          (hooks.roleFilter && hooks.roleFilter !== "all") ||
+          hooks.levelFilter ||
+          hooks.startCreatedAt ||
+          hooks.endCreatedAt) && (
+          <ActiveFiltersDisplay
+            nameFilter={hooks.nameFilter}
+            setNameFilter={hooks.setNameFilter}
+            emailFilter={hooks.emailFilter}
+            setEmailFilter={hooks.setEmailFilter}
+            statusFilter={hooks.statusFilter}
+            setStatusFilter={hooks.setStatusFilter}
+            roleFilter={hooks.roleFilter}
+            setRoleFilter={hooks.setRoleFilter}
+            levelFilter={hooks.levelFilter}
+            setLevelFilter={hooks.setLevelFilter}
+            startCreatedAt={hooks.startCreatedAt}
+            setStartCreatedAt={hooks.setStartCreatedAt}
+            endCreatedAt={hooks.endCreatedAt}
+            setEndCreatedAt={hooks.setEndCreatedAt}
+          />
+        )}
+
+        {/* Teachers List */}
+        <Box sx={{ width: "100%" }}>
+          {hooks.isLoading ? (
+            <Box
+              sx={{
+                p: 4,
+                textAlign: "center",
+                bgcolor: isDarkMode ? color.gray800 : color.gray50,
+                borderRadius: "1rem",
+                border: `1px solid ${
+                  isDarkMode ? color.gray700 : color.gray200
+                }`,
+              }}
+            >
+              <Typography
+                sx={{
+                  color: isDarkMode ? color.gray300 : color.gray700,
+                  fontWeight: 500,
+                }}
+              >
+                Loading teachers...
+              </Typography>
+            </Box>
+          ) : hooks.teachers.length > 0 ? (
+            <ListUser
+              users={hooks.teachers}
+              openRows={hooks.openRows}
+              toggleRow={(id: number) => hooks.toggleRow(id)}
+              handleEdit={hooks.handleEdit}
+              handleChangeStatus={hooks.handleChangeStatus}
+              handleRemove={hooks.handleRemove}
+            />
+          ) : (
+            <EmptyState
+              hasFilters={
+                !!(
+                  hooks.nameFilter ||
+                  hooks.emailFilter ||
+                  hooks.statusFilter ||
+                  (hooks.roleFilter && hooks.roleFilter !== "all") ||
+                  hooks.levelFilter ||
+                  hooks.startCreatedAt ||
+                  hooks.endCreatedAt
+                )
+              }
+              handleResetFilters={hooks.handleResetFilters}
+            />
+          )}
+        </Box>
+
+        {/* Pagination */}
+        {hooks.teachers.length > 0 && (
+          <WEPaginationSelect
+            page={hooks.page}
+            totalPage={Math.ceil(hooks.totalElements / hooks.itemsPerPage)}
+            itemsPerPage={hooks.itemsPerPage}
+            onPageChange={hooks.handleChangePage}
+            onItemsPerPageChange={hooks.handleItemsPerPageChange}
+          />
+        )}
+
+        {/* Dialogs */}
+        <WEConfirmDelete
+          open={hooks.isRemoveDialogOpen}
+          resourceName={hooks.selectedUser?.name || "this teacher"}
+          onCancel={hooks.cancelRemove}
+          onConfirm={hooks.confirmRemove}
+        />
+
+        <WEDialog
+          open={hooks.isChangeStatusDialogOpen}
+          title="Confirm Status Change"
+          onCancel={hooks.cancelChangeStatus}
+          onOk={hooks.confirmChangeStatus}
+        >
+          Are you sure you want to change status of {hooks.selectedUser?.name}{" "}
+          to {hooks.selectedUser?.status === true ? "Inactive" : "Active"}?
+        </WEDialog>
+      </Stack>
+    </LocalizationProvider>
+  );
 }
-
-export default ListTeachers;

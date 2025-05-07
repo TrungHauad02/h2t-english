@@ -40,7 +40,7 @@ export const useLoginForm = () => {
       redirectBasedOnRole(authData.role);
     } catch (error: any) {
       const errorMessage =
-        error.response?.data?.message ||
+        error.response?.data?.data ||
         "Login failed. Please check your email and password.";
       toast.error(errorMessage);
     } finally {

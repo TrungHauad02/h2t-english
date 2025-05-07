@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { SidebarDrawer } from "./sidebar";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import SettingsIcon from "@mui/icons-material/Settings";
 import PeopleIcon from "@mui/icons-material/People";
 import SchoolIcon from "@mui/icons-material/School";
 import { Error } from "@mui/icons-material";
@@ -32,7 +31,6 @@ export default function SidebarAdmin() {
       ],
     },
     { text: "Error Log", icon: <Error />, path: "/admin/error-log" },
-    { text: "Settings", icon: <SettingsIcon />, path: "/admin/settings" },
   ];
 
   return (

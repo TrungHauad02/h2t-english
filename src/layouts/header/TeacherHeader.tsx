@@ -169,6 +169,8 @@ export default function TeacherHeader({
                 aria-expanded={open ? "true" : undefined}
               >
                 <Avatar
+                  src={teacher?.avatar}
+                  alt={teacher?.name}
                   sx={{
                     width: 32,
                     height: 32,

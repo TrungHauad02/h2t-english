@@ -16,11 +16,9 @@ import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import CloseIcon from "@mui/icons-material/Close";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import LogoutIcon from "@mui/icons-material/Logout";
 import { NavLink, useLocation } from "react-router-dom";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-
 
 export default function TeacherAdvanceSidebar({
   drawerWidth,
@@ -46,20 +44,14 @@ export default function TeacherAdvanceSidebar({
     {
       label: "Manage Competitions",
       path: "/teacher-advance/competitions",
-      icon: <EmojiEventsIcon fontSize="small" />, 
+      icon: <EmojiEventsIcon fontSize="small" />,
     },
     {
       label: "Manage Toeic Tests",
       path: "/teacher-advance/toeics",
-      icon: <AssignmentIcon fontSize="small" />, 
-    },
-    {
-      label: "Logout",
-      path: "/logout",
-      icon: <LogoutIcon fontSize="small" />,
+      icon: <AssignmentIcon fontSize="small" />,
     },
   ];
-  
 
   const isActive = (path: string) => {
     return location.pathname === path;
