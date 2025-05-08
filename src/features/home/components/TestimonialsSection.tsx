@@ -1,60 +1,82 @@
-import { Box, Typography, Container, Grid } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Container,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import { TestimonialCard } from "./testimonial";
-import { testimonials } from "../services/mockData";
+import { useEffect, useState } from "react";
+import { Quote } from "interfaces";
+import { quoteService } from "services/features/quoteService";
+import { QuoteCarousel, QuoteGrid, SectionHeader } from "./testimonialsSection";
 
 export default function TestimonialsSection() {
   const { isDarkMode } = useDarkMode();
-  const colors = useColor();
+  const color = useColor();
+  const [quotes, setQuotes] = useState<Quote[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const resData = await quoteService.getRandomQuote();
+        setQuotes(resData.data);
+      } catch (error) {
+        console.error("Error fetching quotes:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <Box
       sx={{
-        py: 8,
-        backgroundColor: isDarkMode ? colors.gray900 : colors.gray50,
+        py: { xs: 6, md: 10 },
+        backgroundColor: isDarkMode ? color.gray900 : color.gray50,
         position: "relative",
+        overflow: "hidden",
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "5px",
+          background: `linear-gradient(90deg, ${color.teal500} 0%, ${color.emerald500} 50%, ${color.green500} 100%)`,
+        },
       }}
     >
       <Container maxWidth="lg">
-        <Typography
-          variant="h4"
-          component="h2"
-          align="center"
-          sx={{
-            fontWeight: "bold",
-            mb: 1,
-            color: isDarkMode ? colors.teal300 : colors.teal700,
-          }}
-        >
-          Success Stories
-        </Typography>
-        <Typography
-          variant="body1"
-          align="center"
-          sx={{
-            mb: 6,
-            maxWidth: 700,
-            mx: "auto",
-            color: isDarkMode ? colors.gray300 : colors.gray700,
-          }}
-        >
-          See what our students are saying about their learning experience
-        </Typography>
+        <SectionHeader />
 
-        <Grid container spacing={4}>
-          {testimonials.map((testimonial, index) => (
-            <Grid item key={index} xs={12} md={4}>
-              <TestimonialCard
-                name={testimonial.name}
-                role={testimonial.role}
-                avatar={testimonial.avatar}
-                rating={testimonial.rating}
-                testimonial={testimonial.comment}
-              />
-            </Grid>
-          ))}
-        </Grid>
+        {isLoading ? (
+          <Box
+            sx={{
+              height: 300,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Typography
+              variant="body1"
+              sx={{ color: isDarkMode ? color.gray300 : color.gray700 }}
+            >
+              Loading inspiring quotes...
+            </Typography>
+          </Box>
+        ) : isMobile ? (
+          <QuoteCarousel quotes={quotes} />
+        ) : (
+          <QuoteGrid quotes={quotes} />
+        )}
       </Container>
     </Box>
   );

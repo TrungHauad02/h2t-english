@@ -46,3 +46,9 @@ export interface ErrorLog extends BaseEntity {
 }
 
 export type RandomName = "YES" | "NO";
+
+export interface Quote {
+  quote: string;
+  author: string;
+  category: string;
+}
