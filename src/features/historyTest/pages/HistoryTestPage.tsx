@@ -1,15 +1,14 @@
-// pages/HistoryTestPage.tsx
 import { Box, Typography, Paper, CircularProgress, Alert } from "@mui/material";
 import { MainPictureSection } from "components/sections";
 import { SiteInfo } from "components/sections/types";
 import { TestTypeEnum } from "interfaces";
-// import MixingTest from "../components/mixingAndCompetition/MixingTest";
-// import {
-//   ReadingTest,
-//   ListeningTest,
-//   SpeakingTest,
-//   WritingTest
-// } from "../components/";
+import {
+  HistoryListeningTest as ListeningTest,
+  HistoryMixingTest as MixingTest,
+  HistoryReadingTest as ReadingTest,
+  HistorySpeakingTest as SpeakingTest,
+  HistoryWritingTest as WritingTest,
+} from "../components/historyTest";
 import useHistoryTest from "../hooks/useHistoryTest";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
@@ -20,15 +19,15 @@ export default function HistoryTestPage() {
 
   const {
     test,
-    testParts,
+    submitTest,
+    loading,
+    error,
     readingPart,
     listeningPart,
     speakingPart,
     writingPart,
-    submitTest,
-    loading,
-    error
-  } = useHistoryTest(); // khác useStudentTest ở điểm: KHÔNG tạo mới submitTest
+    testParts
+  } = useHistoryTest();
 
   if (loading) {
     return (
@@ -75,39 +74,39 @@ export default function HistoryTestPage() {
   };
 
   const renderTest = () => {
-    // switch (test.type) {
-    //   case TestTypeEnum.MIXING:
-    //     return (
-    //       <MixingTest mixingTestParts={testParts} submitTestId={submitTest.id} isHistory />
-    //     );
+    switch (test.type) {
+      case TestTypeEnum.MIXING:
+        return (
+          <MixingTest mixingTestParts={testParts} submitTestId={submitTest.id}  />
+        );
 
-    //   case TestTypeEnum.READING:
-    //     return (
-    //       <ReadingTest testReadings={readingPart?.questions || []} submitTestId={submitTest.id} isHistory />
-    //     );
+      case TestTypeEnum.READING:
+        return (
+          <ReadingTest testReadingIds={readingPart?.questions || []} submitTestId={submitTest.id}  />
+        );
 
-    //   case TestTypeEnum.LISTENING:
-    //     return (
-    //       <ListeningTest testListenings={listeningPart?.questions || []} submitTestId={submitTest.id} isHistory />
-    //     );
+      case TestTypeEnum.LISTENING:
+        return (
+          <ListeningTest testListeningIds={listeningPart?.questions || []} submitTestId={submitTest.id}  />
+        );
 
-    //   case TestTypeEnum.SPEAKING:
-    //     return (
-    //       <SpeakingTest testSpeakings={speakingPart?.questions || []} submitTestId={submitTest.id} isHistory />
-    //     );
+      case TestTypeEnum.SPEAKING:
+        return (
+          <SpeakingTest testSpeakingIds={speakingPart?.questions || []} submitTestId={submitTest.id}  />
+        );
 
-    //   case TestTypeEnum.WRITING:
-    //     return (
-    //       <WritingTest testWritings={writingPart?.questions || []} submitTestId={submitTest.id} isHistory />
-    //     );
+      case TestTypeEnum.WRITING:
+        return (
+          <WritingTest testWritingIds={writingPart?.questions || []} submitTestId={submitTest.id}  />
+        );
 
-    //   default:
-    //     return (
-    //       <Typography variant="body1" sx={{ textAlign: "center" }}>
-    //         Unsupported test type or no history available.
-    //       </Typography>
-    //     );
-    // }
+      default:
+        return (
+          <Typography variant="body1" sx={{ textAlign: "center" }}>
+            Unsupported test type or no history available.
+          </Typography>
+        );
+    }
   };
 
   return (
@@ -121,7 +120,7 @@ export default function HistoryTestPage() {
     }}>
       <MainPictureSection siteInfo={siteInfo} />
       <Box sx={{ mt: 4, mb: 6, px: { xs: 2, md: 4 } }}>
-        {/* {renderTest()} */}
+        {renderTest()}
       </Box>
     </Box>
   );
