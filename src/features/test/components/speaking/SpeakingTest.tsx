@@ -16,7 +16,7 @@ import SubmitTestDialogSingle from "../common/SubmitTestDialog";
 import ConfirmSubmitDialog from "../mixingAndCompetition/ConfirmSubmitDialog";
 import IntroducePartTest from "../mixingAndCompetition/InroducePartTest";
 import TestQuestionGrid from "../mixingAndCompetition/TestQuestionGrid";
-import { TestPartTypeEnum, TestSpeaking } from "interfaces";
+import { TestPartTypeEnum } from "interfaces";
 import useSpeakingTest from "../../hooks/useSpeakingTest";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
@@ -39,20 +39,10 @@ export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTe
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   
-  // State cho audios và recording
-  const [isRecording, setIsRecording] = useState<boolean>(false);
-  const [audioURLs, setAudioURLs] = useState<Record<number, string>>({});
-  const [savedRecordings, setSavedRecordings] = useState<Record<number, string>>({});
-  const [submissionIds, setSubmissionIds] = useState<Record<number, number>>({});
-  const [saving, setSaving] = useState<boolean>(false);
-  const [recordingTime, setRecordingTime] = useState<number>(0);
-  const [currentTestId, setCurrentTestId] = useState<number | null>(null);
-  const [speakingTests, setSpeakingTests] = useState<Record<number, TestSpeaking>>({});
   const [speakingQuestions, setSpeakingQuestions] = useState<any[]>([]);
   
   // Refs
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunks = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   
   // Scroll to question if needed
@@ -71,26 +61,32 @@ export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTe
     submissionResult,
     handleNext,
     handlePrevious,
-    handleUpdateAnsweredQuestions,
+    startRecording,
     setQuestionRef,
+    isRecording,
+    recordingTime,
+    audioURLs,
+    hasRecording,
+    saving,
+    savedRecordings,
+    stopRecording,
     setCurrentIndex,
     questionRefs,
     handleOpenConfirmDialog,
     handleCloseConfirmDialog,
     handleSubmitTest,
     closeSubmitDialog,
-    getCurrentTest
+    getCurrentTest,
+    getCurrentQuestion,
   } = useSpeakingTest(testSpeakings, submitTestId);
 
   const totalQuestions = allQuestions.length;
   const answeredQuestions = allQuestions.filter(q => q.isAnswered).length;
-
   useEffect(() => {
     if (questionsList.length > 0) {
 
       const allQuestionsFlat: any[] = [];
-      const testMap: Record<number, TestSpeaking> = {};
-      
+
       questionsList.forEach(item => {
         if (item.questions) {
           const testId = item.id;
@@ -107,12 +103,7 @@ export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTe
         }
       });
       
-      setSpeakingTests(testMap);
       setSpeakingQuestions(allQuestionsFlat);
-      
-      if (allQuestionsFlat.length > 0 && currentIndex < allQuestionsFlat.length) {
-        setCurrentTestId(allQuestionsFlat[currentIndex].parentTestId);
-      }
     }
   }, [questionsList, currentIndex]);
 
@@ -129,13 +120,9 @@ export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTe
       if (questionIndex !== -1) {
         setCurrentIndex(questionIndex);
         
-        // Update currentTestId nếu có speakingQuestions
-        if (speakingQuestions.length > 0 && questionIndex < speakingQuestions.length) {
-          setCurrentTestId(speakingQuestions[questionIndex].parentTestId);
-        }
       }
     }
-  }, [selectedQuestionId, questionRefs, allQuestions, speakingQuestions]);
+  }, [selectedQuestionId, questionRefs, allQuestions, speakingQuestions,setQuestionRef]);
 
   // Recording functions
   const formatTime = (seconds: number): string => {
@@ -144,87 +131,7 @@ export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTe
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      audioChunks.current = [];
-      setRecordingTime(0);
-
-      mediaRecorder.ondataavailable = (event) => {
-        audioChunks.current.push(event.data);
-      };
-
-      mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunks.current, { type: "audio/wav" });
-        const url = URL.createObjectURL(audioBlob);
-        
-        setAudioURLs(prev => ({
-          ...prev,
-          [currentIndex]: url
-        }));
-        
-        saveRecording(audioBlob);
-      };
-
-      mediaRecorderRef.current = mediaRecorder;
-      mediaRecorder.start();
-      setIsRecording(true);
-
-      timerRef.current = setInterval(() => {
-        setRecordingTime(prev => prev + 1);
-      }, 1000);
-    } catch (error) {
-      console.error("Error accessing microphone:", error);
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      if (mediaRecorderRef.current.stream) {
-        mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
-      }
-      setIsRecording(false);
-
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    }
-  };
-
-  const saveRecording = async (audioBlob: Blob) => {
-    if (!speakingQuestions[currentIndex]) return;
-    
-    const questionId = speakingQuestions[currentIndex].id;
-    setSaving(true);
-    
-    try {
-      const reader = new FileReader();
-      reader.readAsDataURL(audioBlob);
-    
-      reader.onloadend = async () => {
-        const base64data = reader.result as string;
-        
-        setSavedRecordings((prev) => ({
-          ...prev,
-          [currentIndex]: base64data
-        }));
-    
-        handleUpdateAnsweredQuestions(questionId, true);
-        setSaving(false);
-      };
-    } catch (error) {
-      console.error("Error saving recording:", error);
-      setSaving(false);
-    }    
-  };
-
-  const hasRecording = (index: number) => {
-    return Boolean(savedRecordings[index] || audioURLs[index]);
-  };
-
+  
   // Clean up on unmount
   useEffect(() => {
     return () => {
@@ -247,10 +154,6 @@ export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTe
     }
     handleNext();
     
-    // Update currentTestId when changing question
-    if (speakingQuestions.length > 0 && currentIndex + 1 < speakingQuestions.length) {
-      setCurrentTestId(speakingQuestions[currentIndex + 1].parentTestId);
-    }
   };
 
   const handlePreviousQuestion = () => {
@@ -259,10 +162,6 @@ export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTe
     }
     handlePrevious();
     
-    // Update currentTestId when changing question
-    if (speakingQuestions.length > 0 && currentIndex - 1 >= 0) {
-      setCurrentTestId(speakingQuestions[currentIndex - 1].parentTestId);
-    }
   };
 
   // Loading state
@@ -339,13 +238,13 @@ export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTe
     );
   }
 
-  // Current data setup
-  const currentQuestion = speakingQuestions[currentIndex];
+
+  const currentQuestion = getCurrentQuestion();
   const audioSource = audioURLs[currentIndex] || savedRecordings[currentIndex] || null;
   const currentTest = getCurrentTest()
   const progress = ((currentIndex + 1) / speakingQuestions.length) * 100;
   
-  // Tính toán questionIndex và questionCount cho TestSpeakingHeader
+
   const questionCount = speakingQuestions.filter(q => q.parentTestId === currentQuestion.parentTestId).length;
   const questionIndex = speakingQuestions.filter(q => 
     q.parentTestId === currentQuestion.parentTestId && 
@@ -374,6 +273,7 @@ export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTe
         {/* Main content */}
         <Grid item xs={12} md={9} lg={8}>
           <Box
+          ref={(el) => setQuestionRef(currentQuestion.id, el as HTMLDivElement)}
             component={Paper} 
             elevation={3} 
             sx={{
@@ -390,6 +290,7 @@ export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTe
             }}
           >
             <LinearProgress 
+            
               variant="determinate" 
               value={progress} 
               sx={{
@@ -405,6 +306,7 @@ export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTe
             {/* Test Speaking Header */}
             {currentTest && (
               <TestSpeakingHeader 
+              
                 test={currentTest}
                 currentQuestionNumber={questionIndex}
                 totalQuestions={questionCount}
@@ -412,6 +314,7 @@ export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTe
             )}
             
             <Box
+       
               sx={{
                 py: 1.5,
                 px: 2,
@@ -424,7 +327,9 @@ export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTe
                 borderBottom: `1px solid ${isDarkMode ? color.gray600 : color.gray200}`,
               }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box 
+           
+              sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography
                   variant="body2"
                   sx={{
@@ -460,11 +365,12 @@ export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTe
                 px: { xs: 2, sm: 3, md: 4 },
               }}
             >
-              {/* Question display */}
-              <QuestionCard 
-                content={currentQuestion.content || ''} 
-                isDarkMode={isDarkMode} 
-              />
+   
+            <QuestionCard 
+              content={currentQuestion.content || ''} 
+              isDarkMode={isDarkMode} 
+            />
+       
               
               {/* Recording controls */}
               <RecordingControl
@@ -477,6 +383,7 @@ export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTe
                 audioSource={audioSource}
                 isDarkMode={isDarkMode}
               />
+             
             </Container>
 
             {/* Navigation footer */}

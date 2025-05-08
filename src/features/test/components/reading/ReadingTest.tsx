@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -41,7 +41,6 @@ interface ReadingTestProps {
 export default function ReadingTest({ testReadings, submitTestId }: ReadingTestProps) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const isExtraSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   
@@ -73,8 +72,7 @@ export default function ReadingTest({ testReadings, submitTestId }: ReadingTestP
   // Stats for confirm dialog and progress display
   const totalQuestions = allQuestions.length;
   const answeredQuestions = allQuestions.filter(q => q.isAnswered).length;
-  const progressPercentage = totalQuestions > 0 ? Math.round((answeredQuestions / totalQuestions) * 100) : 0;
-  
+
   // Scroll to question if needed
   const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(null);
   

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { testSpeakingService, questionService, submitTestAnswerService, submitTestSpeakingService } from "services";
-import { TestSpeaking } from "interfaces";
+import { testSpeakingService, questionService, submitTestAnswerService, submitTestSpeakingService, scoreSpeakingService } from "services";
+import { TestSpeaking, SubmitTestSpeaking, Question } from "interfaces";
 
 interface QuestionItem {
   id: number;
@@ -29,7 +29,6 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [audioURLs, setAudioURLs] = useState<Record<number, string>>({});
   const [savedRecordings, setSavedRecordings] = useState<Record<number, string>>({});
-  const [submissionIds, setSubmissionIds] = useState<Record<number, number>>({});
   const [saving, setSaving] = useState<boolean>(false);
   const [recordingTime, setRecordingTime] = useState<number>(0);
   
@@ -138,7 +137,6 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
               });
               
               setSavedRecordings(recordingsMap);
-              setSubmissionIds(submissionIdsMap);
             }
           } catch (error) {
             console.error("Error fetching previous answers:", error);
@@ -206,7 +204,6 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
           ...prev,
           [currentIndex]: url
         }));
-        
         saveRecording(audioBlob);
       };
 
@@ -255,7 +252,7 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
             submitTestId,
             questionId
           );
-      
+          console.log(existingRes.data);
           if (existingRes?.data?.length > 0) {
             const existing = existingRes.data[0];
         
@@ -263,13 +260,10 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
               ...existing,
               file: base64data
             });
-        
-            setSubmissionIds((prev) => ({
-              ...prev,
-              [currentIndex]: existing.id
-            }));
+   
+            
           } else {
-            const newSubmission = await submitTestSpeakingService.create({
+            await submitTestSpeakingService.create({
               id: Date.now(),
               submitTest_id: submitTestId,
               question_id: questionId,
@@ -279,11 +273,7 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
               comment: 'not submitted',
               status: true,
             });
-        
-            setSubmissionIds((prev) => ({
-              ...prev,
-              [currentIndex]: newSubmission.id
-            }));
+      
           }
       
           setSavedRecordings((prev) => ({
@@ -355,29 +345,90 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
     setIsConfirmDialogOpen(false);
   };
   
+  const convertUrlToFile = async (url: string, fileName: string): Promise<File> => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+  
+    const fileType = blob.type || "audio/mp3"; 
+    const file = new File([blob], fileName, { type: fileType });
+  
+    return file;
+  };
+  
   const handleSubmitTest = async () => {
     try {
       setIsSubmitting(true);
       setIsConfirmDialogOpen(false);
       setIsSubmitDialogOpen(true);
-      
-      // Calculate results - simplified
+  
       const totalQuestions = allQuestions.length;
-      const answeredCount = allQuestions.filter(q => q.isAnswered).length;
-      const correctAnswers = Math.floor(answeredCount * 0.7); // Simplified scoring
-      const score = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
-      
-      // Prepare result
-      const result = {
+      const speakingRes = await testSpeakingService.getByIds(testSpeakingIds);
+      const speakingItems = speakingRes.data || [];
+  
+      const allQuestionIds: number[] = [];
+      for (const item of speakingItems) {
+        if (item.questions) allQuestionIds.push(...item.questions);
+      }
+  
+      const speakingAnswersRes = await submitTestSpeakingService.findBySubmitTestIdAndQuestionIds(
+        submitTestId,
+        allQuestionIds
+      );
+  
+      if (!speakingAnswersRes?.data?.length) {
+        setSubmissionResult({
+          totalQuestions,
+          correctAnswers: 0,
+          score: 0
+        });
+        return;
+      }
+  
+      const questionRes = await questionService.getByIds(allQuestionIds);
+      const questions = questionRes.data || [];
+  
+      let totalScore = 0;
+      let answeredQuestions = 0;
+  
+      for (const answer of speakingAnswersRes.data as SubmitTestSpeaking[]) {
+        if (answer.file) {
+          const matchedQuestion = questions.find(
+            (q: Question) => q.id === answer.question_id
+          );
+          const expectedText = matchedQuestion?.content || "";
+  
+          try {
+            const file = await convertUrlToFile(answer.file, `recording_${answer.id}.mp3`);
+            const scoreResult = await scoreSpeakingService.evaluateSpeechInTopic(file, expectedText);
+  
+            if (scoreResult.data) {
+              const numericScore = parseFloat(scoreResult.data.score);
+  
+              await submitTestSpeakingService.update(answer.id, {
+                ...answer,
+                score: numericScore,
+                transcript: scoreResult.data.transcript,
+                comment: scoreResult.data.feedback
+              });
+  
+              totalScore += numericScore;
+              answeredQuestions++;
+            }
+          } catch (error) {
+            console.error("Error evaluating speaking:", error);
+          }
+        }
+      }
+  
+      const avgScore = answeredQuestions > 0 ? totalScore / answeredQuestions : 0;
+  
+      setSubmissionResult({
         totalQuestions,
-        correctAnswers,
-        score,
-        answeredQuestions: answeredCount
-      };
-      
-      setSubmissionResult(result);
+        correctAnswers: answeredQuestions,
+        score: avgScore
+      });
     } catch (error) {
-      console.error("Error submitting test:", error);
+      console.error("Error submitting speaking test:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -398,6 +449,11 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
     if (!question || !question.parentTestId) return null;
     
     return speakingTests[question.parentTestId] || null;
+  };
+
+  // Function to find the index of a question by its ID
+  const findQuestionIndexById = (questionId: number): number => {
+    return allQuestions.findIndex(q => q.id === questionId);
   };
   
   return {
@@ -420,6 +476,7 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
     handleUpdateAnsweredQuestions,
     setQuestionRef,
     questionRefs,
+    findQuestionIndexById, // Add the new function
     
     // Dialog control
     handleOpenConfirmDialog,
@@ -432,7 +489,7 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
     startRecording,
     stopRecording,
     recordingTime,
-    formatTime,
+    formatTime,   
     saving,
     audioURLs,
     savedRecordings,

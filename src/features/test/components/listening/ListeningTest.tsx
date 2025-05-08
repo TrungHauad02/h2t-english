@@ -5,7 +5,6 @@ import {
   Paper,
   CircularProgress,
   Grid,
-  Stack,
   Collapse,
   IconButton,
   Divider,
@@ -29,7 +28,7 @@ import PauseIcon from "@mui/icons-material/Pause";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 interface ListeningTestProps {
   testListenings: number[];
   submitTestId: number;
@@ -41,13 +40,13 @@ export default function ListeningTest({ testListenings, submitTestId }: Listenin
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   
-  // Map of audio expanded states - all initialized to true to show audio immediately
+
   const [audioExpandedMap, setAudioExpandedMap] = useState<Record<number, boolean>>({});
-  // Map of audio playing states
+
   const [isPlayingMap, setIsPlayingMap] = useState<Record<number, boolean>>({});
-  // Map of progress for each audio
+
   const [progressMap, setProgressMap] = useState<Record<number, number>>({});
-  // Map of audio refs
+
   const audioRefs = useRef<Record<number, HTMLAudioElement | null>>({});
   
   const {
@@ -96,7 +95,7 @@ export default function ListeningTest({ testListenings, submitTestId }: Listenin
     }
   }, [questionsList]);
   
-  // Handle audio toggle
+
   const toggleAudio = (index: number) => {
     setAudioExpandedMap(prev => ({
       ...prev,
@@ -104,7 +103,7 @@ export default function ListeningTest({ testListenings, submitTestId }: Listenin
     }));
   };
   
-  // Handle play/pause
+
   const togglePlay = (index: number) => {
     const audio = audioRefs.current[index];
     if (!audio) return;
@@ -116,7 +115,7 @@ export default function ListeningTest({ testListenings, submitTestId }: Listenin
         [index]: false
       }));
     } else {
-      // Pause all other audio when playing this one
+ 
       Object.keys(audioRefs.current).forEach(key => {
         const keyNum = Number(key);
         if (keyNum !== index && audioRefs.current[keyNum]) {
@@ -487,11 +486,85 @@ export default function ListeningTest({ testListenings, submitTestId }: Listenin
           }}
         >
           <Box sx={{ mb: 3 }}>
+            <Paper
+              elevation={2}
+              sx={{
+                p: 2,
+                borderRadius: '1rem',
+                backgroundColor: isDarkMode 
+                  ? 'rgba(31, 41, 55, 0.7)' 
+                  : 'rgba(255, 255, 255, 0.9)',
+                boxShadow: isDarkMode 
+                  ? '0 4px 12px rgba(0, 0, 0, 0.2)' 
+                  : '0 4px 12px rgba(0, 0, 0, 0.1)',
+                mb: 3
+              }}
+            >
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                mb: 1
+              }}>
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    fontWeight: 600,
+                    color: isDarkMode ? color.teal300 : color.teal700,
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
+                >
+                  <HelpOutlineIcon fontSize="small" sx={{ mr: 1 }} />
+                  Navigation
+                </Typography>
+              </Box>
+              
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: isDarkMode ? color.gray300 : color.gray700,
+                  mb: 1
+                }}
+              >
+                Use the grid below to navigate between questions. Click on a question number to jump to it.
+              </Typography>
+              
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                mt: 2,
+                mb: 1
+              }}>
+                <Box sx={{ 
+                  width: '20px', 
+                  height: '20px', 
+                  borderRadius: '50%', 
+                  bgcolor: isDarkMode ? color.teal700 : color.teal600,
+                  mr: 1
+                }} />
+                <Typography variant="body2" sx={{ mr: 2, color: isDarkMode ? color.gray300 : color.gray600 }}>
+                  Answered
+                </Typography>
+                
+                <Box sx={{ 
+                  width: '20px', 
+                  height: '20px', 
+                  borderRadius: '50%', 
+                  bgcolor: isDarkMode ? color.gray700 : color.gray300,
+                  mr: 1
+                }} />
+                <Typography variant="body2" sx={{ color: isDarkMode ? color.gray300 : color.gray600 }}>
+                  Not yet answered
+                </Typography>
+              </Box>
+            </Paper>
+            
             <TestQuestionGrid 
               questionItems={allQuestions.map(q => ({
                 serialNumber: q.serialNumber,
                 questionId: q.id,
-                partType: TestPartTypeEnum.LISTENING,
+                partType: TestPartTypeEnum.READING,
                 isAnswered: q.isAnswered
               }))}
               onQuestionSelect={(item) => {

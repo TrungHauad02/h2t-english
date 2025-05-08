@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Box } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import { Test, CompetitionTestFilter } from "interfaces";
 import { competitionTestService } from "services";
 import { WEPaginationSelect } from "components/pagination";
-import LoadingSkeleton from "../common/LoadingSkeleton"; 
+import LoadingSkeleton from "../common/LoadingSkeleton";
+import CompetitionTestItem from "./CompetitionTestItem";
 
 interface ListCompetitionTestProps {
   searchQuery?: string;
@@ -66,22 +67,28 @@ export default function ListCompetitionTest({ searchQuery = "" }: ListCompetitio
 
   return (
     <Box>
-
       <Box sx={{ margin: { xs: "1rem", md: "0 5% 2rem" } }}>
         {loading ? (
           <LoadingSkeleton isLoading={true} cardType="route" />
         ) : (
           <>
             {tests.length > 0 && (
-              <Box sx={{ mt: 3, mb: 2, display: "flex", justifyContent: "center" }}>
-                <WEPaginationSelect
-                  page={page + 1}
-                  totalPage={totalPages}
-                  itemsPerPage={testsPerPage}
-                  onPageChange={handleChangePage}
-                  onItemsPerPageChange={handleItemsPerPageChange}
-                />
-              </Box>
+              <>
+                <Grid container spacing={3}>
+                  {tests.map((test) => (
+                    <CompetitionTestItem key={test.id} test={test as any} />
+                  ))}
+                </Grid>
+                <Box sx={{ mt: 3, mb: 2, display: "flex", justifyContent: "center" }}>
+                  <WEPaginationSelect
+                    page={page + 1}
+                    totalPage={totalPages}
+                    itemsPerPage={testsPerPage}
+                    onPageChange={handleChangePage}
+                    onItemsPerPageChange={handleItemsPerPageChange}
+                  />
+                </Box>
+              </>
             )}
           </>
         )}

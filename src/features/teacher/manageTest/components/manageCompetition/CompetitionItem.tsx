@@ -119,7 +119,7 @@ export default function CompetitionItem({
   };
 
   const handleViewDetail = () => {
-    navigate(`/teacher/competitions/${competition.id}`);
+    navigate(`/teacher-advance/competitions/${competition.id}`);
   };
 
   // Dynamic colors

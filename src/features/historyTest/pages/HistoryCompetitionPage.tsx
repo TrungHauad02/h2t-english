@@ -2,20 +2,19 @@ import React from "react";
 import { Box, Typography, Paper, CircularProgress } from "@mui/material";
 import { MainPictureSection } from "components/sections";
 import { SiteInfo } from "components/sections/types";
-import CompetitionTest from "../components/mixingAndCompetition/CompetitionTest";
+import HistoryCompetitionTest from "../components/historyTest/HistoryCompetitionTest";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import useCompetitionTest from "../hooks/useCompetitionTest";
-export default function CompetitionTestPage() {
+import useHistoryCompetitionTest from "../hooks/useHistoryCompetitionTest";
+
+export default function HistoryCompetitionPage() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  
 
   const {
     competition,
     loading,
-    error
-  } = useCompetitionTest();
+  } = useHistoryCompetitionTest();
 
   if (loading) {
     return (
@@ -45,13 +44,13 @@ export default function CompetitionTestPage() {
             fontWeight: 500
           }}
         >
-          Loading competition...
+          Loading competition history...
         </Typography>
       </Box>
     );
   }
 
-  if (error || !competition) {
+  if (!competition) {
     return (
       <Box 
         component={Paper} 
@@ -68,7 +67,7 @@ export default function CompetitionTestPage() {
         }}
       >
         <Typography variant="h5" gutterBottom>
-          {error || "Competition not found"}
+          { "Competition history not found"}
         </Typography>
         <Typography variant="body1">
           Please check the competition ID and try again.
@@ -79,8 +78,8 @@ export default function CompetitionTestPage() {
 
   const siteInfo: SiteInfo = {
     bgUrl:
-    "http://138.2.91.94:9000/h2t-english/static%2Fmain_picture_competition.jpg",
-    title: competition.title || "Competition",
+      "http://138.2.91.94:9000/h2t-english/static%2Fmain_picture_competition.jpg",
+    title: competition.title || "Competition History",
   };
 
   return (
@@ -103,7 +102,7 @@ export default function CompetitionTestPage() {
           px: { xs: 2, md: 4 }
         }}
       >
-        <CompetitionTest />
+        <HistoryCompetitionTest />
       </Box>
     </Box>
   );

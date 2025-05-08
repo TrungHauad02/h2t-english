@@ -101,22 +101,12 @@ export function WritingSection({ partId, testItemIds }: WritingSectionProps) {
           questions: newTestWritingIds,
         });
         listTestIdsRef.current = newTestWritingIds;
-      }
-      
-      // Save status changes
-      const statusKeys = Object.keys(pendingStatusChangesRef.current);
-      if (statusKeys.length > 0) {
-        for (const idStr of statusKeys) {
-          const id = parseInt(idStr);
-          const writingToUpdate = writings.find(w => w.id === id);
-          if (writingToUpdate) {
-            await testWritingService.update(id, {
-              ...writingToUpdate,
-              status: pendingStatusChangesRef.current[id]
-            });
-          }
+        const updatedWritings = writings.filter(w => w.status !== undefined);
+        for (const writing of updatedWritings) {
+          await testWritingService.patch(writing.id, { status: writing.status });
         }
       }
+      
       
       // Reset change trackers
       setHasMadeChanges(false);

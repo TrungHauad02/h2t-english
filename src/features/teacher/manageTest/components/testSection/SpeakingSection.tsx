@@ -139,22 +139,12 @@ export function SpeakingSection({ partId, testItemIds }: SpeakingSectionProps) {
           questions: newTestSpeakingIds,
         });
         listTestIdsRef.current = newTestSpeakingIds;
-      }
-      
-      // Save status changes
-      const statusKeys = Object.keys(pendingStatusChangesRef.current);
-      if (statusKeys.length > 0) {
-        for (const idStr of statusKeys) {
-          const id = parseInt(idStr);
-          const speakingToUpdate = speakings.find(s => s.id === id);
-          if (speakingToUpdate) {
-            await testSpeakingService.update(id, {
-              ...speakingToUpdate,
-              status: pendingStatusChangesRef.current[id]
-            });
-          }
+        const updatedSpeakings = speakings.filter(s => s.status !== undefined);
+        for (const speaking of updatedSpeakings) {
+          await testSpeakingService.patch(speaking.id, { status: speaking.status });
         }
       }
+      
       
       // Reset change trackers
       setHasMadeChanges(false);

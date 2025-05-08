@@ -119,15 +119,13 @@ export function ReadingSection({ partId, testItemIds }: ReadingSectionProps) {
           questions: newTestReadingIds,
         });
         listTestIdsRef.current = newTestReadingIds;
+        const updatedReadings = readings.filter(r => r.status !== undefined);
+          for (const reading of updatedReadings) {
+            await testReadingService.patch(reading.id, { status: reading.status });
+          }
+
       }
       
-      // Save status changes if needed
-      const updatedReadings = readings.filter(r => r.status !== undefined);
-      for (const reading of updatedReadings) {
-        await testReadingService.update(reading.id, { ...reading });
-      }
-      
-      // Reset change trackers
       setHasMadeChanges(false);
       
       // Show success message
