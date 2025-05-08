@@ -1,9 +1,14 @@
 import { Box, Container, Grid } from "@mui/material";
-import { learningRoutes } from "../services/mockData";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import FadeIn from "./route/FadeInRoute";
-import { RouteCard, useRouteSection, RouteTitle, RouteView, RouteTab } from "./route";
+import {
+  RouteCard,
+  useRouteSection,
+  RouteTitle,
+  RouteView,
+  RouteTab,
+} from "./route";
 
 export default function RoutesSection() {
   const { isDarkMode } = useDarkMode();
@@ -52,9 +57,7 @@ export default function RoutesSection() {
 
       <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
         <FadeIn duration={1000}>
-          <RouteTitle
-            handleExploreAll={hooks.handleExploreAll}
-            />
+          <RouteTitle handleExploreAll={hooks.handleExploreAll} />
         </FadeIn>
 
         <RouteTab
@@ -64,21 +67,15 @@ export default function RoutesSection() {
         />
 
         <Grid container spacing={4}>
-          {learningRoutes.map((route, index) => (
+          {hooks.learningRoutes.map((route, index) => (
             <Grid item key={route.id} xs={12} sm={6} lg={4}>
-              <RouteCard
-                route={route}
-                owner={hooks.getRouteOwner(route.ownerId)}
-                delay={150 * index}
-              />
+              <RouteCard route={route} delay={150 * index} />
             </Grid>
           ))}
         </Grid>
 
         {/* View more button at bottom with enhanced styling */}
-        <RouteView
-          handleExploreAll={hooks.handleExploreAll}
-        />
+        <RouteView handleExploreAll={hooks.handleExploreAll} />
       </Container>
     </Box>
   );
