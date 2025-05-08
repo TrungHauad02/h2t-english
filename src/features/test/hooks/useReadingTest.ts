@@ -172,17 +172,15 @@ const useReadingTest = (testReadingIds: number[], submitTestId: number) => {
         );
         
         if (answersRes?.data?.length) {
-          // Lấy thông tin chi tiết về câu hỏi để kiểm tra đáp án đúng
+
           const questionRes = await questionService.getByIds(questionIds);
           const questions = questionRes.data || [];
-          
-          // Tạo map câu hỏi để tra cứu nhanh
+
           const questionMap: Record<number, any> = {};
           for (const q of questions) {
             questionMap[q.id] = q;
           }
-          
-          // Kiểm tra từng câu trả lời
+
           for (const answer of answersRes.data) {
             const questionId = answer.question_id;
             const answerId = answer.answer_id;
@@ -200,10 +198,9 @@ const useReadingTest = (testReadingIds: number[], submitTestId: number) => {
         }
       }
       
-      // Tính điểm dựa trên số câu trả lời đúng
+
       const score = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
       
-      // Kết quả chi tiết
       const result = {
         totalQuestions,
         correctAnswers,

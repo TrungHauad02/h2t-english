@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { testWritingService, submitTestAnswerService, submitTestWritingService } from "services";
-import { TestWriting } from "interfaces";
+import { testWritingService, submitTestWritingService, scoreWritingService } from "services";
+import { TestWriting, SubmitTestWriting } from "interfaces";
 
 interface QuestionItem {
   id: number;
@@ -14,7 +14,6 @@ interface QuestionItem {
 const useWritingTest = (testWritingIds: number[], submitTestId: number) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [questionsList, setQuestionsList] = useState<any[]>([]);
-  const [writingPrompts, setWritingPrompts] = useState<Record<number, TestWriting>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<boolean>(false);
   const [allQuestions, setAllQuestions] = useState<QuestionItem[]>([]);
@@ -23,38 +22,24 @@ const useWritingTest = (testWritingIds: number[], submitTestId: number) => {
   const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<any>(null);
-  
-  // Writing states
   const [essays, setEssays] = useState<Record<number, string>>({});
   const [saving, setSaving] = useState<boolean>(false);
   const [essayIds, setEssayIds] = useState<Record<number, number>>({});
-  
-  // Refs for scrolling to selected question
   const questionRefs = useRef<Record<number, HTMLDivElement | null>>({});
-  
+
   useEffect(() => {
     async function fetchQuestions() {
       try {
         setLoading(true);
         setError(false);
-        
-        // Fetch writing items first
         const writingItemsResponse = await testWritingService.getByIds(testWritingIds);
         const writingItems = writingItemsResponse.data || [];
-        
-        // Store writing prompts in a map for easy reference
         const promptsMap: Record<number, TestWriting> = {};
-        writingItems.forEach((item : TestWriting) => {
-          promptsMap[item.id] = item;
-        });
-        setWritingPrompts(promptsMap);
-        
+        writingItems.forEach((item: TestWriting) => promptsMap[item.id] = item);
         let currentSerial = 1;
         const tempAllQuestions: QuestionItem[] = [];
-         const fetchedWritings: any[] = [];
+        const fetchedWritings: any[] = [];
 
-        
-        // Process each writing prompt
         for (const writing of writingItems) {
           tempAllQuestions.push({
             id: writing.id,
@@ -64,7 +49,7 @@ const useWritingTest = (testWritingIds: number[], submitTestId: number) => {
             minWords: writing.minWords || 200,
             maxWords: writing.maxWords || 500
           });
-          
+
           fetchedWritings.push({
             id: writing.id,
             topic: writing.topic,
@@ -73,65 +58,31 @@ const useWritingTest = (testWritingIds: number[], submitTestId: number) => {
             startSerial: currentSerial,
             endSerial: currentSerial,
           });
-          
+
           currentSerial++;
         }
-        
-        // Load saved essays
-        if (submitTestId && tempAllQuestions.length > 0) {
-          const writingIds = tempAllQuestions.map(q => q.id);
-          try {
-            // Check for regular answers
-            const answersRes = await submitTestAnswerService.findBySubmitTestIdAndQuestionIds(
-              submitTestId,
-              writingIds
-            );
-            
-            if (answersRes?.data) {
-              const answeredMap: Record<number, boolean> = {};
-              answersRes.data.forEach((answer: any) => {
-                answeredMap[answer.question_id] = true;
-              });
-              
-              // Update the isAnswered flag
-              tempAllQuestions.forEach(q => {
-                if (answeredMap[q.id]) {
-                  q.isAnswered = true;
-                }
-              });
+
+        const writingIds = tempAllQuestions.map(q => q.id);
+        const existingEssays = await submitTestWritingService.findBySubmitTestIdAndTestWritingIds(submitTestId, writingIds);
+        if (existingEssays?.data) {
+          const savedEssays: Record<number, string> = {};
+          const savedEssayIds: Record<number, number> = {};
+
+          existingEssays.data.forEach((essay: any) => {
+            const writingIndex = tempAllQuestions.findIndex(item => item.id === essay.testWriting_id);
+            if (writingIndex !== -1) {
+              savedEssays[writingIndex] = essay.content || '';
+              savedEssayIds[writingIndex] = essay.id;
+              if (essay.content && essay.content.trim() !== '') {
+                tempAllQuestions[writingIndex].isAnswered = true;
+              }
             }
-            
-            // Load existing essay content
-            const existingEssays = await submitTestWritingService.findBySubmitTestIdAndTestWritingIds(
-              submitTestId, 
-              writingIds
-            );
-            
-            if (existingEssays?.data) {
-              const savedEssays: Record<number, string> = {};
-              const savedEssayIds: Record<number, number> = {};
-              
-              existingEssays.data.forEach((essay: any) => {
-                const writingIndex = fetchedWritings.findIndex(item => item.id === essay.testWriting_id);
-                if (writingIndex !== -1) {
-                  savedEssays[writingIndex] = essay.content || '';
-                  savedEssayIds[writingIndex] = essay.id;
-                  
-                  // Mark as answered if content exists
-                  if (essay.content && essay.content.trim() !== '') {
-                    tempAllQuestions[writingIndex].isAnswered = true;
-                  }
-                }
-              });
-              
-              setEssays(savedEssays);
-              setEssayIds(savedEssayIds);
-            }
-          } catch (error) {
-            console.error("Error fetching previous essays:", error);
-          }
+          });
+
+          setEssays(savedEssays);
+          setEssayIds(savedEssayIds);
         }
-        
+
         setQuestionsList(fetchedWritings);
         setAllQuestions(tempAllQuestions);
       } catch (error) {
@@ -150,151 +101,92 @@ const useWritingTest = (testWritingIds: number[], submitTestId: number) => {
     }
   }, [testWritingIds, submitTestId]);
 
-  // Update time counter
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeUsed(prev => prev + 1);
-    }, 1000);
-    
+    const timer = setInterval(() => setTimeUsed(prev => prev + 1), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // Save essay with debounce
-  const debouncedSaveEssay = useCallback(
-    async (index: number, content: string) => {
-      if (!allQuestions[index]) return;
-
-      const writingId = allQuestions[index].id;
-      
-      setSaving(true);
-      try {
-        if (essayIds[index]) {
-          await submitTestWritingService.patch(essayIds[index], {
-            content: content
-          });
-        } else {
-          const newEssay = await submitTestWritingService.create({
-            id: Date.now(),
-            submitTest_id: submitTestId,
-            testWriting_id: writingId,
-            content: content,
-            comment: "not submitted",
-            score: 0,
-            status: true
-          });
-          
-          setEssayIds(prev => ({
-            ...prev,
-            [index]: newEssay.id
-          }));
-        }
-        
-        // Mark question as answered if content exists
-        if (content && content.trim() !== '') {
-          handleUpdateAnsweredQuestions(writingId, true);
-        } else {
-          handleUpdateAnsweredQuestions(writingId, false);
-        }
-      } catch (error) {
-        console.error("Error saving essay:", error);
-      } finally {
-        setSaving(false);
+  const debouncedSaveEssay = useCallback(async (index: number, content: string) => {
+    if (!allQuestions[index]) return;
+    const writingId = allQuestions[index].id;
+    setSaving(true);
+    try {
+      if (essayIds[index]) {
+        await submitTestWritingService.patch(essayIds[index], { content });
+      } else {
+        const newEssay = await submitTestWritingService.create({
+          id: Date.now(),
+          submitTest_id: submitTestId,
+          testWriting_id: writingId,
+          content,
+          comment: "not submitted",
+          score: 0,
+          status: true
+        });
+        setEssayIds(prev => ({ ...prev, [index]: newEssay.id }));
       }
-    },
-    [allQuestions, essayIds, submitTestId]
-  );
+      handleUpdateAnsweredQuestions(writingId, !!content.trim());
+    } catch (error) {
+      console.error("Error saving essay:", error);
+    } finally {
+      setSaving(false);
+    }
+  }, [allQuestions, essayIds, submitTestId]);
 
-  // Handle essay change
   const handleEssayChange = (content: string) => {
-    setEssays({
-      ...essays,
-      [currentIndex]: content
-    });
-    
+    setEssays({ ...essays, [currentIndex]: content });
     debouncedSaveEssay(currentIndex, content);
   };
 
-  // Word count helper
-  const getWordCount = (text: string): number => {
-    return text.trim().split(/\s+/).filter(word => word !== '').length;
-  };
-
-  const getCurrentEssay = (): string => {
-    return essays[currentIndex] || '';
-  };
-
-  // Navigation functions
-  const handleNext = () => {
-    if (currentIndex < questionsList.length - 1) {
-      setCurrentIndex(prevIndex => prevIndex + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(prevIndex => prevIndex - 1);
-    }
-  };
-
   const handleUpdateAnsweredQuestions = (questionId: number, isAnswered: boolean) => {
-    setAllQuestions(prev => 
-      prev.map(q => 
-        q.id === questionId 
-          ? { ...q, isAnswered } 
-          : q
-      )
-    );
-  };
-  
-  const setQuestionRef = (id: number, element: HTMLDivElement | null) => {
-    questionRefs.current[id] = element;
-  };
-  
-  const handleOpenConfirmDialog = () => {
-    setIsConfirmDialogOpen(true);
+    setAllQuestions(prev => prev.map(q => q.id === questionId ? { ...q, isAnswered } : q));
   };
 
-  const handleCloseConfirmDialog = () => {
-    setIsConfirmDialogOpen(false);
-  };
-  
   const handleSubmitTest = async () => {
     try {
       setIsSubmitting(true);
       setIsConfirmDialogOpen(false);
       setIsSubmitDialogOpen(true);
-      
-      // Calculate results - simplified
       const totalQuestions = allQuestions.length;
-      const answeredCount = allQuestions.filter(q => q.isAnswered).length;
-      const correctAnswers = Math.floor(answeredCount * 0.7); // Simplified scoring
-      const score = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
-      
-      // Prepare result
-      const result = {
+      const testWritingRes = await testWritingService.getByIds(testWritingIds);
+      const testWritings = testWritingRes.data || [];
+      const writingRes = await submitTestWritingService.findBySubmitTestIdAndTestWritingIds(submitTestId, testWritingIds);
+      let totalScore = 0;
+      let answeredQuestions = 0;
+
+      for (const answer of writingRes.data as SubmitTestWriting[]) {
+        if (answer.content && answer.content.trim()) {
+          const testWriting = testWritings.find((tw: TestWriting) => tw.id === answer.testWriting_id);
+          if (testWriting?.topic) {
+            const scoreResult = await scoreWritingService.scoreWriting(answer.content, testWriting.topic);
+            if (scoreResult.data) {
+              const numericScore = parseFloat(scoreResult.data.score);
+              await submitTestWritingService.update(answer.id, {
+                ...answer,
+                score: numericScore,
+                comment: scoreResult.data.feedback || ""
+              });
+              totalScore += numericScore;
+              answeredQuestions++;
+            }
+          }
+        }
+      }
+
+      const avgScore = answeredQuestions > 0 ? totalScore / answeredQuestions : 0;
+
+      setSubmissionResult({
         totalQuestions,
-        correctAnswers,
-        score,
-        answeredQuestions: answeredCount
-      };
-      
-      setSubmissionResult(result);
+        correctAnswers: answeredQuestions,
+        score: avgScore
+      });
     } catch (error) {
       console.error("Error submitting test:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
-  
-  const closeSubmitDialog = () => {
-    setIsSubmitDialogOpen(false);
-  };
-  
-  // Get current prompt
-  const getCurrentPrompt = () => {
-    return allQuestions[currentIndex] || null;
-  };
-  
+
   return {
     currentIndex,
     questionsList,
@@ -307,26 +199,21 @@ const useWritingTest = (testWritingIds: number[], submitTestId: number) => {
     isConfirmDialogOpen,
     submissionResult,
     setCurrentIndex,
-    // Question navigation
-    handleNext,
-    handlePrevious,
+    handleNext: () => setCurrentIndex(prev => Math.min(prev + 1, questionsList.length - 1)),
+    handlePrevious: () => setCurrentIndex(prev => Math.max(prev - 1, 0)),
     handleUpdateAnsweredQuestions,
-    setQuestionRef,
+    setQuestionRef: (id: number, element: HTMLDivElement | null) => questionRefs.current[id] = element,
     questionRefs,
-    
-    // Dialog control
-    handleOpenConfirmDialog,
-    handleCloseConfirmDialog,
+    handleOpenConfirmDialog: () => setIsConfirmDialogOpen(true),
+    handleCloseConfirmDialog: () => setIsConfirmDialogOpen(false),
     handleSubmitTest,
-    closeSubmitDialog,
-    
-    // Writing functions
+    closeSubmitDialog: () => setIsSubmitDialogOpen(false),
     essays,
     handleEssayChange,
     saving,
-    getWordCount,
-    getCurrentEssay,
-    getCurrentPrompt
+    getWordCount: (text: string) => text.trim().split(/\s+/).filter(Boolean).length,
+    getCurrentEssay: () => essays[currentIndex] || '',
+    getCurrentPrompt: () => allQuestions[currentIndex] || null
   };
 };
 
