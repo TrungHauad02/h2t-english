@@ -124,12 +124,10 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
           questions: newTestListeningIds,
         });
         listTestIdsRef.current = newTestListeningIds;
-      }
-      
-      // Save status changes if needed
-      const updatedListenings = listenings.filter(l => l.status !== undefined);
-      for (const listening of updatedListenings) {
-        await testListeningService.update(listening.id, { ...listening });
+        const updatedListenings = listenings.filter(l => l.status !== undefined);
+        for (const listening of updatedListenings) {
+          await testListeningService.patch(listening.id, { status: listening.status });
+        }
       }
       
       // Reset change trackers
