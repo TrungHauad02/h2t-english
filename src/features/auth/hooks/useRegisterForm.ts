@@ -51,9 +51,9 @@ export const useRegisterForm = () => {
       };
 
       // Gọi userService để tạo tài khoản
-      const response = await userService.create(userData);
+      await userService.create(userData);
 
-      toast.success(response.data.message);
+      toast.success("Registration successful!");
       navigate("/login");
     } catch (error: any) {
       // Handle error

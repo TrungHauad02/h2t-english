@@ -1,12 +1,32 @@
 import { Box, Container, Grid } from "@mui/material";
-import { featuredTests } from "../services/mockData";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { TestTitle, TestCard } from "./test";
+import { useEffect, useState } from "react";
+import { Test } from "interfaces";
+import { testService } from "services";
+import { toast } from "react-toastify";
 
 export default function TestsSection() {
   const { isDarkMode } = useDarkMode();
   const colors = useColor();
+  const [tests, setTests] = useState<Test[]>([]);
+
+  useEffect(() => {
+    const fetchTests = async () => {
+      try {
+        const resData = await testService.getTestsByTeacher(1, 3, {
+          sortBy: "-createdAt",
+          status: true,
+        });
+        setTests(resData.data.content);
+      } catch (error) {
+        toast.error("Fail to fetch tests data");
+      }
+    };
+
+    fetchTests();
+  }, []);
 
   return (
     <Box
@@ -35,7 +55,7 @@ export default function TestsSection() {
       <Container maxWidth="lg">
         <TestTitle />
         <Grid container spacing={4}>
-          {featuredTests.map((test) => (
+          {tests.map((test) => (
             <Grid item key={test.id} xs={12} sm={6} md={4}>
               <TestCard test={test} />
             </Grid>
