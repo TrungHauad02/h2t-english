@@ -116,6 +116,7 @@ export default function RouteCard({ route, delay }: RouteCardProps) {
             totalNodes={route.routeNodes.length}
             handleShowMore={hooks.handleShowMore}
             handleViewDetail={hooks.handleViewDetail}
+            routeId={route.id}
           />
         </CardContent>
       </Card>
