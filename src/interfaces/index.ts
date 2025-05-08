@@ -10,6 +10,13 @@ export default interface BaseEntity {
   updatedAt?: Date;
 }
 
+export interface AIResponse extends BaseEntity {
+  request: string;
+  response: string;
+  evaluate: string;
+  userId: number; 
+}
+
 export type QuestionSupportType =
   | "topics"
   | "grammars"

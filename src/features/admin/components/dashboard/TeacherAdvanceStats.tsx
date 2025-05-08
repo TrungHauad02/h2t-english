@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Paper, Typography, Skeleton, Divider } from "@mui/material";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
