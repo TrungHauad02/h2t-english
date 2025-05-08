@@ -101,6 +101,16 @@ const getRoutesByTeacherId = async (
   }
 };
 
+const getLongestRoute = async () => {
+  try {
+    const response = await apiClient.get("/routes/longest");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching longest route:", error);
+    throw error;
+  }
+};
+
 const create = async (routeData: Route) => {
   try {
     // Use fileHandlerService to upload image
@@ -218,4 +228,5 @@ export const routeService = {
   patch,
   remove,
   verify,
+  getLongestRoute,
 };
