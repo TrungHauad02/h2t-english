@@ -9,7 +9,7 @@ import {
   QuoteGrid,
   SectionHeader,
   QuoteLoading,
-} from "./testimonialsSection";
+} from "./testimonialsSection/";
 
 export default function TestimonialsSection() {
   const { isDarkMode } = useDarkMode();

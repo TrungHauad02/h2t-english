@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Grid, Stack, Typography } from "@mui/material";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";

@@ -11,6 +11,10 @@ export interface BaseFilter {
   endUpdatedAt?: Date;
 }
 
+export interface AIResponseFilter extends BaseFilter {
+  userId?: number;
+}
+
 export interface UserFilter extends BaseFilter {
   name?: string;
   email?: string;
