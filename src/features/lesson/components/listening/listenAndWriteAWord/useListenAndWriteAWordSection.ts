@@ -9,7 +9,7 @@ interface Sentence {
   audio: string;
   serial: number;
 }
-
+// TODO: Connect to backend
 export default function useListenAndWriteAWordSection() {
   const mockData: ListenAndWriteAWord[] = [
     {

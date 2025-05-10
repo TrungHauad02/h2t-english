@@ -53,19 +53,36 @@ const remove = async (id: number) => {
 
 const getTestStats = async (userId: number): Promise<SubmitTestStats> => {
   try {
-    const response = await apiClient.get(`/submit-competitions/stats?userId=${userId}`);
+    const response = await apiClient.get(
+      `/submit-competitions/stats?userId=${userId}`
+    );
     return response.data;
   } catch (error) {
     console.error("Error retrieving submit test stats:", error);
     throw error;
   }
 };
-const findByIdAndUserIdAndStatusFalse = async (testId: number, userId: number): Promise<{ data: SubmitCompetition }> => {
+const findByIdAndUserIdAndStatusFalse = async (
+  testId: number,
+  userId: number
+): Promise<{ data: SubmitCompetition }> => {
   try {
-    const response = await apiClient.get(`/submit-competitions/by-test-and-user?testId=${testId}&userId=${userId}`);
+    const response = await apiClient.get(
+      `/submit-competitions/by-test-and-user?testId=${testId}&userId=${userId}`
+    );
     return response.data;
   } catch (error) {
     console.error("Error finding SubmitTest:", error);
+    throw error;
+  }
+};
+
+const getLeaderBoard = async () => {
+  try {
+    const response = await apiClient.get(`/submit-competitions/leaderboard`);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting leader board:", error);
     throw error;
   }
 };
@@ -78,4 +95,5 @@ export const submitCompetitionService = {
   remove,
   getTestStats,
   findByIdAndUserIdAndStatusFalse,
+  getLeaderBoard,
 };

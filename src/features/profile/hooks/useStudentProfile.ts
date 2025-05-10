@@ -1,69 +1,89 @@
+import useAuth from "hooks/useAuth";
 import { User } from "interfaces";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { userService } from "services";
 
+// TODO: Fix format date
 export default function useStudentProfile() {
-    const [data, setData] = useState<User | null>(null);
-    const [isEditMode, setIseditMode] = useState(false);
-    const [formData, setFormData] = useState<User | null>(null);
+  const { userId } = useAuth();
+  const [data, setData] = useState<User | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [formData, setFormData] = useState<User | null>(null);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (formData) {
-            setFormData({
-                ...formData,
-                [e.target.name]: e.target.value,
-            });
+  useEffect(() => {
+    try {
+      const fetchData = async () => {
+        if (userId) {
+          const resData = await userService.findById(parseInt(userId));
+          setData(resData.data);
+          setFormData(resData.data);
         }
-    };
+      };
+      fetchData();
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }, [userId]);
 
-    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (formData) {
-            const selectedDate = e.target.value;
-            const [year, month, day] = selectedDate.split("-").map(Number);
-            setFormData({
-                ...formData,
-                dateOfBirth: new Date(year, month - 1, day ),
-            });
-        }
-    }           
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (formData) {
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value,
+      });
+    }
+  };
 
-    const handleAvatarChange = (base64: string) => {
-        if (formData) {
-            setFormData({
-                ...formData,
-                avatar: base64,
-            });
-        }
-    };
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (formData) {
+      const selectedDate = e.target.value;
+      const [year, month, day] = selectedDate.split("-").map(Number);
+      setFormData({
+        ...formData,
+        dateOfBirth: new Date(year, month - 1, day),
+      });
+    }
+  };
 
-    const handleSave = () => {
-        if (formData) {
-            setData(formData);
-            // Here you would normally call an API to save the data
-            setIseditMode(false);
-        }
-    };
+  const handleAvatarChange = (base64: string) => {
+    if (formData) {
+      setFormData({
+        ...formData,
+        avatar: base64,
+      });
+    }
+  };
 
-    const handleCancel = () => {
-        setFormData(data);
-        setIseditMode(false);
-    };  
+  const handleSave = () => {
+    if (formData) {
+      setData(formData);
+      // TODO: Connect Api
+      // Here you would normally call an API to save the data
+      setIsEditMode(false);
+    }
+  };
 
-    const formatDate = (date: Date) => {
-        return date.toLocaleDateString("en-CA");
-    };
+  const handleCancel = () => {
+    setFormData(data);
+    setIsEditMode(false);
+  };
 
-    return {
-        data,
-        setData,
-        isEditMode,
-        setIseditMode,
-        formData,
-        setFormData,
-        handleChange,
-        handleDateChange,
-        handleAvatarChange,
-        handleSave,
-        handleCancel,
-        formatDate
-    };
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString("en-CA");
+  };
+
+  return {
+    data,
+    setData,
+    isEditMode,
+    setIsEditMode,
+    formData,
+    setFormData,
+    handleChange,
+    handleDateChange,
+    handleAvatarChange,
+    handleSave,
+    handleCancel,
+    formatDate,
+  };
 }
