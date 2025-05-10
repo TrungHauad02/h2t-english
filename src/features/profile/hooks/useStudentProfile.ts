@@ -3,7 +3,6 @@ import { User } from "interfaces";
 import { useEffect, useState } from "react";
 import { userService } from "services";
 
-// TODO: Fix format date
 export default function useStudentProfile() {
   const { userId } = useAuth();
   const [data, setData] = useState<User | null>(null);
@@ -52,12 +51,17 @@ export default function useStudentProfile() {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (formData) {
-      setData(formData);
-      // TODO: Connect Api
-      // Here you would normally call an API to save the data
-      setIsEditMode(false);
+      try {
+        const resData = await userService.patch(formData.id, formData);
+        setData(resData.data);
+        setFormData(resData.data);
+      } catch (error) {
+        console.error("Error updating data:", error);
+      } finally {
+        setIsEditMode(false);
+      }
     }
   };
 
