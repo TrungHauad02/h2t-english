@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { testListeningService, questionService, submitTestAnswerService } from "services";
+import { testListeningService, questionService, submitTestAnswerService,commentTestService,submitTestService } from "services";
 
 interface QuestionItem {
   id: number;
@@ -29,7 +29,7 @@ const useListeningTest = (testListeningIds: number[], submitTestId: number) => {
         setError(false);
         
         // Fetch listening items first
-        const listeningItemsResponse = await testListeningService.getByIds(testListeningIds);
+        const listeningItemsResponse = await testListeningService.getByIdsAndStatus(testListeningIds,true);
         const listeningItems = listeningItemsResponse.data || [];
         
         let currentSerial = 1;
@@ -39,7 +39,7 @@ const useListeningTest = (testListeningIds: number[], submitTestId: number) => {
         // For each listening item, fetch its questions
         for (const listening of listeningItems) {
           if (listening.questions && listening.questions.length > 0) {
-            const questionsResponse = await questionService.getByIds(listening.questions);
+            const questionsResponse = await questionService.getByIdsAndStatus(listening.questions,true);
             const questions = questionsResponse.data || [];
             
             const startSerial = currentSerial;
@@ -151,38 +151,34 @@ const useListeningTest = (testListeningIds: number[], submitTestId: number) => {
     setIsConfirmDialogOpen(false);
   };
   
-  const handleSubmitTest = async () => {
+  const handleSubmitTest = useCallback(async () => {
+    if (!submitTestId) return;
+    
     try {
       setIsSubmitting(true);
       setIsConfirmDialogOpen(false);
       setIsSubmitDialogOpen(true);
       
-      // Thực hiện tính điểm chi tiết
       const totalQuestions = allQuestions.length;
       let correctAnswers = 0;
       
       if (submitTestId && totalQuestions > 0) {
-        // Lấy tất cả ID câu hỏi
         const questionIds = allQuestions.map(q => q.id);
         
-        // Lấy câu trả lời đã gửi
         const answersRes = await submitTestAnswerService.findBySubmitTestIdAndQuestionIds(
           submitTestId,
           questionIds
         );
         
         if (answersRes?.data?.length) {
-          // Lấy thông tin chi tiết về câu hỏi để kiểm tra đáp án đúng
-          const questionRes = await questionService.getByIds(questionIds);
+          const questionRes = await questionService.getByIdsAndStatus(questionIds,true);
           const questions = questionRes.data || [];
           
-          // Tạo map câu hỏi để tra cứu nhanh
           const questionMap: Record<number, any> = {};
           for (const q of questions) {
             questionMap[q.id] = q;
           }
           
-          // Kiểm tra từng câu trả lời
           for (const answer of answersRes.data) {
             const questionId = answer.question_id;
             const answerId = answer.answer_id;
@@ -200,24 +196,87 @@ const useListeningTest = (testListeningIds: number[], submitTestId: number) => {
         }
       }
       
-      // Tính điểm dựa trên số câu trả lời đúng
       const score = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
       
-      // Kết quả chi tiết
+      const commentRequestData: any = {
+        vocabulary: [],
+        grammar: [],
+        reading: [],
+        listening: [],
+        speaking: [],
+        writing: []
+      };
+      
+      if (testListeningIds) {
+        const listeningRes = await testListeningService.getByIdsAndStatus(testListeningIds,true);
+        const listenings = listeningRes.data || [];
+        
+        const listeningSectionsPromises = listenings.map(async (listening: any) => {
+          if (!listening.questions?.length) return null;
+          
+          const [questionRes, answersRes] = await Promise.all([
+            questionService.getByIdsAndStatus(listening.questions,true),
+            submitTestAnswerService.findBySubmitTestIdAndQuestionIds(submitTestId, listening.questions)
+          ]);
+          
+          const questions = questionRes.data || [];
+          const answers = answersRes.data || [];
+          
+          const answerMap: Record<number, any> = {};
+          for (const answer of answers) {
+            answerMap[answer.question_id] = answer;
+          }
+          
+          const choiceQuestions = questions.map((question: any) => {
+            const answer = answerMap[question.id];
+            const selectedAnswer = question.answers.find((a: any) => a.id === answer?.answer_id);
+            
+            return {
+              question: question.content,
+              choices: question.answers.map((a: any) => a.content),
+              userAnswer: selectedAnswer?.content || ""
+            };
+          });
+          
+          return {
+            transcript: listening.transcript,
+            questions: choiceQuestions
+          };
+        });
+        
+        const sections = await Promise.all(listeningSectionsPromises);
+        commentRequestData.listening = sections.filter((item) => item !== null);
+      }
+      
+      // Lấy comment
+      const commentResponse = await commentTestService.commentTest(commentRequestData);
+      
       const result = {
         totalQuestions,
         correctAnswers,
         score,
-        answeredQuestions: allQuestions.filter(q => q.isAnswered).length
+        answeredQuestions: allQuestions.filter(q => q.isAnswered).length,
+        comment: commentResponse.data.feedback,
+        strengths: commentResponse.data.strengths,
+        areasToImprove: commentResponse.data.areasToImprove
       };
       
+      if (submitTestId) {
+        await submitTestService.patch(submitTestId, { 
+          score: score,
+          comment: commentResponse.data.feedback,
+          status: true 
+        });
+      }
+      
       setSubmissionResult(result);
+      
     } catch (error) {
       console.error("Error submitting test:", error);
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [submitTestId,testListeningIds, allQuestions]);
   
   const closeSubmitDialog = useCallback(() => {
     setIsSubmitDialogOpen(false);

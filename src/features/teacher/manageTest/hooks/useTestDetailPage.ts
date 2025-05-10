@@ -2,7 +2,7 @@ import { Test, TestPart} from "interfaces";
 import { useEffect, useState } from "react"; 
 import { useParams } from "react-router-dom"; 
 import { testService, testPartService } from "services/test";
-
+import { toast } from "react-toastify";
 export default function useTestDetailPage() { 
   const { id, routeId, type } = useParams(); 
   const [data, setData] = useState<Test | null>(null);
@@ -87,18 +87,27 @@ export default function useTestDetailPage() {
     if (data && data.id) {
       try {
         setLoading(true);
+ 
+        const verifyResult = await testService.verify(data.id);
+        if (verifyResult.status !== "SUCCESS") {
+          toast.error("Test is not valid for publishing.");
+          return;
+        }
+  
         const updatedData = { ...data, status: true };
         await testService.patch(data.id, { status: true });
-        setData(updatedData); 
-        if (editData) setEditData(updatedData); 
+  
+        setData(updatedData);
+        if (editData) setEditData(updatedData);
       } catch (error) {
         console.error("Error publishing test:", error);
       } finally {
         setLoading(false);
-        setOpenPublishDialog(false); 
+        setOpenPublishDialog(false);
       }
-    } 
-  }; 
+    }
+  };
+  
 
   const handleUnpublish = async () => { 
     if (data && data.id) {

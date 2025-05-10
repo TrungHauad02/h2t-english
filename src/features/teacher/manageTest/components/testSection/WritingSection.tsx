@@ -52,7 +52,7 @@ export function WritingSection({ partId, testItemIds }: WritingSectionProps) {
   const fetchWritings = async () => {
     try {
       if (partId) {
-        const resData = await testWritingService.getByIds(listTestIdsRef.current);
+        const resData = await testWritingService.getByIdsAndStatus(listTestIdsRef.current);
         setWritings(resData.data);
         
         const newTestWritingIds = resData.data.map((testWriting: TestWriting) => testWriting.id);
@@ -140,26 +140,30 @@ export function WritingSection({ partId, testItemIds }: WritingSectionProps) {
     pendingStatusChangesRef.current = {};
   };
 
-  // Toggle writing status
-  const handleToggleStatus = (writingId: number) => {
-    // Find the writing to toggle
+  const handleToggleStatus = async (writingId: number) => {
     const writingToUpdate = writings.find(w => w.id === writingId);
     if (!writingToUpdate) return;
-    
-    // Update the pending status changes ref
-    pendingStatusChangesRef.current[writingId] = !writingToUpdate.status;
-    
-    // Mark that changes have been made
+  
+    const newStatus = !writingToUpdate.status;
+  
+    if (newStatus === true) {
+      const verifyResult = await testWritingService.verify(writingId);
+      if (verifyResult.status !== "SUCCESS") {
+        toast.error("Writing test not valid");
+        return;
+      }
+    }
+  
+    pendingStatusChangesRef.current[writingId] = newStatus;
     setHasMadeChanges(true);
-    
-    // Update the UI immediately but don't save yet
-    const updatedWritings = writings.map(w => 
-      w.id === writingId 
-        ? { ...w, status: !w.status } 
-        : w
+  
+    const updatedWritings = writings.map(w =>
+      w.id === writingId ? { ...w, status: newStatus } : w
     );
+  
     setWritings(updatedWritings);
-  };// Move items handlers
+  };
+  
   const onMoveLeft = (index: number) => {
     if (index <= 0) return;
     const updatedWritings = [...writings];

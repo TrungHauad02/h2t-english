@@ -2,12 +2,15 @@ import { useState, useEffect, useRef } from "react";
 import { testService, testPartService, submitTestService } from "services/test";
 import { Test, TestPart, TestTypeEnum, SubmitTest, TestPartTypeEnum } from "interfaces";
 import { useParams } from "react-router-dom";
+import useAuth from "hooks/useAuth";
 
 export default function useStudentTest() {
   const { id, type } = useParams();
   const testId = Number(id);
   const testType = type?.toUpperCase() as keyof typeof TestTypeEnum;
-  const userId = 1;
+  
+  const userId = Number(useAuth().userId);
+
 
   const [test, setTest] = useState<Test | null>(null);
   const [testParts, setTestParts] = useState<TestPart[]>([]);

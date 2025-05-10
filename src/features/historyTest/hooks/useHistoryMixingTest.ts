@@ -5,7 +5,8 @@ import {
   SubmitTestAnswer,
   SubmitTestSpeaking,
   SubmitTestWriting,
-  Answer
+  Answer,
+  Question
 } from "interfaces";
 import {
   testListeningService,
@@ -15,6 +16,7 @@ import {
   submitTestSpeakingService,
   submitTestWritingService,
   questionService,
+  testWritingService,
 } from "services";
 
 interface QuestionItem {
@@ -69,7 +71,7 @@ const useHistoryMixingTest = (parts: TestPart[], submitTestId: number) => {
         tempStartSerials[type] = serial;
 
         if ([TestPartTypeEnum.VOCABULARY, TestPartTypeEnum.GRAMMAR].includes(type)) {
-          const res = await questionService.getByIds(part.questions || []);
+          const res = await questionService.getByIdsAndStatus(part.questions || [],true);
           const answerRes = await submitTestAnswerService.findBySubmitTestIdAndQuestionIds(submitTestId, part.questions || []);
           const answerMap: Record<number, number> = {};
           answerRes.data?.forEach((a: SubmitTestAnswer) => answerMap[a.question_id] = a.answer_id);
@@ -89,9 +91,9 @@ const useHistoryMixingTest = (parts: TestPart[], submitTestId: number) => {
 
         if ([TestPartTypeEnum.READING, TestPartTypeEnum.LISTENING].includes(type)) {
           const service = type === TestPartTypeEnum.READING ? testReadingService : testListeningService;
-          const wrapperRes = await service.getByIds(part.questions || []);
+          const wrapperRes = await service.getByIdsAndStatus(part.questions || [],true);
           const questionIds = wrapperRes.data.flatMap((wr: any) => wr.questions);
-          const questionRes = await questionService.getByIds(questionIds);
+          const questionRes = await questionService.getByIdsAndStatus(questionIds,true);
           const answerRes = await submitTestAnswerService.findBySubmitTestIdAndQuestionIds(submitTestId, questionIds);
           const answerMap: Record<number, number> = {};
           answerRes.data?.forEach((a: SubmitTestAnswer) => answerMap[a.question_id] = a.answer_id);
@@ -110,30 +112,47 @@ const useHistoryMixingTest = (parts: TestPart[], submitTestId: number) => {
         }
 
         if (type === TestPartTypeEnum.SPEAKING && part?.questions?.length) {
-          const wrappers = await testSpeakingService.getByIds(part.questions);
+          const wrappers = await testSpeakingService.getByIdsAndStatus(part.questions, true);
           const speakingQuestionIds = wrappers.data.flatMap((s: any) => s.questions || []);
+        
+          const questionRes = await questionService.getByIdsAndStatus(speakingQuestionIds, true);
           const res = await submitTestSpeakingService.findBySubmitTestIdAndQuestionIds(submitTestId, speakingQuestionIds);
+        
+          const answeredMap: Record<number, boolean> = {};
           res.data.forEach((r: SubmitTestSpeaking) => {
+            answeredMap[r.question_id] = true;
+          });
+        
+          questionRes.data.forEach((q: Question) => {
             items.push({
               serialNumber: serial++,
-              questionId: r.question_id,
+              questionId: q.id,
               partType: type,
-              isAnswered: true
+              isAnswered: !!answeredMap[q.id]
             });
           });
         }
+        
 
         if (type === TestPartTypeEnum.WRITING && part?.questions?.length) {
+          const wrappers = await testWritingService.getByIdsAndStatus(part.questions, true);
           const res = await submitTestWritingService.findBySubmitTestIdAndTestWritingIds(submitTestId, part.questions);
+        
+          const answerMap: Record<number, string> = {};
           res.data.forEach((r: SubmitTestWriting) => {
+            answerMap[r.testWriting_id] = r.content || '';
+          });
+        
+          wrappers.data.forEach((w: any) => {
             items.push({
               serialNumber: serial++,
-              questionId: r.testWriting_id,
+              questionId: w.id,
               partType: type,
-              isAnswered: !!r.content?.trim()
+              isAnswered: !!answerMap[w.id]?.trim()
             });
           });
         }
+        
       };
 
       await fetchAndAppend(vocabularyPart, TestPartTypeEnum.VOCABULARY);

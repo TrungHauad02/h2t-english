@@ -58,7 +58,7 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
   const fetchListenings = async () => {
     try {
       if (partId) {
-        const resData = await testListeningService.getByIds(listTestIdsRef.current);
+        const resData = await testListeningService.getByIdsAndStatus(listTestIdsRef.current);
         setListenings(resData.data);
         
         const newTestListeningIds = resData.data.map((testListening: TestListening) => testListening.id);
@@ -160,17 +160,29 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
     setHasMadeChanges(false);
   };
 
-  // Toggle listening status
-  const handleToggleStatus = (listeningId: number) => {
+  const handleToggleStatus = async (listeningId: number) => {
+    const listeningToUpdate = listenings.find(l => l.id === listeningId);
+    if (!listeningToUpdate) return;
+  
+    const newStatus = !listeningToUpdate.status;
+  
+    if (newStatus === true) {
+      const verifyResult = await testListeningService.verify(listeningId);
+      if (verifyResult.status !== "SUCCESS") {
+        toast.error("Listening test not valid");
+        return;
+      }
+    }
     const updatedListenings = listenings.map(listening => 
       listening.id === listeningId 
-        ? { ...listening, status: !listening.status } 
+        ? { ...listening, status: newStatus } 
         : listening
     );
-    
+  
     setListenings(updatedListenings);
     setHasMadeChanges(true);
   };
+  
 
   // Move items handlers
   const onMoveLeft = (index: number) => {

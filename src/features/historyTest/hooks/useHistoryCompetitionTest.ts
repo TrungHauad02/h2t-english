@@ -99,7 +99,7 @@ const useHistoryCompetitionTest = () => {
         tempStartSerials[type] = serial;
 
         if ([TestPartTypeEnum.VOCABULARY, TestPartTypeEnum.GRAMMAR].includes(type)) {
-          const res = await questionService.getByIds(part.questions || []);
+          const res = await questionService.getByIdsAndStatus(part.questions || [],true);
           const answerRes = await submitCompetitionAnswerService.findBySubmitCompetitionIdAndQuestionIds(submitCompetitionId, part.questions || []);
           const answerMap: Record<number, number> = {};
           answerRes.data?.forEach((a: SubmitCompetitionAnswer) => answerMap[a.question_id] = a.answer_id);
@@ -119,9 +119,9 @@ const useHistoryCompetitionTest = () => {
 
         if ([TestPartTypeEnum.READING, TestPartTypeEnum.LISTENING].includes(type)) {
           const service = type === TestPartTypeEnum.READING ? testReadingService : testListeningService;
-          const wrapperRes = await service.getByIds(part.questions || []);
+          const wrapperRes = await service.getByIdsAndStatus(part.questions || [],true);
           const questionIds = wrapperRes.data.flatMap((wr: any) => wr.questions);
-          const questionRes = await questionService.getByIds(questionIds);
+          const questionRes = await questionService.getByIdsAndStatus(questionIds,true);
           const answerRes = await submitCompetitionAnswerService.findBySubmitCompetitionIdAndQuestionIds(submitCompetitionId, questionIds);
           const answerMap: Record<number, number> = {};
           answerRes.data?.forEach((a: SubmitCompetitionAnswer) => answerMap[a.question_id] = a.answer_id);
@@ -140,7 +140,7 @@ const useHistoryCompetitionTest = () => {
         }
 
         if (type === TestPartTypeEnum.SPEAKING && part?.questions?.length) {
-          const wrappers = await testSpeakingService.getByIds(part.questions);
+          const wrappers = await testSpeakingService.getByIdsAndStatus(part.questions,true);
           const speakingQuestionIds = wrappers.data.flatMap((s: any) => s.questions || []);
           const res = await submitCompetitionSpeakingService.findBySubmitCompetitionIdAndQuestionIds(submitCompetitionId, speakingQuestionIds);
           res.data.forEach((r: SubmitCompetitionSpeaking) => {

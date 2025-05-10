@@ -8,16 +8,22 @@ import {
   Box,
   CircularProgress,
   Slide,
+  Stack,
   Paper,
   Chip,
-  Grid
+  Grid,
+  Divider,
+  Collapse
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
+import { TestPartTypeEnum } from "interfaces";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import FlagIcon from '@mui/icons-material/Flag';
+import CommentIcon from '@mui/icons-material/Comment';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -28,31 +34,86 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-// Simplified result interface for single test types
-interface SingleTestResult {
+interface PartResult {
+  type: TestPartTypeEnum;
+  correctAnswers: number;
+  totalQuestions: number;
+  score: number;
+  weightedScore?: number;
+}
+
+interface TestResult {
   totalQuestions: number;
   correctAnswers: number;
   score: number;
-  answeredQuestions?: number; // Optional for tracking how many questions were attempted
+  answeredQuestions?: number;
+  parts?: PartResult[];
+  comment?: string;
+  strengths?: string[];
+  areasToImprove?: string[];
 }
 
-interface SubmitTestDialogSingleProps {
+interface SubmitTestDialogProps {
   open: boolean;
   onClose: () => void;
   isLoading: boolean;
-  result: SingleTestResult | null;
-  testName: string; // Tên loại test (Reading, Speaking, Writing, Listening)
+  result: TestResult | null;
+  submitTestId?: number;
+  testType?: string; 
 }
 
-const SubmitTestDialogSingle: React.FC<SubmitTestDialogSingleProps> = ({ 
+const SubmitTestDialog: React.FC<SubmitTestDialogProps> = ({ 
   open, 
   onClose, 
   isLoading, 
   result,
-  testName
+  submitTestId,
+  testType = "mixing" 
 }) => {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [showComment, setShowComment] = React.useState(false);
+
+  const handleReviewClick = () => {
+    if (submitTestId) {
+   
+      const pathParts = location.pathname.split('/');
+      let type = testType;
+  
+      if (pathParts.length >= 3) {
+        const rawType = pathParts[2]; 
+     
+        if (rawType.endsWith('s')) {
+          type = rawType.slice(0, -1);
+        } else {
+          type = rawType;
+        }
+      }
+      
+      navigate(`/history-test/${type}/${submitTestId}`);
+    }
+  };
+
+  const getSectionName = (type: TestPartTypeEnum) => {
+    switch(type) {
+      case TestPartTypeEnum.VOCABULARY:
+        return "Vocabulary";
+      case TestPartTypeEnum.GRAMMAR:
+        return "Grammar";
+      case TestPartTypeEnum.READING:
+        return "Reading";
+      case TestPartTypeEnum.LISTENING:
+        return "Listening";
+      case TestPartTypeEnum.SPEAKING:
+        return "Speaking";
+      case TestPartTypeEnum.WRITING:
+        return "Writing";
+      default:
+        return String(type);
+    }
+  };
 
   const getScoreColor = (score: number) => {
     if (score >= 90) return isDarkMode ? color.green500 : color.green600;
@@ -70,6 +131,12 @@ const SubmitTestDialogSingle: React.FC<SubmitTestDialogSingleProps> = ({
     if (score >= 60) return "Fair result! Some areas need improvement.";
     if (score >= 50) return "Passing grade. Review the areas where you had difficulties.";
     return "More practice needed. Review the material and try again.";
+  };
+
+  // If there are low performing parts that need improvement
+  const hasLowPerformingParts = () => {
+    if (!result?.parts) return false;
+    return result.parts.some(part => part.score < 70);
   };
 
   return (
@@ -155,7 +222,7 @@ const SubmitTestDialogSingle: React.FC<SubmitTestDialogSingleProps> = ({
                   color: isDarkMode ? color.gray100 : color.gray900,
                 }}
               >
-                {testName} Test Completed
+                Test Completed
               </Typography>
               <Typography 
                 variant="subtitle1" 
@@ -173,7 +240,7 @@ const SubmitTestDialogSingle: React.FC<SubmitTestDialogSingleProps> = ({
             <Box sx={{ p: 4 }}>
               <Grid container spacing={3}>
                 {/* Overall Score */}
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={5}>
                   <Box 
                     sx={{ 
                       display: 'flex', 
@@ -259,7 +326,7 @@ const SubmitTestDialogSingle: React.FC<SubmitTestDialogSingleProps> = ({
                       / {result.totalQuestions} correct answers
                     </Typography>
                     
-                    {result.answeredQuestions !== undefined && (
+                    {result.answeredQuestions !== undefined && result.answeredQuestions !== result.totalQuestions && (
                       <Typography
                         variant="body2"
                         sx={{ 
@@ -268,202 +335,337 @@ const SubmitTestDialogSingle: React.FC<SubmitTestDialogSingleProps> = ({
                           textAlign: 'center'
                         }}
                       >
-                        {result.answeredQuestions} of {result.totalQuestions} questions attempted
+                        ({result.answeredQuestions} / {result.totalQuestions} questions answered)
                       </Typography>
                     )}
                   </Box>
                 </Grid>
 
-                {/* Performance Details */}
-                <Grid item xs={12} md={6}>
-                  <Box 
-                    sx={{ 
-                      p: 3,
-                      bgcolor: isDarkMode ? color.gray700 : color.gray50,
-                      border: '1px solid',
-                      borderColor: isDarkMode ? color.gray600 : color.gray200,
-                      borderRadius: '16px',
-                      height: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    <Box sx={{ 
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1,
-                      mb: 2
-                    }}>
-                      <EqualizerIcon 
-                        sx={{ 
-                          color: isDarkMode ? color.teal300 : color.teal600,
-                          fontSize: 20
-                        }} 
-                      />
-                      <Typography 
-                        variant="h6" 
-                        sx={{ 
-                          fontWeight: 600,
-                          color: isDarkMode ? color.gray200 : color.gray800 
-                        }}
-                      >
-                        {testName} Performance
-                      </Typography>
-                    </Box>
-
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        p: 2,
-                        bgcolor: isDarkMode ? color.gray800 : color.white,
+                {/* Section Details or Test Info */}
+                <Grid item xs={12} md={7}>
+                  {result.parts && result.parts.length > 0 ? (
+                    <Box 
+                      sx={{ 
+                        p: 3,
+                        bgcolor: isDarkMode ? color.gray700 : color.gray50,
                         border: '1px solid',
                         borderColor: isDarkMode ? color.gray600 : color.gray200,
-                        borderRadius: '8px',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        mb: 2
+                        borderRadius: '16px'
                       }}
                     >
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                        <Box 
+                      <Box sx={{ 
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        mb: 2
+                      }}>
+                        <EqualizerIcon 
                           sx={{ 
-                            width: 36, 
-                            height: 36,
-                            minWidth: 36,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            borderRadius: '50%',
-                            bgcolor: isDarkMode ? color.gray700 : color.gray100,
+                            color: isDarkMode ? color.teal300 : color.teal600,
+                            fontSize: 20
+                          }} 
+                        />
+                        <Typography 
+                          variant="h6" 
+                          sx={{ 
+                            fontWeight: 600,
+                            color: isDarkMode ? color.gray200 : color.gray800 
                           }}
                         >
-                          <Typography sx={{ fontWeight: 600, color: isDarkMode ? color.gray300 : color.gray600 }}>
-                            1
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="subtitle1"
-                            sx={{ 
-                              fontWeight: 600, 
-                              color: isDarkMode ? color.gray100 : color.gray900,
-                              mb: 0.5
+                          Section Performance
+                        </Typography>
+                      </Box>
+
+                      <Stack spacing={2}>
+                        {result.parts.map((part, index) => (
+                          <Paper
+                            key={part.type}
+                            elevation={0}
+                            sx={{
+                              p: 2,
+                              bgcolor: isDarkMode ? color.gray800 : color.white,
+                              border: '1px solid',
+                              borderColor: isDarkMode ? color.gray600 : color.gray200,
+                              borderRadius: '8px',
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center'
                             }}
                           >
-                            {testName}
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                              <Box 
+                                sx={{ 
+                                  width: 36, 
+                                  height: 36,
+                                  minWidth: 36,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  borderRadius: '50%',
+                                  bgcolor: isDarkMode ? color.gray700 : color.gray100,
+                                }}
+                              >
+                                <Typography sx={{ fontWeight: 600, color: isDarkMode ? color.gray300 : color.gray600 }}>
+                                  {index + 1}
+                                </Typography>
+                              </Box>
+                              <Box>
+                                <Typography
+                                  variant="subtitle1"
+                                  sx={{ 
+                                    fontWeight: 600, 
+                                    color: isDarkMode ? color.gray100 : color.gray900,
+                                    mb: 0.5
+                                  }}
+                                >
+                                  {getSectionName(part.type)}
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  sx={{ color: isDarkMode ? color.gray400 : color.gray600 }}
+                                >
+                                  {part.correctAnswers} / {part.totalQuestions} correct answers
+                                </Typography>
+                              </Box>
+                            </Box>
+                            
+                            <Chip
+                              label={`${Math.round(part.score)}%`}
+                              sx={{
+                                fontWeight: 600,
+                                bgcolor: (() => {
+                                  const scoreColor = getScoreColor(part.score);
+                                  return isDarkMode 
+                                    ? `${scoreColor}33` 
+                                    : `${scoreColor}22`;
+                                })(),
+                                color: getScoreColor(part.score),
+                                borderRadius: '8px',
+                              }}
+                            />
+                          </Paper>
+                        ))}
+                      </Stack>
+                    </Box>
+                  ) : (
+                    // If no parts, display general test info
+                    <Box 
+                      sx={{ 
+                        p: 3,
+                        bgcolor: isDarkMode ? color.gray700 : color.gray50,
+                        border: '1px solid',
+                        borderColor: isDarkMode ? color.gray600 : color.gray200,
+                        borderRadius: '16px',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      <Box sx={{ 
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        mb: 3
+                      }}>
+                        <EqualizerIcon 
+                          sx={{ 
+                            color: isDarkMode ? color.teal300 : color.teal600,
+                            fontSize: 20
+                          }} 
+                        />
+                        <Typography 
+                          variant="h6" 
+                          sx={{ 
+                            fontWeight: 600,
+                            color: isDarkMode ? color.gray200 : color.gray800 
+                          }}
+                        >
+                          Test Summary
+                        </Typography>
+                      </Box>
+
+                      <Stack spacing={3}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Typography variant="subtitle1" sx={{ color: isDarkMode ? color.gray300 : color.gray700 }}>
+                            Total Questions:
                           </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: isDarkMode ? color.gray400 : color.gray600 }}
-                          >
-                            {result.correctAnswers} / {result.totalQuestions} correct answers
+                          <Typography variant="subtitle1" sx={{ fontWeight: 600, color: isDarkMode ? color.gray200 : color.gray800 }}>
+                            {result.totalQuestions}
                           </Typography>
                         </Box>
-                      </Box>
-                      
-                      <Chip
-                        label={`${Math.round(result.score)}%`}
-                        sx={{
-                          fontWeight: 600,
-                          bgcolor: (() => {
-                            const scoreColor = getScoreColor(result.score);
-                            return isDarkMode 
-                              ? `${scoreColor}33` 
-                              : `${scoreColor}22`;
-                          })(),
-                          color: getScoreColor(result.score),
-                          borderRadius: '8px',
-                        }}
-                      />
-                    </Paper>
+                        
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Typography variant="subtitle1" sx={{ color: isDarkMode ? color.gray300 : color.gray700 }}>
+                            Correct Answers:
+                          </Typography>
+                          <Typography variant="subtitle1" sx={{ fontWeight: 600, color: isDarkMode ? color.green400 : color.green600 }}>
+                            {result.correctAnswers}
+                          </Typography>
+                        </Box>
+                        
+                        {result.answeredQuestions !== undefined && (
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Typography variant="subtitle1" sx={{ color: isDarkMode ? color.gray300 : color.gray700 }}>
+                              Questions Answered:
+                            </Typography>
+                            <Typography variant="subtitle1" sx={{ fontWeight: 600, color: isDarkMode ? color.gray200 : color.gray800 }}>
+                              {result.answeredQuestions} / {result.totalQuestions}
+                            </Typography>
+                          </Box>
+                        )}
+                        
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Typography variant="subtitle1" sx={{ color: isDarkMode ? color.gray300 : color.gray700 }}>
+                            Performance:
+                          </Typography>
+                          <Chip
+                            label={`${Math.round(result.score)}%`}
+                            sx={{
+                              fontWeight: 600,
+                              bgcolor: (() => {
+                                const scoreColor = getScoreColor(result.score);
+                                return isDarkMode 
+                                  ? `${scoreColor}33` 
+                                  : `${scoreColor}22`;
+                              })(),
+                              color: getScoreColor(result.score),
+                              borderRadius: '8px',
+                            }}
+                          />
+                        </Box>
+                      </Stack>
+                    </Box>
+                  )}
+                </Grid>
+              </Grid>
+
+              {/* Improvement Suggestions - only for mixing tests with parts */}
+              {result.parts && hasLowPerformingParts() && (
+                <Box
+                  sx={{
+                    mt: 3,
+                    p: 3,
+                    bgcolor: isDarkMode ? 'rgba(20, 184, 166, 0.1)' : 'rgba(20, 184, 166, 0.05)',
+                    border: '1px solid',
+                    borderColor: isDarkMode ? 'rgba(20, 184, 166, 0.2)' : 'rgba(20, 184, 166, 0.1)',
+                    borderRadius: '12px',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: 2
+                  }}
+                >
+                  <TipsAndUpdatesIcon 
+                    sx={{ 
+                      color: isDarkMode ? color.teal400 : color.teal600,
+                      fontSize: 24,
+                      mt: 0.5
+                    }} 
+                  />
+                  <Box>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ 
+                        fontWeight: 600, 
+                        color: isDarkMode ? color.teal200 : color.teal700,
+                        mb: 1
+                      }}
+                    >
+                      Improvement Suggestions
+                    </Typography>
                     
-                    {/* Performance Analysis */}
-                    <Box sx={{ mt: 1 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ 
+                        color: isDarkMode ? color.gray300 : color.gray700,
+                        mb: 1
+                      }}
+                    >
+                      Focus on improving these sections:
+                      <Box component="ul" sx={{ m: 0, pl: 2 }}>
+                        {result.parts
+                          .filter(part => part.score < 70)
+                          .map(part => (
+                            <Box component="li" key={part.type} sx={{ mb: 0.5 }}>
+                              <Box component="span" sx={{ fontWeight: 600 }}>
+                                {getSectionName(part.type)}
+                              </Box>
+                              {" - "}
+                              {part.score < 50 
+                                ? "Needs significant improvement" 
+                                : "Needs some improvement"}
+                            </Box>
+                          ))}
+                      </Box>
+                    </Typography>
+                    
+                    <Typography
+                      variant="body2"
+                      sx={{ color: isDarkMode ? color.gray300 : color.gray700 }}
+                    >
+                      {result.score >= 80 
+                        ? "You're doing very well! Keep up the good work." 
+                        : "Review your materials and complete more practice exercises to improve your results."}
+                    </Typography>
+                  </Box>
+                </Box>
+              )}
+              
+              {/* Teacher Comment Section - Only show if there's a comment */}
+              {result.comment && (
+                <Box sx={{ mt: 3 }}>
+                  <Button 
+                    onClick={() => setShowComment(!showComment)}
+                    variant="outlined"
+                    startIcon={<CommentIcon />}
+                    sx={{
+                      mb: 2,
+                      borderRadius: '8px',
+                      borderColor: isDarkMode ? color.teal600 : color.teal300,
+                      color: isDarkMode ? color.teal300 : color.teal600,
+                      '&:hover': {
+                        borderColor: isDarkMode ? color.teal500 : color.teal400,
+                        backgroundColor: isDarkMode ? 'rgba(20, 184, 166, 0.1)' : 'rgba(20, 184, 166, 0.05)',
+                      },
+                    }}
+                  >
+                    {showComment ? "Hide Teacher's Comment" : "Show Teacher's Comment"}
+                  </Button>
+                  
+                  <Collapse in={showComment}>
+                    <Box
+                      sx={{
+                        p: 3,
+                        bgcolor: isDarkMode ? color.gray700 : color.gray50,
+                        border: '1px solid',
+                        borderColor: isDarkMode ? color.gray600 : color.gray200,
+                        borderRadius: '12px',
+                      }}
+                    >
+                      <Typography
+                        variant="subtitle1"
+                        sx={{ 
+                          fontWeight: 600, 
+                          color: isDarkMode ? color.gray200 : color.gray800,
+                          mb: 2
+                        }}
+                      >
+                        Teacher's Comment
+                      </Typography>
+                      
                       <Typography
                         variant="body2"
                         sx={{ 
                           color: isDarkMode ? color.gray300 : color.gray700,
-                          mb: 1
+                          whiteSpace: 'pre-line'
                         }}
                       >
-                        {result.score >= 80 
-                          ? `You showed excellent ${testName.toLowerCase()} skills.` 
-                          : result.score >= 65
-                          ? `Your ${testName.toLowerCase()} skills are good, with some areas for improvement.`
-                          : `You should focus on improving your ${testName.toLowerCase()} skills.`
-                        }
+                        {result.comment}
                       </Typography>
                     </Box>
-                  </Box>
-                </Grid>
-              </Grid>
-
-              {/* Improvement Suggestions */}
-              <Box
-                sx={{
-                  mt: 3,
-                  p: 3,
-                  bgcolor: isDarkMode ? 'rgba(20, 184, 166, 0.1)' : 'rgba(20, 184, 166, 0.05)',
-                  border: '1px solid',
-                  borderColor: isDarkMode ? 'rgba(20, 184, 166, 0.2)' : 'rgba(20, 184, 166, 0.1)',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 2
-                }}
-              >
-                <TipsAndUpdatesIcon 
-                  sx={{ 
-                    color: isDarkMode ? color.teal400 : color.teal600,
-                    fontSize: 24,
-                    mt: 0.5
-                  }} 
-                />
-                <Box>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ 
-                      fontWeight: 600, 
-                      color: isDarkMode ? color.teal200 : color.teal700,
-                      mb: 1
-                    }}
-                  >
-                    Improvement Suggestions
-                  </Typography>
-                  
-                  <Typography
-                    variant="body2"
-                    sx={{ color: isDarkMode ? color.gray300 : color.gray700 }}
-                  >
-                    {(() => {
-                      switch(testName) {
-                        case 'Reading':
-                          return result.score < 70 
-                            ? "Practice more reading comprehension exercises and work on expanding your vocabulary. Focus on identifying main ideas and supporting details." 
-                            : "Continue to challenge yourself with various text types and complexity levels to further improve your reading skills.";
-                        case 'Listening':
-                          return result.score < 70
-                            ? "Practice listening to different speakers and accents. Focus on note-taking skills and identifying key information."
-                            : "Continue to expose yourself to diverse audio materials to further enhance your listening comprehension.";
-                        case 'Speaking':
-                          return result.score < 70
-                            ? "Practice pronunciation and fluency. Record yourself speaking and identify areas for improvement."
-                            : "Work on more complex speaking tasks and continue to build your vocabulary for more nuanced expression.";
-                        case 'Writing':
-                          return result.score < 70
-                            ? "Focus on improving your grammar, sentence structure, and organization. Practice writing different types of essays."
-                            : "Continue to refine your writing style and work on more sophisticated vocabulary and sentence structures.";
-                        default:
-                          return result.score >= 80 
-                            ? "You're doing very well! Keep up the good work." 
-                            : "Review the materials and complete more practice exercises to improve your results.";
-                      }
-                    })()}
-                  </Typography>
+                  </Collapse>
                 </Box>
-              </Box>
+              )}
             </Box>
           </DialogContent>
 
@@ -471,12 +673,35 @@ const SubmitTestDialogSingle: React.FC<SubmitTestDialogSingleProps> = ({
             sx={{ 
               p: 3, 
               pt: 0,
-              justifyContent: 'center'
+              justifyContent: 'center',
+              gap: 2
             }}
           >
+            {submitTestId && (
+              <Button
+                variant="contained"
+                onClick={handleReviewClick}
+                sx={{
+                  py: 1.5,
+                  px: 4,
+                  borderRadius: '8px',
+                  backgroundColor: isDarkMode ? color.teal700 : color.teal500,
+                  color: 'white',
+                  fontWeight: 'bold',
+                  textTransform: 'none',
+                  fontSize: '1rem',
+                  '&:hover': {
+                    backgroundColor: isDarkMode ? color.teal600 : color.teal600,
+                  },
+                }}
+              >
+                Review Test
+              </Button>
+            )}
+
             <Button
               variant="contained"
-              onClick={onClose}
+              onClick={() => window.location.reload()}
               sx={{
                 py: 1.5,
                 px: 4,
@@ -491,28 +716,7 @@ const SubmitTestDialogSingle: React.FC<SubmitTestDialogSingleProps> = ({
                 },
               }}
             >
-              Review Lessons
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={onClose}
-              sx={{
-                py: 1.5,
-                px: 4,
-                ml: 2,
-                borderRadius: '8px',
-                borderColor: isDarkMode ? color.gray600 : color.gray300,
-                color: isDarkMode ? color.gray300 : color.gray700,
-                fontWeight: 'bold',
-                textTransform: 'none',
-                fontSize: '1rem',
-                '&:hover': {
-                  borderColor: isDarkMode ? color.gray500 : color.gray400,
-                  backgroundColor: 'transparent',
-                },
-              }}
-            >
-              Close
+              Test Again
             </Button>
           </DialogActions>
         </>
@@ -525,4 +729,4 @@ const SubmitTestDialogSingle: React.FC<SubmitTestDialogSingleProps> = ({
   );
 };
 
-export default SubmitTestDialogSingle;
+export default SubmitTestDialog;

@@ -14,7 +14,7 @@ export default function useHistorySpeakingTest(testSpeakingIds: number[], submit
     async function load() {
       try {
         setLoading(true);
-        const speakingRes = await testSpeakingService.getByIds(testSpeakingIds);
+        const speakingRes = await testSpeakingService.getByIdsAndStatus(testSpeakingIds,true);
         const testList: TestSpeaking[] = speakingRes.data || [];
 
         const testMap: Record<number, TestSpeaking> = {};
@@ -23,7 +23,7 @@ export default function useHistorySpeakingTest(testSpeakingIds: number[], submit
         for (const test of testList) {
           testMap[test.id] = test;
           if (test.questions?.length) {
-            const qRes = await questionService.getByIds(test.questions);
+            const qRes = await questionService.getByIdsAndStatus(test.questions,true);
             const questionData = qRes.data || [];
 
             questionData.forEach((q: any, idx: number) => {

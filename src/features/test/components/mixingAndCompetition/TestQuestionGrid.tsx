@@ -28,6 +28,7 @@ const TestQuestionGrid: React.FC<TestQuestionGridProps> = ({
 }) => {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
+console.log(questionItems);
 
   const questionsByType = React.useMemo(() => {
     const grouped: Record<TestPartTypeEnum, QuestionItem[]> = {

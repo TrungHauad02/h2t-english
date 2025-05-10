@@ -2,7 +2,7 @@ import { TestPart, CompetitionTest } from "interfaces";
 import { useEffect, useState } from "react"; 
 import { useParams } from "react-router-dom"; 
 import { competitionTestService, testPartService } from "services/test";
-
+import { toast } from "react-toastify";
 export default function useCompetitionDetailPage() { 
   const { id } = useParams(); 
   const [data, setData] = useState<CompetitionTest | null>(null);
@@ -87,18 +87,27 @@ export default function useCompetitionDetailPage() {
     if (data && data.id) {
       try {
         setLoading(true);
+  
+        const verifyResult = await competitionTestService.verify(data.id);
+        if (verifyResult.status !== "SUCCESS") {
+          toast.error("Competition test is not valid for publishing.");
+          return;
+        }
+  
         const updatedData = { ...data, status: true };
         await competitionTestService.patch(data.id, { status: true });
-        setData(updatedData); 
-        if (editData) setEditData(updatedData); 
+  
+        setData(updatedData);
+        if (editData) setEditData(updatedData);
       } catch (error) {
         console.error("Error publishing competition test:", error);
       } finally {
         setLoading(false);
-        setOpenPublishDialog(false); 
+        setOpenPublishDialog(false);
       }
-    } 
-  }; 
+    }
+  };
+  
 
   const handleUnpublish = async () => { 
     if (data && data.id) {
