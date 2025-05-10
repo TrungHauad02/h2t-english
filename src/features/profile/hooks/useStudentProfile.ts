@@ -34,13 +34,11 @@ export default function useStudentProfile() {
     }
   };
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDateChange = (date: Date | null) => {
     if (formData) {
-      const selectedDate = e.target.value;
-      const [year, month, day] = selectedDate.split("-").map(Number);
       setFormData({
         ...formData,
-        dateOfBirth: new Date(year, month - 1, day),
+        dateOfBirth: date as Date,
       });
     }
   };
@@ -68,10 +66,6 @@ export default function useStudentProfile() {
     setIsEditMode(false);
   };
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-CA");
-  };
-
   return {
     data,
     setData,
@@ -84,6 +78,5 @@ export default function useStudentProfile() {
     handleAvatarChange,
     handleSave,
     handleCancel,
-    formatDate,
   };
 }
