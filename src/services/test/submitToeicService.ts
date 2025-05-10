@@ -1,4 +1,4 @@
-import { SubmitToeic, SubmitTestStats } from "interfaces";
+import { SubmitToeic, SubmitToeicFilter } from "interfaces";
 import apiClient from "services/apiClient";
 
 const findById = async (id: number): Promise<SubmitToeic> => {
@@ -51,12 +51,40 @@ const remove = async (id: number): Promise<any> => {
   }
 };
 
-const getTestStats = async (userId: number): Promise<SubmitTestStats> => {
+const getSubmitToeicsForStudent = async (
+  page: number,
+  itemsPerPage: number,
+  userId: number,
+  filter?: SubmitToeicFilter
+) => {
   try {
-    const response = await apiClient.get(`/submit-toeic/stats?userId=${userId}`);
+    let url = `/submit-toeic?page=${page - 1}&size=${itemsPerPage}&userId=${userId}&status=true`;
+
+    if (filter) {
+      if (filter.title) {
+        url += `&title=${encodeURIComponent(filter.title)}`;
+      }
+      if (filter.sortBy) {
+        url += `&sortFields=${encodeURIComponent(filter.sortBy)}`;
+      }
+      if (filter.startCreatedAt) {
+        url += `&startCreatedAt=${filter.startCreatedAt.toISOString().slice(0, -1)}`;
+      }
+      if (filter.endCreatedAt) {
+        url += `&endCreatedAt=${filter.endCreatedAt.toISOString().slice(0, -1)}`;
+      }
+      if (filter.startUpdatedAt) {
+        url += `&startUpdatedAt=${filter.startUpdatedAt.toISOString().slice(0, -1)}`;
+      }
+      if (filter.endUpdatedAt) {
+        url += `&endUpdatedAt=${filter.endUpdatedAt.toISOString().slice(0, -1)}`;
+      }
+    }
+
+    const response = await apiClient.get(url);
     return response.data;
   } catch (error) {
-    console.error("Error getting SubmitToeic stats:", error);
+    console.error("Error fetching submit toeics for student:", error);
     throw error;
   }
 };
@@ -67,5 +95,5 @@ export const submitToeicService = {
   update,
   patch,
   remove,
-  getTestStats,
+  getSubmitToeicsForStudent,
 };

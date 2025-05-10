@@ -154,6 +154,15 @@ const getCompetitionTestsByTeacher = async (
     throw error;
   }
 };
+const verify = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/competition-tests/${id}/verify`);
+    return response.data;
+  } catch (error) {
+    console.error("Error verifying competition:", error);
+    throw error;
+  }
+};
 
 export const competitionTestService = {
   findById,
@@ -163,4 +172,5 @@ export const competitionTestService = {
   remove,
   getCompetitionTestsForStudent,
   getCompetitionTestsByTeacher,
+  verify,
 };

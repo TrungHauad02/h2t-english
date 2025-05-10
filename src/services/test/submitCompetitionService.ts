@@ -1,4 +1,4 @@
-import { SubmitCompetition, SubmitTestStats } from "interfaces";
+import { SubmitCompetition, SubmitCompetitionFilter } from "interfaces";
 import apiClient from "services/apiClient";
 
 const findById = async (id: number) => {
@@ -51,15 +51,6 @@ const remove = async (id: number) => {
   }
 };
 
-const getTestStats = async (userId: number): Promise<SubmitTestStats> => {
-  try {
-    const response = await apiClient.get(`/submit-competitions/stats?userId=${userId}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error retrieving submit test stats:", error);
-    throw error;
-  }
-};
 const findByIdAndUserIdAndStatusFalse = async (testId: number, userId: number): Promise<{ data: SubmitCompetition }> => {
   try {
     const response = await apiClient.get(`/submit-competitions/by-test-and-user?testId=${testId}&userId=${userId}`);
@@ -70,12 +61,50 @@ const findByIdAndUserIdAndStatusFalse = async (testId: number, userId: number): 
   }
 };
 
+const getSubmitCompetitionsForStudent = async (
+  page: number,
+  itemsPerPage: number,
+  userId: number,
+  filter?: SubmitCompetitionFilter
+) => {
+  try {
+    let url = `/submit-competitions?page=${page - 1}&size=${itemsPerPage}&userId=${userId}&status=true`;
+
+    if (filter) {
+      if (filter.title) {
+        url += `&title=${encodeURIComponent(filter.title)}`;
+      }
+      if (filter.sortBy) {
+        url += `&sortFields=${encodeURIComponent(filter.sortBy)}`;
+      }
+      if (filter.startCreatedAt) {
+        url += `&startCreatedAt=${filter.startCreatedAt.toISOString().slice(0, -1)}`;
+      }
+      if (filter.endCreatedAt) {
+        url += `&endCreatedAt=${filter.endCreatedAt.toISOString().slice(0, -1)}`;
+      }
+      if (filter.startUpdatedAt) {
+        url += `&startUpdatedAt=${filter.startUpdatedAt.toISOString().slice(0, -1)}`;
+      }
+      if (filter.endUpdatedAt) {
+        url += `&endUpdatedAt=${filter.endUpdatedAt.toISOString().slice(0, -1)}`;
+      }
+    }
+
+    const response = await apiClient.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching submit competitions for student:", error);
+    throw error;
+  }
+};
+
 export const submitCompetitionService = {
   findById,
   create,
   update,
   patch,
   remove,
-  getTestStats,
+  getSubmitCompetitionsForStudent,
   findByIdAndUserIdAndStatusFalse,
 };

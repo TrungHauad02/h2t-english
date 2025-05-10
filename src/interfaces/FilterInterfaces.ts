@@ -39,3 +39,16 @@ export interface CompetitionTestFilter extends BaseFilter {
   startEndTime?: Date;
   endEndTime?: Date;
 }
+export interface SubmitTestFilter extends BaseFilter {
+  title?: string;         
+  type?: TestTypeEnum;
+}
+
+export interface SubmitToeicFilter extends BaseFilter {
+  title?: string;           
+}
+
+export interface SubmitCompetitionFilter extends BaseFilter {
+  title?: string;         
+}
+

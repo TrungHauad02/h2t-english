@@ -28,12 +28,15 @@ const findByTestId = async (
     throw error;
   }
 };
-const getByIds = async (ids: number[]) => {
+
+const getByIdsAndStatus = async (ids: number[], status?: Boolean) => {
   try {
-    const response = await apiClient.post("/questions/by-ids", ids);
+    const response = await apiClient.post("/questions/by-ids", ids, {
+      params: status ? { status } : undefined,
+    });
     return response.data;
   } catch (error) {
-    console.error("Error getting Question by ids:", error);
+    console.error("Error getting TestWriting by ids and status:", error);
     throw error;
   }
 };
@@ -77,13 +80,23 @@ const remove = async (id: number) => {
     throw error;
   }
 };
+const verify = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/questions/${id}/verify`);
+    return response.data;
+  } catch (error) {
+    console.error("Error verifying question:", error);
+    throw error;
+  }
+};
 
 export const questionService = {
   findById,
   findByTestId,
   create,
-  getByIds,
+  getByIdsAndStatus,
   update,
   patch,
   remove,
+  verify,
 };
