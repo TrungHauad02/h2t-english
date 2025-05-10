@@ -3,7 +3,6 @@ import { User } from "interfaces";
 import { useEffect, useState } from "react";
 import { userService } from "services";
 
-// TODO: Fix format date
 export default function useStudentProfile() {
   const { userId } = useAuth();
   const [data, setData] = useState<User | null>(null);
@@ -34,13 +33,11 @@ export default function useStudentProfile() {
     }
   };
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDateChange = (date: Date | null) => {
     if (formData) {
-      const selectedDate = e.target.value;
-      const [year, month, day] = selectedDate.split("-").map(Number);
       setFormData({
         ...formData,
-        dateOfBirth: new Date(year, month - 1, day),
+        dateOfBirth: date as Date,
       });
     }
   };
@@ -54,22 +51,23 @@ export default function useStudentProfile() {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (formData) {
-      setData(formData);
-      // TODO: Connect Api
-      // Here you would normally call an API to save the data
-      setIsEditMode(false);
+      try {
+        const resData = await userService.patch(formData.id, formData);
+        setData(resData.data);
+        setFormData(resData.data);
+      } catch (error) {
+        console.error("Error updating data:", error);
+      } finally {
+        setIsEditMode(false);
+      }
     }
   };
 
   const handleCancel = () => {
     setFormData(data);
     setIsEditMode(false);
-  };
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-CA");
   };
 
   return {
@@ -84,6 +82,5 @@ export default function useStudentProfile() {
     handleAvatarChange,
     handleSave,
     handleCancel,
-    formatDate,
   };
 }
