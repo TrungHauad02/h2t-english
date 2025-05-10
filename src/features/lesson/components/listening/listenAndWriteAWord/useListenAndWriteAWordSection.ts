@@ -1,5 +1,7 @@
 import { ListenAndWriteAWord } from "interfaces";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { listeningExercisesService } from "services/lesson/listeningExercisesService";
 
 interface Sentence {
   id: number;
@@ -9,48 +11,42 @@ interface Sentence {
   audio: string;
   serial: number;
 }
-// TODO: Connect to backend
-export default function useListenAndWriteAWordSection() {
-  const mockData: ListenAndWriteAWord[] = [
-    {
-      id: 1,
-      status: true,
-      audio: "/basic_listening.mp3",
-      serial: 1,
-      sentence: "I to eat an apple a day.",
-      missingIndex: 1,
-      correctAnswer: "like",
-      listeningId: 1,
-    },
-    {
-      id: 2,
-      status: true,
-      audio: "/basic_listening.mp3",
-      serial: 2,
-      sentence: "like to eat an apple a day.",
-      missingIndex: 0,
-      correctAnswer: "I",
-      listeningId: 1,
-    },
-  ];
 
+export default function useListenAndWriteAWordSection() {
+  const { id } = useParams();
+  const [data, setData] = useState<ListenAndWriteAWord[]>([]);
   const [curIndex, setCurIndex] = useState<number>(0);
   const [stateData, setStateData] = useState<Sentence[]>([]);
-
   const [score, setScore] = useState<string | null>(null);
   const [isShowExplain, setIsShowExplain] = useState(false);
   const [isShowConfirm, setIsShowConfirm] = useState(false);
   const [isShowScoreDialog, setIsShowScoreDialog] = useState(false);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (id) {
+          const resData = await listeningExercisesService.findByListeningId(
+            Number(id)
+          );
+          setData(resData.data);
+        }
+      } catch (error) {
+        console.error("Error fetching topics");
+      }
+    };
+    fetchData();
+  }, [id]);
+
+  useEffect(() => {
     resetState();
-  }, []);
+  }, [data]);
 
   const resetState = () => {
     setCurIndex(0);
-    mockData.forEach((item) => console.log(item.sentence.split(" ")));
+    data.forEach((item) => console.log(item.sentence.split(" ")));
     setStateData(
-      mockData.map((item) => ({
+      data.map((item) => ({
         id: item.id,
         sentence: [
           ...item.sentence.split(" ").slice(0, item.missingIndex),
