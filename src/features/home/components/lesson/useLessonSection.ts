@@ -42,7 +42,6 @@ export default function useLessonsSection() {
             : await featureLessonService.getMostRecentLessons();
 
         // Update only the specific filter data, keeping other data intact
-        console.log(resData.data);
         setLessonsData((prev) => ({
           ...prev,
           [filter]: resData.data,
@@ -55,7 +54,7 @@ export default function useLessonsSection() {
     };
 
     fetchLessons();
-  }, [filter, lessonsData]);
+  }, [filter]);
 
   const handleFilterChange = useCallback(
     (_event: React.SyntheticEvent, newValue: string) => {

@@ -1,15 +1,12 @@
 import React from "react";
 import { Box } from "@mui/material";
-import { SeverityEnum, BaseFilter } from "interfaces";
+import { ErrorLogFilter } from "interfaces";
 import useErrorLogFilter from "./filter/useErrorLogFilters";
 import { ShowFilter, BoxFilter, ActiveFilter } from "./filter";
 
 interface ErrorLogFilterSectionProps {
-  filters: BaseFilter & {
-    severity?: SeverityEnum | null;
-    errorCode?: string;
-  };
-  onFilterChange: (filters: any) => void;
+  filters: ErrorLogFilter;
+  onFilterChange: (filters: ErrorLogFilter) => void;
 }
 
 export default function ErrorLogFilterSection({
@@ -18,7 +15,9 @@ export default function ErrorLogFilterSection({
 }: ErrorLogFilterSectionProps) {
   const [showFilters, setShowFilters] = React.useState(false);
   const hooks = useErrorLogFilter(onFilterChange);
-  const toggleFilters = () => { setShowFilters(!showFilters); };
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
 
   // Count active filters
   const getActiveFilterCount = () => {
@@ -52,11 +51,8 @@ export default function ErrorLogFilterSection({
         onFilterChange={onFilterChange}
       />
       {activeFilterCount > 0 && (
-        <ActiveFilter
-          filters={filters}
-          onFilterChange={onFilterChange}
-        />
-      )};
+        <ActiveFilter filters={filters} onFilterChange={onFilterChange} />
+      )}
     </Box>
   );
 }

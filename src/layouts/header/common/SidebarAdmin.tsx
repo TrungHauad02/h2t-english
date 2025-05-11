@@ -3,6 +3,7 @@ import { SidebarDrawer } from "./sidebar";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
 import SchoolIcon from "@mui/icons-material/School";
+import SmartToyIcon from '@mui/icons-material/SmartToy';
 import { Error } from "@mui/icons-material";
 
 export default function SidebarAdmin() {
@@ -31,6 +32,7 @@ export default function SidebarAdmin() {
       ],
     },
     { text: "Error Log", icon: <Error />, path: "/admin/error-log" },
+    { text: "AI Response", icon: <SmartToyIcon />, path: "/admin/ai-response" },
   ];
 
   return (

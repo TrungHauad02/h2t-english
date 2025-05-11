@@ -10,6 +10,13 @@ export default interface BaseEntity {
   updatedAt?: Date;
 }
 
+export interface AIResponse extends BaseEntity {
+  request: string;
+  response: string;
+  evaluate: string;
+  userId: number; 
+}
+
 export type QuestionSupportType =
   | "topics"
   | "grammars"
@@ -34,9 +41,9 @@ export interface Voice {
 }
 
 export enum SeverityEnum {
-  LOW,
-  MEDIUM,
-  HIGH,
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
 }
 
 export interface ErrorLog extends BaseEntity {
@@ -46,3 +53,9 @@ export interface ErrorLog extends BaseEntity {
 }
 
 export type RandomName = "YES" | "NO";
+
+export interface Quote {
+  quote: string;
+  author: string;
+  category: string;
+}

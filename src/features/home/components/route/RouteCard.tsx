@@ -1,5 +1,5 @@
 import { useDarkMode } from "hooks/useDarkMode";
-import { Route, User } from "interfaces";
+import { Route } from "interfaces";
 import useColor from "theme/useColor";
 import useRouteCard from "./useRouteCard";
 import FadeIn from "./FadeInRoute";
@@ -13,14 +13,13 @@ import RouteCardActions from "./RouteCardActions";
 
 interface RouteCardProps {
   route: Route;
-  owner: User;
   delay: number;
 }
 
-export default function RouteCard({ route, owner, delay }: RouteCardProps) {
+export default function RouteCard({ route, delay }: RouteCardProps) {
   const { isDarkMode } = useDarkMode();
   const colors = useColor();
-  const hooks = useRouteCard(route, owner);
+  const hooks = useRouteCard(route);
 
   return (
     <FadeIn delay={delay} duration={800}>
@@ -54,7 +53,7 @@ export default function RouteCard({ route, owner, delay }: RouteCardProps) {
         <RouteCardMedia
           image={route.image}
           title={route.title}
-          level={owner.level}
+          level={hooks.owner.level}
           imageHover={hooks.imageHover}
           setImageHover={hooks.setImageHover}
           hover={hooks.hover}
@@ -85,7 +84,7 @@ export default function RouteCard({ route, owner, delay }: RouteCardProps) {
             />
 
             <RouteCardTeacher
-              owner={owner}
+              owner={hooks.owner}
               hover={hooks.hover}
               ownerInitial={hooks.ownerInitial}
             />
@@ -102,7 +101,7 @@ export default function RouteCard({ route, owner, delay }: RouteCardProps) {
 
           {/* List of route nodes - only showing serial and type */}
           <RouteCardModules
-            visibleNodes={hooks.visibleNodes} // ✅ Đúng tên props
+            visibleNodes={hooks.visibleNodes}
             getChipColor={hooks.getChipColor}
             chipHover={hooks.chipHover}
             setChipHover={hooks.setChipHover}
@@ -117,6 +116,7 @@ export default function RouteCard({ route, owner, delay }: RouteCardProps) {
             totalNodes={route.routeNodes.length}
             handleShowMore={hooks.handleShowMore}
             handleViewDetail={hooks.handleViewDetail}
+            routeId={route.id}
           />
         </CardContent>
       </Card>

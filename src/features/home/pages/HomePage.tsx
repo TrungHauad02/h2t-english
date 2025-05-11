@@ -13,7 +13,6 @@ import {
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import StudentHeader from "layouts/header/StudentHeader";
-import Footer from "layouts/footer/Footer";
 
 export default function HomePage() {
   const color = useColor();
@@ -39,7 +38,6 @@ export default function HomePage() {
       <LeaderboardSection />
       <ToeicSection />
       <TestimonialsSection />
-      <Footer />
     </Box>
   );
 }

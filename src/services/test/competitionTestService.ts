@@ -52,7 +52,6 @@ const remove = async (id: number) => {
   }
 };
 
-
 const getCompetitionTestsForStudent = async (
   page: number,
   itemsPerPage: number,
@@ -60,7 +59,9 @@ const getCompetitionTestsForStudent = async (
   filter?: CompetitionTestFilter
 ) => {
   try {
-    let url = `/competition-tests?page=${page - 1}&size=${itemsPerPage}&userId=${userId}&status=true`;
+    let url = `/competition-tests?page=${
+      page - 1
+    }&size=${itemsPerPage}&userId=${userId}&status=true`;
 
     if (filter) {
       if (filter.title) {
@@ -70,25 +71,39 @@ const getCompetitionTestsForStudent = async (
         url += `&sortFields=${encodeURIComponent(filter.sortBy)}`;
       }
       if (filter.startCreatedAt) {
-        url += `&startCreatedAt=${filter.startCreatedAt.toISOString().slice(0, -1)}`;
+        url += `&startCreatedAt=${filter.startCreatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.endCreatedAt) {
-        url += `&endCreatedAt=${filter.endCreatedAt.toISOString().slice(0, -1)}`;
+        url += `&endCreatedAt=${filter.endCreatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.startUpdatedAt) {
-        url += `&startUpdatedAt=${filter.startUpdatedAt.toISOString().slice(0, -1)}`;
+        url += `&startUpdatedAt=${filter.startUpdatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.endUpdatedAt) {
-        url += `&endUpdatedAt=${filter.endUpdatedAt.toISOString().slice(0, -1)}`;
+        url += `&endUpdatedAt=${filter.endUpdatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.startStartTime) {
-        url += `&startStartTime=${filter.startStartTime.toISOString().slice(0, -1)}`;
+        url += `&startStartTime=${filter.startStartTime
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.endStartTime) {
-        url += `&endStartTime=${filter.endStartTime.toISOString().slice(0, -1)}`;
+        url += `&endStartTime=${filter.endStartTime
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.startEndTime) {
-        url += `&startEndTime=${filter.startEndTime.toISOString().slice(0, -1)}`;
+        url += `&startEndTime=${filter.startEndTime
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.endEndTime) {
         url += `&endEndTime=${filter.endEndTime.toISOString().slice(0, -1)}`;
@@ -122,25 +137,39 @@ const getCompetitionTestsByTeacher = async (
         url += `&sortFields=${encodeURIComponent(filter.sortBy)}`;
       }
       if (filter.startCreatedAt) {
-        url += `&startCreatedAt=${filter.startCreatedAt.toISOString().slice(0, -1)}`;
+        url += `&startCreatedAt=${filter.startCreatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.endCreatedAt) {
-        url += `&endCreatedAt=${filter.endCreatedAt.toISOString().slice(0, -1)}`;
+        url += `&endCreatedAt=${filter.endCreatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.startUpdatedAt) {
-        url += `&startUpdatedAt=${filter.startUpdatedAt.toISOString().slice(0, -1)}`;
+        url += `&startUpdatedAt=${filter.startUpdatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.endUpdatedAt) {
-        url += `&endUpdatedAt=${filter.endUpdatedAt.toISOString().slice(0, -1)}`;
+        url += `&endUpdatedAt=${filter.endUpdatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.startStartTime) {
-        url += `&startStartTime=${filter.startStartTime.toISOString().slice(0, -1)}`;
+        url += `&startStartTime=${filter.startStartTime
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.endStartTime) {
-        url += `&endStartTime=${filter.endStartTime.toISOString().slice(0, -1)}`;
+        url += `&endStartTime=${filter.endStartTime
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.startEndTime) {
-        url += `&startEndTime=${filter.startEndTime.toISOString().slice(0, -1)}`;
+        url += `&startEndTime=${filter.startEndTime
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.endEndTime) {
         url += `&endEndTime=${filter.endEndTime.toISOString().slice(0, -1)}`;
@@ -164,6 +193,16 @@ const verify = async (id: number) => {
   }
 };
 
+const getLastCompletedCompetition = async () => {
+  try {
+    const response = await apiClient.get("/competition-tests/recent-completed");
+    return response.data;
+  } catch (error) {
+    console.error("Error get last completed CompetitionTest:", error);
+    throw error;
+  }
+};
+
 export const competitionTestService = {
   findById,
   create,
@@ -173,4 +212,5 @@ export const competitionTestService = {
   getCompetitionTestsForStudent,
   getCompetitionTestsByTeacher,
   verify,
+  getLastCompletedCompetition,
 };

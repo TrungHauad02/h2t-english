@@ -12,8 +12,6 @@ export { default as HistoryTestPage } from "features/historyTest/pages/HistoryTe
 export { default as ReviewHistoryTestPage } from "features/historyTest/pages/ReviewHistoryTestPage";
 export { default as HistoryToeicPage } from "features/historyTest/pages/HistoryToeicPage";
 
-// Error Log Page
-export { default as ErrorLogPage } from "features/errorlog/pages/ErrorLogPage";
 // Error Page
 export { default as ErrorPage } from "pages/ErrorPage";
 
@@ -50,7 +48,7 @@ export { default as CompetitionDetailPage } from "features/teacher/manageTest/pa
 export { default as ManageToeicPage } from "features/teacher/manageTest/pages/ManageToeicPage";
 export { default as ToeicDetailPage } from "features/teacher/manageTest/pages/ToeicDetailPage";
 // Admin Pages
-export { default as ManageUserPage } from "features/admin/pages/ManageUsersPage";
 export { default as ManageStudentPage } from "features/admin/pages/ManageStudentsPage";
 export { default as ManageTeacherPage } from "features/admin/pages/ManageTeachersPage";
-export { default as ManageTeacherAdvancePage } from "features/admin/pages/ManageTeacherAdvancePage";
+export { default as AdminDashboardPage } from "features/admin/pages/AdminDashboardPage";
+export { default as ErrorLogPage } from "features/errorlog/pages/ErrorLogPage";

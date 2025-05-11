@@ -41,3 +41,25 @@ export function formatDateShort(date: Date | undefined): string {
   const year = parsedDate.getFullYear();
   return `${day}/${month}/${year}`;
 }
+
+export const formatLocalDateForFilter = (
+  date: Date,
+  endOfDay: boolean = false
+): string => {
+  const dateCopy = new Date(date);
+
+  if (endOfDay) {
+    dateCopy.setHours(23, 59, 59, 999);
+  } else {
+    dateCopy.setHours(0, 0, 0, 0);
+  }
+
+  const year = dateCopy.getFullYear();
+  const month = String(dateCopy.getMonth() + 1).padStart(2, "0");
+  const day = String(dateCopy.getDate()).padStart(2, "0");
+  const hours = String(dateCopy.getHours()).padStart(2, "0");
+  const minutes = String(dateCopy.getMinutes()).padStart(2, "0");
+  const seconds = String(dateCopy.getSeconds()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+};

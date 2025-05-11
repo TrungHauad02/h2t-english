@@ -99,6 +99,31 @@ const getSubmitCompetitionsForStudent = async (
   }
 };
 
+const findByIdAndUserIdAndStatusFalse = async (
+  testId: number,
+  userId: number
+): Promise<{ data: SubmitCompetition }> => {
+  try {
+    const response = await apiClient.get(
+      `/submit-competitions/by-test-and-user?testId=${testId}&userId=${userId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching submit competitions for student:", error);
+    throw error;
+  }
+};
+
+const getLeaderBoard = async () => {
+  try {
+    const response = await apiClient.get(`/submit-competitions/leaderboard`);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting leader board:", error);
+    throw error;
+  }
+};
+
 export const submitCompetitionService = {
   findById,
   create,
@@ -107,4 +132,5 @@ export const submitCompetitionService = {
   remove,
   getSubmitCompetitionsForStudent,
   findByIdAndUserIdAndStatusFalse,
+  getLeaderBoard,
 };

@@ -67,13 +67,11 @@ const AppRoutes = () => {
         }
       >
         <Route path="/admin" element={<Layouts.AdminLayout />}>
-          <Route index element={<Pages.ManageUserPage />} />
+          <Route index element={<Pages.AdminDashboardPage />} />
+          <Route path="dashboard" element={<Pages.AdminDashboardPage />} />
           <Route path="manage-student" element={<Pages.ManageStudentPage />} />
           <Route path="manage-teacher" element={<Pages.ManageTeacherPage />} />
-          <Route
-            path="manage-teacher/teacher-advance"
-            element={<Pages.ManageTeacherAdvancePage />}
-          />
+          <Route path="error-log/:id" element={<Pages.ErrorLogPage />} />
           <Route path="error-log" element={<Pages.ErrorLogPage />} />
         </Route>
       </Route>

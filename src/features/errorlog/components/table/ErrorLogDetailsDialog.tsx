@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -14,19 +13,32 @@ import {
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { ErrorLog } from "interfaces";
-import { ErrorLogHeaderDetailsDialog, useLogTable, ErrorCodeSection, ErrorMessageSection, ErrorStatusSection, ErrorRecommentSection } from ".";
+import {
+  ErrorLogHeaderDetailsDialog,
+  useLogTable,
+  ErrorCodeSection,
+  ErrorMessageSection,
+  ErrorStatusSection,
+  ErrorRecommendSection,
+} from "./detailsDialog";
 
 interface ErrorLogDetailsDialogProps {
   open: boolean;
   log: ErrorLog | null;
   onClose: () => void;
   onMarkResolved?: (log: ErrorLog) => void;
+  onDeleteLog?: (log: ErrorLog) => void;
 }
 
-export default function ErrorLogDetailsDialog({ open, log, onClose, onMarkResolved }: ErrorLogDetailsDialogProps) {
+export default function ErrorLogDetailsDialog({
+  open,
+  log,
+  onClose,
+  onMarkResolved,
+  onDeleteLog,
+}: ErrorLogDetailsDialogProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [activeTab, setActiveTab] = useState<number>(0);
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const hooks = useLogTable(log);
@@ -46,21 +58,21 @@ export default function ErrorLogDetailsDialog({ open, log, onClose, onMarkResolv
           borderRadius: isMobile ? 0 : "1rem",
           backgroundImage: isDarkMode
             ? `radial-gradient(at 100% 0%, ${alpha(
-              color.teal900,
-              0.15
-            )} 0px, transparent 50%),
+                color.teal900,
+                0.15
+              )} 0px, transparent 50%),
                radial-gradient(at 0% 100%, ${alpha(
-              color.emerald900,
-              0.1
-            )} 0px, transparent 50%)`
+                 color.emerald900,
+                 0.1
+               )} 0px, transparent 50%)`
             : `radial-gradient(at 100% 0%, ${alpha(
-              color.teal100,
-              0.3
-            )} 0px, transparent 50%),
+                color.teal100,
+                0.3
+              )} 0px, transparent 50%),
                radial-gradient(at 0% 100%, ${alpha(
-              color.emerald100,
-              0.2
-            )} 0px, transparent 50%)`,
+                 color.emerald100,
+                 0.2
+               )} 0px, transparent 50%)`,
           overflow: "hidden",
         },
       }}
@@ -71,7 +83,6 @@ export default function ErrorLogDetailsDialog({ open, log, onClose, onMarkResolv
         onClose={onClose}
         log={log}
         severityInfo={hooks.severityInfo}
-        getBadgeContent={hooks.getBadgeContent}
       />
 
       <DialogContent
@@ -90,7 +101,7 @@ export default function ErrorLogDetailsDialog({ open, log, onClose, onMarkResolv
         }}
       >
         {/* Overview Tab */}
-        <Collapse in={activeTab === 0} timeout={500} mountOnEnter unmountOnExit>
+        <Collapse in={true} timeout={500} mountOnEnter unmountOnExit>
           <Box sx={{ p: 3 }}>
             {/* Error Code Section */}
             <ErrorCodeSection
@@ -110,13 +121,9 @@ export default function ErrorLogDetailsDialog({ open, log, onClose, onMarkResolv
             <ErrorStatusSection log={log} formatDate={hooks.formatDate} />
 
             {/* Recommended Actions Section */}
-            {log.status && (
-              <ErrorRecommentSection />
-            )}
-
+            {log.status && <ErrorRecommendSection />}
           </Box>
         </Collapse>
-
       </DialogContent>
 
       <DialogActions
@@ -145,26 +152,43 @@ export default function ErrorLogDetailsDialog({ open, log, onClose, onMarkResolv
           Close
         </Button>
 
-        {log.status && (
-          <Button
-            variant="contained"
-            onClick={() => {
-              if (onMarkResolved && log) {
-                onMarkResolved(log);
-              }
-            }}
-            sx={{
-              textTransform: "none",
-              backgroundColor: isDarkMode ? color.teal700 : color.teal600,
-              color: color.white,
-              "&:hover": {
-                backgroundColor: isDarkMode ? color.teal600 : color.teal500,
-              },
-            }}
-          >
-            Mark as Resolved
-          </Button>
-        )}
+        <Box sx={{ display: "flex", gap: 2 }}>
+          {/* Show Delete button when status is false */}
+          {log.status === false && onDeleteLog && (
+            <Button
+              variant="contained"
+              onClick={() => onDeleteLog(log)}
+              sx={{
+                textTransform: "none",
+                backgroundColor: isDarkMode ? color.red700 : color.red600,
+                color: color.white,
+                "&:hover": {
+                  backgroundColor: isDarkMode ? color.red600 : color.red500,
+                },
+              }}
+            >
+              Delete Log
+            </Button>
+          )}
+
+          {/* Show Mark as Resolved button when status is true */}
+          {log.status === true && onMarkResolved && (
+            <Button
+              variant="contained"
+              onClick={() => onMarkResolved(log)}
+              sx={{
+                textTransform: "none",
+                backgroundColor: isDarkMode ? color.teal700 : color.teal600,
+                color: color.white,
+                "&:hover": {
+                  backgroundColor: isDarkMode ? color.teal600 : color.teal500,
+                },
+              }}
+            >
+              Mark as Resolved
+            </Button>
+          )}
+        </Box>
       </DialogActions>
     </Dialog>
   );

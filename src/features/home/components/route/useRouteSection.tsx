@@ -1,22 +1,58 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme, useMediaQuery, Box } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import { mockTeacher } from "features/home/services/mockData";
-import { User } from "interfaces";
+import { Route } from "interfaces";
+import { routeService } from "services";
+import { toast } from "react-toastify";
 
 export default function useRouteSection() {
   const { isDarkMode } = useDarkMode();
   const colors = useColor();
   const [activeTab, setActiveTab] = useState(0);
+  const [longestRoutes, setLongestRoutes] = useState<Route[]>([]);
+  const [recentRoutes, setRecentRoutes] = useState<Route[]>([]);
+  const [isLongestRoutesLoaded, setIsLongestRoutesLoaded] = useState(false);
+  const [isRecentRoutesLoaded, setIsRecentRoutesLoaded] = useState(false);
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const getRouteOwner = (ownerId: number): User => {
-    return mockTeacher;
-  };
+  useEffect(() => {
+    const fetchLongestRoutes = async () => {
+      if (!isLongestRoutesLoaded && activeTab === 0) {
+        try {
+          const resData = await routeService.getLongestRoute();
+          setLongestRoutes(resData.data);
+          setIsLongestRoutesLoaded(true);
+        } catch (error) {
+          console.log(error);
+          toast.error("Fail to fetch longest routes data");
+        }
+      }
+    };
+    fetchLongestRoutes();
+  }, [activeTab, isLongestRoutesLoaded]);
+
+  useEffect(() => {
+    const fetchRecentRoutes = async () => {
+      if (!isRecentRoutesLoaded && activeTab === 1) {
+        try {
+          const resData = await routeService.getRoutesForStudent(1, 3, {
+            sortBy: "-createdAt",
+            status: true,
+          });
+          setRecentRoutes(resData.data.content);
+          setIsRecentRoutesLoaded(true);
+        } catch (error) {
+          console.log(error);
+          toast.error("Fail to fetch recent routes data");
+        }
+      }
+    };
+    fetchRecentRoutes();
+  }, [activeTab, isRecentRoutesLoaded]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
@@ -83,16 +119,16 @@ export default function useRouteSection() {
     return elements;
   };
 
+  const learningRoutes = activeTab === 0 ? longestRoutes : recentRoutes;
+
   return {
-    isDarkMode,
-    colors,
+    learningRoutes,
     activeTab,
     setActiveTab,
     navigate,
     isMobile,
     handleTabChange,
     handleExploreAll,
-    getRouteOwner,
-    createDecorationElements
+    createDecorationElements,
   };
 }

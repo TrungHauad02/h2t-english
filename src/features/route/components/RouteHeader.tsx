@@ -16,10 +16,11 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SchoolIcon from "@mui/icons-material/School";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
-import { Route } from "interfaces";
+import { Route, RouteNodeEnum } from "interfaces";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { formatDate } from "utils/format";
+import { useNavigate } from "react-router-dom";
 
 interface RouteHeaderProps {
   route: Route;
@@ -30,12 +31,55 @@ export default function RouteHeader({ route }: RouteHeaderProps) {
   const { isDarkMode } = useDarkMode();
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate();
 
   // Dynamic color variables
   const cardBgColor = isDarkMode ? color.gray900 : color.white;
   const accentGradient = `linear-gradient(135deg, ${color.teal400}, ${color.emerald500})`;
   const textColor = isDarkMode ? color.white : color.gray900;
   const secondaryTextColor = isDarkMode ? color.gray300 : color.gray700;
+
+  const handleStartLearning = () => {
+    let prefix = "";
+    switch (route.routeNodes[0].type) {
+      case RouteNodeEnum.VOCABULARY:
+        prefix = "/lesson/topics";
+        break;
+      case RouteNodeEnum.GRAMMAR:
+        prefix = "/lesson/grammars";
+        break;
+      case RouteNodeEnum.READING:
+        prefix = "/lesson/readings";
+        break;
+      case RouteNodeEnum.LISTENING:
+        prefix = "/lesson/listenings";
+        break;
+      case RouteNodeEnum.WRITING:
+        prefix = "/lesson/writings";
+        break;
+      case RouteNodeEnum.SPEAKING:
+        prefix = "/lesson/speakings";
+        break;
+      case RouteNodeEnum.MIXING_TEST:
+        prefix = "/test/mixings";
+        break;
+      case RouteNodeEnum.READING_TEST:
+        prefix = "/test/readings";
+        break;
+      case RouteNodeEnum.LISTENING_TEST:
+        prefix = "/test/listenings";
+        break;
+      case RouteNodeEnum.WRITING_TEST:
+        prefix = "/test/writings";
+        break;
+      case RouteNodeEnum.SPEAKING_TEST:
+        prefix = "/test/speakings";
+        break;
+      default:
+        break;
+    }
+    navigate(`${prefix}/${route.routeNodes[0].nodeId}`);
+  };
 
   return (
     <Paper
@@ -437,6 +481,7 @@ export default function RouteHeader({ route }: RouteHeaderProps) {
               }}
             >
               <Button
+                onClick={handleStartLearning}
                 variant="contained"
                 endIcon={<ArrowForwardIcon />}
                 startIcon={<AutoAwesomeIcon />}

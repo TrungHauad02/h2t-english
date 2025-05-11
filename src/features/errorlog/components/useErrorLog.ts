@@ -1,104 +1,100 @@
-import { BaseFilter, ErrorLog, SeverityEnum } from "interfaces";
+import { ErrorLog, ErrorLogFilter, SeverityEnum } from "interfaces";
 import { useEffect, useState } from "react";
 import { errorLogService } from "services/features/errorLogService";
-export default function useErrorLog(initialItemsPerPage: number) {
+
+export default function useErrorLog() {
   const [errorLogs, setErrorLogs] = useState<ErrorLog[]>([]);
-  const [filteredErrorLogs, setFilteredErrorLogs] = useState<ErrorLog[]>([]);
   const [page, setPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalItems, setTotalItems] = useState(0);
-  const [filters, setFilters] = useState<BaseFilter & {
-    severity?: SeverityEnum | null;
-    errorCode?: string;
-  }>({
-    status: null,
-    sortBy: "-createdAt",
-    severity: null,
-    errorCode: "",
+  const [errorCounts, setErrorCounts] = useState({
+    [SeverityEnum.LOW]: 0,
+    [SeverityEnum.MEDIUM]: 0,
+    [SeverityEnum.HIGH]: 0,
   });
 
-  useEffect(() => {
-    const fetchLogs = async () => {
-      try {
-        const response = await errorLogService.getErrorLogs(page, itemsPerPage); 
-        setErrorLogs(response.data.content); 
-        setTotalItems(response.data.totalElements);
-      } catch (error) {
-        console.error("Failed to fetch error logs", error);
-      }
-    };
-  
-    fetchLogs();
-  }, [page, itemsPerPage]);
+  const [filters, setFilters] = useState<ErrorLogFilter>({
+    sortBy: "-createdAt",
+  });
 
-  useEffect(() => {
-    let result = [...errorLogs];
+  const fetchErrorCountsBySeverity = async () => {
+    try {
+      const severities = [
+        SeverityEnum.LOW,
+        SeverityEnum.MEDIUM,
+        SeverityEnum.HIGH,
+      ];
 
-    // Apply search
-    if (searchQuery) {
-      result = result.filter(
-        (log) =>
-          log.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          log.errorCode.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
+      const countPromises = severities.map(async (severity) => {
+        const response = await errorLogService.getErrorLogs(1, 1, {
+          ...filters,
+          severity: severity,
+        });
+        return {
+          severity,
+          count: response.data.totalElements,
+        };
+      });
 
-    // Apply filters
-    if (filters.status !== null) result = result.filter((log) => log.status === filters.status);
-    if (filters.severity !== null) result = result.filter((log) => log.severity === filters.severity);
-    if (filters.errorCode) result = result.filter((log) =>
-      log.errorCode.toLowerCase().includes(filters.errorCode!.toLowerCase())
-    );
+      const counts = await Promise.all(countPromises);
 
-    if (filters.startCreatedAt) {
-      result = result.filter((log) =>
-        log.createdAt && new Date(log.createdAt) >= new Date(filters.startCreatedAt!)
-      );
-    }
-
-    if (filters.endCreatedAt) {
-      result = result.filter((log) =>
-        log.createdAt && new Date(log.createdAt) <= new Date(filters.endCreatedAt!)
-      );
-    }
-
-    // Apply sorting
-    if (filters.sortBy) {
-      const sortField = filters.sortBy.startsWith("-") ? filters.sortBy.substring(1) : filters.sortBy;
-      const sortDirection = filters.sortBy.startsWith("-") ? -1 : 1;
-
-      result.sort((a, b) => {
-        if (!a[sortField as keyof ErrorLog] || !b[sortField as keyof ErrorLog]) return 0;
-        if (sortField === "createdAt" || sortField === "updatedAt") {
-          return sortDirection * (
-            new Date(a[sortField] as Date).getTime() -
-            new Date(b[sortField] as Date).getTime()
-          );
+      const newErrorCounts = counts.reduce(
+        (acc, curr) => {
+          acc[curr.severity] = curr.count;
+          return acc;
+        },
+        {
+          [SeverityEnum.LOW]: 0,
+          [SeverityEnum.MEDIUM]: 0,
+          [SeverityEnum.HIGH]: 0,
         }
-        return 0;
+      );
+
+      setErrorCounts(newErrorCounts);
+    } catch (error) {
+      console.error("Failed to fetch error counts", error);
+      setErrorCounts({
+        [SeverityEnum.LOW]: 0,
+        [SeverityEnum.MEDIUM]: 0,
+        [SeverityEnum.HIGH]: 0,
       });
     }
+  };
 
-    setFilteredErrorLogs(result);
-  }, [errorLogs, searchQuery, filters]);
+  const fetchLogs = async () => {
+    try {
+      const apiFilter: ErrorLogFilter = {
+        ...filters,
+      };
+
+      if (searchQuery) {
+        apiFilter.message = searchQuery;
+      }
+
+      const response = await errorLogService.getErrorLogs(
+        page,
+        itemsPerPage,
+        apiFilter
+      );
+
+      setErrorLogs(response.data.content);
+      setTotalItems(response.data.totalElements);
+      fetchErrorCountsBySeverity();
+    } catch (error) {
+      console.error("Failed to fetch error logs", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchLogs();
+  }, [page, itemsPerPage, filters, searchQuery]);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  const paginatedLogs = filteredErrorLogs;
-
-  const errorCounts = {
-    [SeverityEnum.LOW]: errorLogs.filter((log) => log.severity === SeverityEnum.LOW).length,
-    [SeverityEnum.MEDIUM]: errorLogs.filter((log) => log.severity === SeverityEnum.MEDIUM).length,
-    [SeverityEnum.HIGH]: errorLogs.filter((log) => log.severity === SeverityEnum.HIGH).length,
-  };
-
   const onRefresh = () => {
     setFilters({
-      status: null,
       sortBy: "-createdAt",
-      severity: null,
-      errorCode: "",
     });
     setSearchQuery("");
     setPage(1);
@@ -118,16 +114,16 @@ export default function useErrorLog(initialItemsPerPage: number) {
 
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
+    setPage(1);
   };
 
-  const handleFilterChange = (newFilters: typeof filters) => {
-    setFilters({ ...filters, ...newFilters });
+  const handleFilterChange = (newFilters: Partial<ErrorLogFilter>) => {
+    setFilters((prevFilters) => ({ ...prevFilters, ...newFilters }));
+    setPage(1);
   };
 
   return {
     errorLogs,
-    filteredErrorLogs,
-    paginatedLogs,
     page,
     itemsPerPage,
     filters,
@@ -143,7 +139,7 @@ export default function useErrorLog(initialItemsPerPage: number) {
     handleItemsPerPageChange,
     handleSearchChange,
     handleFilterChange,
-    totalItems, 
-    setTotalItems
+    totalItems,
+    fetchLogs,
   };
 }

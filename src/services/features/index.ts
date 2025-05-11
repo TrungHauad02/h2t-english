@@ -6,5 +6,5 @@ export * from "./userService";
 export * from "./authService";
 export * from "./emailService";
 export * from "./commentTestService";
-
-
+export * from "./errorLogService";
+export * from "./adminDashboardService";

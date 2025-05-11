@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -12,7 +12,6 @@ import {
 import BadgeIcon from "@mui/icons-material/Badge";
 
 import { User, LevelsEnum } from "interfaces";
-import { mockData } from "../services/mockData";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import {
@@ -21,6 +20,8 @@ import {
   ExpertiseSection,
   LevelBadge,
 } from "./teacherInfo";
+import { userService } from "services";
+import { toast } from "react-toastify";
 
 interface TeacherInfoCardProps {
   userId: number;
@@ -31,7 +32,19 @@ export default function TeacherInfoCard({ userId }: TeacherInfoCardProps) {
   const { isDarkMode } = useDarkMode();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const teacher: User = mockData.teacher;
+  const [teacher, setTeacher] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchTeacher = async () => {
+      try {
+        const resData = await userService.findById(userId);
+        setTeacher(resData.data);
+      } catch (error) {
+        toast.error("Failed to fetch teacher data");
+      }
+    };
+    fetchTeacher();
+  }, [userId]);
 
   const getLevelColor = (level?: LevelsEnum) => {
     switch (level) {
@@ -68,7 +81,11 @@ export default function TeacherInfoCard({ userId }: TeacherInfoCardProps) {
     }
   };
 
-  const levelColors = getLevelColor(teacher.level);
+  const levelColors = getLevelColor(teacher?.level);
+
+  if (!teacher) {
+    return null;
+  }
 
   return (
     <Card
