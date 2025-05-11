@@ -90,10 +90,10 @@ export default function ResponseRow({ row, onEvaluate, onViewDetail, isMobile }:
             sx={{
               backgroundColor: row.status 
                 ? (isDarkMode ? color.green800 : color.green100)
-                : (isDarkMode ? color.gray700 : color.gray200),
+                : isDarkMode ? color.red800 : color.red100,
               color: row.status
                 ? (isDarkMode ? color.green300 : color.green800)
-                : (isDarkMode ? color.gray300 : color.gray700),
+                : isDarkMode ? color.red200 : color.red800,
               fontWeight: 500,
               fontSize: '0.75rem',
             }}

@@ -329,13 +329,12 @@ export default function EvaluateDialog({
                 label={response.status ? "Evaluated" : "Not Evaluated Yet"}
                 size="small"
                 sx={{
-                  backgroundColor: response.status 
-                    ? (isDarkMode ? color.green800 : color.green100)
-                    : (isDarkMode ? color.gray700 : color.gray200),
-                  color: response.status
-                    ? (isDarkMode ? color.green300 : color.green800)
-                    : (isDarkMode ? color.gray300 : color.gray700),
-                  fontWeight: 500,
+                  backgroundColor: response.evaluate
+                    ? isDarkMode ? color.green800 : color.green100
+                    : isDarkMode ? color.red800 : color.red100,
+                  color: response.evaluate
+                    ? isDarkMode ? color.green200 : color.green800
+                    : isDarkMode ? color.red200 : color.red800,
                 }}
               />
             </Box>
