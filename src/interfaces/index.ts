@@ -13,8 +13,8 @@ export default interface BaseEntity {
 export interface AIResponse extends BaseEntity {
   request: string;
   response: string;
-  evaluate: string;
-  userId: number; 
+  evaluate?: string;
+  userId?: number; 
 }
 
 export type QuestionSupportType =
