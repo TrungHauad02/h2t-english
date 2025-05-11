@@ -10,7 +10,6 @@ import {
   Paper,
   Chip,
   IconButton,
-  useTheme
 } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
@@ -48,9 +47,7 @@ export default function DetailDialog({
   onEvaluate
 }: DetailDialogProps) {
   const color = useColor();
-  const { isDarkMode } = useDarkMode();
-  const theme = useTheme();
-  
+  const { isDarkMode } = useDarkMode();  
   // State for copy operations
   const [copyRequestSuccess, setCopyRequestSuccess] = useState<boolean>(false);
   const [copyResponseSuccess, setCopyResponseSuccess] = useState<boolean>(false);

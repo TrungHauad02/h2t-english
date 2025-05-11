@@ -13,7 +13,6 @@ import {
   Chip,
   IconButton,
   CircularProgress,
-  useTheme,
   Alert,
   Tooltip,
   Fade
@@ -52,9 +51,7 @@ export default function EvaluateDialog({
   onSave 
 }: EvaluateDialogProps) {
   const color = useColor();
-  const { isDarkMode } = useDarkMode();
-  const theme = useTheme();
-  
+  const { isDarkMode } = useDarkMode();  
   const [evaluate, setEvaluate] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
