@@ -1,18 +1,21 @@
-import { Typography, Box } from "@mui/material";
+import {  Box } from "@mui/material";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import StatCard from "./historyTest/StatCard";
-import { calculateAverageScore, calculateHighestScore } from "./historyTest/utils";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-
+export interface HistoryStats {
+    averageScore: number;      
+    totalTestsTaken: number;   
+    highestScore: number;      
+  }
 interface HistoryTestDashboardProps {
-    filteredHistory: any[];
+    testStats: HistoryStats;
 }
 
 export default function HistoryTestDashboard({
-    filteredHistory,
+    testStats,
 }: HistoryTestDashboardProps) {
     const color = useColor();
     const { isDarkMode } = useDarkMode();
@@ -31,7 +34,7 @@ export default function HistoryTestDashboard({
             >
                 <StatCard
                     title="Average Score"
-                    value={calculateAverageScore(filteredHistory)}
+                    value={testStats?.averageScore?.toString() ?? "0"}
                     icon={<TrendingUpIcon />}
                     color={isDarkMode ? color.teal400 : color.teal600}
                     isDarkMode={isDarkMode}
@@ -39,7 +42,7 @@ export default function HistoryTestDashboard({
                 />
                 <StatCard
                     title="Tests Taken"
-                    value={filteredHistory.length.toString()}
+                    value={testStats?.totalTestsTaken.toString()  ?? "0" }
                     icon={<AssignmentIcon />}
                     color={isDarkMode ? color.emerald400 : color.emerald600}
                     isDarkMode={isDarkMode}
@@ -47,7 +50,7 @@ export default function HistoryTestDashboard({
                 />
                 <StatCard
                     title="High Score"
-                    value={calculateHighestScore(filteredHistory)}
+                    value={testStats?.highestScore.toString()  ?? "0"}
                     icon={<EmojiEventsIcon />}
                     color={isDarkMode ? color.green400 : color.green600}
                     isDarkMode={isDarkMode}

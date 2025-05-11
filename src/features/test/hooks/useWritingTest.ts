@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { testWritingService, submitTestWritingService, scoreWritingService } from "services";
+import { testWritingService, submitTestWritingService, scoreWritingService,submitTestService,commentTestService } from "services";
 import { TestWriting, SubmitTestWriting } from "interfaces";
 
 interface QuestionItem {
@@ -32,7 +32,7 @@ const useWritingTest = (testWritingIds: number[], submitTestId: number) => {
       try {
         setLoading(true);
         setError(false);
-        const writingItemsResponse = await testWritingService.getByIds(testWritingIds);
+        const writingItemsResponse = await testWritingService.getByIdsAndStatus(testWritingIds,true);
         const writingItems = writingItemsResponse.data || [];
         const promptsMap: Record<number, TestWriting> = {};
         writingItems.forEach((item: TestWriting) => promptsMap[item.id] = item);
@@ -142,50 +142,120 @@ const useWritingTest = (testWritingIds: number[], submitTestId: number) => {
     setAllQuestions(prev => prev.map(q => q.id === questionId ? { ...q, isAnswered } : q));
   };
 
-  const handleSubmitTest = async () => {
+  const handleSubmitTest = useCallback(async () => {
+    if (!submitTestId) return;
+    
     try {
       setIsSubmitting(true);
       setIsConfirmDialogOpen(false);
       setIsSubmitDialogOpen(true);
+      
       const totalQuestions = allQuestions.length;
-      const testWritingRes = await testWritingService.getByIds(testWritingIds);
+ 
+      const testWritingRes = await testWritingService.getByIdsAndStatus(testWritingIds,true);
       const testWritings = testWritingRes.data || [];
-      const writingRes = await submitTestWritingService.findBySubmitTestIdAndTestWritingIds(submitTestId, testWritingIds);
+      
+      const writingRes = await submitTestWritingService.findBySubmitTestIdAndTestWritingIds(
+        submitTestId, 
+        testWritingIds
+      );
+      
+      if (!writingRes?.data?.length) {
+        const result = {
+          totalQuestions,
+          correctAnswers: 0,
+          score: 0
+        };
+        
+        setSubmissionResult(result);
+        
+        if (submitTestId) {
+          await submitTestService.patch(submitTestId, { 
+            score: 0,
+            status: true 
+          });
+        }
+        
+        return;
+      }
+      
       let totalScore = 0;
       let answeredQuestions = 0;
-
+      
+      const commentRequestData: any = {
+        vocabulary: [],
+        grammar: [],
+        reading: [],
+        listening: [],
+        speaking: [],
+        writing: []
+      };
+      
+      // Xử lý từng câu trả lời writing
       for (const answer of writingRes.data as SubmitTestWriting[]) {
         if (answer.content && answer.content.trim()) {
           const testWriting = testWritings.find((tw: TestWriting) => tw.id === answer.testWriting_id);
+          
           if (testWriting?.topic) {
+            // Thêm vào dữ liệu comment
+            commentRequestData.writing.push({
+              topic: testWriting.topic,
+              userAnswer: answer.content
+            });
+            
+            // Chấm điểm
             const scoreResult = await scoreWritingService.scoreWriting(answer.content, testWriting.topic);
+            
             if (scoreResult.data) {
               const numericScore = parseFloat(scoreResult.data.score);
+              
+              // Cập nhật điểm và comment cho bài viết
               await submitTestWritingService.update(answer.id, {
                 ...answer,
                 score: numericScore,
                 comment: scoreResult.data.feedback || ""
               });
+              
               totalScore += numericScore;
               answeredQuestions++;
             }
           }
         }
       }
-
+      
+      // Tính điểm trung bình (thang điểm 100)
       const avgScore = answeredQuestions > 0 ? totalScore / answeredQuestions : 0;
-
-      setSubmissionResult({
+      
+      // Lấy comment
+      const commentResponse = await commentTestService.commentTest(commentRequestData);
+      
+      // Kết quả cuối cùng
+      const result = {
         totalQuestions,
         correctAnswers: answeredQuestions,
-        score: avgScore
-      });
+        score: avgScore,
+        comment: commentResponse.data.feedback,
+        strengths: commentResponse.data.strengths,
+        areasToImprove: commentResponse.data.areasToImprove
+      };
+      
+      // Cập nhật kết quả vào database
+      if (submitTestId) {
+        await submitTestService.patch(submitTestId, { 
+          score: avgScore,
+          comment: commentResponse.data.feedback,
+          status: true 
+        });
+      }
+      
+      setSubmissionResult(result);
+      
     } catch (error) {
-      console.error("Error submitting test:", error);
+      console.error("Error submitting writing test:", error);
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [submitTestId, testWritingIds, allQuestions]);
 
   return {
     currentIndex,

@@ -54,7 +54,7 @@ export function SpeakingSection({ partId, testItemIds }: SpeakingSectionProps) {
   const fetchSpeakings = async () => {
     try {
       if (partId) {
-        const resData = await testSpeakingService.getByIds(listTestIdsRef.current);
+        const resData = await testSpeakingService.getByIdsAndStatus(listTestIdsRef.current);
         setSpeakings(resData.data);
         
         const newTestSpeakingIds = resData.data.map((testSpeaking: TestSpeaking) => testSpeaking.id);
@@ -80,20 +80,30 @@ export function SpeakingSection({ partId, testItemIds }: SpeakingSectionProps) {
     }
   };
 
-  // Toggle speaking status
-  const handleToggleStatus = (speakingId: number) => {
+  const handleToggleStatus = async (speakingId: number) => {
     const speakingToUpdate = speakings.find(s => s.id === speakingId);
     if (!speakingToUpdate) return;
-    
-    pendingStatusChangesRef.current[speakingId] = !speakingToUpdate.status;
-    
+  
+    const newStatus = !speakingToUpdate.status;
+  
+    if (newStatus === true) {
+      const verifyResult = await testSpeakingService.verify(speakingId);
+      if (verifyResult.status !== "SUCCESS") {
+        toast.error("Speaking test not valid");
+        return;
+      }
+    }
+  
+    pendingStatusChangesRef.current[speakingId] = newStatus;
     setHasMadeChanges(true);
-    
-    const updatedSpeakings = speakings.map(s => 
-      s.id === speakingId ? { ...s, status: !s.status } : s
+  
+    const updatedSpeakings = speakings.map(s =>
+      s.id === speakingId ? { ...s, status: newStatus } : s
     );
+  
     setSpeakings(updatedSpeakings);
   };
+  
 
   // Calculate question ranges
   const calculateQuestionRanges = (speakingsData: TestSpeaking[]) => {

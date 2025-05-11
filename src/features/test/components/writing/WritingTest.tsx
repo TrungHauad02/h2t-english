@@ -23,7 +23,6 @@ import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import CreateIcon from "@mui/icons-material/Create";
 
@@ -34,7 +33,6 @@ interface WritingTestProps {
 
 export default function WritingTest({ testWritings, submitTestId }: WritingTestProps) {
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -67,14 +65,11 @@ export default function WritingTest({ testWritings, submitTestId }: WritingTestP
     getCurrentEssay
   } = useWritingTest(testWritings, submitTestId);
 
-
   const totalQuestions = allQuestions.length;
   const answeredQuestions = allQuestions.filter(q => q.isAnswered).length;
   
   useEffect(() => {
-
     if (selectedQuestionId && questionRefs.current[selectedQuestionId]) {
-
       setTimeout(() => {
         questionRefs.current[selectedQuestionId]?.scrollIntoView({
           behavior: 'smooth',
@@ -84,7 +79,6 @@ export default function WritingTest({ testWritings, submitTestId }: WritingTestP
       
       const questionIndex = allQuestions.findIndex(q => q.id === selectedQuestionId);
       if (questionIndex !== -1) {
-        
         setCurrentIndex(questionIndex);
       }
     }
@@ -98,7 +92,6 @@ export default function WritingTest({ testWritings, submitTestId }: WritingTestP
   const isUnderMinimum = wordCount < minWords;
   const isOverMaximum = maxWords && wordCount > maxWords;
   const currentSerialNumber = currentPrompt?.serialNumber || 1;
-
 
   const getWordCountColor = useCallback(() => {
     if (isUnderMinimum) return isDarkMode ? color.warningDarkMode : color.warning;
@@ -196,10 +189,11 @@ export default function WritingTest({ testWritings, submitTestId }: WritingTestP
         </Grid>
         
         {/* Horizontal Layout Grid */}
-        <Grid item xs={12}>
+
+        <Grid item xs={9}>
           <Grid container spacing={3}>
             {/* Left: Question Info */}
-            <Grid item xs={12} md={4}>
+            <Grid item xs={5}>
               <Paper
                 elevation={3}
                 sx={{
@@ -211,6 +205,7 @@ export default function WritingTest({ testWritings, submitTestId }: WritingTestP
                     : '0 8px 32px rgba(0,0,0,0.1)',
                 }}
               >
+                {/* Giữ nguyên nội dung phần Question Info */}
                 <Box 
                   sx={{ 
                     p: { xs: 2, sm: 3 },
@@ -249,6 +244,7 @@ export default function WritingTest({ testWritings, submitTestId }: WritingTestP
                   </Box>
                 </Box>
 
+                {/* Phần nội dung còn lại của Question Info giữ nguyên */}
                 <Box 
                   sx={{ 
                     p: { xs: 2, sm: 3 },
@@ -258,6 +254,7 @@ export default function WritingTest({ testWritings, submitTestId }: WritingTestP
                     height: 'calc(100% - 80px)',
                   }}
                 >
+                  {/* Giữ nguyên toàn bộ nội dung còn lại */}
                   <Box 
                    ref={(el) => {
                     if (currentPrompt?.id && el) {
@@ -275,6 +272,7 @@ export default function WritingTest({ testWritings, submitTestId }: WritingTestP
                       mb: 3,
                     }}
                   >
+                    {/* Toàn bộ nội dung về chủ đề và hướng dẫn giữ nguyên */}
                     <Typography 
                       variant="body1" 
                       sx={{ 
@@ -330,97 +328,13 @@ export default function WritingTest({ testWritings, submitTestId }: WritingTestP
                       </Typography>
                     </Box>
                   </Box>
-
-                  {/* Question Navigation Section (Desktop) */}
-                  {!isSmallScreen && (
-                    <Box sx={{ mb: 2 }}>
-                      <Paper
-                        elevation={2}
-                        sx={{
-                          p: 2,
-                          borderRadius: '1rem',
-                          backgroundColor: isDarkMode 
-                            ? 'rgba(31, 41, 55, 0.7)' 
-                            : 'rgba(255, 255, 255, 0.9)',
-                          boxShadow: isDarkMode 
-                            ? '0 4px 12px rgba(0, 0, 0, 0.2)' 
-                            : '0 4px 12px rgba(0, 0, 0, 0.1)',
-                        }}
-                      >
-                        <Box sx={{ 
-                          display: 'flex', 
-                          justifyContent: 'space-between', 
-                          alignItems: 'center',
-                          mb: 1
-                        }}>
-                          <Typography 
-                            variant="body1" 
-                            sx={{ 
-                              fontWeight: 600,
-                              color: isDarkMode ? color.emerald300 : color.emerald700,
-                              display: 'flex',
-                              alignItems: 'center'
-                            }}
-                          >
-                            <HelpOutlineIcon fontSize="small" sx={{ mr: 1 }} />
-                            Navigation
-                          </Typography>
-                        </Box>
-                        
-                        <Box sx={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          mt: 2,
-                          mb: 1
-                        }}>
-                          <Box sx={{ 
-                            width: '20px', 
-                            height: '20px', 
-                            borderRadius: '50%', 
-                            bgcolor: isDarkMode ? color.emerald700 : color.emerald600,
-                            mr: 1
-                          }} />
-                          <Typography variant="body2" sx={{ mr: 2, color: isDarkMode ? color.gray300 : color.gray600 }}>
-                            Answered
-                          </Typography>
-                          
-                          <Box sx={{ 
-                            width: '20px', 
-                            height: '20px', 
-                            borderRadius: '50%', 
-                            bgcolor: isDarkMode ? color.gray700 : color.gray300,
-                            mr: 1
-                          }} />
-                          <Typography variant="body2" sx={{ color: isDarkMode ? color.gray300 : color.gray600 }}>
-                            Not yet answered
-                          </Typography>
-                        </Box>
-                      </Paper>
-                      
-                      <Box sx={{ mt: 2 }}>
-                        <TestQuestionGrid 
-                          questionItems={allQuestions.map(q => ({
-                            serialNumber: q.serialNumber,
-                            questionId: q.id,
-                            partType: TestPartTypeEnum.WRITING,
-                            isAnswered: q.isAnswered
-                          }))}
-                          onQuestionSelect={(item) => {
-                            console.log("Selected question:", item.questionId);
-                            setSelectedQuestionId(item.questionId);
-                          }}
-                          onSubmitTest={handleOpenConfirmDialog}
-                          isTitle={true}
-                        />
-                      </Box>
-                    </Box>
-                  )}
                 </Box>
               </Paper>
             </Grid>
+            
 
             {/* Right: Response Area */}
-            <Grid item xs={12} md={8}>
+            <Grid item xs={7}>
               <Paper
                 elevation={3}
                 sx={{
@@ -435,7 +349,7 @@ export default function WritingTest({ testWritings, submitTestId }: WritingTestP
                     : '0 8px 32px rgba(0,0,0,0.1)',
                 }}
               >
-                {/* Section de rédaction */}
+                {/* Giữ nguyên toàn bộ nội dung phần Response Area */}
                 <Box 
                   sx={{ 
                     p: { xs: 2, sm: 3 },
@@ -445,6 +359,7 @@ export default function WritingTest({ testWritings, submitTestId }: WritingTestP
                     flexDirection: 'column',
                   }}
                 >
+    
                   <Box sx={{ 
                     display: 'flex', 
                     alignItems: 'center', 
@@ -459,7 +374,8 @@ export default function WritingTest({ testWritings, submitTestId }: WritingTestP
                       height: '32px',
                       borderRadius: '50%',
                       backgroundColor: isDarkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.1)',
-                      flexShrink: 0
+                      flexShrink
+                      : 0
                     }}>
                       <CreateIcon 
                         fontSize="small"
@@ -504,7 +420,7 @@ export default function WritingTest({ testWritings, submitTestId }: WritingTestP
                           borderWidth: '1px',
                         }, 
                         '&.Mui-focused fieldset': { 
-                          borderColor: isDarkMode ? color.emerald400 : color.emerald500,
+                          borderColor: isDarkMode ? color.emerald400: color.emerald500,
                           borderWidth: '2px',
                         },
                       },
@@ -634,35 +550,30 @@ export default function WritingTest({ testWritings, submitTestId }: WritingTestP
             </Grid>
           </Grid>
         </Grid>
-        
-        {/* Mobile Question Grid */}
-        {isSmallScreen && (
-          <Grid item xs={12}>
-            <Box sx={{ mt: 2 }}>
-              <TestQuestionGrid 
-                questionItems={allQuestions.map(q => ({
-                  serialNumber: q.serialNumber,
-                  questionId: q.id,
-                  partType: TestPartTypeEnum.WRITING,
-                  isAnswered: q.isAnswered
-                }))}
-                onQuestionSelect={(item) => {
-                  setSelectedQuestionId(item.questionId);
-                }}
-                onSubmitTest={handleOpenConfirmDialog}
-                isTitle={true}
-              />
-            </Box>
-          </Grid>
-        )}
+        <Grid item xs={3}>
+          <TestQuestionGrid 
+            questionItems={allQuestions.map(q => ({
+              serialNumber: q.serialNumber,
+              questionId: q.id,
+              partType: TestPartTypeEnum.WRITING,
+              isAnswered: q.isAnswered
+            }))}
+            onQuestionSelect={(item) => {
+              console.log("Selected question:", item.questionId);
+              setSelectedQuestionId(item.questionId);
+            }}
+            onSubmitTest={handleOpenConfirmDialog}
+            isTitle={true}
+          />
+        </Grid>
       </Grid>
 
-      <SubmitTestDialogSingle 
+      <SubmitTestDialogSingle
         open={isSubmitDialogOpen}
+        submitTestId={submitTestId}
         onClose={closeSubmitDialog}
         isLoading={isSubmitting}
         result={submissionResult}
-        testName="Writing"
       />
 
       {/* Confirm Submit Dialog */}

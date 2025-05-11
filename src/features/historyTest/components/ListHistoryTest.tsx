@@ -26,7 +26,7 @@ export default function ListHistoryTest() {
     <Box sx={{ p: { xs: 1, sm: 2, md: 4 } }}>
 
       <HistoryTestDashboard
-        filteredHistory={hooks.filteredHistory}
+        testStats={hooks.testStats}
       />
       <Paper
         elevation={isDarkMode ? 1 : 3}
@@ -43,16 +43,19 @@ export default function ListHistoryTest() {
           handleTabChange={hooks.handleTabChange}
         />
         {/* Filter controls */}
-        <HistoryTestFilter
-          searchTerm={hooks.searchTerm}
-          handleSearchChange={hooks.handleSearchChange}
-          filterType={hooks.filterType}
-          handleFilterChange={hooks.handleFilterChange}
-          sortBy={hooks.sortBy}
-          handleSortChange={hooks.handleSortChange}
-          sortDirection={hooks.sortDirection}
-          toggleSortDirection={hooks.toggleSortDirection}
-        />
+        {hooks.showFilters && (
+          <HistoryTestFilter
+            searchTerm={hooks.searchTerm}
+            handleSearchChange={hooks.handleSearchChange}
+            filterType={hooks.filterType}
+            handleFilterChange={hooks.handleFilterChange}
+            sortBy={hooks.sortBy}
+            handleSortChange={hooks.handleSortChange}
+            sortDirection={hooks.sortDirection}
+            toggleSortDirection={hooks.toggleSortDirection}
+            showFiltersTest={hooks.showFiltersTest}
+          />
+        )}
 
         {/* Table of test history */}
         <HistoryTestTable
@@ -67,6 +70,7 @@ export default function ListHistoryTest() {
         />
 
         {/* Pagination */}
+        {hooks.showFilters && (
         <WEPaginationSelect
           page={hooks.page}
           totalPage={Math.ceil(hooks.filteredHistory.length / hooks.rowsPerPage)}
@@ -74,6 +78,7 @@ export default function ListHistoryTest() {
           onPageChange={hooks.handlePageChange}
           onItemsPerPageChange={hooks.handleItemsPerPageChange}
         />
+        )}
 
       </Paper>
     </Box>

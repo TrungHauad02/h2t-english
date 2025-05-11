@@ -6,7 +6,8 @@ import { AnswersSection, QuestionDetailsSection } from "./editMode";
 import { WESaveChangeButtons } from "components/input";
 import { useState } from "react";
 import { WEConfirmDelete } from "components/display";
-
+import { questionService } from "services";
+import { toast } from "react-toastify";
 interface QuestionEditModeProps {
   editData: Question;
   setEditData: (data: Question) => void;
@@ -27,9 +28,23 @@ export function QuestionEditMode({
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleQuestionChange = (field: keyof Question, value: any) => {
+  const handleQuestionChange = async (field: keyof Question, value: any) => {
+    if (field !== "status") {
+      setEditData({ ...editData, [field]: value });
+      return;
+    }
+
+    if (value === true) {
+      const verifyResult = await questionService.verify(editData.id);
+      if (verifyResult.status !== "SUCCESS") {
+        toast.error("Question is not valid for publishing.");
+        return;
+      }
+    }
+  
     setEditData({ ...editData, [field]: value });
   };
+  
 
   const handleOpenDeleteDialog = (index: number) => {
     const id = editData.answers[index].id;

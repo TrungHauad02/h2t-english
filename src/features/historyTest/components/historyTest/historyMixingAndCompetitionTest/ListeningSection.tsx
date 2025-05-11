@@ -35,7 +35,7 @@ export default function ListeningSection({
       try {
         setLoading(true);
     
-        const listeningItemsResponse = await testListeningService.getByIds(testItemIds);
+        const listeningItemsResponse = await testListeningService.getByIdsAndStatus(testItemIds,true);
         const items = listeningItemsResponse.data || [];
         
         let currentSerial = startSerial;
@@ -44,7 +44,7 @@ export default function ListeningSection({
         const listeningItemsWithQuestions = await Promise.all(
           items.map(async (item: TestListening) => {
             if (item.questions && item.questions.length > 0) {
-              const questionsResponse = await questionService.getByIds(item.questions);
+              const questionsResponse = await questionService.getByIdsAndStatus(item.questions,true);
               
               // Store current serial number for this item
               const itemStartSerial = currentSerial;

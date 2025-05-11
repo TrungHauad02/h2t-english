@@ -58,7 +58,7 @@ export default function WritingSection({
       try {
         setLoading(true);
 
-        const response = await testWritingService.getByIds(testItemIds);
+        const response = await testWritingService.getByIdsAndStatus(testItemIds,true);
         const items: TestWriting[] = response.data || [];
         const withSerial = items.map((item, index) => ({ ...item, serial: startSerial + index }));
         setWritingPrompts(withSerial);

@@ -36,7 +36,7 @@ export default function ReadingSection({
       try {
         setLoading(true);
         
-        const readingItemsResponse = await testReadingService.getByIds(testItemIds);
+        const readingItemsResponse = await testReadingService.getByIdsAndStatus(testItemIds,true);
         const items = readingItemsResponse.data || [];
         
         let currentSerial = startSerial;
@@ -44,7 +44,7 @@ export default function ReadingSection({
         const readingItemsWithQuestions = await Promise.all(
           items.map(async (item: TestReading) => {
             if (item.questions && item.questions.length > 0) {
-              const questionsResponse = await questionService.getByIds(item.questions);
+              const questionsResponse = await questionService.getByIdsAndStatus(item.questions,true);
               
               const itemStartSerial = currentSerial;
              

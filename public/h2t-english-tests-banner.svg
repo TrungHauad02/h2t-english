@@ -1,0 +1,115 @@
+<svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with subtle pattern -->
+  <rect width="1200" height="300" fill="white"/>
+  <pattern id="dot-pattern" width="20" height="20" patternUnits="userSpaceOnUse">
+    <circle cx="3" cy="3" r="1" fill="#10b981" opacity="0.1"/>
+  </pattern>
+  <rect width="1200" height="300" fill="url(#dot-pattern)"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="340" cy="250" r="50" fill="#ecfdf5"/>
+  <circle cx="1100" cy="50" r="60" fill="#ecfdf5"/>
+  
+  <!-- Main title -->
+  <text x="600" y="100" font-family="Arial, sans-serif" font-size="70" font-weight="900" text-anchor="middle" fill="#10b981">TESTS</text>
+  
+  <!-- H2T English logo -->
+  <g transform="translate(80, 60)">
+    <rect x="0" y="0" width="150" height="50" rx="10" fill="#10b981"/>
+    <text x="75" y="35" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="white">H2T English</text>
+  </g>
+  
+  <!-- Main test illustration -->
+  <g transform="translate(520, 180)">
+    <!-- Test document -->
+    <rect x="-180" y="-70" width="380" height="140" rx="5" fill="white" stroke="#10b981" stroke-width="2.5"/>
+    
+    <!-- Test title -->
+    <rect x="-170" y="-60" width="340" height="25" rx="3" fill="#ecfdf5"/>
+    <text x="0" y="-42" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#10b981">ENGLISH PROFICIENCY ASSESSMENT</text>
+    
+    <!-- Test sections -->
+    <g transform="translate(-150, -20)">
+      <rect x="0" y="0" width="14" height="14" rx="2" stroke="#10b981" stroke-width="1.5" fill="none"/>
+      <text x="25" y="11" font-family="Arial, sans-serif" font-size="12" fill="#333">Reading Comprehension</text>
+    </g>
+    
+    <g transform="translate(40, -20)">
+      <rect x="0" y="0" width="14" height="14" rx="2" fill="#10b981" opacity="0.8"/>
+      <text x="25" y="11" font-family="Arial, sans-serif" font-size="12" fill="#333">Writing Assessment</text>
+    </g>
+    
+    <g transform="translate(-150, 5)">
+      <rect x="0" y="0" width="14" height="14" rx="2" stroke="#10b981" stroke-width="1.5" fill="none"/>
+      <text x="25" y="11" font-family="Arial, sans-serif" font-size="12" fill="#333">Listening Skills</text>
+    </g>
+    
+    <g transform="translate(40, 5)">
+      <rect x="0" y="0" width="14" height="14" rx="2" stroke="#10b981" stroke-width="1.5" fill="none"/>
+      <text x="25" y="11" font-family="Arial, sans-serif" font-size="12" fill="#333">Speaking Assessment</text>
+    </g>
+    
+    <g transform="translate(-150, 30)">
+      <rect x="0" y="0" width="14" height="14" rx="2" fill="#10b981" opacity="0.8"/>
+      <text x="25" y="11" font-family="Arial, sans-serif" font-size="12" fill="#333">Comprehensive Test</text>
+    </g>
+    
+    <g transform="translate(40, 30)">
+      <rect x="0" y="0" width="14" height="14" rx="2" fill="#10b981" opacity="0.8"/>
+      <text x="25" y="11" font-family="Arial, sans-serif" font-size="12" fill="#333">TOEIC Preparation</text>
+    </g>
+    
+    <!-- Timer icon -->
+    <g transform="translate(155, -45)">
+      <circle cx="0" cy="0" r="15" fill="none" stroke="#10b981" stroke-width="1.5"/>
+      <line x1="0" y1="-8" x2="0" y2="0" stroke="#10b981" stroke-width="1.5"/>
+      <line x1="0" y1="0" x2="7" y2="5" stroke="#10b981" stroke-width="1.5"/>
+    </g>
+  </g>
+  
+  <!-- Character taking test -->
+  <g transform="translate(900, 180)">
+    <!-- Head -->
+    <circle cx="0" cy="0" r="40" fill="#ffb6c1"/>
+    <!-- Face -->
+    <circle cx="-15" cy="-10" r="5" fill="#333"/>
+    <circle cx="15" cy="-10" r="5" fill="#333"/>
+    <path d="M-15,15 Q0,10 15,15" stroke="#333" stroke-width="3" fill="none"/> <!-- Focused test-taking face -->
+    <!-- Hair -->
+    <path d="M-40,-10 Q-30,-50 0,-45 Q30,-50 40,-10" fill="#333" stroke="none"/>
+    <!-- Body -->
+    <path d="M-30,40 L0,120 L30,40" fill="#6ee7b7"/>
+    <rect x="-40" y="40" width="80" height="50" rx="10" fill="#10b981"/>
+    
+    <!-- Taking test -->
+    <rect x="-65" y="40" width="40" height="50" rx="3" fill="white" stroke="#333" stroke-width="1.5"/>
+    <line x1="-60" y1="50" x2="-30" y2="50" stroke="#333" stroke-width="0.75"/>
+    <line x1="-60" y1="60" x2="-30" y2="60" stroke="#333" stroke-width="0.75"/>
+    <line x1="-60" y1="70" x2="-30" y2="70" stroke="#333" stroke-width="0.75"/>
+    <line x1="-60" y1="80" x2="-30" y2="80" stroke="#333" stroke-width="0.75"/>
+    
+    <!-- Pencil/pen -->
+    <g transform="translate(-50, 30) rotate(-30)">
+      <rect x="-2" y="-15" width="4" height="25" rx="1" fill="#333"/>
+      <path d="M-2,-15 L2,-15 L0,-20 Z" fill="#333"/>
+    </g>
+    
+    <!-- Thinking bubbles -->
+    <g transform="translate(55, -20)">
+      <circle cx="0" cy="0" r="10" fill="white" stroke="#10b981" stroke-width="1"/>
+      <text x="0" y="4" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#10b981">?</text>
+    </g>
+    <g transform="translate(35, -45)">
+      <circle cx="0" cy="0" r="8" fill="white" stroke="#10b981" stroke-width="1"/>
+      <text x="0" y="4" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="#10b981">!</text>
+    </g>
+    <g transform="translate(65, -40)">
+      <circle cx="0" cy="0" r="8" fill="white" stroke="#10b981" stroke-width="1"/>
+      <text x="0" y="4" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="#10b981">✓</text>
+    </g>
+  </g>
+  
+  <!-- Decorative lines -->
+  <line x1="0" y1="280" x2="1200" y2="280" stroke="#10b981" stroke-width="3" stroke-dasharray="5,5"/>
+  <line x1="20" y1="260" x2="1180" y2="260" stroke="#10b981" stroke-width="2" stroke-dasharray="2,2"/>
+</svg>

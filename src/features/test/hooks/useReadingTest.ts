@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { testReadingService, questionService, submitTestAnswerService } from "services";
+import { testReadingService, questionService, submitTestAnswerService,submitTestService,commentTestService,TestCommentRequestDTO } from "services";
 
 interface QuestionItem {
   id: number;
@@ -29,7 +29,7 @@ const useReadingTest = (testReadingIds: number[], submitTestId: number) => {
         setError(false);
         
         // Fetch reading items first
-        const readingItemsResponse = await testReadingService.getByIds(testReadingIds);
+        const readingItemsResponse = await testReadingService.getByIdsAndStatus(testReadingIds,true);
         const readingItems = readingItemsResponse.data || [];
         
         let currentSerial = 1;
@@ -39,7 +39,7 @@ const useReadingTest = (testReadingIds: number[], submitTestId: number) => {
         // For each reading item, fetch its questions
         for (const reading of readingItems) {
           if (reading.questions && reading.questions.length > 0) {
-            const questionsResponse = await questionService.getByIds(reading.questions);
+            const questionsResponse = await questionService.getByIdsAndStatus(reading.questions,true);
             const questions = questionsResponse.data || [];
             
             const startSerial = currentSerial;
@@ -151,36 +151,38 @@ const useReadingTest = (testReadingIds: number[], submitTestId: number) => {
     setIsConfirmDialogOpen(false);
   };
   
-  const handleSubmitTest = async () => {
+  const handleSubmitTest = useCallback(async () => {
+    if (!submitTestId) return;
+    
     try {
       setIsSubmitting(true);
       setIsConfirmDialogOpen(false);
       setIsSubmitDialogOpen(true);
       
-      // Thực hiện tính điểm chi tiết
-      const totalQuestions = allQuestions.length;
+
+      let totalQuestions = allQuestions.length;
       let correctAnswers = 0;
       
       if (submitTestId && totalQuestions > 0) {
-        // Lấy tất cả ID câu hỏi
+ 
         const questionIds = allQuestions.map(q => q.id);
         
-        // Lấy câu trả lời đã gửi
+
         const answersRes = await submitTestAnswerService.findBySubmitTestIdAndQuestionIds(
           submitTestId,
           questionIds
         );
         
         if (answersRes?.data?.length) {
-
-          const questionRes = await questionService.getByIds(questionIds);
+ 
+          const questionRes = await questionService.getByIdsAndStatus(questionIds,true);
           const questions = questionRes.data || [];
-
+  
           const questionMap: Record<number, any> = {};
           for (const q of questions) {
             questionMap[q.id] = q;
           }
-
+        
           for (const answer of answersRes.data) {
             const questionId = answer.question_id;
             const answerId = answer.answer_id;
@@ -201,20 +203,85 @@ const useReadingTest = (testReadingIds: number[], submitTestId: number) => {
 
       const score = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
       
+  
+      const commentRequestData: TestCommentRequestDTO = {
+        vocabulary: [],
+        grammar: [],
+        reading: [],
+        listening: [],
+        speaking: [],
+        writing: []
+      };
+      
+      if (testReadingIds) {
+        const readingRes = await testReadingService.getByIdsAndStatus(testReadingIds,true);
+        const readings = readingRes.data || [];
+        
+        const readingSectionsPromises = readings.map(async (reading: any) => {
+          if (!reading.questions?.length) return null;
+          
+          const [questionRes, answersRes] = await Promise.all([
+            questionService.getByIdsAndStatus(reading.questions,true),
+            submitTestAnswerService.findBySubmitTestIdAndQuestionIds(submitTestId, reading.questions)
+          ]);
+          
+          const questions = questionRes.data || [];
+          const answers = answersRes.data || [];
+          
+          const answerMap: Record<number, any> = {};
+          for (const answer of answers) {
+            answerMap[answer.question_id] = answer;
+          }
+          
+          const choiceQuestions = questions.map((question: any) => {
+            const answer = answerMap[question.id];
+            const selectedAnswer = question.answers.find((a: any) => a.id === answer?.answer_id);
+            
+            return {
+              question: question.content,
+              choices: question.answers.map((a: any) => a.content),
+              userAnswer: selectedAnswer?.content || ""
+            };
+          });
+          
+          return {
+            passage: reading.file,
+            questions: choiceQuestions
+          };
+        });
+        
+        const sections = await Promise.all(readingSectionsPromises);
+        commentRequestData.reading = sections.filter((item) => item !== null);
+      }
+      
+  
+      const commentResponse = await commentTestService.commentTest(commentRequestData);
+      
+  
       const result = {
         totalQuestions,
         correctAnswers,
         score,
-        answeredQuestions: allQuestions.filter(q => q.isAnswered).length
+        answeredQuestions: allQuestions.filter(q => q.isAnswered).length,
+        comment: commentResponse.data.feedback,
+        strengths: commentResponse.data.strengths,
+        areasToImprove: commentResponse.data.areasToImprove
       };
       
+      // Cập nhật kết quả vào database
+      await submitTestService.patch(submitTestId, { score: score });
+      await submitTestService.patch(submitTestId, { comment: commentResponse.data.feedback });
+      await submitTestService.patch(submitTestId, { status: true });
+      
+      // Cập nhật kết quả vào UI
       setSubmissionResult(result);
+      
     } catch (error) {
       console.error("Error submitting test:", error);
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [submitTestId, testReadingIds, allQuestions]);
   
   const closeSubmitDialog = useCallback(() => {
     setIsSubmitDialogOpen(false);

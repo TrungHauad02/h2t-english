@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
   Button,
@@ -9,7 +8,6 @@ import {
   Box,
   CircularProgress,
   Slide,
-  Divider,
   Stack,
   Paper,
   Chip,
@@ -19,11 +17,10 @@ import { TransitionProps } from "@mui/material/transitions";
 import { TestPartTypeEnum } from "interfaces";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import FlagIcon from '@mui/icons-material/Flag';
-
+import { useNavigate } from 'react-router-dom';
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
     children: React.ReactElement;
@@ -50,17 +47,22 @@ interface SubmitTestDialogProps {
   onClose: () => void;
   isLoading: boolean;
   result: TestResult | null;
+  submitTestId?: number;
 }
 
 const SubmitTestDialog: React.FC<SubmitTestDialogProps> = ({ 
   open, 
   onClose, 
   isLoading, 
-  result 
+  result,
+  submitTestId
 }) => {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-
+  const navigate = useNavigate();
+  const handleReviewClick = () => {
+    navigate(`/history-test/mixing/${submitTestId}`);
+  };
   const getSectionName = (type: TestPartTypeEnum) => {
     switch(type) {
       case TestPartTypeEnum.VOCABULARY:
@@ -475,46 +477,46 @@ const SubmitTestDialog: React.FC<SubmitTestDialogProps> = ({
               justifyContent: 'center'
             }}
           >
-            <Button
-              variant="contained"
-              onClick={onClose}
-              sx={{
-                py: 1.5,
-                px: 4,
-                borderRadius: '8px',
-                backgroundColor: isDarkMode ? color.teal700 : color.teal500,
-                color: 'white',
-                fontWeight: 'bold',
-                textTransform: 'none',
-                fontSize: '1rem',
-                '&:hover': {
-                  backgroundColor: isDarkMode ? color.teal600 : color.teal600,
-                },
-              }}
-            >
-              Review Lessons
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={onClose}
-              sx={{
-                py: 1.5,
-                px: 4,
-                ml: 2,
-                borderRadius: '8px',
-                borderColor: isDarkMode ? color.gray600 : color.gray300,
-                color: isDarkMode ? color.gray300 : color.gray700,
-                fontWeight: 'bold',
-                textTransform: 'none',
-                fontSize: '1rem',
-                '&:hover': {
-                  borderColor: isDarkMode ? color.gray500 : color.gray400,
-                  backgroundColor: 'transparent',
-                },
-              }}
-            >
-              Close
-            </Button>
+           <Button
+            variant="contained"
+            onClick={handleReviewClick}
+            sx={{
+              py: 1.5,
+              px: 4,
+              borderRadius: '8px',
+              backgroundColor: isDarkMode ? color.teal700 : color.teal500,
+              color: 'white',
+              fontWeight: 'bold',
+              textTransform: 'none',
+              fontSize: '1rem',
+              '&:hover': {
+                backgroundColor: isDarkMode ? color.teal600 : color.teal600,
+              },
+            }}
+          >
+            Review Test
+          </Button>
+
+          <Button
+          variant="contained"
+          onClick={() => window.location.reload()}
+          sx={{
+            py: 1.5,
+            px: 4,
+            borderRadius: '8px',
+            backgroundColor: isDarkMode ? color.teal700 : color.teal500,
+            color: 'white',
+            fontWeight: 'bold',
+            textTransform: 'none',
+            fontSize: '1rem',
+            '&:hover': {
+              backgroundColor: isDarkMode ? color.teal600 : color.teal600,
+            },
+          }}
+        >
+          Test Again
+        </Button>
+
           </DialogActions>
         </>
       ) : (

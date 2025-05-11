@@ -24,11 +24,11 @@ export default function useHistoryReadingTest({
         setLoading(true);
         setError(false);
 
-        const res = await testReadingService.getByIds(testReadingIds);
+        const res = await testReadingService.getByIdsAndStatus(testReadingIds,true);
         const readings = res.data || [];
 
         const questionIds = readings.flatMap((item: any) => item.questions || []);
-        const questionsRes = await questionService.getByIds(questionIds);
+        const questionsRes = await questionService.getByIdsAndStatus(questionIds,true);
         const allQ = questionsRes.data || [];
 
         const answersRes = await submitTestAnswerService.findBySubmitTestIdAndQuestionIds(

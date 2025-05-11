@@ -200,7 +200,7 @@ export default function useCompetitionTest() {
       
 
       if (readingPart?.questions?.length) {
-        const readingRes = await testReadingService.getByIds(readingPart.questions);
+        const readingRes = await testReadingService.getByIdsAndStatus(readingPart.questions,true);
         for (const item of readingRes.data || []) {
           if (item.questions) allQuestionIds.push(...item.questions);
         }
@@ -208,7 +208,7 @@ export default function useCompetitionTest() {
       
 
       if (listeningPart?.questions?.length) {
-        const listeningRes = await testListeningService.getByIds(listeningPart.questions);
+        const listeningRes = await testListeningService.getByIdsAndStatus(listeningPart.questions,true);
         for (const item of listeningRes.data || []) {
           if (item.questions) allQuestionIds.push(...item.questions);
         }
@@ -216,7 +216,7 @@ export default function useCompetitionTest() {
       
 
       if (speakingPart?.questions?.length) {
-        const speakingRes = await testSpeakingService.getByIds(speakingPart.questions);
+        const speakingRes = await testSpeakingService.getByIdsAndStatus(speakingPart.questions,true);
         for (const item of speakingRes.data || []) {
           if (item.questions) allQuestionIds.push(...item.questions);
         }
@@ -336,7 +336,7 @@ export default function useCompetitionTest() {
 
 
       if (type === TestPartTypeEnum.READING) {
-        const res = await testReadingService.getByIds(part.questions);
+        const res = await testReadingService.getByIdsAndStatus(part.questions,true);
         for (const item of res.data || []) {
           for (const qId of item.questions || []) {
             tempQuestions.push({
@@ -351,7 +351,7 @@ export default function useCompetitionTest() {
 
 
       if (type === TestPartTypeEnum.LISTENING) {
-        const res = await testListeningService.getByIds(part.questions);
+        const res = await testListeningService.getByIdsAndStatus(part.questions,true);
         for (const item of res.data || []) {
           for (const qId of item.questions || []) {
             tempQuestions.push({
@@ -366,7 +366,7 @@ export default function useCompetitionTest() {
 
 
       if (type === TestPartTypeEnum.SPEAKING) {
-        const res = await testSpeakingService.getByIds(part.questions);
+        const res = await testSpeakingService.getByIdsAndStatus(part.questions,true);
         for (const item of res.data || []) {
           for (const qId of item.questions || []) {
             tempQuestions.push({
@@ -475,8 +475,7 @@ export default function useCompetitionTest() {
           score: number;
         }[]
       };
-
-
+      
       const processSimpleParts = async (part: TestPart | undefined, type: TestPartTypeEnum) => {
         if (!part?.questions?.length) return;
         
@@ -489,8 +488,8 @@ export default function useCompetitionTest() {
           questionIds = [...part.questions];
         } else if (type === TestPartTypeEnum.READING || type === TestPartTypeEnum.LISTENING) {
           const res = type === TestPartTypeEnum.READING
-            ? await testReadingService.getByIds(part.questions)
-            : await testListeningService.getByIds(part.questions);
+            ? await testReadingService.getByIdsAndStatus(part.questions,true)
+            : await testListeningService.getByIdsAndStatus(part.questions,true)
             
           for (const item of res.data || []) {
             if (item.questions) questionIds.push(...item.questions);
@@ -515,7 +514,7 @@ export default function useCompetitionTest() {
           return;
         }
         
-        const questionRes = await questionService.getByIds(questionIds);
+        const questionRes = await questionService.getByIdsAndStatus(questionIds,true);
         const questions = questionRes.data || [];
         
         const questionMap: Record<number, any> = {};
@@ -551,25 +550,24 @@ export default function useCompetitionTest() {
         result.correctAnswers += correctAnswers;
       };
       
-
       const processSpeakingPart = async (part: TestPart | undefined) => {
         if (!part?.questions?.length) return;
-
-        const speakingRes = await testSpeakingService.getByIds(part.questions);
+        
+        const speakingRes = await testSpeakingService.getByIdsAndStatus(part.questions,true)
         const speakingItems = speakingRes.data || [];
-
+        
         const allQuestionIds: number[] = [];
         for (const item of speakingItems) {
           if (item.questions) allQuestionIds.push(...item.questions);
         }
-
+        
         if (allQuestionIds.length === 0) return;
-
+        
         const speakingAnswersRes = await submitCompetitionSpeakingService.findBySubmitCompetitionIdAndQuestionIds(
           submitCompetition.id,
           allQuestionIds
         );
-
+        
         if (!speakingAnswersRes?.data?.length) {
           result.parts.push({
             type: TestPartTypeEnum.SPEAKING,
@@ -579,20 +577,20 @@ export default function useCompetitionTest() {
           });
           return;
         }
-
-        const questionRes = await questionService.getByIds(allQuestionIds);
+        
+        const questionRes = await questionService.getByIdsAndStatus(allQuestionIds,true);
         const questions = questionRes.data || [];
-
+        
         let totalScore = 0;
         let answeredQuestions = 0;
-
+        
         for (const answer of speakingAnswersRes.data) {
           if (answer.file) {
             const matchedQuestion = questions.find(
               (q: Question) => q.id === answer.question_id
             );
             const expectedText = matchedQuestion?.content || "";
-        
+            
             try {
               const file = await convertUrlToFile(answer.file, `recording_${answer.id}.mp3`);
               
@@ -600,19 +598,19 @@ export default function useCompetitionTest() {
                 file,
                 expectedText
               );
-        
+              
               if (scoreResult.data) {
                 const numericScore = parseFloat(scoreResult.data.score);
-        
+                
                 await submitCompetitionSpeakingService.update(
                   answer.id,
                   {
-                  ...answer,
-                  score: numericScore,
-                  transcript: scoreResult.data.transcript,
-                }
+                    ...answer,
+                    score: numericScore,
+                    transcript: scoreResult.data.transcript,
+                  }
                 );
-        
+                
                 totalScore += numericScore;
                 answeredQuestions++;
               }
@@ -621,32 +619,31 @@ export default function useCompetitionTest() {
             }
           }
         }
-
+        
         const avgScore = answeredQuestions > 0 ? totalScore / answeredQuestions : 0;
-
+        
         result.parts.push({
           type: TestPartTypeEnum.SPEAKING,
           correctAnswers: answeredQuestions,
           totalQuestions: allQuestionIds.length,
           score: avgScore
         });
-
+        
         result.totalQuestions += allQuestionIds.length;
         result.correctAnswers += (avgScore / 100) * allQuestionIds.length;
       };
-
-
+      
       const processWritingPart = async (part: TestPart | undefined) => {
         if (!part?.questions?.length) return;
-
-        const testWritingRes = await testWritingService.getByIds(part.questions);
+        
+        const testWritingRes = await testWritingService.getByIdsAndStatus(part.questions,true)
         const testWritings = testWritingRes.data || [];
-
+        
         const writingRes = await submitCompetitionWritingService.findBySubmitCompetitionIdAndTestWritingIds(
           submitCompetition.id,
           part.questions
         );
-
+        
         if (!writingRes?.data?.length) {
           result.parts.push({
             type: TestPartTypeEnum.WRITING,
@@ -656,31 +653,31 @@ export default function useCompetitionTest() {
           });
           return;
         }
-
+        
         let totalScore = 0;
         let answeredQuestions = 0;
-
+        
         for (const answer of writingRes.data) {
           if (answer.content && answer.content.trim() !== "") {
             try {
               const testWriting = testWritings.find(
                 (tw: TestWriting) => tw.id === answer.CompetitionWriting_id
               );
-
+              
               if (testWriting && testWriting.topic) {
                 const scoreResult = await scoreWritingService.scoreWriting(
                   answer.content,
                   testWriting.topic
                 );
-
+                
                 if (scoreResult.data) {
                   const numericScore = parseFloat(scoreResult.data.score);
-
+                  
                   await submitCompetitionWritingService.update(answer.id, {
                     ...answer,
                     score: numericScore,
                   });
-
+                  
                   totalScore += numericScore;
                   answeredQuestions++;
                 }
@@ -690,33 +687,31 @@ export default function useCompetitionTest() {
             }
           }
         }
-
+        
         const avgScore = answeredQuestions > 0 ? totalScore / answeredQuestions : 0;
-
+        
         result.parts.push({
           type: TestPartTypeEnum.WRITING,
           correctAnswers: answeredQuestions,
           totalQuestions: part.questions.length,
           score: avgScore,
         });
-
+        
         result.totalQuestions += part.questions.length;
         result.correctAnswers += (avgScore / 100) * part.questions.length;
       };
-
-
+      
       await processSimpleParts(vocabularyPart, TestPartTypeEnum.VOCABULARY);
       await processSimpleParts(grammarPart, TestPartTypeEnum.GRAMMAR);
       await processSimpleParts(readingPart, TestPartTypeEnum.READING);
       await processSimpleParts(listeningPart, TestPartTypeEnum.LISTENING);
       await processSpeakingPart(speakingPart);
       await processWritingPart(writingPart);
-
+      
       if (result.totalQuestions > 0) {
         result.score = (result.correctAnswers / result.totalQuestions) * 100;
       }
       
-
       if (submitCompetition?.id) {
         await submitCompetitionService.patch(submitCompetition.id, {
           ...submitCompetition,
@@ -726,8 +721,9 @@ export default function useCompetitionTest() {
       }
       
       setSubmissionResult(result);
+      
     } catch (error) {
-      console.error("Error submitting test:", error);
+      console.error("Error submitting competition test:", error);
     } finally {
       setIsSubmitting(false);
     }

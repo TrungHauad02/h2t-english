@@ -631,12 +631,12 @@ export default function ReadingTest({ testReadings, submitTestId }: ReadingTestP
       </Grid>
 
       {/* Sử dụng SubmitTestDialogSingle thay vì SubmitTestDialog */}
-      <SubmitTestDialogSingle 
+      <SubmitTestDialogSingle
         open={isSubmitDialogOpen}
+        submitTestId={submitTestId}
         onClose={closeSubmitDialog}
         isLoading={isSubmitting}
         result={submissionResult}
-        testName="Reading"
       />
 
       {/* Confirm Submit Dialog */}

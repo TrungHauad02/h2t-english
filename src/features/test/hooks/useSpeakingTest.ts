@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { testSpeakingService, questionService, submitTestAnswerService, submitTestSpeakingService, scoreSpeakingService } from "services";
+import { useState, useEffect, useRef,useCallback } from "react";
+import { testSpeakingService, questionService, submitTestAnswerService, submitTestSpeakingService, scoreSpeakingService,submitTestService,commentTestService } from "services";
 import { TestSpeaking, SubmitTestSpeaking, Question } from "interfaces";
 
 interface QuestionItem {
@@ -45,7 +45,7 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
         setError(false);
         
         // Fetch speaking items first
-        const speakingItemsResponse = await testSpeakingService.getByIds(testSpeakingIds);
+        const speakingItemsResponse = await testSpeakingService.getByIdsAndStatus(testSpeakingIds,true);
         const speakingItems = speakingItemsResponse.data || [];
         
         // Store tests in a map for easy reference
@@ -62,7 +62,7 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
         // For each speaking item, fetch its questions
         for (const speaking of speakingItems) {
           if (speaking.questions && speaking.questions.length > 0) {
-            const questionsResponse = await questionService.getByIds(speaking.questions);
+            const questionsResponse = await questionService.getByIdsAndStatus(speaking.questions,true);
             const questions = questionsResponse.data || [];
             
             const startSerial = currentSerial;
@@ -355,84 +355,128 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
     return file;
   };
   
-  const handleSubmitTest = async () => {
+  const handleSubmitTest = useCallback(async () => {
+    if (!submitTestId) return;
+    
     try {
       setIsSubmitting(true);
       setIsConfirmDialogOpen(false);
       setIsSubmitDialogOpen(true);
-  
+      
       const totalQuestions = allQuestions.length;
-      const speakingRes = await testSpeakingService.getByIds(testSpeakingIds);
+      const speakingRes = await testSpeakingService.getByIdsAndStatus(testSpeakingIds,true);
       const speakingItems = speakingRes.data || [];
-  
+      
       const allQuestionIds: number[] = [];
       for (const item of speakingItems) {
         if (item.questions) allQuestionIds.push(...item.questions);
       }
-  
+      
       const speakingAnswersRes = await submitTestSpeakingService.findBySubmitTestIdAndQuestionIds(
         submitTestId,
         allQuestionIds
       );
-  
+      
       if (!speakingAnswersRes?.data?.length) {
-        setSubmissionResult({
+        const result = {
           totalQuestions,
           correctAnswers: 0,
           score: 0
-        });
+        };
+        
+        setSubmissionResult(result);
+        
+        if (submitTestId) {
+          await submitTestService.patch(submitTestId, { 
+            score: 0,
+            status: true 
+          });
+        }
+        
         return;
       }
-  
-      const questionRes = await questionService.getByIds(allQuestionIds);
+      
+      const questionRes = await questionService.getByIdsAndStatus(allQuestionIds,true);
       const questions = questionRes.data || [];
-  
+      
       let totalScore = 0;
       let answeredQuestions = 0;
-  
+      
+      const commentRequestData: any = {
+        vocabulary: [],
+        grammar: [],
+        reading: [],
+        listening: [],
+        speaking: [],
+        writing: []
+      };
+      
       for (const answer of speakingAnswersRes.data as SubmitTestSpeaking[]) {
         if (answer.file) {
           const matchedQuestion = questions.find(
             (q: Question) => q.id === answer.question_id
           );
           const expectedText = matchedQuestion?.content || "";
-  
+          
           try {
             const file = await convertUrlToFile(answer.file, `recording_${answer.id}.mp3`);
             const scoreResult = await scoreSpeakingService.evaluateSpeechInTopic(file, expectedText);
-  
+            
             if (scoreResult.data) {
               const numericScore = parseFloat(scoreResult.data.score);
-  
+              
               await submitTestSpeakingService.update(answer.id, {
                 ...answer,
                 score: numericScore,
                 transcript: scoreResult.data.transcript,
                 comment: scoreResult.data.feedback
               });
-  
+              
               totalScore += numericScore;
               answeredQuestions++;
+         
+              commentRequestData.speaking.push({
+                question: expectedText,
+                transcript: scoreResult.data.transcript || ""
+              });
             }
           } catch (error) {
             console.error("Error evaluating speaking:", error);
           }
         }
       }
-  
+ 
       const avgScore = answeredQuestions > 0 ? totalScore / answeredQuestions : 0;
-  
-      setSubmissionResult({
+      
+    
+      const commentResponse = await commentTestService.commentTest(commentRequestData);
+      
+      const result = {
         totalQuestions,
         correctAnswers: answeredQuestions,
-        score: avgScore
-      });
+        score: avgScore,
+        comment: commentResponse.data.feedback,
+        strengths: commentResponse.data.strengths,
+        areasToImprove: commentResponse.data.areasToImprove
+      };
+      
+
+      if (submitTestId) {
+        await submitTestService.patch(submitTestId, { 
+          score: avgScore,
+          comment: commentResponse.data.feedback,
+          status: true 
+        });
+      }
+      
+      setSubmissionResult(result);
+      
     } catch (error) {
       console.error("Error submitting speaking test:", error);
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [submitTestId, testSpeakingIds, allQuestions]);
   
   const closeSubmitDialog = () => {
     setIsSubmitDialogOpen(false);

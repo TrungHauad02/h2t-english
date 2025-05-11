@@ -216,17 +216,6 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId }
             {renderSection()}
           </Box>
 
-          {isSmallScreen && (
-            <Box sx={{  display: "flex", justifyContent: "center", mt: 3, mb: 2 }}>
-              <Box sx={{ width: { xs: "80%", sm: "50%" } }}>
-                <TestQuestionGrid 
-                  questionItems={allQuestions}
-                  onQuestionSelect={handleQuestionSelect}
-                  onSubmitTest={handleOpenConfirmDialog}
-                />
-              </Box>
-            </Box>
-          )}
           
         </Grid>
         
@@ -247,6 +236,7 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId }
       {/* Submit Test Dialog */}
       <SubmitTestDialog 
         open={isSubmitDialogOpen}
+        submitTestId={submitTestId}
         onClose={closeSubmitDialog}
         isLoading={isSubmitting}
         result={submissionResult}

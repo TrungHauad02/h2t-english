@@ -52,7 +52,7 @@ export function ReadingSection({ partId, testItemIds }: ReadingSectionProps) {
   const fetchReadings = async () => {
     try {
       if (partId) {
-        const resData = await testReadingService.getByIds(listTestIdsRef.current);
+        const resData = await testReadingService.getByIdsAndStatus(listTestIdsRef.current);
         setReadings(resData.data);
         
         const newTestReadingIds = resData.data.map((testReading: TestReading) => testReading.id);
@@ -155,17 +155,30 @@ export function ReadingSection({ partId, testItemIds }: ReadingSectionProps) {
     setHasMadeChanges(false);
   };
 
-  // Toggle reading status
-  const handleToggleStatus = (readingId: number) => {
+  const handleToggleStatus = async (readingId: number) => {
+    const readingToUpdate = readings.find(r => r.id === readingId);
+    if (!readingToUpdate) return;
+  
+    const newStatus = !readingToUpdate.status;
+  
+    if (newStatus === true) {
+      const verifyResult = await testReadingService.verify(readingId);
+      if (verifyResult.status !== "SUCCESS") {
+        toast.error("Reading test not valid");
+        return;
+      }
+    }
+  
     const updatedReadings = readings.map(reading => 
       reading.id === readingId 
-        ? { ...reading, status: !reading.status } 
+        ? { ...reading, status: newStatus } 
         : reading
     );
-    
+  
     setReadings(updatedReadings);
     setHasMadeChanges(true);
   };
+  
 
   // Move items handlers
   const onMoveLeft = (index: number) => {

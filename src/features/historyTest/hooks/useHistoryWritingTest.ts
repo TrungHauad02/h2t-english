@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { testWritingService, submitTestAnswerService, submitTestWritingService } from "services";
+import { TestPartTypeEnum } from "interfaces";
 
 export default function useHistoryWritingTest({
   testWritingIds,
@@ -20,7 +21,7 @@ export default function useHistoryWritingTest({
         setLoading(true);
         setError(false);
 
-        const res = await testWritingService.getByIds(testWritingIds);
+        const res = await testWritingService.getByIdsAndStatus(testWritingIds, true);
         const writings = res.data || [];
 
         const answersRes = await submitTestAnswerService.findBySubmitTestIdAndQuestionIds(
@@ -28,9 +29,9 @@ export default function useHistoryWritingTest({
           writings.map((w: any) => w.id)
         );
 
-        const answeredMap: Record<number, boolean> = {};
+        const answeredMap: Record<number, string> = {};
         (answersRes?.data || []).forEach((ans: any) => {
-          answeredMap[ans.question_id] = true;
+          answeredMap[ans.question_id] = ans.answer_id || "";
         });
 
         const essaysRes = await submitTestWritingService.findBySubmitTestIdAndTestWritingIds(
@@ -44,18 +45,16 @@ export default function useHistoryWritingTest({
         });
 
         let serial = 1;
-        const processed = writings.map((item: any) => {
-          const question = {
-            id: item.id,
-            topic: item.topic,
-            minWords: item.minWords || 200,
-            maxWords: item.maxWords || 500,
-            content: essayMap[item.id] || "",
-            isAnswered: !!answeredMap[item.id],
-            serial: serial++
-          };
-          return question;
-        });
+        const processed = writings.map((w: any) => ({
+          serial: serial++,
+          questionId: w.id,
+          partType: TestPartTypeEnum.WRITING,
+          isAnswered: !!essayMap[w.id]?.trim(),
+          topic: w.topic,
+          minWords: w.minWords || 200,
+          maxWords: w.maxWords || 500,
+          content: essayMap[w.id] || ""
+        }));
 
         setWritingItems(processed);
         setAllQuestions(processed);
