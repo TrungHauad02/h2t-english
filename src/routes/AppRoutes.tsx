@@ -73,6 +73,7 @@ const AppRoutes = () => {
           <Route path="manage-teacher" element={<Pages.ManageTeacherPage />} />
           <Route path="error-log/:id" element={<Pages.ErrorLogPage />} />
           <Route path="error-log" element={<Pages.ErrorLogPage />} />
+          <Route path="ai-response" element={<Pages.AIResponsePage />} />
         </Route>
       </Route>
 
