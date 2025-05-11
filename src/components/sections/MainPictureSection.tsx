@@ -1,6 +1,8 @@
 import { CardMedia, Stack, Typography } from "@mui/material";
 import useColor from "theme/useColor";
 import { SiteInfo } from "./types";
+import { useState } from "react";
+import { useLocation } from "react-router-dom";
 
 interface MainPictureSectionProps {
   siteInfo: SiteInfo;
@@ -8,6 +10,15 @@ interface MainPictureSectionProps {
 
 function MainPictureSection({ siteInfo }: MainPictureSectionProps) {
   const color = useColor();
+  const location = useLocation();
+  const [imgError, setImgError] = useState(false);
+
+  const imageSrc = imgError
+    ? location.pathname.includes("lesson")
+      ? "/h2t-english-lessons-banner.svg"
+      : "/h2t-english-tests-banner.svg"
+    : siteInfo.bgUrl;
+
   return (
     <Stack
       direction="column"
@@ -17,9 +28,10 @@ function MainPictureSection({ siteInfo }: MainPictureSectionProps) {
     >
       <CardMedia
         component="img"
-        image={siteInfo.bgUrl}
+        image={imageSrc}
         alt="main"
         sx={{ width: "100vw", height: "300px", objectFit: "cover" }}
+        onError={() => setImgError(true)}
       />
       <Typography
         variant="h4"

@@ -7,37 +7,37 @@ export default function useListLessonPage() {
       type: "topics",
       title: "Vocabulary",
       bgUrl:
-        "https://firebasestorage.googleapis.com/v0/b/englishweb-5a6ce.appspot.com/o/static%2Fbg_vocabulary.png?alt=media",
+        "http://138.2.91.94:9000/h2t-english/static%2Fh2t-english-vocabulary-banner.svg",
     },
     {
       type: "grammars",
       title: "Grammar",
       bgUrl:
-        "https://firebasestorage.googleapis.com/v0/b/englishweb-5a6ce.appspot.com/o/static%2Fbg_grammar.png?alt=media",
+        "http://138.2.91.94:9000/h2t-english/static%2Fh2t-english-grammar-banner.svg",
     },
     {
       type: "readings",
       title: "Reading",
       bgUrl:
-        "https://firebasestorage.googleapis.com/v0/b/englishweb-5a6ce.appspot.com/o/static%2Fbg_reading.jpg?alt=media",
+        "http://138.2.91.94:9000/h2t-english/static%2Fh2t-english-reading-banner.svg",
     },
     {
       type: "listenings",
       title: "Listening",
       bgUrl:
-        "https://firebasestorage.googleapis.com/v0/b/englishweb-5a6ce.appspot.com/o/static%2Fbg_listening.jpg?alt=media",
+        "http://138.2.91.94:9000/h2t-english/static%2Fh2t-english-listening-banner.svg",
     },
     {
       type: "speakings",
       title: "Speaking",
       bgUrl:
-        "https://firebasestorage.googleapis.com/v0/b/englishweb-5a6ce.appspot.com/o/static%2Fbg_speaking.jpg?alt=media",
+        "http://138.2.91.94:9000/h2t-english/static%2Fh2t-english-speaking-banner.svg",
     },
     {
       type: "writings",
       title: "Writing",
       bgUrl:
-        "https://firebasestorage.googleapis.com/v0/b/englishweb-5a6ce.appspot.com/o/static%2Fbg_writing.png?alt=media",
+        "http://138.2.91.94:9000/h2t-english/static%2Fh2t-english-writing-banner.svg",
     },
   ];
 
