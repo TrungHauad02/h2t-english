@@ -139,6 +139,16 @@ const getTestsByTeacher = async (
     throw error;
   }
 };
+const verify = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/tests/${id}/verify`);
+    return response.data;
+  } catch (error) {
+    console.error("Error verifying test:", error);
+    throw error;
+  }
+};
+
 
 export const testService = {
   findById,
@@ -148,4 +158,5 @@ export const testService = {
   remove,
   getTestsForStudent,
   getTestsByTeacher,
+  verify,
 };

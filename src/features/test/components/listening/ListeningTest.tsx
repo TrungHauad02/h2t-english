@@ -599,12 +599,12 @@ export default function ListeningTest({ testListenings, submitTestId }: Listenin
       </Grid>
 
       {/* Sử dụng SubmitTestDialogSingle thay vì SubmitTestDialog */}
-      <SubmitTestDialogSingle 
+      <SubmitTestDialogSingle
         open={isSubmitDialogOpen}
+        submitTestId={submitTestId}
         onClose={closeSubmitDialog}
         isLoading={isSubmitting}
         result={submissionResult}
-        testName="Listening"
       />
 
       {/* Confirm Submit Dialog */}

@@ -524,12 +524,12 @@ export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTe
       </Grid>
 
       {/* Sử dụng SubmitTestDialogSingle thay vì SubmitTestDialog */}
-      <SubmitTestDialogSingle 
+      <SubmitTestDialogSingle
         open={isSubmitDialogOpen}
+        submitTestId={submitTestId}
         onClose={closeSubmitDialog}
         isLoading={isSubmitting}
         result={submissionResult}
-        testName="Speaking"
       />
 
       {/* Confirm Submit Dialog */}

@@ -11,15 +11,18 @@ const findById = async (id: number) => {
   }
 };
 
-const getByIds = async (ids: number[]) => {
+const getByIdsAndStatus = async (ids: number[], status?: Boolean) => {
   try {
-    const response = await apiClient.post("/test-speakings/by-ids", ids);
+    const response = await apiClient.post("/test-speakings/by-ids", ids, {
+      params: status ? { status } : undefined,
+    });
     return response.data;
   } catch (error) {
-    console.error("Error getting TestSpeaking by ids:", error);
+    console.error("Error getting TestSpeaking by ids and status:", error);
     throw error;
   }
 };
+
 
 const create = async (data: TestSpeaking) => {
   try {
@@ -60,12 +63,23 @@ const remove = async (id: number) => {
     throw error;
   }
 };
+const verify = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/test-speakings/${id}/verify`);
+    return response.data;
+  } catch (error) {
+    console.error("Error verifying question:", error);
+    throw error;
+  }
+};
+
 
 export const testSpeakingService = {
   findById,
-  getByIds,
+  getByIdsAndStatus,
   create,
   update,
   patch,
   remove,
+  verify,
 };

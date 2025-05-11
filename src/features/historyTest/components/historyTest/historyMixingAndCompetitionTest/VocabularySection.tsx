@@ -33,7 +33,7 @@ export default function VocabularySection({
     async function fetchQuestions() {
       try {
         setLoading(true);
-        const fetchedQuestions = await questionService.getByIds(questionIds);
+        const fetchedQuestions = await questionService.getByIdsAndStatus(questionIds,true);
         setQuestions(fetchedQuestions.data || []);
       } catch (error) {
         console.error("Error fetching vocabulary questions:", error);

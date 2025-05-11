@@ -1,5 +1,16 @@
-import { Box, Typography, Paper, CircularProgress, Alert } from "@mui/material";
-import { MainPictureSection } from "components/sections";
+import { 
+  Box, 
+  Typography, 
+  Paper, 
+  CircularProgress, 
+  Alert, 
+  Grid,
+  Tab,
+  Tabs,
+  Fade
+} from "@mui/material";
+import { useState } from "react";
+import { MainPictureSection } from "components/sections"; 
 import { SiteInfo } from "components/sections/types";
 import { TestTypeEnum } from "interfaces";
 import {
@@ -12,10 +23,14 @@ import {
 import useHistoryTest from "../hooks/useHistoryTest";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
+import TestResultSummary from "../components/historyTest/common/resultSummary/TestResultSummary";
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import SummarizeIcon from '@mui/icons-material/Summarize';
 
 export default function HistoryTestPage() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const [activeTab, setActiveTab] = useState(0);
 
   const {
     test,
@@ -29,17 +44,36 @@ export default function HistoryTestPage() {
     testParts
   } = useHistoryTest();
 
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
+  };
+
   if (loading) {
     return (
       <Box sx={{
-        display: 'flex', flexDirection: 'column',
-        justifyContent: 'center', alignItems: 'center',
+        display: 'flex', 
+        flexDirection: 'column',
+        justifyContent: 'center', 
+        alignItems: 'center',
         height: '80vh',
         backgroundColor: isDarkMode ? color.gray900 : color.gray50,
         gap: 2
       }}>
-        <CircularProgress size={60} thickness={4} sx={{ color: isDarkMode ? color.teal400 : color.teal600 }} />
-        <Typography variant="h6" sx={{ mt: 2, color: isDarkMode ? color.gray300 : color.gray700, fontWeight: 500 }}>
+        <CircularProgress 
+          size={60} 
+          thickness={4} 
+          sx={{ 
+            color: isDarkMode ? color.teal400 : color.teal600 
+          }} 
+        />
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            mt: 2, 
+            color: isDarkMode ? color.gray300 : color.gray700, 
+            fontWeight: 500 
+          }}
+        >
           Loading test...
         </Typography>
       </Box>
@@ -48,17 +82,28 @@ export default function HistoryTestPage() {
 
   if (error || !test || !submitTest) {
     return (
-      <Box component={Paper} elevation={3} sx={{
-        p: 4, textAlign: "center", mt: 4, maxWidth: '600px', mx: 'auto',
-        borderRadius: '1rem',
-        backgroundColor: isDarkMode ? color.gray800 : color.white,
-        color: isDarkMode ? color.gray100 : color.gray900
-      }}>
-        <Alert severity="error" sx={{
-          mb: 2,
-          '& .MuiAlert-icon': { color: isDarkMode ? color.red400 : color.red600 },
-          backgroundColor: isDarkMode ? color.gray700 : undefined
-        }}>
+      <Box 
+        component={Paper} 
+        elevation={3} 
+        sx={{
+          p: 4, 
+          textAlign: "center", 
+          mt: 4, 
+          maxWidth: '600px', 
+          mx: 'auto',
+          borderRadius: '1rem',
+          backgroundColor: isDarkMode ? color.gray800 : color.white,
+          color: isDarkMode ? color.gray100 : color.gray900
+        }}
+      >
+        <Alert 
+          severity="error" 
+          sx={{
+            mb: 2,
+            '& .MuiAlert-icon': { color: isDarkMode ? color.red400 : color.red600 },
+            backgroundColor: isDarkMode ? color.gray700 : undefined
+          }}
+        >
           Cannot load test history.
         </Alert>
         <Typography variant="body1">
@@ -77,27 +122,27 @@ export default function HistoryTestPage() {
     switch (test.type) {
       case TestTypeEnum.MIXING:
         return (
-          <MixingTest mixingTestParts={testParts} submitTestId={submitTest.id}  />
+          <MixingTest mixingTestParts={testParts} submitTestId={submitTest.id} />
         );
 
       case TestTypeEnum.READING:
         return (
-          <ReadingTest testReadingIds={readingPart?.questions || []} submitTestId={submitTest.id}  />
+          <ReadingTest testReadingIds={readingPart?.questions || []} submitTestId={submitTest.id} />
         );
 
       case TestTypeEnum.LISTENING:
         return (
-          <ListeningTest testListeningIds={listeningPart?.questions || []} submitTestId={submitTest.id}  />
+          <ListeningTest testListeningIds={listeningPart?.questions || []} submitTestId={submitTest.id} />
         );
 
       case TestTypeEnum.SPEAKING:
         return (
-          <SpeakingTest testSpeakingIds={speakingPart?.questions || []} submitTestId={submitTest.id}  />
+          <SpeakingTest testSpeakingIds={speakingPart?.questions || []} submitTestId={submitTest.id} />
         );
 
       case TestTypeEnum.WRITING:
         return (
-          <WritingTest testWritingIds={writingPart?.questions || []} submitTestId={submitTest.id}  />
+          <WritingTest testWritingIds={writingPart?.questions || []} submitTestId={submitTest.id} />
         );
 
       default:
@@ -119,8 +164,27 @@ export default function HistoryTestPage() {
       transition: 'background-color 0.3s ease'
     }}>
       <MainPictureSection siteInfo={siteInfo} />
-      <Box sx={{ mt: 4, mb: 6, px: { xs: 2, md: 4 } }}>
-        {renderTest()}
+      
+      <Box 
+        sx={{ 
+          maxWidth: "1200px", 
+          mx: "auto", 
+          mt: 4, 
+          mb: 6, 
+          px: { xs: 2, md: 4 } 
+        }}
+      >
+        {/* Test Result Summary */}
+        <TestResultSummary 
+          score={submitTest?.score ?? 0} 
+          maxScore={100} 
+          comment={submitTest.comment}
+        />
+        
+        
+        <Box sx={{ display: activeTab === 0 ? 'block' : 'none' }}>
+            {renderTest()}
+          </Box>
       </Box>
     </Box>
   );

@@ -24,11 +24,11 @@ export default function useHistoryListeningTest({
         setLoading(true);
         setError(false);
 
-        const res = await testListeningService.getByIds(testListeningIds);
+        const res = await testListeningService.getByIdsAndStatus(testListeningIds,true);
         const listenings = res.data || [];
 
         const questionIds = listenings.flatMap((item: any) => item.questions || []);
-        const questionsRes = await questionService.getByIds(questionIds);
+        const questionsRes = await questionService.getByIdsAndStatus(questionIds,true);
         const allQ = questionsRes.data || [];
 
         const answersRes = await submitTestAnswerService.findBySubmitTestIdAndQuestionIds(

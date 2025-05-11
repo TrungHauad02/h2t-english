@@ -64,7 +64,7 @@ export default function SpeakingSection({
       try {
         setLoading(true);
         
-        const speakingItemsResponse = await testSpeakingService.getByIds(testItemIds);
+        const speakingItemsResponse = await testSpeakingService.getByIdsAndStatus(testItemIds,true);
         const items: TestSpeaking[] = speakingItemsResponse.data || [];
         
         const testMap: Record<number, TestSpeaking> = {};
@@ -79,7 +79,7 @@ export default function SpeakingSection({
         await Promise.all(
           items.map(async (item: TestSpeaking) => {
             if (item.questions && item.questions.length > 0) {
-              const questionsResponse = await questionService.getByIds(item.questions);
+              const questionsResponse = await questionService.getByIdsAndStatus(item.questions,true);
               const questions = questionsResponse.data || [];
               
               const questionsWithParent = questions.map((q: any, qIndex: number) => ({

@@ -14,6 +14,7 @@ interface HistoryTestFilterProps {
     handleSortChange: (event: SelectChangeEvent<string>) => void;
     sortDirection: "asc" | "desc";
     toggleSortDirection: () => void;
+    showFiltersTest?: boolean;
   }
   
   export default function HistoryTestFilter({
@@ -25,6 +26,7 @@ interface HistoryTestFilterProps {
     handleSortChange,
     sortDirection,
     toggleSortDirection,
+    showFiltersTest,
   }: HistoryTestFilterProps) {
     const theme = useTheme();
     const isSmDown = useMediaQuery(theme.breakpoints.down("sm"));  
@@ -70,6 +72,7 @@ interface HistoryTestFilterProps {
         />
   
         <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", width: isSmDown ? "100%" : "auto" }}>
+                {!showFiltersTest && (
           <FormControl size="small" sx={{ minWidth: "120px", maxWidth: "100%", flexGrow: 1 }}>
             <InputLabel>Test Type</InputLabel>
             <Select value={filterType} label="Test Type" onChange={handleFilterChange}>
@@ -79,17 +82,16 @@ interface HistoryTestFilterProps {
               <MenuItem value="WRITING">Writing</MenuItem>
               <MenuItem value="SPEAKING">Speaking</MenuItem>
               <MenuItem value="MIXING">Mixing</MenuItem>
-              <MenuItem value="TOEIC">TOEIC</MenuItem>
-              <MenuItem value="COMPETITION">Competition</MenuItem>
             </Select>
           </FormControl>
+        )}
+
   
           <FormControl size="small" sx={{ minWidth: "120px", maxWidth: "50%", flexGrow: 1 }}>
             <InputLabel>Sort By</InputLabel>
             <Select value={sortBy} label="Sort By" onChange={handleSortChange}>
               <MenuItem value="date">Date</MenuItem>
               <MenuItem value="score">Score</MenuItem>
-              <MenuItem value="title">Title</MenuItem>
             </Select>
           </FormControl>
   
