@@ -51,16 +51,6 @@ const remove = async (id: number) => {
   }
 };
 
-const findByIdAndUserIdAndStatusFalse = async (testId: number, userId: number): Promise<{ data: SubmitCompetition }> => {
-  try {
-    const response = await apiClient.get(`/submit-competitions/by-test-and-user?testId=${testId}&userId=${userId}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error finding SubmitTest:", error);
-    throw error;
-  }
-};
-
 const getSubmitCompetitionsForStudent = async (
   page: number,
   itemsPerPage: number,
@@ -68,7 +58,9 @@ const getSubmitCompetitionsForStudent = async (
   filter?: SubmitCompetitionFilter
 ) => {
   try {
-    let url = `/submit-competitions?page=${page - 1}&size=${itemsPerPage}&userId=${userId}&status=true`;
+    let url = `/submit-competitions?page=${
+      page - 1
+    }&size=${itemsPerPage}&userId=${userId}&status=true`;
 
     if (filter) {
       if (filter.title) {
@@ -78,16 +70,24 @@ const getSubmitCompetitionsForStudent = async (
         url += `&sortFields=${encodeURIComponent(filter.sortBy)}`;
       }
       if (filter.startCreatedAt) {
-        url += `&startCreatedAt=${filter.startCreatedAt.toISOString().slice(0, -1)}`;
+        url += `&startCreatedAt=${filter.startCreatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.endCreatedAt) {
-        url += `&endCreatedAt=${filter.endCreatedAt.toISOString().slice(0, -1)}`;
+        url += `&endCreatedAt=${filter.endCreatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.startUpdatedAt) {
-        url += `&startUpdatedAt=${filter.startUpdatedAt.toISOString().slice(0, -1)}`;
+        url += `&startUpdatedAt=${filter.startUpdatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.endUpdatedAt) {
-        url += `&endUpdatedAt=${filter.endUpdatedAt.toISOString().slice(0, -1)}`;
+        url += `&endUpdatedAt=${filter.endUpdatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
     }
 

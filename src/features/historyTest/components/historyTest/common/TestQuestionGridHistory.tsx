@@ -3,10 +3,8 @@ import { Box, Typography, Grid, Stack, Divider, Tooltip } from "@mui/material";
 import { TestPartTypeEnum } from "interfaces";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-import DescriptionIcon from '@mui/icons-material/Description';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 interface QuestionItem {
   serialNumber: number;
@@ -22,10 +20,10 @@ interface TestQuestionGridHistoryProps {
   isTitle?: boolean;
 }
 
-const TestQuestionGridHistory: React.FC<TestQuestionGridHistoryProps> = ({ 
-  questionItems, 
+const TestQuestionGridHistory: React.FC<TestQuestionGridHistoryProps> = ({
+  questionItems,
   onQuestionSelect,
-  isTitle
+  isTitle,
 }) => {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
@@ -40,7 +38,7 @@ const TestQuestionGridHistory: React.FC<TestQuestionGridHistoryProps> = ({
       [TestPartTypeEnum.WRITING]: [],
     };
 
-    questionItems.forEach(item => {
+    questionItems.forEach((item) => {
       grouped[item.partType].push(item);
     });
 
@@ -62,7 +60,7 @@ const TestQuestionGridHistory: React.FC<TestQuestionGridHistoryProps> = ({
         border: borderWrong,
         text: textWrong,
         icon: <ErrorOutlineIcon fontSize="small" />,
-        tooltip: "Not answered"
+        tooltip: "Not answered",
       };
     }
 
@@ -76,7 +74,7 @@ const TestQuestionGridHistory: React.FC<TestQuestionGridHistoryProps> = ({
         border: borderCorrect,
         text: textCorrect,
         icon: <CheckCircleOutlineIcon fontSize="small" />,
-        tooltip: "Answered"
+        tooltip: "Answered",
       };
     }
 
@@ -87,7 +85,7 @@ const TestQuestionGridHistory: React.FC<TestQuestionGridHistoryProps> = ({
         border: borderCorrect,
         text: textCorrect,
         icon: <CheckCircleOutlineIcon fontSize="small" />,
-        tooltip: "Correct"
+        tooltip: "Correct",
       };
     } else {
       return {
@@ -95,20 +93,27 @@ const TestQuestionGridHistory: React.FC<TestQuestionGridHistoryProps> = ({
         border: borderWrong,
         text: textWrong,
         icon: <ErrorOutlineIcon fontSize="small" />,
-        tooltip: "Incorrect"
+        tooltip: "Incorrect",
       };
     }
   };
 
   const getSectionIcon = (sectionType: string) => {
-    switch(sectionType) {
-      case 'VOCABULARY': return '📚';
-      case 'GRAMMAR': return '📝';
-      case 'READING': return '📖';
-      case 'LISTENING': return '🎧';
-      case 'SPEAKING': return '🎤';
-      case 'WRITING': return '✍️';
-      default: return '📄';
+    switch (sectionType) {
+      case "VOCABULARY":
+        return "📚";
+      case "GRAMMAR":
+        return "📝";
+      case "READING":
+        return "📖";
+      case "LISTENING":
+        return "🎧";
+      case "SPEAKING":
+        return "🎤";
+      case "WRITING":
+        return "✍️";
+      default:
+        return "📄";
     }
   };
 
@@ -120,7 +125,7 @@ const TestQuestionGridHistory: React.FC<TestQuestionGridHistoryProps> = ({
         borderColor: isDarkMode ? color.gray700 : color.gray300,
         borderRadius: "12px",
         bgcolor: isDarkMode ? color.gray800 : color.white,
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
       }}
     >
       <Typography
@@ -129,26 +134,35 @@ const TestQuestionGridHistory: React.FC<TestQuestionGridHistoryProps> = ({
           textAlign: "center",
           fontWeight: "bold",
           color: isDarkMode ? color.gray200 : color.gray800,
-          mb: 2
+          mb: 2,
         }}
       >
         Answer Summary
       </Typography>
 
-      <Divider sx={{ mb: 2, borderColor: isDarkMode ? color.gray700 : color.gray300 }} />
+      <Divider
+        sx={{ mb: 2, borderColor: isDarkMode ? color.gray700 : color.gray300 }}
+      />
 
       {Object.entries(questionsByType).map(([section, items]) => {
         if (items.length === 0) return null;
 
         const sectionName = (() => {
-          switch(section) {
-            case 'VOCABULARY': return 'Vocabulary';
-            case 'GRAMMAR': return 'Grammar';
-            case 'READING': return 'Reading';
-            case 'LISTENING': return 'Listening';
-            case 'SPEAKING': return 'Speaking';
-            case 'WRITING': return 'Writing';
-            default: return section;
+          switch (section) {
+            case "VOCABULARY":
+              return "Vocabulary";
+            case "GRAMMAR":
+              return "Grammar";
+            case "READING":
+              return "Reading";
+            case "LISTENING":
+              return "Listening";
+            case "SPEAKING":
+              return "Speaking";
+            case "WRITING":
+              return "Writing";
+            default:
+              return section;
           }
         })();
 
@@ -161,17 +175,21 @@ const TestQuestionGridHistory: React.FC<TestQuestionGridHistoryProps> = ({
               sx={{
                 fontWeight: 600,
                 mb: 1.5,
-                display: 'flex',
-                alignItems: 'center',
+                display: "flex",
+                alignItems: "center",
                 gap: 1,
                 color: isDarkMode ? color.teal200 : color.teal700,
               }}
             >
-              <span style={{ fontSize: '1.2rem' }}>{sectionIcon}</span>
+              <span style={{ fontSize: "1.2rem" }}>{sectionIcon}</span>
               {sectionName}
             </Typography>
 
-            <Grid container spacing={{ xs: 0.5, sm: 1 }} justifyContent="flex-start">
+            <Grid
+              container
+              spacing={{ xs: 0.5, sm: 1 }}
+              justifyContent="flex-start"
+            >
               {items.map((item) => {
                 const colors = getColorConfig(item);
                 return (
@@ -182,7 +200,7 @@ const TestQuestionGridHistory: React.FC<TestQuestionGridHistoryProps> = ({
                       flexBasis: { xs: "16.666%", sm: "12.5%" },
                       display: "flex",
                       justifyContent: "center",
-                      mb: 0.5
+                      mb: 0.5,
                     }}
                   >
                     <Tooltip title={colors.tooltip} arrow placement="top">
@@ -197,15 +215,15 @@ const TestQuestionGridHistory: React.FC<TestQuestionGridHistoryProps> = ({
                           fontWeight: 600,
                           borderRadius: "8px",
                           bgcolor: colors.bg,
-                          border: '2px solid',
+                          border: "2px solid",
                           borderColor: colors.border,
                           color: colors.text,
-                          cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                          '&:hover': {
-                            transform: 'translateY(-2px)',
-                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                          }
+                          cursor: "pointer",
+                          transition: "all 0.2s ease",
+                          "&:hover": {
+                            transform: "translateY(-2px)",
+                            boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                          },
                         }}
                       >
                         {item.serialNumber}
@@ -219,31 +237,41 @@ const TestQuestionGridHistory: React.FC<TestQuestionGridHistoryProps> = ({
         );
       })}
 
-      <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', gap: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Box sx={{ 
-            width: 16, 
-            height: 16, 
-            borderRadius: '4px', 
-            bgcolor: isDarkMode ? color.green900 : color.green100,
-            border: '1px solid',
-            borderColor: isDarkMode ? color.green500 : color.green500
-          }} />
-          <Typography variant="body2" sx={{ color: isDarkMode ? color.gray300 : color.gray600 }}>
+      <Box sx={{ mt: 4, display: "flex", justifyContent: "center", gap: 3 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box
+            sx={{
+              width: 16,
+              height: 16,
+              borderRadius: "4px",
+              bgcolor: isDarkMode ? color.green900 : color.green100,
+              border: "1px solid",
+              borderColor: isDarkMode ? color.green500 : color.green500,
+            }}
+          />
+          <Typography
+            variant="body2"
+            sx={{ color: isDarkMode ? color.gray300 : color.gray600 }}
+          >
             Correct
           </Typography>
         </Box>
-        
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Box sx={{ 
-            width: 16, 
-            height: 16, 
-            borderRadius: '4px', 
-            bgcolor: isDarkMode ? color.red900 : color.red100,
-            border: '1px solid',
-            borderColor: isDarkMode ? color.red500 : color.red500
-          }} />
-          <Typography variant="body2" sx={{ color: isDarkMode ? color.gray300 : color.gray600 }}>
+
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box
+            sx={{
+              width: 16,
+              height: 16,
+              borderRadius: "4px",
+              bgcolor: isDarkMode ? color.red900 : color.red100,
+              border: "1px solid",
+              borderColor: isDarkMode ? color.red500 : color.red500,
+            }}
+          />
+          <Typography
+            variant="body2"
+            sx={{ color: isDarkMode ? color.gray300 : color.gray600 }}
+          >
             Incorrect/Not answered
           </Typography>
         </Box>
