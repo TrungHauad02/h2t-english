@@ -17,14 +17,17 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { AIResponse } from "interfaces";
 import { format } from 'date-fns';
+import JsonViewer from "./JsonViewer";
+import { isValidJson } from "utils/jsonFormatter";
 
 interface ResponseRowProps {
   row: AIResponse;
   onEvaluate: (response: AIResponse) => void;
+  onViewDetail: (response: AIResponse) => void;
   isMobile: boolean;
 }
 
-export default function ResponseRow({ row, onEvaluate, isMobile }: ResponseRowProps) {
+export default function ResponseRow({ row, onEvaluate, onViewDetail, isMobile }: ResponseRowProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const [open, setOpen] = useState(false);
@@ -33,6 +36,10 @@ export default function ResponseRow({ row, onEvaluate, isMobile }: ResponseRowPr
     if (!date) return 'N/A';
     return format(new Date(date), 'MMM dd, yyyy HH:mm');
   };
+
+  // Kiểm tra nếu request hoặc response là JSON
+  const isRequestJson = isValidJson(row.request);
+  const isResponseJson = isValidJson(row.response);
   
   return (
     <>
@@ -97,7 +104,7 @@ export default function ResponseRow({ row, onEvaluate, isMobile }: ResponseRowPr
             <Tooltip title="View Details">
               <IconButton
                 size="small"
-                onClick={() => setOpen(!open)}
+                onClick={() => onViewDetail(row)}
                 sx={{
                   color: isDarkMode ? color.teal400 : color.teal600,
                   '&:hover': {
@@ -149,7 +156,7 @@ export default function ResponseRow({ row, onEvaluate, isMobile }: ResponseRowPr
                 m: 2, 
                 px: 2, 
                 py: 3, 
-                borderRadius: '0.5rem',
+                borderRadius: '0.75rem',
                 backgroundColor: isDarkMode ? color.gray900 : color.gray50,
                 border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`
               }}
@@ -166,17 +173,30 @@ export default function ResponseRow({ row, onEvaluate, isMobile }: ResponseRowPr
               >
                 Full Request:
               </Typography>
-              <Typography 
-                variant="body2" 
-                sx={{ 
-                  mt: 1, 
-                  mb: 3,
-                  whiteSpace: 'pre-wrap',
-                  color: isDarkMode ? color.gray200 : color.gray800
-                }}
-              >
-                {row.request}
-              </Typography>
+              
+              {isRequestJson ? (
+                <Box sx={{ mt: 2, mb: 3 }}>
+                  <JsonViewer
+                    data={row.request}
+                    maxHeight="300px"
+                    showCopyButton
+                    showExpandButton
+                    initiallyExpanded={false}
+                  />
+                </Box>
+              ) : (
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    mt: 1, 
+                    mb: 3,
+                    whiteSpace: 'pre-wrap',
+                    color: isDarkMode ? color.gray200 : color.gray800
+                  }}
+                >
+                  {row.request}
+                </Typography>
+              )}
               
               <Typography 
                 variant="subtitle2" 
@@ -190,24 +210,37 @@ export default function ResponseRow({ row, onEvaluate, isMobile }: ResponseRowPr
               >
                 AI Response:
               </Typography>
-              <Typography 
-                variant="body2" 
-                sx={{ 
-                  mt: 1,
-                  mb: 3,
-                  whiteSpace: 'pre-wrap',
-                  color: isDarkMode ? color.gray200 : color.gray800,
-                  fontSize: '0.875rem',
-                  fontFamily: 'monospace',
-                  lineHeight: 1.6,
-                  p: 1.5,
-                  backgroundColor: isDarkMode ? `${color.gray800}60` : `${color.gray200}30`,
-                  borderRadius: '0.5rem',
-                  border: `1px solid ${isDarkMode ? color.gray700 : color.gray300}`
-                }}
-              >
-                {row.response}
-              </Typography>
+              
+              {isResponseJson ? (
+                <Box sx={{ mt: 2, mb: 3 }}>
+                  <JsonViewer
+                    data={row.response}
+                    maxHeight="350px"
+                    showCopyButton
+                    showExpandButton
+                    initiallyExpanded={false}
+                  />
+                </Box>
+              ) : (
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    mt: 1,
+                    mb: 3,
+                    whiteSpace: 'pre-wrap',
+                    color: isDarkMode ? color.gray200 : color.gray800,
+                    fontSize: '0.875rem',
+                    fontFamily: 'monospace',
+                    lineHeight: 1.6,
+                    p: 1.5,
+                    backgroundColor: isDarkMode ? `${color.gray800}60` : `${color.gray200}30`,
+                    borderRadius: '0.5rem',
+                    border: `1px solid ${isDarkMode ? color.gray700 : color.gray300}`
+                  }}
+                >
+                  {row.response}
+                </Typography>
+              )}
               
               <Typography 
                 variant="subtitle2" 

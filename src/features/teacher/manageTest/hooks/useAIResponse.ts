@@ -13,6 +13,7 @@ interface UseAIResponseResult {
   filter: AIResponseFilter;
   selectedResponse: AIResponse | null;
   evaluateDialogOpen: boolean;
+  detailDialogOpen: boolean; // New state for detail dialog
   
   // Actions
   setPage: (page: number) => void;
@@ -20,6 +21,8 @@ interface UseAIResponseResult {
   setFilter: (filter: AIResponseFilter) => void;
   openEvaluateDialog: (response: AIResponse) => void;
   closeEvaluateDialog: () => void;
+  openDetailDialog: (response: AIResponse) => void; // New action for opening detail dialog
+  closeDetailDialog: () => void; // New action for closing detail dialog
   saveEvaluation: (evaluate: string) => Promise<void>;
   fetchData: () => Promise<void>;
   handlePageChange: (event: React.ChangeEvent<unknown>, value: number) => void;
@@ -38,6 +41,7 @@ export default function useAIResponse(): UseAIResponseResult {
   const [filter, setFilter] = useState<AIResponseFilter>({});
   const [selectedResponse, setSelectedResponse] = useState<AIResponse | null>(null);
   const [evaluateDialogOpen, setEvaluateDialogOpen] = useState<boolean>(false);
+  const [detailDialogOpen, setDetailDialogOpen] = useState<boolean>(false); // New state for detail dialog
 
   // Fetch data function
   const fetchData = useCallback(async () => {
@@ -78,12 +82,24 @@ export default function useAIResponse(): UseAIResponseResult {
   const openEvaluateDialog = useCallback((response: AIResponse) => {
     setSelectedResponse(response);
     setEvaluateDialogOpen(true);
+    setDetailDialogOpen(false); // Close detail dialog if open
   }, []);
 
   // Close evaluate dialog
   const closeEvaluateDialog = useCallback(() => {
     setEvaluateDialogOpen(false);
-    setSelectedResponse(null);
+  }, []);
+
+  // Open detail dialog
+  const openDetailDialog = useCallback((response: AIResponse) => {
+    setSelectedResponse(response);
+    setDetailDialogOpen(true);
+    setEvaluateDialogOpen(false); // Close evaluate dialog if open
+  }, []);
+
+  // Close detail dialog
+  const closeDetailDialog = useCallback(() => {
+    setDetailDialogOpen(false);
   }, []);
 
   // Save evaluation
@@ -124,6 +140,7 @@ export default function useAIResponse(): UseAIResponseResult {
     filter,
     selectedResponse,
     evaluateDialogOpen,
+    detailDialogOpen, // Add detail dialog state to return
     
     // Actions
     setPage,
@@ -131,6 +148,8 @@ export default function useAIResponse(): UseAIResponseResult {
     setFilter,
     openEvaluateDialog,
     closeEvaluateDialog,
+    openDetailDialog, // Add open detail dialog action to return
+    closeDetailDialog, // Add close detail dialog action to return
     saveEvaluation,
     fetchData,
     handlePageChange,

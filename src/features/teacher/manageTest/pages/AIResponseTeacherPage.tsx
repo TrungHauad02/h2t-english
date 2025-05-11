@@ -2,12 +2,11 @@ import { Box, Container, Alert, Fade } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { WEPaginationSelect } from "components/pagination";
-import {
-  ResponseHeader,
+import { ResponseHeader,
   SearchSection,
   ResponseTable,
-  EvaluateDialog
-} from "../components/manageAIResponse";
+  EvaluateDialog,
+  DetailDialog } from "../components/manageAIResponse";
 import useAIResponse from "../hooks/useAIResponse";
 
 export default function AIResponseTeacherPage() {
@@ -23,12 +22,15 @@ export default function AIResponseTeacherPage() {
     totalPage,
     itemsPerPage,
     evaluateDialogOpen,
+    detailDialogOpen,
     selectedResponse,
     handlePageChange,
     handleItemsPerPageChange,
     handleFilterChange,
     openEvaluateDialog,
     closeEvaluateDialog,
+    openDetailDialog,
+    closeDetailDialog,
     saveEvaluation,
     fetchData
   } = useAIResponse();
@@ -81,6 +83,7 @@ export default function AIResponseTeacherPage() {
             loading={loading} 
             error={error}
             onEvaluate={openEvaluateDialog}
+            onViewDetail={openDetailDialog}
             onRefresh={fetchData}
           />
         </Box>
@@ -96,12 +99,23 @@ export default function AIResponseTeacherPage() {
         )}
       </Container>
 
+      {/* Evaluate Dialog */}
       {selectedResponse && (
         <EvaluateDialog
           open={evaluateDialogOpen}
           response={selectedResponse}
           onClose={closeEvaluateDialog}
           onSave={saveEvaluation}
+        />
+      )}
+
+      {/* Detail Dialog */}
+      {selectedResponse && (
+        <DetailDialog
+          open={detailDialogOpen}
+          response={selectedResponse}
+          onClose={closeDetailDialog}
+          onEvaluate={openEvaluateDialog}
         />
       )}
     </Box>
