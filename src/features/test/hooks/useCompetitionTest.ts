@@ -16,7 +16,6 @@ import {
   scoreWritingService,
   testWritingService
 } from "services";
-import { tr } from "date-fns/locale";
 
 interface QuestionItem {
   serialNumber: number;
