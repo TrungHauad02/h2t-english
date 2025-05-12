@@ -4,28 +4,23 @@ import {
   Box,
   Typography,
   Paper,
-  useMediaQuery,
-  useTheme,
   CircularProgress,
-  Alert
+  Alert,
+  Button
 } from "@mui/material";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import { AIResponse } from "interfaces";
-import { AIResponseFilter } from "interfaces";
+import { AIResponse, AIResponseFilter } from "interfaces";
 import { aiResponseService } from "services/features/aiResponseService";
-import { WEPaginationSelect } from "components/pagination";
 import { 
-  AIResponseSearchPanel, 
-  AIResponseTable,
-  AIResponseHeader
+  SearchPanel, 
+  ResponseTable,
+  SystemHeader
 } from "../components/airesponseList";
-
+import { WEPaginationSelect } from "components/pagination";
 export default function AIResponsePage() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // Pagination states
   const [page, setPage] = useState<number>(1);
@@ -38,54 +33,40 @@ export default function AIResponsePage() {
   const [error, setError] = useState<string | null>(null);
   const [responses, setResponses] = useState<AIResponse[]>([]);
   
-  // Filter states
+  // Filter states - bắt đầu với một đối tượng rỗng
   const [filters, setFilters] = useState<AIResponseFilter>({});
 
-  // Cập nhật hàm fetchData để xử lý dữ liệu và bắt lỗi tốt hơn
-
-const fetchData = async () => {
-  try {
-    setLoading(true);
-    setError(null);
-    console.log("Fetching data with:", { page, itemsPerPage, filters });
-    
-    const result = await aiResponseService.getAIResponses(page, itemsPerPage, filters);
-    console.log("Fetch result:", result);
-    
-    // Kiểm tra cấu trúc dữ liệu
-    if (result) {
-      // Trường hợp 1: API trả về đúng định dạng pagination
-      if (Array.isArray(result.content)) {
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      console.log("Fetching with filters:", filters);
+      const result = await aiResponseService.getAIResponses(page, itemsPerPage, filters);
+      console.log("API Result:", result);
+      
+      // API trả về cấu trúc { content, totalPages, totalElements, ... }
+      if (result && result.content) {
         setResponses(result.content);
-        setTotalPage(result.totalPages || 1);
-        setTotalItems(result.totalElements || result.content.length);
-      } 
-      // Trường hợp 2: API trả về mảng trực tiếp
-      else if (Array.isArray(result)) {
-        setResponses(result);
-        setTotalPage(1);
-        setTotalItems(result.length);
-      }
-      // Trường hợp 3: Định dạng không đúng
-      else {
+        setTotalPage(result.totalPages);
+        setTotalItems(result.totalElements);
+      } else {
+        // Trường hợp không có dữ liệu
+        setResponses([]);
+        setTotalPage(0);
+        setTotalItems(0);
         console.error("Unexpected data format:", result);
         setError("Unexpected data format received from the server.");
-        setResponses([]);
       }
-    } else {
+    } catch (err: any) {
+      console.error("Error fetching data:", err);
+      const errorMessage = err.response?.data?.message || err.message || "Failed to fetch AI responses";
+      setError(errorMessage);
       setResponses([]);
-      setTotalPage(1);
-      setTotalItems(0);
+    } finally {
+      setLoading(false);
     }
-  } catch (err: any) {
-    console.error("Error fetching data:", err);
-    const errorMessage = err.response?.data?.message || err.message || "Failed to fetch AI responses";
-    setError(errorMessage);
-    setResponses([]);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   // Effect to fetch data when page, itemsPerPage, or filters change
   useEffect(() => {
@@ -103,22 +84,31 @@ const fetchData = async () => {
   };
 
   const handleFilterChange = (newFilters: AIResponseFilter) => {
+    console.log("Filter changed to:", newFilters);
     setFilters(newFilters);
     setPage(1); // Reset to first page when applying filters
   };
 
   const handleFilterReset = () => {
+    console.log("Resetting filters");
+    // Xóa tất cả các filter bằng cách set lại thành object rỗng
     setFilters({});
     setPage(1);
+    
+    // Thêm một timeout nhỏ để đảm bảo UI cập nhật trước khi gọi lại API
+    setTimeout(() => {
+      console.log("Fetching data after reset");
+      fetchData();
+    }, 50);
   };
 
   return (
     <Stack spacing={3} sx={{ p: { xs: 1, sm: 2, md: 3 } }}>
       {/* Header Section */}
-      <AIResponseHeader />
+      <SystemHeader />
       
       {/* Search Panel */}
-      <AIResponseSearchPanel 
+      <SearchPanel 
         filters={filters}
         onFilterChange={handleFilterChange}
         onFilterReset={handleFilterReset}
@@ -144,7 +134,19 @@ const fetchData = async () => {
         
         {/* Error display */}
         {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <Alert 
+            severity="error" 
+            sx={{ mb: 2 }}
+            action={
+              <Button 
+                color="inherit" 
+                size="small" 
+                onClick={fetchData}
+              >
+                Retry
+              </Button>
+            }
+          >
             {error}
           </Alert>
         )}
@@ -171,7 +173,7 @@ const fetchData = async () => {
             </Typography>
           </Box>
         ) : (
-          <AIResponseTable 
+          <ResponseTable 
             data={responses} 
             onRefresh={fetchData}
           />

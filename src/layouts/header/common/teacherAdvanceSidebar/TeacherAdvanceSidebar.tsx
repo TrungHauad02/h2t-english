@@ -19,6 +19,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import { NavLink, useLocation } from "react-router-dom";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import SmartToyIcon from '@mui/icons-material/SmartToy';
 
 export default function TeacherAdvanceSidebar({
   drawerWidth,
@@ -50,6 +51,11 @@ export default function TeacherAdvanceSidebar({
       label: "Manage Toeic Tests",
       path: "/teacher-advance/toeics",
       icon: <AssignmentIcon fontSize="small" />,
+    },
+    {
+      label: "Manage AI Response",
+      path: "/teacher-advance/ai-response",
+      icon: <SmartToyIcon fontSize="small" />,
     },
   ];
 
