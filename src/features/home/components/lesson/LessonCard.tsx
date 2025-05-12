@@ -14,26 +14,28 @@ import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { StyledCard, CardOverlay } from "./LessonCardStyles";
-
-interface Lesson {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  views: number;
-}
+import { Lesson, RouteNode, RouteNodeEnum } from "interfaces";
+import { createLessonFactory, LessonCreationService } from "services";
+import { useNavigate } from "react-router-dom";
 
 interface LessonCardProps {
-  lesson: Lesson;
+  node: RouteNode;
   index: number;
   isSelected: boolean;
   onSelect: (id: number) => void;
 }
 
-export default function LessonCard({ lesson, index, isSelected, onSelect }: LessonCardProps) {
+export default function LessonCard({
+  node,
+  index,
+  isSelected,
+  onSelect,
+}: LessonCardProps) {
   const { isDarkMode } = useDarkMode();
   const colors = useColor();
+  const navigate = useNavigate();
   const [showCard, setShowCard] = useState(false);
+  const [lesson, setLesson] = useState<Lesson | null>(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -44,6 +46,49 @@ export default function LessonCard({ lesson, index, isSelected, onSelect }: Less
     return () => clearTimeout(timer);
   }, [index]);
 
+  useEffect(() => {
+    const fetchLesson = async () => {
+      try {
+        const lessonService = createLessonFactory(
+          node.type
+        ) as LessonCreationService<Lesson>;
+        const response = await lessonService.findById(node.nodeId);
+        setLesson(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchLesson();
+  }, [node.type, node.nodeId]);
+
+  const handleStartClick = () => {
+    let prefix = "";
+    switch (node.type) {
+      case RouteNodeEnum.VOCABULARY:
+        prefix = "/lesson/topics";
+        break;
+      case RouteNodeEnum.GRAMMAR:
+        prefix = "/lesson/grammars";
+        break;
+      case RouteNodeEnum.READING:
+        prefix = "/lesson/readings";
+        break;
+      case RouteNodeEnum.LISTENING:
+        prefix = "/lesson/listenings";
+        break;
+      case RouteNodeEnum.WRITING:
+        prefix = "/lesson/writings";
+        break;
+      case RouteNodeEnum.SPEAKING:
+        prefix = "/lesson/speakings";
+        break;
+      default:
+        break;
+    }
+
+    navigate(`${prefix}/${node.nodeId}`);
+  };
+
   const getBorderColor = () => {
     const colors = ["#5eead4", "#6ee7b7", "#86efac", "#4ade80"];
     return colors[index % colors.length];
@@ -52,7 +97,7 @@ export default function LessonCard({ lesson, index, isSelected, onSelect }: Less
   return (
     <Zoom in={showCard}>
       <StyledCard
-        onClick={() => onSelect(lesson.id)}
+        onClick={() => onSelect(index)}
         sx={{
           backgroundColor: isDarkMode ? colors.gray800 : colors.white,
           color: isDarkMode ? colors.gray100 : colors.gray900,
@@ -74,8 +119,8 @@ export default function LessonCard({ lesson, index, isSelected, onSelect }: Less
           <CardMedia
             component="img"
             height={isMobile ? "180" : "200"}
-            image={lesson.image}
-            alt={lesson.title}
+            image={node.image}
+            alt={node.title}
             sx={{
               filter: isDarkMode ? "brightness(0.85)" : "none",
               transition: "all 0.5s ease",
@@ -105,7 +150,7 @@ export default function LessonCard({ lesson, index, isSelected, onSelect }: Less
               textOverflow: "ellipsis",
             }}
           >
-            {lesson.title}
+            {node.title}
           </Typography>
 
           <Typography
@@ -121,14 +166,25 @@ export default function LessonCard({ lesson, index, isSelected, onSelect }: Less
               fontSize: "0.875rem",
             }}
           >
-            {lesson.description}
+            {node.description}
           </Typography>
 
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <VisibilityIcon sx={{ color: isDarkMode ? colors.gray400 : colors.gray500, mr: 0.5 }} />
+              <VisibilityIcon
+                sx={{
+                  color: isDarkMode ? colors.gray400 : colors.gray500,
+                  mr: 0.5,
+                }}
+              />
               <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>
-                {lesson.views.toLocaleString()}
+                {lesson?.views.toLocaleString()}
               </Typography>
             </Box>
 
@@ -136,13 +192,16 @@ export default function LessonCard({ lesson, index, isSelected, onSelect }: Less
               variant="contained"
               size="small"
               startIcon={<PlayArrowIcon />}
+              onClick={handleStartClick}
               sx={{
                 backgroundColor: isDarkMode ? colors.teal700 : colors.teal600,
                 color: colors.white,
                 fontWeight: 600,
                 fontSize: "0.75rem",
                 padding: "4px 10px",
-                "&:hover": { backgroundColor: isDarkMode ? colors.teal600 : colors.teal500 },
+                "&:hover": {
+                  backgroundColor: isDarkMode ? colors.teal600 : colors.teal500,
+                },
               }}
             >
               Start
