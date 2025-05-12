@@ -1,4 +1,4 @@
-import { Lesson } from "interfaces";
+import { RouteNode } from "interfaces";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { featureLessonService } from "services";
 
@@ -9,8 +9,8 @@ export default function useLessonsSection() {
   const [filter, setFilter] = useState<FilterType>("popular");
   const [animate, setAnimate] = useState<boolean>(false);
   const [lessonsData, setLessonsData] = useState<{
-    popular: Lesson[];
-    recent: Lesson[];
+    popular: RouteNode[];
+    recent: RouteNode[];
   }>({
     popular: [],
     recent: [],
@@ -22,7 +22,7 @@ export default function useLessonsSection() {
   }, []);
 
   // Memoize current lessons based on filter
-  const lessons = useMemo(() => {
+  const nodes = useMemo(() => {
     return lessonsData[filter] || [];
   }, [lessonsData, filter]);
 
@@ -68,7 +68,7 @@ export default function useLessonsSection() {
     setSelectedLessonId,
     filter,
     animate,
-    lessons,
+    nodes,
     isLoading,
     handleFilterChange,
   };
