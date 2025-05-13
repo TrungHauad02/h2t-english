@@ -26,6 +26,11 @@ export default function useStudentProfile() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (formData) {
+      if (e.target.name === "phoneNumber") {
+        if (e.target.value.length > 10 || /[a-zA-Z]/.test(e.target.value)) {
+          return;
+        }
+      }
       setFormData({
         ...formData,
         [e.target.name]: e.target.value,

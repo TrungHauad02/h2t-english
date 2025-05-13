@@ -74,7 +74,7 @@ export default function Register() {
             label="Phone Number"
             type="text"
             value={useRegister.phoneNumber}
-            onChange={(e) => useRegister.setPhoneNumber(e.target.value)}
+            onChange={useRegister.handleChangePhoneNumber}
             required
           />
           <WEDateField
