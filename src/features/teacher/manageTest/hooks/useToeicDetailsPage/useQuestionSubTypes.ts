@@ -1,6 +1,6 @@
 import { Toeic, ToeicQuestion } from "interfaces";
 import { useState } from "react";
-import { toeicQuestionService, toeicPart3_4Service, toeicPart6Service, toeicPart7Service, toeicAnswerService } from "services/test";
+import { toeicQuestionService, toeicPart3_4Service, toeicPart6Service, toeicPart7Service } from "services/test";
 
 export function useQuestionSubTypes(data: Toeic | null) {
   const [part3ToeicQuestions, setPart3ToeicQuestions] = useState<{ [partId: number]: ToeicQuestion[] }>({});
@@ -50,7 +50,7 @@ export function useQuestionSubTypes(data: Toeic | null) {
   ) => {
     if (!questionIds.length) return;
 
-    const questions = await toeicQuestionService.getByIds(questionIds);
+    const questions = await toeicQuestionService.getByIdsAndStatus(questionIds);
     const { updateStateFn } = getPartStateAndUpdater(partType, partId);
     updateStateFn(questions.data);
   };
@@ -64,17 +64,7 @@ export function useQuestionSubTypes(data: Toeic | null) {
 
       const created = await toeicQuestionService.create(question);
       const newQuestion = created.data;
-      
-      if (question.answers && question.answers.length > 0) {
-        await Promise.all(
-          question.answers.map((answer) =>
-            toeicAnswerService.create({
-              ...answer,
-              questionId: newQuestion.id,
-            })
-          )
-        );
-      }
+ 
     
       const { currentPart, updateStateFn } = getPartStateAndUpdater(partType, parentId);
       updateStateFn([...currentPart, newQuestion]);
@@ -95,16 +85,6 @@ export function useQuestionSubTypes(data: Toeic | null) {
  
       await toeicQuestionService.update(question.id, question);
   
-      if (question.answers && question.answers.length > 0) {
-        await Promise.all(
-          question.answers.map((answer) =>
-            toeicAnswerService.update(answer.id, {
-              ...answer,
-              questionId: question.id
-            })
-          )
-        );
-      }
   
       const { currentPart, updateStateFn } = getPartStateAndUpdater(partType, parentId);
       const updated = currentPart.map(q => (q.id === question.id ? question : q));

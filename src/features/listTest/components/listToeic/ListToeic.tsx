@@ -5,13 +5,13 @@ import { toeicService } from "services";
 import { WEPaginationSelect } from "components/pagination";
 import LoadingSkeleton from "../common/LoadingSkeleton";
 import ToeicItem from "./ToeicItem";
-
+import useAuth from "hooks/useAuth";
 interface ListToeicProps {
   searchQuery?: string;
 }
 
 export default function ListToeic({ searchQuery = "" }: ListToeicProps) {
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [toeicsPerPage, setToeicsPerPage] = useState(8);
   const [toeics, setToeics] = useState<Toeic[]>([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -21,8 +21,7 @@ export default function ListToeic({ searchQuery = "" }: ListToeicProps) {
     title: "",
     status: true,
   });
-
-  const userId = 1;
+  const userId = Number(useAuth().userId);
 
   const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value - 1);
@@ -30,7 +29,7 @@ export default function ListToeic({ searchQuery = "" }: ListToeicProps) {
 
   const handleItemsPerPageChange = (itemsPerPage: number) => {
     setToeicsPerPage(itemsPerPage);
-    setPage(0);
+    setPage(1);
   };
 
   useEffect(() => {
@@ -55,6 +54,8 @@ export default function ListToeic({ searchQuery = "" }: ListToeicProps) {
           setToeics(response.data.content || []);
           setTotalPages(response.data.totalPages || 1);
         }
+        console.log(response.data);
+        
       } catch (error) {
         console.error("Error fetching TOEIC tests:", error);
       } finally {
@@ -77,7 +78,7 @@ export default function ListToeic({ searchQuery = "" }: ListToeicProps) {
                 <ToeicItem key={toeic.id} toeic={toeic} />
               ))}
             </Grid>
-
+        
             {toeics.length > 0 && (
               <Box sx={{ mt: 3, mb: 2, display: "flex", justifyContent: "center" }}>
                 <WEPaginationSelect

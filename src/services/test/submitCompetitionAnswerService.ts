@@ -55,7 +55,7 @@ const findBySubmitCompetitionIdAndQuestionIds = async (
   questionIds: number[]
 ) => {
   const response = await apiClient.post(
-    `/submit-competition-speaking/by-submit-competition/${submitCompetitionId}/questions`,
+    `/submit-competition-answers/by-submit-competition/${submitCompetitionId}/questions`,
     questionIds
   );
   return response.data;
@@ -65,7 +65,7 @@ const findBySubmitCompetitionIdAndQuestionId = async (
   questionId: number
 ) => {
   const response = await apiClient.get(
-    `/submit-competition-speaking/by-submit-competition/${submitCompetitionId}/question/${questionId}`
+    `/submit-competition-answers/by-submit-competition/${submitCompetitionId}/question/${questionId}`
   );
   return response.data;
 };

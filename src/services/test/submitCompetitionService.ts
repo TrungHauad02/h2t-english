@@ -99,13 +99,14 @@ const getSubmitCompetitionsForStudent = async (
   }
 };
 
-const findByIdAndUserIdAndStatusFalse = async (
+const findByIdAndUserIdAndStatus = async (
   testId: number,
-  userId: number
+  userId: number,
+  status: boolean,
 ): Promise<{ data: SubmitCompetition }> => {
   try {
     const response = await apiClient.get(
-      `/submit-competitions/by-test-and-user?testId=${testId}&userId=${userId}`
+      `/submit-competitions/by-test-and-user?testId=${testId}&userId=${userId}&status=${status}`
     );
     return response.data;
   } catch (error) {
@@ -123,6 +124,21 @@ const getLeaderBoard = async () => {
     throw error;
   }
 };
+const findByTestIdAndStatus = async (
+  testId: number,
+  status: boolean
+): Promise<{ data: SubmitCompetition[] }> => {
+  try {
+    const response = await apiClient.get(
+      `/submit-competitions/by-test-id-and-status?testId=${testId}&status=${status}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching SubmitCompetitions by testId and status:", error);
+    throw error;
+  }
+};
+
 
 export const submitCompetitionService = {
   findById,
@@ -131,6 +147,7 @@ export const submitCompetitionService = {
   patch,
   remove,
   getSubmitCompetitionsForStudent,
-  findByIdAndUserIdAndStatusFalse,
+  findByIdAndUserIdAndStatus,
   getLeaderBoard,
+  findByTestIdAndStatus,
 };

@@ -12,8 +12,8 @@ import {
 } from "./";
 import TestQuestionGrid from "./TestQuestionGrid";
 import IntroducePartTest from "./InroducePartTest";
-import TimeRemaining from "./TimeRemaining";
-import SubmitTestDialog from "./SubmitTestDialog";
+import TimeRemaining from "./TimeRemainingCompetition";
+import SubmitCompetitionDialog from "../common/SubmitCompetitionDialog";
 import ConfirmSubmitDialog from "./ConfirmSubmitDialog";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
@@ -24,9 +24,8 @@ export default function CompetitionTest() {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [timeUsed, setTimeUsed] = useState(0);
 
   const {
     allQuestions,
@@ -50,9 +49,11 @@ export default function CompetitionTest() {
     writingPart,
     submitCompetition,
     loading,
-    error
+    error,
+    competition,
   } = useCompetitionTest();
 
+  const endTime = competition?.endTime ? new Date(competition.endTime) : new Date(Date.now());
   const handleOpenConfirmDialog = useCallback(() => {
     setIsConfirmDialogOpen(true);
   }, []);
@@ -146,12 +147,7 @@ export default function CompetitionTest() {
     handleUpdateAnsweredQuestions
   ]);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeUsed(prev => prev + 1);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+ 
 
   if (loading || error || !submitCompetition) return null;
 
@@ -170,7 +166,10 @@ export default function CompetitionTest() {
       <Grid container spacing={2}>
         {isSmallScreen && (
           <Grid item xs={12}>
-            <TimeRemaining timeUsed={timeUsed} />
+         <TimeRemaining endTime={endTime} onTimeout={handleSubmitTest} 
+         duration={competition?.duration || 0}
+ />
+
           </Grid>
         )}
 
@@ -214,7 +213,8 @@ export default function CompetitionTest() {
 
         {!isSmallScreen && (
           <Grid item md={3} lg={4}>
-            <TimeRemaining timeUsed={timeUsed} />
+        <TimeRemaining endTime={endTime} onTimeout={handleSubmitTest}  duration={competition?.duration || 0}
+ />
             <Box sx={{ mt: 3 }}>
               <TestQuestionGrid
                 questionItems={allQuestions}
@@ -227,11 +227,13 @@ export default function CompetitionTest() {
       </Grid>
 
 
-      <SubmitTestDialog
+      <SubmitCompetitionDialog
         open={isSubmitDialogOpen}
         onClose={closeSubmitDialog}
         isLoading={isSubmitting}
         result={submissionResult}
+        competitionId={submitCompetition.competition_id}
+        submitCompetitionId={submitCompetition.id}
       />
 
       <ConfirmSubmitDialog

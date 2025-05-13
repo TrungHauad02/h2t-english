@@ -8,7 +8,7 @@ import useListTestPage from "../hooks/useListTestPage";
 import ListTest from "../components/ListTest";
 import SearchTests from "../components/common/SearchTests";
 import { TestTypeEnum } from "interfaces";
-
+import TestHeader from "../components/common/TestHeader";
 export default function ListTestPage() {
   const { type = "" } = useParams<{ type?: string }>();
   const trimmedType = type.slice(0, -1).toUpperCase();
@@ -90,7 +90,8 @@ export default function ListTestPage() {
             <SearchTests onSearch={handleSearch} />
           </Box>
         </Fade>
-        
+        <TestHeader type={type as any} />
+
         {/* Tests list component */}
         <Fade in timeout={1800}>
           <Box>

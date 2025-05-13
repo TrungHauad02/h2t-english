@@ -1,7 +1,7 @@
 import { SubmitToeic, SubmitToeicFilter } from "interfaces";
 import apiClient from "services/apiClient";
 
-const findById = async (id: number): Promise<SubmitToeic> => {
+const findById = async (id: number)  => {
   try {
     const response = await apiClient.get(`/submit-toeic/${id}`);
     return response.data;
@@ -11,7 +11,7 @@ const findById = async (id: number): Promise<SubmitToeic> => {
   }
 };
 
-const create = async (data: SubmitToeic): Promise<SubmitToeic> => {
+const create = async (data: SubmitToeic) => {
   try {
     const response = await apiClient.post("/submit-toeic", data);
     return response.data;
@@ -21,7 +21,7 @@ const create = async (data: SubmitToeic): Promise<SubmitToeic> => {
   }
 };
 
-const update = async (id: number, data: SubmitToeic): Promise<SubmitToeic> => {
+const update = async (id: number, data: SubmitToeic) => {
   try {
     const response = await apiClient.put(`/submit-toeic/${id}`, data);
     return response.data;
@@ -31,7 +31,7 @@ const update = async (id: number, data: SubmitToeic): Promise<SubmitToeic> => {
   }
 };
 
-const patch = async (id: number, data: Partial<SubmitToeic>): Promise<SubmitToeic> => {
+const patch = async (id: number, data: Partial<SubmitToeic>) => {
   try {
     const response = await apiClient.patch(`/submit-toeic/${id}`, data);
     return response.data;
@@ -47,6 +47,15 @@ const remove = async (id: number): Promise<any> => {
     return response.data;
   } catch (error) {
     console.error("Error deleting SubmitToeic:", error);
+    throw error;
+  }
+};
+const findByToeicIdAndUserIdAndStatusFalse = async (toeicId: number, userId: number): Promise<{ data: SubmitToeic }> => {
+  try {
+    const response = await apiClient.get(`/submit-toeic/by-test-and-user?toeicId=${toeicId}&userId=${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error finding submit toeic:", error);
     throw error;
   }
 };
@@ -96,4 +105,5 @@ export const submitToeicService = {
   patch,
   remove,
   getSubmitToeicsForStudent,
+  findByToeicIdAndUserIdAndStatusFalse,
 };

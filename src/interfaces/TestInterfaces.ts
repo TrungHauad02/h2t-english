@@ -170,7 +170,7 @@ export interface SubmitCompetitionSpeaking extends BaseEntity {
 
 export interface SubmitCompetitionWriting extends BaseEntity {
   submitCompetition_id: number;
-  CompetitionWriting_id: number;
+  competitionWriting_id: number;
   content: string;
   score: number;
 }

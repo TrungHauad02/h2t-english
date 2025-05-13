@@ -12,16 +12,18 @@ const findById = async (id: number) => {
   }
 };
 
-const getByIds = async (ids: number[]) => {
+
+const getByIdsAndStatus = async (ids: number[], status?: Boolean) => {
   try {
-    const response = await apiClient.post("/toeic-part6/by-ids", ids);
+    const response = await apiClient.post("/toeic-part6/by-ids", ids, {
+      params: status ? { status } : undefined,
+    });
     return response.data;
   } catch (error) {
-    console.error("Error getting ToeicPart6 by ids:", error);
+    console.error("Error getting toeic-part6 by ids and status:", error);
     throw error;
   }
 };
-
 const create = async (data: ToeicPart6) => {
   try {
     const fileResult = await fileHandlerService.handleFileUpdate({
@@ -101,7 +103,7 @@ const remove = async (id: number) => {
 
 export const toeicPart6Service = {
   findById,
-  getByIds,
+  getByIdsAndStatus,
   create,
   update,
   patch,

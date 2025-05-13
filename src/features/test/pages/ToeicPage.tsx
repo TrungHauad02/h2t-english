@@ -1,40 +1,122 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Box, CircularProgress, Typography } from '@mui/material';
-import { testService } from '../services/testServices';
-import { ToeicTest } from '../components'; 
-import { Toeic  } from 'interfaces/TestInterfaces';
+import React from 'react';
+import { Box, CircularProgress, Typography, Paper, Alert } from '@mui/material';
+import useToeicPage from '../hooks/useToeicTest';
+import { ToeicTest } from '../components';
+import useColor from 'theme/useColor';
+import { useDarkMode } from 'hooks/useDarkMode';
 
+export default function ToeicPage() {
+  const color = useColor();
+  const { isDarkMode } = useDarkMode();
+  
+  const { toeic, submitToeic, loading, error } = useToeicPage();
 
-const ToeicPage = () => {
-  const { id } = useParams();
-  const toeicId = Number(id);
-  const [toeic, setToeic] = useState<Toeic | null>(null);
-
-  useEffect(() => {
-    if (!isNaN(toeicId)) {
-      const data = testService.getToeicById(toeicId);
-      setToeic(data);
-    }
-  }, [toeicId]);
-
-  if (isNaN(toeicId)) {
-    return <Typography sx={{ mt: 4, textAlign: 'center' }}>Invalid TOEIC ID</Typography>;
+  if (loading) {
+    return (
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          flexDirection: 'column',
+          justifyContent: 'center', 
+          alignItems: 'center',
+          backgroundColor: isDarkMode ? color.gray900 : color.gray50,
+          gap: 2
+        }}
+      >
+        <CircularProgress 
+          size={60}
+          thickness={4}
+          sx={{ 
+            color: isDarkMode ? color.teal400 : color.teal600,
+          }} 
+        />
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            mt: 2, 
+            color: isDarkMode ? color.gray300 : color.gray700,
+            fontWeight: 500
+          }}
+        >
+          Loading TOEIC test...
+        </Typography>
+      </Box>
+    );
   }
 
-  if (!toeic) {
+  if (error) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-        <CircularProgress />
+      <Box 
+        component={Paper} 
+        elevation={3}
+        sx={{ 
+          p: 4, 
+          textAlign: "center", 
+          mt: 4,
+          maxWidth: '600px',
+          mx: 'auto',
+          borderRadius: '1rem',
+          backgroundColor: isDarkMode ? color.gray800 : color.white,
+          color: isDarkMode ? color.gray100 : color.gray900
+        }}
+      >
+        <Typography variant="h5" gutterBottom>
+          {error}
+        </Typography>
+        <Typography variant="body1">
+          Please check the test ID and try again.
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (!submitToeic) {
+    return (
+      <Box 
+        component={Paper} 
+        elevation={3}
+        sx={{ 
+          p: 4, 
+          textAlign: "center", 
+          mt: 4,
+          maxWidth: '600px',
+          mx: 'auto',
+          borderRadius: '1rem',
+          backgroundColor: isDarkMode ? color.gray800 : color.white,
+          color: isDarkMode ? color.gray100 : color.gray900
+        }}
+      >
+        <Alert 
+          severity="error" 
+          sx={{ 
+            mb: 2,
+            '& .MuiAlert-icon': {
+              color: isDarkMode ? color.red400 : color.red600
+            },
+            backgroundColor: isDarkMode ? color.gray700 : undefined
+          }}
+        >
+          Unable to create Toeic submission. Please try again.
+        </Alert>
+        <Typography variant="body1">
+          There was an error preparing your Toeic test submission. Please refresh or contact support.
+        </Typography>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ width: '100vw' }}>
-      <ToeicTest toeic={toeic} />
+    <Box sx={{ 
+      width: "100%",
+      backgroundImage: isDarkMode
+        ? `radial-gradient(${color.emerald900} 1px, transparent 1px)`
+        : `radial-gradient(${color.emerald200} 1px, transparent 1px)`,
+      backgroundSize: "20px 20px",
+      pt: 10,
+      pb: 8,
+      position: "relative",
+      overflow: "hidden",}}>
+      {toeic && <ToeicTest toeic={toeic} submitToeicId={submitToeic.id} />}
     </Box>
   );
-};
-
-export default ToeicPage;
+}

@@ -4,7 +4,7 @@ import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import { MainPictureSection } from "components/sections";
 import SearchTests from "../components/common/SearchTests";
-import { TestOverviewSection } from "../components/listTest/TestOverviewSection";
+import TestHeader from "../components/common/TestHeader";
 import ListToeic from "../components/listToeic/ListToeic";
 
 export default function ListToeicPage() {
@@ -78,17 +78,19 @@ export default function ListToeicPage() {
           </Box>
         </Fade>
 
-        <Fade in timeout={1200}>
-          <Box sx={{ my: 4 }}>
-            <TestOverviewSection type="toeic" />
-          </Box>
-        </Fade>
+      
 
         <Fade in timeout={1400}>
           <Box sx={{ mb: 4 }}>
             <SearchTests onSearch={handleSearch} />
           </Box>
         </Fade>
+        <Fade in timeout={1200}>
+          <Box sx={{ my: 4 }}>
+          <TestHeader type={"toeic" as any} />
+          </Box>
+        </Fade>
+
 
         <Fade in timeout={1800}>
           <Box>

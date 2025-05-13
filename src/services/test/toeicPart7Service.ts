@@ -12,12 +12,14 @@ const findById = async (id: number) => {
   }
 };
 
-const getByIds = async (ids: number[]) => {
+const getByIdsAndStatus = async (ids: number[], status?: Boolean) => {
   try {
-    const response = await apiClient.post("/toeic-part7/by-ids", ids);
+    const response = await apiClient.post("/toeic-part7/by-ids", ids, {
+      params: status ? { status } : undefined,
+    });
     return response.data;
   } catch (error) {
-    console.error("Error getting ToeicPart7 by ids:", error);
+    console.error("Error getting toeic-part7 by ids and status:", error);
     throw error;
   }
 };
@@ -86,7 +88,7 @@ const remove = async (id: number) => {
 
 export const toeicPart7Service = {
   findById,
-  getByIds,
+  getByIdsAndStatus,
   create,
   update,
   patch,
