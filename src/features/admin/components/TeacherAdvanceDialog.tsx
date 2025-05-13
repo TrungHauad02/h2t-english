@@ -94,9 +94,16 @@ export default function TeacherAdvanceDialog({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setUser((prev) => ({ ...prev, [name]: value }));
+    if (name === "phoneNumber") {
+      if (value.length > 10 || /[a-zA-Z]/.test(value)) {
+        return;
+      }
 
-    // Clear error for this field when user starts typing
+      setUser((prev) => ({ ...prev, [name]: value }));
+    } else {
+      setUser((prev) => ({ ...prev, [name]: value }));
+    }
+
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
