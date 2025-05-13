@@ -3,27 +3,42 @@ import { Box, Typography, Paper, CircularProgress } from "@mui/material";
 import { MainPictureSection } from "components/sections";
 import { SiteInfo } from "components/sections/types";
 import CompetitionTest from "../components/mixingAndCompetition/CompetitionTest";
+import CompetitionResults from "../components/mixingAndCompetition/CompetitionResults";
+import CompetitionWaitingForResults from "../components/mixingAndCompetition/CompetitionWaitingForResults";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import useCompetitionTest from "../hooks/useCompetitionTest";
+
 export default function CompetitionTestPage() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  
-
+      
   const {
     competition,
     loading,
-    error
+    error,
+    userId,
+    submitCompetition
   } = useCompetitionTest();
+
+  const hasCompetitionEnded = () => {
+    if (!competition) return false;
+    const now = new Date();
+    const endTime = new Date(competition.endTime);
+    return now > endTime;
+  };
+
+  const hasCompletedTest = () => {
+    return submitCompetition?.status === true;
+  };
 
   if (loading) {
     return (
       <Box 
-        sx={{ 
-          display: 'flex', 
+        sx={{
+          display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center', 
+          justifyContent: 'center',
           alignItems: 'center',
           height: '80vh',
           backgroundColor: isDarkMode ? color.gray900 : color.gray50,
@@ -40,7 +55,7 @@ export default function CompetitionTestPage() {
         <Typography 
           variant="h6" 
           sx={{ 
-            mt: 2, 
+            mt: 2,
             color: isDarkMode ? color.gray300 : color.gray700,
             fontWeight: 500
           }}
@@ -54,11 +69,11 @@ export default function CompetitionTestPage() {
   if (error || !competition) {
     return (
       <Box 
-        component={Paper} 
+        component={Paper}
         elevation={3}
-        sx={{ 
-          p: 4, 
-          textAlign: "center", 
+        sx={{
+          p: 4,
+          textAlign: "center",
           mt: 4,
           maxWidth: '600px',
           mx: 'auto',
@@ -78,14 +93,40 @@ export default function CompetitionTestPage() {
   }
 
   const siteInfo: SiteInfo = {
-    bgUrl:
-    "http://138.2.91.94:9000/h2t-english/static%2Fmain_picture_competition.jpg",
+    bgUrl: "http://138.2.91.94:9000/h2t-english/static%2Fmain_picture_competition.jpg",
     title: competition.title || "Competition",
+  };
+
+  const renderContent = () => {
+    // If competition has ended, show results
+    if (hasCompetitionEnded()) {
+      return (
+        <CompetitionResults
+          competition={competition}
+          currentUserId={userId}
+          submitCompetitionId={submitCompetition?.id}
+        />
+      );
+    }
+
+    // If user has completed the test but competition hasn't ended, show waiting screen
+    if (hasCompletedTest() && !hasCompetitionEnded()) {
+      return (
+        <CompetitionWaitingForResults
+          competition={competition}
+          submitCompetitionId={submitCompetition.id}
+          endTime={new Date(competition.endTime)}
+        />
+      );
+    }
+
+    // Otherwise, show the test
+    return <CompetitionTest />;
   };
 
   return (
     <Box 
-      sx={{ 
+      sx={{
         width: "100%",
         minHeight: '100vh',
         pt: 8,
@@ -97,13 +138,15 @@ export default function CompetitionTestPage() {
       <MainPictureSection siteInfo={siteInfo} />
       
       <Box 
-        sx={{ 
-          mt: 4, 
+        sx={{
+          mt: 4,
           mb: 6,
-          px: { xs: 2, md: 4 }
+          px: { xs: 2, md: 4 },
+          maxWidth: '1400px',
+          mx: 'auto'
         }}
       >
-        <CompetitionTest />
+        {renderContent()}
       </Box>
     </Box>
   );
