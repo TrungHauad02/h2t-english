@@ -60,6 +60,8 @@ export default function LearningPathTimeline({
     [key: number]: boolean;
   }>({});
 
+  const sortedNodes = route.routeNodes.sort((a, b) => a.serial - b.serial);
+
   const textColor = isDarkMode ? color.gray100 : color.gray900;
   const secondaryTextColor = isDarkMode ? color.gray300 : color.gray600;
   const cardGradient = isDarkMode
@@ -289,7 +291,7 @@ export default function LearningPathTimeline({
             }}
           />
 
-          {route.routeNodes.map((node, index) => {
+          {sortedNodes.map((node, index) => {
             const nodeColor = getNodeColor(node.type);
             const isExpanded = expandedNodes[node.id] || false;
 

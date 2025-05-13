@@ -63,7 +63,7 @@ export default function TestimonialsSection() {
         setIsLoading(false);
       }
     };
-    fetchData();
+    if (quotes.length === 0) fetchData();
   }, []);
 
   return (
