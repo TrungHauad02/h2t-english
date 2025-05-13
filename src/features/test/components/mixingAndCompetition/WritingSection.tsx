@@ -73,7 +73,7 @@ export default function WritingSection({
         const savedEssayIds: Record<number, number> = {};
         
         existingSubmits.data.forEach((essay: any) => {
-          const writingId = isCompetitionTest ? essay.CompetitionWriting_id : essay.testWriting_id;
+          const writingId = isCompetitionTest ? essay.competitionWriting_id : essay.testWriting_id;
           const writingIndex = items.findIndex(item => item.id === writingId);
           
           if (writingIndex !== -1) {
@@ -122,7 +122,7 @@ export default function WritingSection({
             const newEssay = await submitCompetitionWritingService.create({
               id: Date.now(),
               submitCompetition_id: submitTestId,
-              CompetitionWriting_id: writingId,
+              competitionWriting_id: writingId,
               content: content,
               score: 0,
               status: true

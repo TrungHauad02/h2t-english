@@ -47,7 +47,7 @@ export default function AnswerQuestionSection({
           : await submitTestAnswerService.findBySubmitTestIdAndQuestionIds(submitTestId, questionIds);
         
         const answersMap: Record<string, number> = {};
-        
+       
         if (response && response.data) {
           response.data.forEach((answer: any) => {
             answersMap[answer.question_id] = answer.answer_id;

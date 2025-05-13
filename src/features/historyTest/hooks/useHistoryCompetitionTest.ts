@@ -5,7 +5,8 @@ import {
   SubmitCompetitionAnswer,
   SubmitCompetitionSpeaking,
   SubmitCompetitionWriting,
-  Answer
+  Answer,
+  Question,
 } from "interfaces";
 import {
   competitionTestService,
@@ -17,6 +18,7 @@ import {
   submitCompetitionAnswerService,
   submitCompetitionSpeakingService,
   submitCompetitionWritingService,
+  testWritingService,
   questionService,
 } from "services";
 import { useParams } from "react-router-dom";
@@ -92,18 +94,18 @@ const useHistoryCompetitionTest = () => {
         [TestPartTypeEnum.SPEAKING]: 0,
         [TestPartTypeEnum.WRITING]: 0,
       };
-
+  
       const fetchAndAppend = async (part: TestPart | undefined, type: TestPartTypeEnum) => {
         if (!part) return;
-
+  
         tempStartSerials[type] = serial;
-
+  
         if ([TestPartTypeEnum.VOCABULARY, TestPartTypeEnum.GRAMMAR].includes(type)) {
-          const res = await questionService.getByIdsAndStatus(part.questions || [],true);
+          const res = await questionService.getByIdsAndStatus(part.questions || [], true);
           const answerRes = await submitCompetitionAnswerService.findBySubmitCompetitionIdAndQuestionIds(submitCompetitionId, part.questions || []);
           const answerMap: Record<number, number> = {};
           answerRes.data?.forEach((a: SubmitCompetitionAnswer) => answerMap[a.question_id] = a.answer_id);
-
+  
           for (const q of res.data || []) {
             const chosenId = answerMap[q.id];
             const correctId = q.answers?.find((a: Answer) => a.correct)?.id;
@@ -116,16 +118,16 @@ const useHistoryCompetitionTest = () => {
             });
           }
         }
-
+  
         if ([TestPartTypeEnum.READING, TestPartTypeEnum.LISTENING].includes(type)) {
           const service = type === TestPartTypeEnum.READING ? testReadingService : testListeningService;
-          const wrapperRes = await service.getByIdsAndStatus(part.questions || [],true);
+          const wrapperRes = await service.getByIdsAndStatus(part.questions || [], true);
           const questionIds = wrapperRes.data.flatMap((wr: any) => wr.questions);
-          const questionRes = await questionService.getByIdsAndStatus(questionIds,true);
+          const questionRes = await questionService.getByIdsAndStatus(questionIds, true);
           const answerRes = await submitCompetitionAnswerService.findBySubmitCompetitionIdAndQuestionIds(submitCompetitionId, questionIds);
           const answerMap: Record<number, number> = {};
           answerRes.data?.forEach((a: SubmitCompetitionAnswer) => answerMap[a.question_id] = a.answer_id);
-
+  
           for (const q of questionRes.data || []) {
             const chosenId = answerMap[q.id];
             const correctId = q.answers?.find((a: Answer) => a.correct)?.id;
@@ -138,49 +140,111 @@ const useHistoryCompetitionTest = () => {
             });
           }
         }
-
+  
         if (type === TestPartTypeEnum.SPEAKING && part?.questions?.length) {
-          const wrappers = await testSpeakingService.getByIdsAndStatus(part.questions,true);
+          const wrappers = await testSpeakingService.getByIdsAndStatus(part.questions, true);
           const speakingQuestionIds = wrappers.data.flatMap((s: any) => s.questions || []);
+        
+          const questionRes = await questionService.getByIdsAndStatus(speakingQuestionIds, true);
           const res = await submitCompetitionSpeakingService.findBySubmitCompetitionIdAndQuestionIds(submitCompetitionId, speakingQuestionIds);
+        
+          const answeredMap: Record<number, boolean> = {};
           res.data.forEach((r: SubmitCompetitionSpeaking) => {
+            answeredMap[r.question_id] = true;
+          });
+        
+          questionRes.data.forEach((q: Question) => {
             items.push({
               serialNumber: serial++,
-              questionId: r.question_id,
+              questionId: q.id,
               partType: type,
-              isAnswered: true
+              isAnswered: !!answeredMap[q.id]
             });
           });
         }
-
+        
         if (type === TestPartTypeEnum.WRITING && part?.questions?.length) {
+          const wrappers = await testWritingService.getByIdsAndStatus(part.questions, true);
           const res = await submitCompetitionWritingService.findBySubmitCompetitionIdAndTestWritingIds(submitCompetitionId, part.questions);
+        
+          const answerMap: Record<number, string> = {};
           res.data.forEach((r: SubmitCompetitionWriting) => {
+            answerMap[r.competitionWriting_id] = r.content || '';
+          });
+        
+          wrappers.data.forEach((w: any) => {
             items.push({
               serialNumber: serial++,
-              questionId: r.CompetitionWriting_id,
+              questionId: w.id,
               partType: type,
-              isAnswered: !!r.content?.trim()
+              isAnswered: !!answerMap[w.id]?.trim()
             });
           });
         }
       };
-
+  
       await fetchAndAppend(vocabularyPart, TestPartTypeEnum.VOCABULARY);
       await fetchAndAppend(grammarPart, TestPartTypeEnum.GRAMMAR);
       await fetchAndAppend(readingPart, TestPartTypeEnum.READING);
       await fetchAndAppend(listeningPart, TestPartTypeEnum.LISTENING);
       await fetchAndAppend(speakingPart, TestPartTypeEnum.SPEAKING);
       await fetchAndAppend(writingPart, TestPartTypeEnum.WRITING);
-
+  
       setStartSerials(tempStartSerials);
       setAllQuestions(items);
     };
-
+  
     if (submitCompetition && competitionParts.length > 0) {
       fetchData();
     }
   }, [submitCompetitionId, submitCompetition, competitionParts]);
+  const sectionScores = useMemo(() => {
+    const TOTAL_SCORE = 100;
+    const PART_COUNT = 6;
+    const PART_MAX_SCORE = TOTAL_SCORE / PART_COUNT;
+  
+    const scores = {
+      [TestPartTypeEnum.VOCABULARY]: 0,
+      [TestPartTypeEnum.GRAMMAR]: 0,
+      [TestPartTypeEnum.READING]: 0,
+      [TestPartTypeEnum.LISTENING]: 0,
+      [TestPartTypeEnum.SPEAKING]: 0,
+      [TestPartTypeEnum.WRITING]: 0,
+    };
+  
+    // Group questions by part type
+    const questionsByPart = allQuestions.reduce((acc, question) => {
+      if (!acc[question.partType]) {
+        acc[question.partType] = [];
+      }
+      acc[question.partType].push(question);
+      return acc;
+    }, {} as Record<TestPartTypeEnum, typeof allQuestions>);
+  
+   
+    Object.entries(questionsByPart).forEach(([partType, questions]) => {
+      const totalQuestions = questions.length;
+      
+      if (totalQuestions === 0) {
+        scores[partType as TestPartTypeEnum] = 0;
+        return;
+      }
+  
+      if (partType === TestPartTypeEnum.SPEAKING || partType === TestPartTypeEnum.WRITING) {
+  
+        const answeredQuestions = questions.filter(q => q.isAnswered).length;
+        const answerRate = answeredQuestions / totalQuestions;
+        scores[partType as TestPartTypeEnum] = answerRate * PART_MAX_SCORE;
+      } else {
+     
+        const correctAnswers = questions.filter(q => q.isCorrect === true).length;
+        const partScore = (correctAnswers / totalQuestions) * 100;
+        scores[partType as TestPartTypeEnum] = (partScore / 100) * PART_MAX_SCORE;
+      }
+    });
+  
+    return scores;
+  }, [allQuestions])
 
   return {
     allQuestions,
@@ -198,7 +262,8 @@ const useHistoryCompetitionTest = () => {
     writingPart,
     submitCompetition,
     loading,
-    competition
+    competition,
+    sectionScores
   };
 };
 

@@ -88,7 +88,7 @@ export default function ToeicItem({
   };
   
   const handleViewDetail = () => {
-    navigate(`/teacher/toeic/${toeic.id}`);
+    navigate(`/teacher-advance/toeics/${toeic.id}`);
   };
 
   // Dynamic colors

@@ -9,12 +9,14 @@ import {
   CardContent,
   LinearProgress,
   Avatar,
-  Stack
+  Stack,
+  Paper,
+  useTheme,
+  useMediaQuery
 } from "@mui/material";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { TestPartTypeEnum } from "interfaces";
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import SpellcheckIcon from '@mui/icons-material/Spellcheck';
 import GavelIcon from '@mui/icons-material/Gavel';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -22,7 +24,8 @@ import HearingIcon from '@mui/icons-material/Hearing';
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 import CreateIcon from '@mui/icons-material/Create';
 import StarRoundedIcon from '@mui/icons-material/StarRounded';
-import StarsRoundedIcon from '@mui/icons-material/StarsRounded';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import TrophyIcon from '@mui/icons-material/EmojiEvents';
 
 interface SectionScores {
   VOCABULARY: number;
@@ -41,23 +44,25 @@ interface CompetitionScoreSummaryProps {
   sectionScores: SectionScores;
 }
 
-const CompetitionScoreSummary: React.FC<CompetitionScoreSummaryProps> = ({
+export default function CompetitionScoreSummary({
   competitionTitle,
   completedDate,
   totalScore,
   sectionScores
-}) => {
+}: CompetitionScoreSummaryProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   
   const maxTotalScore = 100;
   
   // Medal color based on score
   const getMedalColor = (score: number) => {
-    if (score >= 90) return 'gold';
-    if (score >= 75) return 'silver';
+    if (score >= 90) return color.yellow;
+    if (score >= 75) return color.gray400;
     if (score >= 60) return '#CD7F32'; // bronze
-    return isDarkMode ? color.gray400 : color.gray600;
+    return isDarkMode ? color.gray500 : color.gray400;
   };
 
   // Achievement label based on score
@@ -68,15 +73,29 @@ const CompetitionScoreSummary: React.FC<CompetitionScoreSummaryProps> = ({
     return "Participation";
   };
 
+  // Get color for section based on score
+  const getSectionColor = (percentage: number) => {
+    if (percentage >= 80) return isDarkMode ? color.emerald400 : color.emerald600;
+    if (percentage >= 60) return isDarkMode ? color.teal400 : color.teal600;
+    if (percentage >= 40) return isDarkMode ? color.warning : color.warningDarkMode;
+    return isDarkMode ? color.red400 : color.red600;
+  };
+
   // Get icon for each section tab
   const getTabIcon = (section: TestPartTypeEnum) => {
     switch(section) {
-      case TestPartTypeEnum.VOCABULARY: return <SpellcheckIcon />;
-      case TestPartTypeEnum.GRAMMAR: return <GavelIcon />;
-      case TestPartTypeEnum.READING: return <MenuBookIcon />;
-      case TestPartTypeEnum.LISTENING: return <HearingIcon />;
-      case TestPartTypeEnum.SPEAKING: return <RecordVoiceOverIcon />;
-      case TestPartTypeEnum.WRITING: return <CreateIcon />;
+      case TestPartTypeEnum.VOCABULARY: 
+        return <SpellcheckIcon sx={{ fontSize: 20 }} />;
+      case TestPartTypeEnum.GRAMMAR: 
+        return <GavelIcon sx={{ fontSize: 20 }} />;
+      case TestPartTypeEnum.READING: 
+        return <MenuBookIcon sx={{ fontSize: 20 }} />;
+      case TestPartTypeEnum.LISTENING: 
+        return <HearingIcon sx={{ fontSize: 20 }} />;
+      case TestPartTypeEnum.SPEAKING: 
+        return <RecordVoiceOverIcon sx={{ fontSize: 20 }} />;
+      case TestPartTypeEnum.WRITING: 
+        return <CreateIcon sx={{ fontSize: 20 }} />;
       default: return null;
     }
   };
@@ -85,96 +104,116 @@ const CompetitionScoreSummary: React.FC<CompetitionScoreSummaryProps> = ({
   const formatDate = (date: string | Date) => {
     if (!date) return '';
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleDateString();
+    return dateObj.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
   };
 
   return (
-    <Card
-      elevation={4}
-      sx={{
-        mb: 4,
-        borderRadius: '1rem',
-        bgcolor: isDarkMode ? color.gray800 : color.white,
-        border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
-        overflow: 'hidden',
-        boxShadow: isDarkMode 
-          ? '0 8px 32px rgba(0,0,0,0.25)'
-          : '0 8px 32px rgba(0,0,0,0.08)',
-      }}
-    >
-      <Box 
-        sx={{ 
-          p: 3, 
-          background: `linear-gradient(135deg, ${isDarkMode ? color.teal800 : color.teal600} 0%, ${isDarkMode ? color.teal700 : color.teal400} 100%)`,
-          color: 'white',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 2,
-          flexWrap: { xs: 'wrap', sm: 'nowrap' }
-        }}
-      >
-        <EmojiEventsIcon sx={{ fontSize: 40 }} />
-        <Box sx={{ flex: 1 }}>
-          <Typography variant="h5" fontWeight="bold">
-            {competitionTitle || "Competition Results"}
-          </Typography>
-          <Typography variant="body2" sx={{ mt: 0.5, opacity: 0.9 }}>
-            Completed on: {formatDate(completedDate)}
-          </Typography>
-        </Box>
-        
-        <Chip 
-          icon={<StarsRoundedIcon />} 
-          label={getAchievementLabel(totalScore)}
-          sx={{ 
-            bgcolor: 'rgba(255,255,255,0.2)',
-            color: 'white',
-            fontWeight: 'bold',
-            px: 1,
-            '& .MuiChip-icon': {
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      {/* Score Summary Header - Simple version */}
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <TrophyIcon 
+            sx={{ 
+              fontSize: 32, 
               color: getMedalColor(totalScore)
-            }
-          }}
-        />
-      </Box>
-      
-      <CardContent sx={{ p: 3 }}>
-        <Grid container spacing={3}>
-          {/* Total Score */}
-          <Grid item xs={12} md={4}>
-            <Box sx={{ 
-              p: 3, 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center',
-              bgcolor: isDarkMode ? color.gray900 : 'rgba(20, 184, 166, 0.05)',
-              borderRadius: '1rem',
-              position: 'relative',
-              border: `1px solid ${isDarkMode ? color.gray700 : color.teal100}`,
-            }}>
+            }} 
+          />
+          <Box>
+            <Typography 
+              variant="h5" 
+              sx={{ 
+                fontWeight: 700,
+                color: isDarkMode ? color.gray100 : color.gray900
+              }}
+            >
+              {competitionTitle || "Competition Results"}
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <CalendarTodayIcon sx={{ fontSize: 14, color: isDarkMode ? color.gray400 : color.gray600 }} />
               <Typography 
-                variant="h6" 
+                variant="caption" 
                 sx={{ 
-                  mb: 2, 
-                  fontWeight: 'bold', 
-                  color: isDarkMode ? color.teal200 : color.teal700 
+                  color: isDarkMode ? color.gray400 : color.gray600 
                 }}
               >
-                Overall Score
+                {formatDate(completedDate)}
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+        
+        <Box sx={{ display: 'flex', gap: 1.5 }}>
+          <Chip 
+            icon={<StarRoundedIcon />} 
+            label={getAchievementLabel(totalScore)}
+            size="medium"
+            sx={{ 
+              bgcolor: getMedalColor(totalScore),
+              color: totalScore >= 60 ? color.gray900 : 'white',
+              fontWeight: 'bold',
+              '& .MuiChip-icon': {
+                color: totalScore >= 60 ? color.gray900 : 'white'
+              }
+            }}
+          />
+        </Box>
+      </Box>
+
+      {/* Main Score Cards */}
+      <Grid container spacing={3}>
+        {/* Total Score Card */}
+        <Grid item xs={12} md={4}>
+          <Card
+            elevation={0}
+            sx={{ 
+              height: '100%',
+              borderRadius: '1rem',
+              bgcolor: isDarkMode ? color.gray800 : color.white,
+              border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+              boxShadow: isDarkMode 
+                ? '0 4px 16px rgba(0,0,0,0.2)'
+                : '0 4px 16px rgba(0,0,0,0.06)',
+            }}
+          >
+            <CardContent
+              sx={{ 
+                p: 3, 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center',
+                height: '100%',
+                justifyContent: 'center'
+              }}
+            >
+              <Typography 
+                variant="subtitle1" 
+                sx={{ 
+                  mb: 3, 
+                  fontWeight: 'bold', 
+                  color: isDarkMode ? color.teal300 : color.teal700,
+                  textAlign: 'center'
+                }}
+              >
+                Overall Performance
               </Typography>
               
               <Box sx={{ 
                 position: 'relative', 
-                width: 140, 
-                height: 140, 
+                width: { xs: 140, md: 180 }, 
+                height: { xs: 140, md: 180 }, 
                 display: 'flex', 
                 alignItems: 'center', 
-                justifyContent: 'center'
+                justifyContent: 'center',
+                mb: 2
               }}>
                 <CircularProgress
                   variant="determinate"
                   value={100}
-                  size={140}
+                  size={isMobile ? 140 : 180}
                   thickness={4}
                   sx={{ 
                     color: isDarkMode ? color.gray700 : color.gray200,
@@ -184,7 +223,7 @@ const CompetitionScoreSummary: React.FC<CompetitionScoreSummaryProps> = ({
                 <CircularProgress
                   variant="determinate"
                   value={(totalScore / maxTotalScore) * 100}
-                  size={140}
+                  size={isMobile ? 140 : 180}
                   thickness={6}
                   sx={{ 
                     color: getMedalColor(totalScore),
@@ -194,9 +233,9 @@ const CompetitionScoreSummary: React.FC<CompetitionScoreSummaryProps> = ({
                     }
                   }}
                 />
-                <Box sx={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
+                <Box sx={{ textAlign: 'center' }}>
                   <Typography 
-                    variant="h3" 
+                    variant={isMobile ? "h2" : "h1"} 
                     sx={{ 
                       fontWeight: 'bold',
                       color: isDarkMode ? color.gray100 : color.gray900,
@@ -206,66 +245,80 @@ const CompetitionScoreSummary: React.FC<CompetitionScoreSummaryProps> = ({
                     {totalScore}
                   </Typography>
                   <Typography 
-                    variant="caption" 
+                    variant="body2" 
                     sx={{ 
                       color: isDarkMode ? color.gray400 : color.gray600,
-                      display: 'block'
+                      mt: 0.5
                     }}
                   >
                     out of {maxTotalScore}
                   </Typography>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: getMedalColor(totalScore),
+                      fontWeight: 'bold',
+                      mt: 1
+                    }}
+                  >
+                    {Math.round((totalScore / maxTotalScore) * 100)}%
+                  </Typography>
                 </Box>
               </Box>
-              
-              <StarRoundedIcon 
-                sx={{ 
-                  position: 'absolute',
-                  top: 16,
-                  right: 16,
-                  fontSize: 28,
-                  color: getMedalColor(totalScore)
-                }}
-              />
-            </Box>
-          </Grid>
-          
-          {/* Section Scores */}
-          <Grid item xs={12} md={8}>
-            <Box sx={{ 
-              p: 3, 
-              bgcolor: isDarkMode ? color.gray900 : color.gray50,
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        {/* Section Scores */}
+        <Grid item xs={12} md={8}>
+          <Card
+            elevation={0}
+            sx={{ 
+              height: '100%',
               borderRadius: '1rem',
+              bgcolor: isDarkMode ? color.gray800 : color.white,
               border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
-              height: '100%'
-            }}>
+              boxShadow: isDarkMode 
+                ? '0 4px 16px rgba(0,0,0,0.2)'
+                : '0 4px 16px rgba(0,0,0,0.06)',
+            }}
+          >
+            <CardContent sx={{ p: 3 }}>
               <Typography 
-                variant="h6" 
+                variant="subtitle1" 
                 sx={{ 
-                  mb: 2, 
+                  mb: 3, 
                   fontWeight: 'bold', 
                   color: isDarkMode ? color.gray200 : color.gray800 
                 }}
               >
-                Section Scores
+                Section Breakdown
               </Typography>
               
-              <Stack spacing={2}>
+              <Stack spacing={2.5}>
                 {Object.entries(sectionScores).map(([section, score]) => {
                   const sectionType = section as TestPartTypeEnum;
                   const icon = getTabIcon(sectionType);
-                  const sectionMaxScore = 100/6; // Each section has equal weight
+                  const sectionMaxScore = 100/6;
                   const percentage = (score / sectionMaxScore) * 100;
                   
                   return (
                     <Box key={section} sx={{ width: '100%' }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5, alignItems: 'center' }}>
+                      <Box sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        mb: 1, 
+                        alignItems: 'center' 
+                      }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Avatar 
                             sx={{ 
                               width: 32, 
                               height: 32, 
-                              bgcolor: isDarkMode ? color.gray800 : color.gray100,
-                              color: isDarkMode ? color.teal300 : color.teal600
+                              bgcolor: isDarkMode 
+                                ? `${getSectionColor(percentage)}20` 
+                                : `${getSectionColor(percentage)}15`,
+                              color: getSectionColor(percentage),
                             }}
                           >
                             {icon}
@@ -280,15 +333,25 @@ const CompetitionScoreSummary: React.FC<CompetitionScoreSummaryProps> = ({
                             {section.charAt(0) + section.slice(1).toLowerCase()}
                           </Typography>
                         </Box>
-                        <Typography 
-                          variant="body2" 
-                          sx={{ 
-                            fontWeight: 'bold',
-                            color: isDarkMode ? color.gray200 : color.gray800
-                          }}
-                        >
-                          {score.toFixed(1)}/{sectionMaxScore.toFixed(1)}
-                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Typography 
+                            variant="body2" 
+                            sx={{ 
+                              fontWeight: 'bold',
+                              color: getSectionColor(percentage)
+                            }}
+                          >
+                            {Math.round(percentage)}%
+                          </Typography>
+                          <Typography 
+                            variant="caption" 
+                            sx={{ 
+                              color: isDarkMode ? color.gray400 : color.gray600
+                            }}
+                          >
+                            ({score.toFixed(1)}/{sectionMaxScore.toFixed(1)})
+                          </Typography>
+                        </Box>
                       </Box>
                       <LinearProgress
                         variant="determinate"
@@ -299,13 +362,8 @@ const CompetitionScoreSummary: React.FC<CompetitionScoreSummaryProps> = ({
                           bgcolor: isDarkMode ? color.gray700 : color.gray200,
                           '& .MuiLinearProgress-bar': {
                             borderRadius: 4,
-                            bgcolor: percentage >= 80 
-                              ? (isDarkMode ? color.emerald400 : color.emerald600)
-                              : percentage >= 60 
-                              ? (isDarkMode ? color.teal400 : color.teal600)
-                              : percentage >= 40 
-                              ? (isDarkMode ? color.warning : color.warning)
-                              : (isDarkMode ? color.red400 : color.red600)
+                            bgcolor: getSectionColor(percentage),
+                            transition: 'transform 0.5s ease'
                           }
                         }}
                       />
@@ -313,12 +371,10 @@ const CompetitionScoreSummary: React.FC<CompetitionScoreSummaryProps> = ({
                   );
                 })}
               </Stack>
-            </Box>
-          </Grid>
+            </CardContent>
+          </Card>
         </Grid>
-      </CardContent>
-    </Card>
+      </Grid>
+    </Box>
   );
-};
-
-export default CompetitionScoreSummary;
+}

@@ -38,14 +38,14 @@ export default function HistoryCompetitionTest() {
     submitCompetition,
     loading
   } = useHistoryCompetitionTest();
-
+  
   const renderSection = () => {
     const commonProps = {
       submitTestId: submitCompetition?.id,
       selectedQuestionId,
-      isHistory: true,
+      isCompetitionTest: true,
+      
     };
-
     switch (activeTab) {
       case TestPartTypeEnum.VOCABULARY:
         return vocabularyPart && (

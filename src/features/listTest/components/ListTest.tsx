@@ -4,8 +4,10 @@ import { Test, TestFilter } from "interfaces";
 import { testService } from "services";
 import { TestTypeEnum } from "interfaces";
 import { WEPaginationSelect } from "components/pagination";
-import { TestHeader, TestGrid } from "./listTest/";
+import { TestGrid } from "./listTest/";
+
 import LoadingSkeleton from "./common/LoadingSkeleton"; 
+import useAuth from "hooks/useAuth";
 
 interface ListTestProps {
   type: TestTypeEnum;
@@ -18,14 +20,13 @@ export default function ListTest({ type, searchQuery = "" }: ListTestProps) {
   const [tests, setTests] = useState<Test[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
-
+  const userId = Number(useAuth().userId);
   const [filter, setFilter] = useState<TestFilter>({
     title: "",
     type,
     status: true,
   });
 
-  const userId = 1;
 
   const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value - 1);
@@ -83,8 +84,7 @@ export default function ListTest({ type, searchQuery = "" }: ListTestProps) {
 
   return (
     <Box>
-      <TestHeader type={type as any} />
-
+ 
       <Box sx={{ margin: { xs: "1rem", md: "0 5% 2rem" } }}>
         {loading ? (
           <LoadingSkeleton isLoading={true} cardType="route" />

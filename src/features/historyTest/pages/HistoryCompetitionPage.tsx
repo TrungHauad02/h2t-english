@@ -1,8 +1,9 @@
 import React from "react";
-import { Box, Typography, Paper, CircularProgress } from "@mui/material";
+import { Box, Typography, Paper, CircularProgress, Container } from "@mui/material";
 import { MainPictureSection } from "components/sections";
 import { SiteInfo } from "components/sections/types";
 import HistoryCompetitionTest from "../components/historyTest/HistoryCompetitionTest";
+import CompetitionScoreSummary from "../components/historyTest/common/CompetitionScoreSummary";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import useHistoryCompetitionTest from "../hooks/useHistoryCompetitionTest";
@@ -13,7 +14,9 @@ export default function HistoryCompetitionPage() {
 
   const {
     competition,
+    submitCompetition,
     loading,
+    sectionScores,
   } = useHistoryCompetitionTest();
 
   if (loading) {
@@ -67,7 +70,7 @@ export default function HistoryCompetitionPage() {
         }}
       >
         <Typography variant="h5" gutterBottom>
-          { "Competition history not found"}
+          Competition history not found
         </Typography>
         <Typography variant="body1">
           Please check the competition ID and try again.
@@ -77,8 +80,7 @@ export default function HistoryCompetitionPage() {
   }
 
   const siteInfo: SiteInfo = {
-    bgUrl:
-      "http://138.2.91.94:9000/h2t-english/static%2Fmain_picture_competition.jpg",
+    bgUrl: "http://138.2.91.94:9000/h2t-english/static%2Fmain_picture_competition.jpg",
     title: competition.title || "Competition History",
   };
 
@@ -87,23 +89,28 @@ export default function HistoryCompetitionPage() {
       sx={{ 
         width: "100%",
         minHeight: '100vh',
-        pt: 8,
-        pb: 6,
         backgroundColor: isDarkMode ? color.gray900 : color.gray50,
         transition: 'background-color 0.3s ease'
       }}
     >
       <MainPictureSection siteInfo={siteInfo} />
-      
-      <Box 
-        sx={{ 
-          mt: 4, 
-          mb: 6,
-          px: { xs: 2, md: 4 }
-        }}
-      >
-        <HistoryCompetitionTest />
-      </Box>
+
+      <Container maxWidth="xl">
+        <Box sx={{ mt: 6, mb: 4 }}>
+          {submitCompetition && (
+            <CompetitionScoreSummary
+              competitionTitle={competition.title}
+              completedDate={submitCompetition.createdAt}
+              totalScore={submitCompetition.score || 0}
+              sectionScores={sectionScores}
+            />
+          )}
+        </Box>
+
+        <Box sx={{ mb: 6 }}>
+          <HistoryCompetitionTest />
+        </Box>
+      </Container>
     </Box>
   );
 }

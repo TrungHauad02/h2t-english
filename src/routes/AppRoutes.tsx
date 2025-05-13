@@ -30,13 +30,13 @@ const AppRoutes = () => {
             path="/history-test/:type/:id"
             element={<Pages.HistoryTestPage />}
           />
+            <Route
+            path="/history-test/competition/:id"
+            element={<Pages.HistoryCompetitionPage />}
+          />
           <Route
             path="/history-test/toeic/:id"
             element={<Pages.HistoryToeicPage />}
-          />
-          <Route
-            path="/history-test/:type/:id/review"
-            element={<Pages.ReviewHistoryTestPage />}
           />
           <Route path="/lesson/:type" element={<Pages.ListLessonPage />} />
           <Route path="/lesson/:type/:id" element={<Pages.LessonPage />} />

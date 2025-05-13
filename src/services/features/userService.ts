@@ -146,6 +146,23 @@ const remove = async (id: number) => {
     throw error;
   }
 };
+const findByIdsAndStatus = async (ids: number[], status: boolean) => {
+  try {
+    const params = new URLSearchParams();
+    ids.forEach(id => params.append("ids", id.toString()));
+    params.append("status", status.toString());
+
+    const response = await apiClient.post(
+      `/users/by-ids-and-status?${params.toString()}`
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching users by ids and status:", error);
+    throw error;
+  }
+};
+
 
 export const userService = {
   findAll,
@@ -154,4 +171,5 @@ export const userService = {
   update,
   patch,
   remove,
+  findByIdsAndStatus,
 };

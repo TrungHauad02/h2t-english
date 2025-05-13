@@ -12,16 +12,18 @@ const findById = async (id: number) => {
   }
 };
 
-const getByIds = async (ids: number[]) => {
+
+const getByIdsAndStatus = async (ids: number[], status?: Boolean) => {
   try {
-    const response = await apiClient.post("/toeic-part3-4/by-ids", ids);
+    const response = await apiClient.post("/toeic-part3-4/by-ids", ids, {
+      params: status ? { status } : undefined,
+    });
     return response.data;
   } catch (error) {
-    console.error("Error getting ToeicPart3_4 by ids:", error);
+    console.error("Error getting toeic-part3-4 by ids and status:", error);
     throw error;
   }
 };
-
 const handleFileFields = async (
   data: any,
   idOrTemp: string,
@@ -101,7 +103,7 @@ const remove = async (id: number) => {
 
 export const toeicPart3_4Service = {
   findById,
-  getByIds,
+  getByIdsAndStatus,
   create,
   update,
   patch,

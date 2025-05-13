@@ -63,7 +63,7 @@ export function usePartHandlers(
   const loadPart1Data = async (toeic: Toeic) => {
     if (toeic.questionsPart1?.length) {
       try {
-        const part1 = await toeicPart1Service.getByIds(toeic.questionsPart1);
+        const part1 = await toeicPart1Service.getByIdsAndStatus(toeic.questionsPart1);
         setPart1Questions(part1.data);
       } catch (error) {
         console.error("Error loading Part 1 data:", error);
@@ -113,7 +113,7 @@ export function usePartHandlers(
   const loadPart2Data = async (toeic: Toeic) => {
     if (toeic.questionsPart2?.length) {
       try {
-        const part2 = await toeicPart2Service.getByIds(toeic.questionsPart2);
+        const part2 = await toeicPart2Service.getByIdsAndStatus(toeic.questionsPart2);
         setPart2Questions(part2.data);
       } catch (error) {
         console.error("Error loading Part 2 data:", error);
@@ -163,7 +163,7 @@ export function usePartHandlers(
   const loadPart3Data = async (toeic: Toeic) => {
     if (toeic.questionsPart3?.length) {
       try {
-        const part3 = await toeicPart3_4Service.getByIds(toeic.questionsPart3);
+        const part3 = await toeicPart3_4Service.getByIdsAndStatus(toeic.questionsPart3);
         setPart3Questions(part3.data);
         
         if (questionHandlers) {
@@ -189,7 +189,7 @@ export function usePartHandlers(
   const loadPart4Data = async (toeic: Toeic) => {
     if (toeic.questionsPart4?.length) {
       try {
-        const part4 = await toeicPart3_4Service.getByIds(toeic.questionsPart4);
+        const part4 = await toeicPart3_4Service.getByIdsAndStatus(toeic.questionsPart4);
         setPart4Questions(part4.data);
         
         if (questionHandlers) {
@@ -286,7 +286,7 @@ export function usePartHandlers(
   const loadPart5Data = async (toeic: Toeic) => {
     if (toeic.questionsPart5?.length) {
       try {
-        const part5 = await toeicQuestionService.getByIds(toeic.questionsPart5);
+        const part5 = await toeicQuestionService.getByIdsAndStatus(toeic.questionsPart5);
         setPart5Questions(part5.data);
       } catch (error) {
         console.error("Error loading Part 5 data:", error);
@@ -335,7 +335,7 @@ export function usePartHandlers(
   const loadPart6Data = async (toeic: Toeic) => {
     if (toeic.questionsPart6?.length) {
       try {
-        const part6 = await toeicPart6Service.getByIds(toeic.questionsPart6);
+        const part6 = await toeicPart6Service.getByIdsAndStatus(toeic.questionsPart6);
         setPart6Questions(part6.data);
         
         if (questionHandlers) {
@@ -426,7 +426,7 @@ export function usePartHandlers(
   const loadPart7Data = async (toeic: Toeic) => {
     if (toeic.questionsPart7?.length) {
       try {
-        const part7 = await toeicPart7Service.getByIds(toeic.questionsPart7);
+        const part7 = await toeicPart7Service.getByIdsAndStatus(toeic.questionsPart7);
         setPart7Questions(part7.data);
         
         if (questionHandlers) {

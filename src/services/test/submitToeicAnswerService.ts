@@ -51,10 +51,43 @@ const remove = async (id: number): Promise<any> => {
   }
 };
 
+const findBySubmitToeicIdAndQuestionId = async (
+  submitToeicId: number, 
+  questionId: number
+): Promise<any> => {
+  try {
+    const response = await apiClient.get(
+      `/submit-toeic-answers/by-submit-toeic/${submitToeicId}/question/${questionId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error getting SubmitToeicAnswer by submitToeicId and questionId:", error);
+    throw error;
+  }
+};
+
+const findBySubmitToeicIdAndQuestionIds = async (
+  submitToeicId: number, 
+  questionIds: number[]
+): Promise<any> => {
+  try {
+    const response = await apiClient.post(
+      `/submit-toeic-answers/by-submit-toeic/${submitToeicId}/questions`,
+      questionIds
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error getting SubmitToeicAnswer by submitToeicId and questionIds:", error);
+    throw error;
+  }
+};
+
 export const submitToeicAnswerService = {
   findById,
   create,
   update,
   patch,
   remove,
+  findBySubmitToeicIdAndQuestionId,
+  findBySubmitToeicIdAndQuestionIds,
 };
