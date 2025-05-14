@@ -1,6 +1,7 @@
 import { Route, RouteFilter } from "interfaces";
 import apiClient from "services/apiClient";
 import { fileHandlerService } from "services/features/fileHandlerService";
+import { formatLocalDateForFilter } from "utils/format";
 
 const getRoutesForStudent = async (
   page: number,
@@ -19,24 +20,35 @@ const getRoutesForStudent = async (
       }
 
       if (filter.startCreatedAt) {
-        url += `&startCreatedAt=${filter.startCreatedAt
-          .toISOString()
-          .slice(0, -1)}`;
+        const formattedStartDate = formatLocalDateForFilter(
+          filter.startCreatedAt,
+          false
+        );
+        url += `&startCreatedAt=${formattedStartDate}`;
       }
+
       if (filter.endCreatedAt) {
-        url += `&endCreatedAt=${filter.endCreatedAt
-          .toISOString()
-          .slice(0, -1)}`;
+        const formattedEndDate = formatLocalDateForFilter(
+          filter.endCreatedAt,
+          true
+        );
+        url += `&endCreatedAt=${formattedEndDate}`;
       }
+
       if (filter.startUpdatedAt) {
-        url += `&startUpdatedAt=${filter.startUpdatedAt
-          .toISOString()
-          .slice(0, -1)}`;
+        const formattedStartUpdateDate = formatLocalDateForFilter(
+          filter.startUpdatedAt,
+          false
+        );
+        url += `&startUpdatedAt=${formattedStartUpdateDate}`;
       }
+
       if (filter.endUpdatedAt) {
-        url += `&endUpdatedAt=${filter.endUpdatedAt
-          .toISOString()
-          .slice(0, -1)}`;
+        const formattedEndUpdateDate = formatLocalDateForFilter(
+          filter.endUpdatedAt,
+          true
+        );
+        url += `&endUpdatedAt=${formattedEndUpdateDate}`;
       }
     }
 
