@@ -6,7 +6,7 @@ import { ResponseHeader,
   SearchSection,
   ResponseTable,
   EvaluateDialog,
-  DetailDialog } from "../components/manageAIResponse";
+  DetailDialog } from "../components";
 import useAIResponse from "../hooks/useAIResponse";
 
 export default function AIResponseTeacherPage() {
