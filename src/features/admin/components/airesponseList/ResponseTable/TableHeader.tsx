@@ -23,7 +23,7 @@ export default function TableHeader({ isMobile }: TableHeaderProps) {
         }}
       >
         {!isMobile && <TableCell padding="checkbox"></TableCell>}
-        <TableCell>User ID</TableCell>
+        <TableCell>Teacher ID</TableCell>
         <TableCell>Request</TableCell>
         {!isMobile && <TableCell>Response</TableCell>}
         {!isMobile && <TableCell>Evaluation</TableCell>}
