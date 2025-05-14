@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { AIResponse, AIResponseFilter } from "interfaces";
 import { aiResponseService } from "services/features/aiResponseService";
-import useAuth from "hooks/useAuth";
+import useAuth from "hooks/useAuth"; 
 
 interface UseAIResponseResult {
   aiResponses: AIResponse[];
@@ -37,9 +37,7 @@ export default function useAIResponse(): UseAIResponseResult {
   const [itemsPerPage, setItemsPerPage] = useState<number>(8);
   const [totalPage, setTotalPage] = useState<number>(1);
   const [filter, setFilter] = useState<AIResponseFilter>({});
-  const [selectedResponse, setSelectedResponse] = useState<AIResponse | null>(
-    null
-  );
+  const [selectedResponse, setSelectedResponse] = useState<AIResponse | null>(null);
   const [evaluateDialogOpen, setEvaluateDialogOpen] = useState<boolean>(false);
   const [detailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const { userId } = useAuth();
@@ -49,7 +47,8 @@ export default function useAIResponse(): UseAIResponseResult {
       setLoading(true);
       setError(null);
 
-      const result = await aiResponseService.getAIResponses(
+      // Sử dụng endpoint teacher-view với điều kiện OR được xử lý ở backend
+      const result = await aiResponseService.getTeacherViewResponses(
         page,
         itemsPerPage,
         filter
@@ -72,18 +71,18 @@ export default function useAIResponse(): UseAIResponseResult {
     []
   );
 
-  // Handle items per page change
   const handleItemsPerPageChange = useCallback((value: number) => {
     setItemsPerPage(value);
     setPage(1);
   }, []);
 
   const handleFilterChange = useCallback((newFilter: AIResponseFilter) => {
-    setFilter(newFilter);
+    // Loại bỏ status và userId khỏi filter vì backend đã xử lý logic OR
+    const { status, userId, ...rest } = newFilter;
+    setFilter(rest);
     setPage(1);
   }, []);
 
-  // Open evaluate dialog
   const openEvaluateDialog = useCallback((response: AIResponse) => {
     setSelectedResponse(response);
     setEvaluateDialogOpen(true);
@@ -104,20 +103,17 @@ export default function useAIResponse(): UseAIResponseResult {
     setDetailDialogOpen(false);
   }, []);
 
-  // Save evaluation
   const saveEvaluation = useCallback(
     async (evaluate: string) => {
       if (selectedResponse) {
         try {
-          await aiResponseService.patch(selectedResponse.id, {
+          await aiResponseService.patch(Number(selectedResponse.id), {
             evaluate,
             userId: Number(userId),
-            status: true,
+            status: true, // Đánh dấu là đã đánh giá
           });
 
           await fetchData();
-
-          // Close dialog
           closeEvaluateDialog();
         } catch (error) {
           console.error("Error updating evaluation:", error);
@@ -126,7 +122,7 @@ export default function useAIResponse(): UseAIResponseResult {
         }
       }
     },
-    [selectedResponse, fetchData, closeEvaluateDialog]
+    [selectedResponse, userId, fetchData, closeEvaluateDialog]
   );
 
   useEffect(() => {
@@ -152,8 +148,8 @@ export default function useAIResponse(): UseAIResponseResult {
     setFilter,
     openEvaluateDialog,
     closeEvaluateDialog,
-    openDetailDialog, // Add open detail dialog action to return
-    closeDetailDialog, // Add close detail dialog action to return
+    openDetailDialog,
+    closeDetailDialog,
     saveEvaluation,
     fetchData,
     handlePageChange,

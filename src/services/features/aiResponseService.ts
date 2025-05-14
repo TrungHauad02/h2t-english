@@ -74,6 +74,68 @@ const getAIResponses = async (
   }
 };
 
+// Thêm method mới cho teacher view
+const getTeacherViewResponses = async (
+  page: number,
+  itemsPerPage: number,
+  filter?: AIResponseFilter
+) => {
+  try {
+    let url = `/ai-response/teacher-view?page=${page - 1}&size=${itemsPerPage}`;
+
+    if (filter) {
+      // SortBy
+      if (filter.sortBy) {
+        url += `&sort=${encodeURIComponent(filter.sortBy)}`;
+      }
+
+      // Xử lý ngày tháng với múi giờ địa phương
+      if (filter.startCreatedAt) {
+        const formattedStartDate = formatLocalDateForFilter(
+          filter.startCreatedAt,
+          false
+        );
+        url += `&startCreatedAt=${formattedStartDate}`;
+      }
+
+      if (filter.endCreatedAt) {
+        const formattedEndDate = formatLocalDateForFilter(
+          filter.endCreatedAt,
+          true
+        );
+        url += `&endCreatedAt=${formattedEndDate}`;
+      }
+
+      // UpdatedAt fields
+      if (filter.startUpdatedAt) {
+        const formattedStartUpdateDate = formatLocalDateForFilter(
+          filter.startUpdatedAt,
+          false
+        );
+        url += `&startUpdatedAt=${formattedStartUpdateDate}`;
+      }
+
+      if (filter.endUpdatedAt) {
+        const formattedEndUpdateDate = formatLocalDateForFilter(
+          filter.endUpdatedAt,
+          true
+        );
+        url += `&endUpdatedAt=${formattedEndUpdateDate}`;
+      }
+    }
+
+    console.log("API Request URL:", url);
+    
+    const response = await apiClient.get(url);
+    
+    // Truy cập đúng vào dữ liệu trong response
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching teacher view AIResponse:", error);
+    throw error;
+  }
+};
+
 const patch = async (id: number, data: Partial<AIResponse>) => {
   try {
     const response = await apiClient.patch(`/ai-response/${id}`, data);
@@ -119,6 +181,7 @@ const remove = async (id: number) => {
 
 export const aiResponseService = {
   getAIResponses,
+  getTeacherViewResponses, // Thêm method mới
   findById,
   update,
   patch,
