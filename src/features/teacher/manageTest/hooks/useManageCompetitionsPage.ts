@@ -2,7 +2,7 @@ import { CompetitionTest, CompetitionTestFilter } from "interfaces";
 import { useEffect, useState } from "react";
 import { competitionTestService } from "services";
 import { toast } from "react-toastify";
-import { zonedTimeToUtc } from "date-fns-tz";
+
 
 export default function useManageCompetitionsPage() {
   const [filter, setFilter] = useState<CompetitionTestFilter>({
@@ -97,19 +97,12 @@ export default function useManageCompetitionsPage() {
 
   const createCompetition = async (data: Partial<CompetitionTest>) => {
     try {
-      const timeZone = "UTC";
 
-      if (data.startTime) {
-        data.startTime = zonedTimeToUtc(data.startTime, timeZone);
-      }
-
-      if (data.endTime) {
-        data.endTime = zonedTimeToUtc(data.endTime, timeZone);
-      }
-
-      const response = await competitionTestService.create(
-        data as CompetitionTest
-      );
+   
+   
+      const response = await competitionTestService.create(data as CompetitionTest);
+      
+ 
 
       await fetchData();
       toast.success("Competition created successfully");
