@@ -32,13 +32,14 @@ import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrow
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import WEDocumentViewer from "components/display/document/WEDocumentViewer";
-
+import { Test } from "interfaces";
 interface ReadingTestProps {
   testReadings: number[];
   submitTestId: number;
+  test : Test,
 }
 
-export default function ReadingTest({ testReadings, submitTestId }: ReadingTestProps) {
+export default function ReadingTest({ testReadings, submitTestId,test }: ReadingTestProps) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const color = useColor();
@@ -184,15 +185,14 @@ export default function ReadingTest({ testReadings, submitTestId }: ReadingTestP
         mx: "auto",
       }}
     >
-      {/* Introduction title section */}
       <IntroducePartTest type={TestPartTypeEnum.READING} />
       
       <Grid container spacing={3}>
-        {/* Top section with TimeRemaining and progress for both mobile and desktop */}
+  
         <Grid item xs={12}>
-        <TimeRemaining timeUsed={timeUsed} />
-            
-            
+        <TimeRemaining timeUsed={timeUsed}
+        duration={test.duration}
+        onTimeUp={handleSubmitTest} />
         </Grid>
   
         {/* Main content */}

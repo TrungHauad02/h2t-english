@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with subtle pattern -->
+  <rect width="1200" height="300" fill="white"/>
+  <defs>
+    <pattern id="competition-dot-pattern" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1" fill="#10b981" opacity="0.1"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="300" fill="url(#competition-dot-pattern)"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="100" cy="250" r="40" fill="#ecfdf5"/>
+  <circle cx="1100" cy="50" r="50" fill="#ecfdf5"/>
+  
+  <!-- Main title -->
+  <text x="620" y="100" font-family="Arial, sans-serif" font-size="60" font-weight="900" text-anchor="middle" fill="#10b981">COMPETITIONS</text>
+  
+  <!-- H2T English logo -->
+  <g transform="translate(50, 60)">
+    <rect x="0" y="0" width="150" height="50" rx="10" fill="#10b981"/>
+    <text x="75" y="35" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="white">H2T English</text>
+  </g>
+  
+  <!-- Leaderboard -->
+  <g transform="translate(250, 100)">
+    <!-- Podium -->
+    <rect x="0" y="50" width="60" height="80" rx="5" fill="#e5e7eb"/> <!-- 2nd place -->
+    <rect x="70" y="20" width="60" height="110" rx="5" fill="#fbbf24"/> <!-- 1st place -->
+    <rect x="140" y="80" width="60" height="50" rx="5" fill="#f97316"/> <!-- 3rd place -->
+    
+    <!-- Numbers on podium -->
+    <text x="30" y="95" font-family="Arial, sans-serif" font-size="36" font-weight="bold" text-anchor="middle" fill="#10b981">2</text>
+    <text x="100" y="75" font-family="Arial, sans-serif" font-size="42" font-weight="bold" text-anchor="middle" fill="#10b981">1</text>
+    <text x="170" y="115" font-family="Arial, sans-serif" font-size="32" font-weight="bold" text-anchor="middle" fill="#10b981">3</text>
+    
+    <!-- Trophy on 1st place -->
+    <g transform="translate(100, 5)">
+      <path d="M-15,-10 L15,-10 L12,5 L-12,5 Z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1"/>
+      <rect x="-5" y="5" width="10" height="10" rx="1" fill="#f59e0b"/>
+      <rect x="-8" y="15" width="16" height="3" rx="1" fill="#f59e0b"/>
+    </g>
+  </g>
+  
+  <!-- Character 2 (2nd place) -->
+  <g transform="translate(730, 160)">
+    <!-- Head -->
+    <circle cx="0" cy="0" r="35" fill="#fdba74"/>
+    <!-- Face -->
+    <circle cx="-12" cy="-8" r="4" fill="#333"/>
+    <circle cx="12" cy="-8" r="4" fill="#333"/>
+    <path d="M-10,10 Q0,6 10,10" stroke="#333" stroke-width="2.5" fill="none"/> <!-- Determined face -->
+    <!-- Hair (short) -->
+    <path d="M-35,-8 Q-30,-35 0,-38 Q30,-35 35,-8" fill="#7c3aed" stroke="none"/>
+    <!-- Body -->
+    <path d="M-25,35 L0,100 L25,35" fill="#f9a8d4"/>
+    <rect x="-35" y="35" width="70" height="45" rx="8" fill="#7c3aed"/>
+    
+    <!-- Normal arms -->
+    <rect x="-50" y="40" width="15" height="35" rx="7" fill="#fdba74"/>
+    <rect x="35" y="40" width="15" height="35" rx="7" fill="#fdba74"/>
+    
+    <!-- Medal (2nd place) -->
+    <circle cx="0" cy="60" r="12" fill="#e5e7eb" stroke="#9ca3af" stroke-width="2"/>
+    <text x="0" y="65" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#333">2</text>
+  </g>
+  
+  <!-- Character 1 (Winner - 1st place) -->
+  <g transform="translate(860, 140)">
+    <!-- Head -->
+    <circle cx="0" cy="0" r="35" fill="#ffb6c1"/>
+    <!-- Face -->
+    <circle cx="-12" cy="-8" r="4" fill="#333"/>
+    <circle cx="12" cy="-8" r="4" fill="#333"/>
+    <path d="M-12,8 Q0,16 12,8" stroke="#333" stroke-width="2.5" fill="none"/> <!-- Victory smile -->
+    <!-- Hair (ponytail) -->
+    <path d="M-35,-8 Q-26,-44 0,-40 Q26,-44 35,-8" fill="#333" stroke="none"/>
+    <circle cx="35" cy="-10" r="15" fill="#333"/>
+    <!-- Body -->
+    <path d="M-25,35 L0,100 L25,35" fill="#6ee7b7"/>
+    <rect x="-35" y="35" width="70" height="45" rx="8" fill="#10b981"/>
+    
+    <!-- Arms raised in victory -->
+    <path d="M-30,35 L-45,10 L-40,5" stroke="#ffb6c1" stroke-width="12" stroke-linecap="round" fill="none"/>
+    <path d="M30,35 L45,10 L40,5" stroke="#ffb6c1" stroke-width="12" stroke-linecap="round" fill="none"/>
+    
+    <!-- Medal -->
+    <circle cx="0" cy="60" r="12" fill="#fbbf24" stroke="#f59e0b" stroke-width="2"/>
+    <text x="0" y="65" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#fff">1</text>
+    
+    <!-- Victory effects -->
+    <g transform="translate(35, -20)">
+      <path d="M0,0 L3,7 L10,8 L5,13 L6,20 L0,16.5 L-6,20 L-5,13 L-10,8 L-3,7 Z" fill="#fbbf24" opacity="0.8"/>
+    </g>
+  </g>
+  
+  <!-- Character 3 (3rd place) -->
+  <g transform="translate(990, 165)">
+    <!-- Head -->
+    <circle cx="0" cy="0" r="35" fill="#fde68a"/>
+    <!-- Face -->
+    <circle cx="-12" cy="-8" r="4" fill="#333"/>
+    <circle cx="12" cy="-8" r="4" fill="#333"/>
+    <path d="M-8,12 Q0,8 8,12" stroke="#333" stroke-width="2.5" fill="none"/> <!-- Content face -->
+    <!-- Hair (buzz cut) -->
+    <path d="M-35,-8 Q-28,-35 0,-32 Q28,-35 35,-8" fill="#8b5cf6" stroke="none"/>
+    <!-- Body -->
+    <path d="M-25,35 L0,100 L25,35" fill="#bfdbfe"/>
+    <rect x="-35" y="35" width="70" height="45" rx="8" fill="#3b82f6"/>
+    
+    <!-- Normal arms -->
+    <rect x="-50" y="40" width="15" height="35" rx="7" fill="#fde68a"/>
+    <rect x="35" y="40" width="15" height="35" rx="7" fill="#fde68a"/>
+    
+    <!-- Medal (3rd place) -->
+    <circle cx="0" cy="60" r="12" fill="#f97316" stroke="#ea580c" stroke-width="2"/>
+    <text x="0" y="65" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#fff">3</text>
+  </g>
+  
+  <!-- Competition announcement -->
+  <g transform="translate(930, 70)">
+    <rect x="0" y="0" width="180" height="30" rx="15" fill="#10b981" opacity="0.2"/>
+    <text x="90" y="20" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#10b981">Join And Compete!</text>
+  </g>
+  
+  <!-- Decorative elements only -->
+  <g>
+    <!-- Stars -->
+    <path d="M350,120 L353,127 L360,128 L355,133 L356,140 L350,136.5 L344,140 L345,133 L340,128 L347,127 Z" fill="#10b981" opacity="0.4"/>
+    <path d="M700,110 L703,117 L710,118 L705,123 L706,130 L700,126.5 L694,130 L695,123 L690,118 L697,117 Z" fill="#10b981" opacity="0.3"/>
+    <path d="M1050,140 L1053,147 L1060,148 L1055,153 L1056,160 L1050,156.5 L1044,160 L1045,153 L1040,148 L1047,147 Z" fill="#10b981" opacity="0.5"/>
+    
+    <!-- Small decorative circles -->
+    <circle cx="320" cy="90" r="8" fill="#10b981" opacity="0.2"/>
+    <circle cx="650" cy="130" r="6" fill="#10b981" opacity="0.3"/>
+    <circle cx="1100" cy="200" r="10" fill="#10b981" opacity="0.2"/>
+  </g>
+  
+  <!-- Decorative lines -->
+  <line x1="0" y1="280" x2="1200" y2="280" stroke="#10b981" stroke-width="3" stroke-dasharray="5,5"/>
+  <line x1="20" y1="260" x2="1180" y2="260" stroke="#10b981" stroke-width="2" stroke-dasharray="2,2"/>
+</svg>

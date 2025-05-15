@@ -113,10 +113,11 @@ export default function ToeicPage() {
         : `radial-gradient(${color.emerald200} 1px, transparent 1px)`,
       backgroundSize: "20px 20px",
       pt: 10,
+      height: "calc(100vh - 80px)", 
       pb: 8,
       position: "relative",
       overflow: "hidden",}}>
-      {toeic && <ToeicTest toeic={toeic} submitToeicId={submitToeic.id} />}
+      {toeic && <ToeicTest  />}
     </Box>
   );
 }

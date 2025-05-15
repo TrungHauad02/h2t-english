@@ -17,6 +17,7 @@ export { default as ErrorPage } from "pages/ErrorPage";
 
 // Home Page
 export { default as HomePage } from "features/home/pages/HomePage";
+export { default as AIResponseFeedbackPage } from "features/home/pages/AIResponseFeedbackPage";
 
 // Lesson Pages
 export { default as ListLessonPage } from "features/listLesson/pages/ListLessonPage";

@@ -138,6 +138,7 @@ export default function TestPage() {
         if (testParts && testParts.length > 0) {
           return (
             <MixingTest 
+            test={test}
               mixingTestParts={testParts}
               submitTestId={submitTest.id}
             />
@@ -149,6 +150,7 @@ export default function TestPage() {
         if (readingPart && readingPart.questions && readingPart.questions.length > 0) {
           return (
             <ReadingTest 
+            test={test}
               testReadings={readingPart.questions}
               submitTestId={submitTest.id}
             />
@@ -160,6 +162,7 @@ export default function TestPage() {
         if (listeningPart && listeningPart.questions && listeningPart.questions.length > 0) {
           return (
             <ListeningTest 
+            test={test}
               testListenings={listeningPart.questions}
               submitTestId={submitTest.id}
             />
@@ -171,6 +174,7 @@ export default function TestPage() {
         if (speakingPart && speakingPart.questions && speakingPart.questions.length > 0) {
           return (
             <SpeakingTest 
+            test={test}
               testSpeakings={speakingPart.questions}
               submitTestId={submitTest.id}
             />
@@ -182,6 +186,7 @@ export default function TestPage() {
         if (writingPart && writingPart.questions && writingPart.questions.length > 0) {
           return (
             <WritingTest 
+            test={test}
               testWritings={writingPart.questions}
               submitTestId={submitTest.id}
             />

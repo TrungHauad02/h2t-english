@@ -1,21 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
   Paper,
   Chip,
-  alpha,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails
+  Divider,
+  alpha
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import HeadsetIcon from '@mui/icons-material/Headset';
+import QuizIcon from '@mui/icons-material/Quiz';
 import { useDarkMode } from 'hooks/useDarkMode';
 import useColor from 'theme/useColor';
 import { ToeicPart3_4, ToeicQuestion, AnswerEnum } from 'interfaces/TestInterfaces';
+import TranscriptDisplay from './TranscriptDisplay';
+import QuestionHistoryItem from './QuestionHistoryItem';
 
 type Props = {
   partData: ToeicPart3_4;
@@ -23,6 +22,7 @@ type Props = {
   questionNumberStart: number;
   userAnswers: Record<number, AnswerEnum>;
   isReview: boolean;
+  partNumber: 3 | 4;
 };
 
 export default function ListeningPart3And4HistoryItem({
@@ -30,11 +30,12 @@ export default function ListeningPart3And4HistoryItem({
   questions,
   questionNumberStart,
   userAnswers,
-  isReview
+  isReview,
+  partNumber = 3
 }: Props) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-
+  
   const correctCount = questions.filter(q => {
     const userAnswer = userAnswers[q.id];
     const correctAnswer = q.answers?.find(a => a.correct);
@@ -43,20 +44,30 @@ export default function ListeningPart3And4HistoryItem({
     return userAnswer === correctLetter;
   }).length;
 
+  const isAllCorrect = correctCount === questions.length;
+  const partTitle = partNumber === 3 ? 'Short Conversations' : 'Short Talks';
+
   return (
     <Paper
-      elevation={2}
+      elevation={3}
       sx={{
-        borderRadius: 2,
+        borderRadius: 3,
         overflow: 'hidden',
-        bgcolor: isDarkMode ? color.gray800 : color.white,
+        bgcolor: isDarkMode ? color.gray900 : color.white,
+        border: '2px solid',
+        borderColor: isAllCorrect 
+          ? (isDarkMode ? color.green600 : color.green400)
+          : correctCount > 0
+            ? (isDarkMode ? color.yellow : color.yellow)
+            : (isDarkMode ? color.red100 : color.red400),
       }}
     >
+      {/* Header - Đồng bộ với Part 6-7 */}
       <Box
         sx={{
           background: isDarkMode
-            ? `linear-gradient(135deg, ${color.emerald800} 0%, ${color.teal800} 100%)`
-            : `linear-gradient(135deg, ${color.emerald500} 0%, ${color.teal500} 100%)`,
+            ? `linear-gradient(135deg, ${color.teal700} 0%, ${color.teal900} 100%)`
+            : `linear-gradient(135deg, ${color.teal400} 0%, ${color.teal600} 100%)`,
           color: color.white,
           px: 3,
           py: 2,
@@ -65,32 +76,54 @@ export default function ListeningPart3And4HistoryItem({
           justifyContent: 'space-between',
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <HeadsetIcon sx={{ fontSize: 28 }} />
-          <Typography
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5
+          }}
+        >
+          <Box
+            component="span"
             sx={{
-              fontWeight: 700,
-              fontSize: '1.25rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minWidth: 90,
+              height: 36,
+              borderRadius: 18,
+              bgcolor: alpha(color.white, 0.2),
+              color: color.white,
+              fontWeight: 800,
+              fontSize: '0.85rem',
+              px: 2,
+              backdropFilter: 'blur(10px)'
             }}
           >
-            Questions {questionNumberStart}–{questionNumberStart + questions.length - 1}
-          </Typography>
-        </Box>
+            {questionNumberStart}–{questionNumberStart + questions.length - 1}
+          </Box>
+        </Typography>
         
         <Chip
+          icon={isAllCorrect ? <CheckCircleIcon /> : correctCount > 0 ? <QuizIcon /> : <CancelIcon />}
           label={`${correctCount}/${questions.length} Correct`}
           sx={{
-            bgcolor: correctCount === questions.length
-              ? alpha(color.green500, 0.2)
-              : alpha(color.yellow, 0.2),
+            bgcolor: alpha(color.white, 0.2),
             color: color.white,
             fontWeight: 600,
+            backdropFilter: 'blur(10px)',
             border: `1px solid ${alpha(color.white, 0.3)}`,
+            '& .MuiChip-icon': {
+              color: 'inherit'
+            }
           }}
         />
       </Box>
 
       <Box sx={{ p: 3 }}>
+        {/* Audio Section */}
         {partData.audio && (
           <Box sx={{ mb: 3 }}>
             <Typography variant="body2" color="text.secondary" mb={1}>
@@ -100,139 +133,50 @@ export default function ListeningPart3And4HistoryItem({
               <source src={partData.audio} type="audio/mpeg" />
               Your browser does not support the audio element.
             </audio>
+            
+            {/* Transcript display directly under audio */}
+            {partData.transcript && (
+              <TranscriptDisplay 
+                part={partData} 
+                partNumber={partNumber} 
+              />
+            )}
           </Box>
         )}
 
-        {questions.map((question, index) => {
-          const questionNumber = questionNumberStart + index;
-          const userAnswer = userAnswers[question.id];
-          const correctAnswer = question.answers?.find(a => a.correct);
-          const correctLetter = correctAnswer && question.answers
-            ? ['A', 'B', 'C', 'D'][question.answers.indexOf(correctAnswer)] as AnswerEnum
-            : undefined;
-          const isCorrect = userAnswer === correctLetter;
+        <Divider sx={{ my: 3 }} />
 
-          return (
-            <Accordion
-              key={question.id}
-              sx={{
-                mb: 2,
-                border: '2px solid',
-                borderColor: isCorrect
-                  ? (isDarkMode ? color.green600 : color.green400)
-                  : (isDarkMode ? color.red600 : color.red400),
-                '&:before': {
-                  display: 'none',
-                },
-              }}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                sx={{
-                  bgcolor: isDarkMode ? color.gray700 : color.gray100,
-                }}
-              >
-                <Box sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'space-between',
-                  width: '100%',
-                  pr: 2
-                }}>
-                  <Typography
-                    sx={{
-                      fontWeight: 700,
-                      color: isDarkMode ? color.emerald300 : color.emerald700,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1.5,
-                    }}
-                  >
-                    <Box
-                      component="span"
-                      sx={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 32,
-                        height: 32,
-                        borderRadius: '50%',
-                        bgcolor: isDarkMode ? color.emerald800 : color.emerald200,
-                        color: isDarkMode ? color.white : color.emerald900,
-                        fontWeight: 800,
-                        fontSize: '0.9rem',
-                      }}
-                    >
-                      {questionNumber}
-                    </Box>
-                    {question.content}
-                  </Typography>
-                  
-                  {isCorrect ? (
-                    <CheckCircleIcon sx={{ color: isDarkMode ? color.green400 : color.green600 }} />
-                  ) : (
-                    <CancelIcon sx={{ color: isDarkMode ? color.red400 : color.red600 }} />
-                  )}
-                </Box>
-              </AccordionSummary>
-              <AccordionDetails sx={{ px: 4, py: 3 }}>
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="body2" color="text.secondary" mb={1}>
-                    Your answer:
-                  </Typography>
-                  <Chip
-                    label={userAnswer || 'Not answered'}
-                    sx={{
-                      bgcolor: userAnswer
-                        ? (isCorrect
-                          ? (isDarkMode ? color.green800 : color.green100)
-                          : (isDarkMode ? color.red800 : color.red100))
-                        : (isDarkMode ? color.gray700 : color.gray200),
-                      color: userAnswer
-                        ? (isCorrect
-                          ? (isDarkMode ? color.green100 : color.green800)
-                          : (isDarkMode ? color.red100 : color.red800))
-                        : (isDarkMode ? color.gray300 : color.gray700),
-                      fontWeight: 600,
-                    }}
-                  />
-                  <Typography 
-                    variant="body2" 
-                    sx={{ 
-                      mt: 0.5,
-                      color: isDarkMode ? color.gray300 : color.gray700
-                    }}
-                  >
-                    {userAnswer && question.answers?.find((a, i) => ['A', 'B', 'C', 'D'][i] === userAnswer)?.content}
-                  </Typography>
-                </Box>
+        {/* Questions List */}
+        <Box>
+          <Typography 
+            variant="subtitle1" 
+            fontWeight={600}
+            sx={{ 
+              mb: 2.5,
+              color: isDarkMode ? color.gray100 : color.gray900 
+            }}
+          >
+            Questions Detail
+          </Typography>
 
-                <Box>
-                  <Typography variant="body2" color="text.secondary" mb={1}>
-                    Correct answer:
-                  </Typography>
-                  <Chip
-                    label={correctLetter || 'N/A'}
-                    sx={{
-                      bgcolor: isDarkMode ? color.green800 : color.green100,
-                      color: isDarkMode ? color.green100 : color.green800,
-                      fontWeight: 600,
-                    }}
-                  />
-                  <Typography 
-                    variant="body2" 
-                    sx={{ 
-                      mt: 0.5,
-                      color: isDarkMode ? color.gray300 : color.gray700
-                    }}
-                  >
-                    {correctAnswer?.content}
-                  </Typography>
-                </Box>
-              </AccordionDetails>
-            </Accordion>
-          );
-        })}
+          {questions.map((question, index) => {
+            const questionNumber = questionNumberStart + index;
+            const userAnswer = userAnswers[question.id];
+
+            return (
+              <Box key={question.id} sx={{ mb: 2 }}>
+                <QuestionHistoryItem
+                  questionNumber={questionNumber}
+                  question={question}
+                  selectedAnswer={userAnswer}
+                  isReview={isReview}
+                  showExplanation={true}
+                  canCollapse={true}
+                />
+              </Box>
+            );
+          })}
+        </Box>
       </Box>
     </Paper>
   );

@@ -27,13 +27,14 @@ import {
   NavigationFooter, 
   TestSpeakingHeader 
 } from "../mixingAndCompetition/speakingSection/";
-
+import { Test } from "interfaces";
 interface SpeakingTestProps {
   testSpeakings: number[];
   submitTestId: number;
+  test : Test,
 }
 
-export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTestProps) {
+export default function SpeakingTest({ testSpeakings, submitTestId,test }: SpeakingTestProps) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const color = useColor();
@@ -267,7 +268,9 @@ export default function SpeakingTest({ testSpeakings, submitTestId }: SpeakingTe
       <Grid container spacing={3}>
         {/* Top section with TimeRemaining and progress for both mobile and desktop */}
         <Grid item xs={12}>
-          <TimeRemaining timeUsed={timeUsed} />
+        <TimeRemaining timeUsed={timeUsed}
+        duration={test.duration}
+        onTimeUp={handleSubmitTest} />
         </Grid>
   
         {/* Main content */}

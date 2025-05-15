@@ -9,10 +9,12 @@ import {
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import QuizIcon from '@mui/icons-material/Quiz';
 import { ToeicPart6, ToeicQuestion, AnswerEnum } from 'interfaces/TestInterfaces';
 import WEDocumentViewer from 'components/display/document/WEDocumentViewer';
 import { useDarkMode } from 'hooks/useDarkMode';
 import useColor from 'theme/useColor';
+import QuestionHistoryItem from './QuestionHistoryItem';
 
 type Props = {
   passage: ToeicPart6;
@@ -32,6 +34,16 @@ export default function Part6HistoryItem({
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
+  const correctCount = questions.filter(q => {
+    const userAnswer = selectedAnswers[q.id];
+    const correctAnswer = q.answers?.find(a => a.correct);
+    if (!userAnswer || !correctAnswer) return false;
+    const correctLetter = ['A', 'B', 'C', 'D'][q.answers.indexOf(correctAnswer)] as AnswerEnum;
+    return userAnswer === correctLetter;
+  }).length;
+
+  const isAllCorrect = correctCount === questions.length;
+
   return (
     <Paper
       elevation={3}
@@ -40,7 +52,11 @@ export default function Part6HistoryItem({
         overflow: 'hidden',
         bgcolor: isDarkMode ? color.gray900 : color.white,
         border: '2px solid',
-        borderColor: isDarkMode ? color.teal600 : color.teal400,
+        borderColor: isAllCorrect 
+          ? (isDarkMode ? color.green600 : color.green400)
+          : correctCount > 0
+            ? (isDarkMode ? color.yellow : color.yellow)
+            : (isDarkMode ? color.red100 : color.red400),
       }}
     >
       <Box
@@ -56,22 +72,54 @@ export default function Part6HistoryItem({
           justifyContent: 'space-between',
         }}
       >
-        <Typography variant="h6" fontWeight={700}>
-          Questions {questionNumberStart}–{questionNumberStart + questions.length - 1}
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5
+          }}
+        >
+          <Box
+            component="span"
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minWidth: 90,
+              height: 36,
+              borderRadius: 18,
+              bgcolor: alpha(color.white, 0.2),
+              color: color.white,
+              fontWeight: 800,
+              fontSize: '0.85rem',
+              px: 2,
+              backdropFilter: 'blur(10px)'
+            }}
+          >
+            {questionNumberStart}–{questionNumberStart + questions.length - 1}
+          </Box>
         </Typography>
+        
         <Chip
-          label={`${questions.length} questions`}
+          icon={isAllCorrect ? <CheckCircleIcon /> : correctCount > 0 ? <QuizIcon /> : <CancelIcon />}
+          label={`${correctCount}/${questions.length} Correct`}
           sx={{
             bgcolor: alpha(color.white, 0.2),
             color: color.white,
             fontWeight: 600,
             backdropFilter: 'blur(10px)',
-            border: `1px solid ${alpha(color.white, 0.3)}`
+            border: `1px solid ${alpha(color.white, 0.3)}`,
+            '& .MuiChip-icon': {
+              color: 'inherit'
+            }
           }}
         />
       </Box>
 
       <Grid container>
+        {/* Left side - Document */}
         <Grid item xs={12} md={6} sx={{
           p: 3,
           bgcolor: isDarkMode ? color.gray800 : color.gray50,
@@ -79,6 +127,14 @@ export default function Part6HistoryItem({
           borderBottom: { xs: '1px solid', md: 'none' },
           borderColor: isDarkMode ? color.gray700 : color.gray200,
         }}>
+          <Typography 
+            variant="subtitle2" 
+            color="text.secondary" 
+            fontWeight={500}
+            mb={2}
+          >
+            Reading Passage
+          </Typography>
           <Paper
             elevation={0}
             sx={{
@@ -100,130 +156,34 @@ export default function Part6HistoryItem({
           </Paper>
         </Grid>
 
+        {/* Right side - Questions */}
         <Grid item xs={12} md={6} sx={{
           p: 3,
           bgcolor: isDarkMode ? color.gray800 : color.white,
         }}>
-          {questions.map((question, idx) => {
-            const number = questionNumberStart + idx;
-            const selected = selectedAnswers[question.id];
-            const correctAnswerObj = question.answers.find(a => a.correct);
-            const correctAnswerIndex = correctAnswerObj ? question.answers.indexOf(correctAnswerObj) : -1;
-            const correctAnswer = correctAnswerIndex !== -1 ? (['A', 'B', 'C', 'D'][correctAnswerIndex] as AnswerEnum) : undefined;
-            const isCorrect = selected === correctAnswer;
+          <Typography 
+            variant="subtitle2" 
+            color="text.secondary" 
+            fontWeight={500}
+            mb={2}
+          >
+            Questions Detail
+          </Typography>
+          
+          {questions.map((question, index) => {
+            const questionNumber = questionNumberStart + index;
+            const userAnswer = selectedAnswers[question.id];
 
             return (
-              <Box
-                key={question.id}
-                mb={3}
-                sx={{
-                  p: 2,
-                  borderRadius: 2,
-                  bgcolor: isDarkMode ? color.gray900 : color.gray50,
-                  border: '2px solid',
-                  borderColor: selected
-                    ? isCorrect
-                      ? (isDarkMode ? color.green600 : color.green400)
-                      : (isDarkMode ? color.red600 : color.red400)
-                    : (isDarkMode ? color.gray700 : color.gray200),
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                  <Typography
-                    sx={{
-                      fontWeight: 700,
-                      color: isDarkMode ? color.teal300 : color.teal700,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1
-                    }}
-                  >
-                    <Box
-                      component="span"
-                      sx={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 32,
-                        height: 32,
-                        borderRadius: '50%',
-                        bgcolor: isDarkMode ? color.teal800 : color.teal100,
-                        color: isDarkMode ? color.teal200 : color.teal700,
-                        fontWeight: 800,
-                        fontSize: '0.9rem'
-                      }}
-                    >
-                      {number}
-                    </Box>
-                    Question {number}
-                  </Typography>
-                  
-                  {selected && (
-                    <Chip
-                      icon={isCorrect ? <CheckCircleIcon /> : <CancelIcon />}
-                      label={isCorrect ? 'Correct' : 'Incorrect'}
-                      size="small"
-                      sx={{
-                        bgcolor: isCorrect
-                          ? (isDarkMode ? color.green800 : color.green100)
-                          : (isDarkMode ? color.red800 : color.red100),
-                        color: isCorrect
-                          ? (isDarkMode ? color.green100 : color.green800)
-                          : (isDarkMode ? color.red100 : color.red800),
-                        fontWeight: 600,
-                        '& .MuiChip-icon': {
-                          color: 'inherit',
-                          fontSize: '1rem'
-                        }
-                      }}
-                    />
-                  )}
-                </Box>
-
-                <Typography variant="body2" sx={{ mb: 1.5, fontWeight: 500 }}>
-                  {question.content}
-                </Typography>
-
-                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">
-                      Your answer:
-                    </Typography>
-                    <Chip
-                      label={selected || 'Not answered'}
-                      size="small"
-                      sx={{
-                        ml: 1,
-                        bgcolor: selected
-                          ? (isCorrect
-                            ? (isDarkMode ? color.green800 : color.green100)
-                            : (isDarkMode ? color.red800 : color.red100))
-                          : (isDarkMode ? color.gray700 : color.gray200),
-                        color: selected
-                          ? (isCorrect
-                            ? (isDarkMode ? color.green100 : color.green800)
-                            : (isDarkMode ? color.red100 : color.red800))
-                          : (isDarkMode ? color.gray300 : color.gray700),
-                        fontWeight: 600
-                      }}
-                    />
-                  </Box>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">
-                      Correct:
-                    </Typography>
-                    <Chip
-                      label={correctAnswer || 'N/A'}
-                      size="small"
-                      sx={{
-                        ml: 1,
-                        bgcolor: isDarkMode ? color.green800 : color.green100,
-                        color: isDarkMode ? color.green100 : color.green800,
-                        fontWeight: 600
-                      }}
-                    />
-                  </Box>
-                </Box>
+              <Box key={question.id} sx={{ mb: 2 }}>
+                <QuestionHistoryItem
+                  questionNumber={questionNumber}
+                  question={question}
+                  selectedAnswer={userAnswer}
+                  isReview={isReview}
+                  showExplanation={true}
+                  canCollapse={true}
+                />
               </Box>
             );
           })}

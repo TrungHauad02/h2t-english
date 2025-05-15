@@ -12,19 +12,20 @@ import {
 } from "./";
 import TestQuestionGrid from "./TestQuestionGrid";
 import IntroducePartTest from "./InroducePartTest";
-import TimeRemaining from "./TimeRemaining";
+import TimeRemaining from "../common/TimeRemaining";
 import SubmitTestDialog from "./SubmitTestDialog";
 import ConfirmSubmitDialog from "./ConfirmSubmitDialog";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import useMixingTest from "../../hooks/useMixingTest";
-
+import { Test } from "interfaces";
 interface MixingTestProps {
   mixingTestParts: TestPart[];
   submitTestId: number;
+  test: Test ;
 }
 
-const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId }) => {
+const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId,test}) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const color = useColor();
@@ -187,7 +188,9 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId }
       <Grid container spacing={2}>
         {isSmallScreen && (
           <Grid item xs={12}>
-            <TimeRemaining timeUsed={timeUsed} />
+           <TimeRemaining timeUsed={timeUsed}
+        duration={test.duration}
+        onTimeUp={handleSubmitTest} />
           </Grid>
         )}
 
@@ -221,7 +224,9 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId }
         
         {!isSmallScreen && (
           <Grid item md={3} lg={4}>
-            <TimeRemaining timeUsed={timeUsed} />
+               <TimeRemaining timeUsed={timeUsed}
+        duration={test.duration}
+        onTimeUp={handleSubmitTest} />
             <Box sx={{ mt: 3 }}>
               <TestQuestionGrid 
                 questionItems={allQuestions}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -9,8 +9,11 @@ import {
   useMediaQuery,
   useTheme
 } from "@mui/material";
+import { Headphones } from "@mui/icons-material";
 import AnswerQuestionSectionHistory from "./common/answerQuestion/AnswerQuestionSectionHistory";
 import TestQuestionGridHistory from "./common/TestQuestionGridHistory";
+import AudioPlayer from "./common/AudioPlayer";
+import TranscriptSection from "./common/TranscriptSection";
 import { TestPartTypeEnum } from "interfaces";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
@@ -67,30 +70,75 @@ export default function HistoryListeningTest({
             {listeningItems.map((item, idx) => (
               <Paper
                 key={item.id}
-                elevation={3}
+                elevation={4}
                 sx={{
-                  p: { xs: 2, sm: 3 },
-                  borderRadius: "1rem",
+                  borderRadius: '20px',
+                  overflow: 'hidden',
                   bgcolor: isDarkMode ? color.gray800 : color.white,
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  boxShadow: isDarkMode 
+                    ? '0 8px 32px rgba(0,0,0,0.3)'
+                    : '0 8px 32px rgba(0,0,0,0.08)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: isDarkMode 
+                      ? '0 12px 40px rgba(0,0,0,0.4)'
+                      : '0 12px 40px rgba(0,0,0,0.12)',
+                  },
                 }}
               >
-                <Typography
-                  variant="h6"
-                  sx={{ mb: 2, color: isDarkMode ? color.teal200 : color.teal700 }}
+                {/* Header Section */}
+                <Box
+                  sx={{
+                    p: 3,
+                    background: isDarkMode 
+                      ? `linear-gradient(135deg, ${color.teal900}, ${color.teal800})`
+                      : `linear-gradient(135deg, ${color.teal500}, ${color.teal600})`,
+                    color: color.white,
+                  }}
                 >
-                  Listening {idx + 1}
-                </Typography>
+                  <Stack direction="row" alignItems="center" spacing={2}>
+                    <Headphones sx={{ fontSize: 32 }} />
+                    <Typography 
+                      variant="h5" 
+                      sx={{ 
+                        fontWeight: 700,
+                        letterSpacing: '0.5px',
+                      }}
+                    >
+                      Listening {idx + 1}
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        ml: 'auto',
+                        fontWeight: 600,
+                        opacity: 0.95,
+                      }}
+                    >
+                      Questions {item.startSerial} - {item.startSerial + item.questions.length - 1}
+                    </Typography>
+                  </Stack>
+                </Box>
 
-                <AnswerQuestionSectionHistory
-                  questions={item.questions}
-                  startSerial={item.startSerial}
-                  submitTestId={submitTestId}
-                  partId={item.id}
-                  selectedQuestionId={selectedQuestionId}
-                  setQuestionRef={setQuestionRef}
-                  isCompetitionTest={false}
-                />
+                {/* Audio Section */}
+                <Box sx={{ p: 3, borderBottom: `1px solid ${isDarkMode ? color.gray700 : color.gray200}` }}>
+                  <AudioPlayer src={item.audio} />
+                  {item.transcript && <TranscriptSection transcript={item.transcript} />}
+                </Box>
+
+                {/* Questions Section */}
+                <Box sx={{ p: 3 }}>
+                  <AnswerQuestionSectionHistory
+                    questions={item.questions}
+                    startSerial={item.startSerial}
+                    submitTestId={submitTestId}
+                    partId={item.id}
+                    selectedQuestionId={selectedQuestionId}
+                    setQuestionRef={setQuestionRef}
+                    isCompetitionTest={false}
+                  />
+                </Box>
               </Paper>
             ))}
           </Stack>

@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Typography,
-  Chip,
   alpha,
   Fade,
   Button,
@@ -10,10 +9,9 @@ import {
 } from '@mui/material';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import TimerIcon from '@mui/icons-material/Timer';
-import HeadsetIcon from '@mui/icons-material/Headset';
 import { useDarkMode } from 'hooks/useDarkMode';
 import useColor from 'theme/useColor';
-import { Toeic } from 'interfaces/TestInterfaces';
+import useToeicPage from '../hooks/useToeicTest';
 
 import VolumeTestStep from './toeic/introduce/VolumeTestStep';
 import DirectionsStep from './toeic/introduce/DirectionsStep';
@@ -24,23 +22,35 @@ import ListeningPart3And4List from './toeic/part3And4/ListeningPart3And4List';
 import Part5List from './toeic/part5/Part5List';
 import Part6List from './toeic/part6/Part6List';
 import Part7List from './toeic/part7/Part7List';
+import ConfirmSubmitDialog from './common/ConfirmSubmitDialog';
+import ToeicSubmitTestDialog from './common/ToeicSubmitTestDialog';
 
-type Props = {
-  toeic: Toeic;
-  submitToeicId: number;
-};
+const ToeicTest: React.FC = () => {
+  const { 
+    toeic, 
+    submitToeic, 
+    loading, 
+    error,
+    totalAnswered,
+    calculateTotalAnswered,
+    submitToeicTest
+  } = useToeicPage();
 
-const ToeicTest: React.FC<Props> = ({ toeic, submitToeicId }) => {
   const [volume, setVolume] = useState(50);
   const [step, setStep] = useState(0);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionResult, setSubmissionResult] = useState<any>(null);
+  
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
   useEffect(() => {
-    if (step === 7) { // Start countdown for Reading Section
-      setCountdown(75 * 60); // 75 minutes for reading
+    if (step === 7) {
+      setCountdown(75 * 60);
     }
   }, [step]);
 
@@ -53,6 +63,35 @@ const ToeicTest: React.FC<Props> = ({ toeic, submitToeicId }) => {
     }
     return () => clearInterval(timer);
   }, [countdown]);
+
+  const handleSubmitTest = useCallback(async () => {
+    if (!submitToeic?.id) return;
+    
+    try {
+      setIsSubmitting(true);
+      setIsConfirmDialogOpen(false);
+      setIsSubmitDialogOpen(true);
+      
+     
+      const result = await submitToeicTest();
+  
+      setSubmissionResult(result);
+      
+    } catch (error) {
+      console.error("Error submitting TOEIC test:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [submitToeic, submitToeicTest]);
+
+  const handleSubmitClick = async () => {
+    await calculateTotalAnswered();
+    setIsConfirmDialogOpen(true);
+  };
+
+  const closeSubmitDialog = useCallback(() => {
+    setIsSubmitDialogOpen(false);
+  }, []);
 
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
@@ -82,20 +121,8 @@ const ToeicTest: React.FC<Props> = ({ toeic, submitToeicId }) => {
     }
   };
 
-  const getPartInfo = () => {
-    switch (step) {
-      case 3: return { part: 'Part 1', icon: <HeadsetIcon />, questions: 6 };
-      case 4: return { part: 'Part 2', icon: <HeadsetIcon />, questions: 25 };
-      case 5: return { part: 'Part 3', icon: <HeadsetIcon />, questions: 39 };
-      case 6: return { part: 'Part 4', icon: <HeadsetIcon />, questions: 30 };
-      case 7: return { part: 'Part 5', icon: null, questions: 30 };
-      case 8: return { part: 'Part 6', icon: null, questions: 16 };
-      case 9: return { part: 'Part 7', icon: null, questions: 54 };
-      default: return null;
-    }
-  };
-
   const getTotalCurrentPartItems = () => {
+    if (!toeic) return 0;
     switch (step) {
       case 7: return toeic.questionsPart5?.length ?? 0;
       case 8: return toeic.questionsPart6?.length ?? 0;
@@ -104,25 +131,47 @@ const ToeicTest: React.FC<Props> = ({ toeic, submitToeicId }) => {
     }
   };
 
+  const canGoNext = () => {
+    const total = getTotalCurrentPartItems();
+    return step < 9 || currentIndex < total - 1;
+  };
+
+  const canGoPrevious = () => {
+    return step > 7 || (step === 7 && currentIndex > 0);
+  };
+
   const nextReading = () => {
     const total = getTotalCurrentPartItems();
+    
     if (currentIndex < total - 1) {
       setCurrentIndex((prev) => prev + 1);
-    } else {
-      if (step < 9) {
-        setStep((prev) => prev + 1);
-        setCurrentIndex(0);
-      }
+    } else if (step < 9) {
+      setStep((prev) => prev + 1);
+      setCurrentIndex(0);
     }
   };
 
   const prevReading = () => {
     if (currentIndex > 0) {
       setCurrentIndex((prev) => prev - 1);
+    } else if (step > 7) {
+      setStep((prev) => prev - 1);
+      const previousPartTotal = step === 8 
+        ? (toeic?.questionsPart5?.length ?? 0)
+        : (toeic?.questionsPart6?.length ?? 0);
+      setCurrentIndex(previousPartTotal - 1);
     }
   };
 
+  const isLastQuestion = () => {
+    return step === 9 && currentIndex === getTotalCurrentPartItems() - 1;
+  };
+
   const renderStep = () => {
+    if (!toeic || !submitToeic) {
+      return <Typography>Loading...</Typography>;
+    }
+
     switch (step) {
       case 0: return <VolumeTestStep />;
       case 1: return <DirectionsStep />;
@@ -131,25 +180,25 @@ const ToeicTest: React.FC<Props> = ({ toeic, submitToeicId }) => {
         questionsPart1={toeic.questionsPart1 ?? []} 
         startIndex={1} 
         onFinish={() => setStep(4)} 
-        submitToeicId={submitToeicId}
+        submitToeicId={submitToeic.id}
       />;
       case 4: return <ListeningPart2List 
         questionsPart2={toeic.questionsPart2 ?? []} 
         startIndex={7} 
         onFinish={() => setStep(5)} 
-        submitToeicId={submitToeicId}
+        submitToeicId={submitToeic.id}
       />;
       case 5: return <ListeningPart3And4List 
         questions={toeic.questionsPart3 ?? []} 
         startIndex={32} 
         onFinish={() => setStep(6)} 
-        submitToeicId={submitToeicId}
+        submitToeicId={submitToeic.id}
       />;
       case 6: return <ListeningPart3And4List 
         questions={toeic.questionsPart4 ?? []} 
         startIndex={71} 
         onFinish={() => setStep(7)} 
-        submitToeicId={submitToeicId}
+        submitToeicId={submitToeic.id}
       />;
       case 7: return <Part5List 
         questionsPart5={toeic.questionsPart5 ?? []} 
@@ -157,7 +206,7 @@ const ToeicTest: React.FC<Props> = ({ toeic, submitToeicId }) => {
         currentIndex={currentIndex} 
         setCurrentIndex={setCurrentIndex} 
         onFinish={() => setStep(8)} 
-        submitToeicId={submitToeicId}
+        submitToeicId={submitToeic.id}
       />;
       case 8: return <Part6List 
         questionsPart6={toeic.questionsPart6 ?? []} 
@@ -165,7 +214,7 @@ const ToeicTest: React.FC<Props> = ({ toeic, submitToeicId }) => {
         currentIndex={currentIndex} 
         setCurrentIndex={setCurrentIndex} 
         onFinish={() => setStep(9)} 
-        submitToeicId={submitToeicId}
+        submitToeicId={submitToeic.id}
       />;
       case 9: return <Part7List 
         questionsPart7={toeic.questionsPart7 ?? []} 
@@ -173,19 +222,49 @@ const ToeicTest: React.FC<Props> = ({ toeic, submitToeicId }) => {
         currentIndex={currentIndex} 
         setCurrentIndex={setCurrentIndex} 
         onFinish={() => {}} 
-        submitToeicId={submitToeicId}
+        submitToeicId={submitToeic.id}
       />;
       default: return <Typography>Coming soon...</Typography>;
     }
   };
 
-  const partInfo = getPartInfo();
   const isReadingSection = [7, 8, 9].includes(step);
   const isListeningSection = [3, 4, 5, 6].includes(step);
+
+  // Loading state
+  if (loading) {
+    return (
+      <Box sx={{ 
+        width: '100%', 
+        height: '100%', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center' 
+      }}>
+        <Typography>Loading...</Typography>
+      </Box>
+    );
+  }
+
+  // Error state
+  if (error || !toeic || !submitToeic) {
+    return (
+      <Box sx={{ 
+        width: '100%', 
+        height: '100%', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center' 
+      }}>
+        <Typography color="error">{error || 'Failed to load test'}</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ 
       width: '100%',
+      height: '100%',
       display: 'flex', 
       flexDirection: 'column',
       borderRadius: 2,
@@ -205,6 +284,7 @@ const ToeicTest: React.FC<Props> = ({ toeic, submitToeicId }) => {
           justifyContent: 'space-between',
           flexWrap: 'wrap',
           gap: 2,
+          flexShrink: 0,
         }}
       >
         <Typography variant="h5" fontWeight={700}>
@@ -218,7 +298,6 @@ const ToeicTest: React.FC<Props> = ({ toeic, submitToeicId }) => {
         )}
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          {/* Timer for Reading Section */}
           {isReadingSection && countdown !== null && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <TimerIcon />
@@ -228,7 +307,6 @@ const ToeicTest: React.FC<Props> = ({ toeic, submitToeicId }) => {
             </Box>
           )}
           
-          {/* Volume Control for Listening Section */}
           {isListeningSection && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <VolumeUpIcon sx={{ fontSize: 20 }} />
@@ -256,43 +334,6 @@ const ToeicTest: React.FC<Props> = ({ toeic, submitToeicId }) => {
         </Box>
       </Box>
 
-      {/* Part Information Bar */}
-      {partInfo && (
-        <Box
-          sx={{
-            bgcolor: color.emerald500,
-            color: color.white,
-            px: { xs: 2, md: 3 },
-            py: 2,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            background: `linear-gradient(135deg, ${color.emerald500} 0%, ${color.teal500} 100%)`,
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            {partInfo.icon}
-            <Typography variant="h5" fontWeight={700}>
-              {partInfo.part}
-            </Typography>
-          </Box>
-          
-          <Chip
-            label={`${partInfo.questions} Questions`}
-            sx={{
-              bgcolor: alpha(color.white, 0.2),
-              color: color.white,
-              fontWeight: 600,
-              backdropFilter: 'blur(10px)',
-              border: `1px solid ${alpha(color.white, 0.3)}`,
-              px: 2,
-              height: 32,
-              fontSize: '0.9rem'
-            }}
-          />
-        </Box>
-      )}
-
       {/* Main Content Area */}
       <Box 
         sx={{ 
@@ -302,15 +343,13 @@ const ToeicTest: React.FC<Props> = ({ toeic, submitToeicId }) => {
           alignItems: 'center',
           p: { xs: 2, md: 4 },
           bgcolor: isDarkMode ? color.gray800 : color.gray50,
-          minHeight: { xs: '60vh', md: '65vh' },
-          maxHeight: '70vh',
           overflowY: 'auto',
+          minHeight: 0,
         }}
       >
         <Fade in key={step}>
           <Box sx={{ 
-            width: '100%', 
-            maxWidth: '1000px',
+            width: '100%',
             mx: 'auto'
           }}>
             {renderStep()}
@@ -329,51 +368,53 @@ const ToeicTest: React.FC<Props> = ({ toeic, submitToeicId }) => {
           alignItems: 'center',
           borderTop: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
           gap: 2,
+          flexShrink: 0,
         }}
       >
         {/* Back Button */}
-        {isReadingSection ? (
-          <Button
-            variant="contained"
-            onClick={prevReading}
-            disabled={step === 7 && currentIndex === 0}
-            sx={{
-              px: 3,
-              py: 1.2,
-              bgcolor: color.gray300,
-              color: color.gray800,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              borderRadius: 1,
-              minWidth: 100,
-              '&:hover': {
-                bgcolor: color.gray400,
-              },
-              '&:disabled': {
-                opacity: 0.5
-              }
-            }}
-          >
-            Back
-          </Button>
-        ) : (
-          <Box width={100} />
-        )}
+        <Button
+          variant="contained"
+          onClick={prevReading}
+          disabled={!canGoPrevious()}
+          sx={{
+            px: 3,
+            py: 1.2,
+            bgcolor: color.gray600,
+            color: color.white,
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            borderRadius: 1,
+            minWidth: 100,
+            visibility: isReadingSection ? 'visible' : 'hidden',
+            '&:hover': {
+              bgcolor: color.gray700,
+            },
+            '&:disabled': {
+              bgcolor: isDarkMode ? color.gray700 : color.gray300,
+              color: isDarkMode ? color.gray500 : color.gray400,
+            }
+          }}
+        >
+          Back
+        </Button>
         
         {/* Next/Submit Button */}
         <Button
           variant="contained"
           onClick={() => {
-            if (isReadingSection) {
+            if (isLastQuestion()) {
+              handleSubmitClick();
+            } else if (isReadingSection) {
               nextReading();
             } else {
               setStep((prev) => prev + 1);
             }
           }}
+          disabled={!canGoNext() && !isLastQuestion()}
           sx={{
             px: 3,
             py: 1.2,
-            bgcolor: step === 9 && currentIndex === getTotalCurrentPartItems() - 1 
+            bgcolor: isLastQuestion() 
               ? color.green600 
               : color.emerald500,
             color: color.white,
@@ -383,16 +424,38 @@ const ToeicTest: React.FC<Props> = ({ toeic, submitToeicId }) => {
             minWidth: 100,
             boxShadow: 2,
             '&:hover': {
-              bgcolor: step === 9 && currentIndex === getTotalCurrentPartItems() - 1 
+              bgcolor: isLastQuestion() 
                 ? color.green700 
                 : color.emerald600,
               boxShadow: 3,
+            },
+            '&:disabled': {
+              bgcolor: isDarkMode ? color.gray700 : color.gray300,
+              color: isDarkMode ? color.gray500 : color.gray400,
             }
           }}
         >
-          {step === 9 && currentIndex === getTotalCurrentPartItems() - 1 ? 'Submit' : 'Next'}
+          {isLastQuestion() ? 'Submit' : 'Next'}
         </Button>
       </Box>
+
+      {/* Dialogs */}
+      <ConfirmSubmitDialog
+        open={isConfirmDialogOpen}
+        onClose={() => setIsConfirmDialogOpen(false)}
+        onConfirm={handleSubmitTest}
+        totalQuestions={200}
+        answeredQuestions={totalAnswered}
+        isSubmitting={isSubmitting}
+      />
+
+      <ToeicSubmitTestDialog
+        open={isSubmitDialogOpen}
+        onClose={closeSubmitDialog}
+        isLoading={isSubmitting}
+        result={submissionResult}
+        submitTestId={submitToeic?.id || 0}
+      />
     </Box>
   );
 };

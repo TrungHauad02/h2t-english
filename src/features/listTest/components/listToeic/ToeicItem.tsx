@@ -22,9 +22,18 @@ export default function TestItem({ toeic }: { toeic: Toeic }) {
   const [hovered, setHovered] = useState(false);
   const navigate = useNavigate();
 
+  const handleGoToHistory = () => {
+    navigate('/history-test', {
+      state: {
+        title: toeic.title,
+        type: 'toeic',
+      }
+    });
+  };
+
   // Calculate score percentage for progress bar
   const scorePercentage = toeic?.scoreLastOfTest
-    ? (toeic.scoreLastOfTest / 100) * 100
+    ? (toeic.scoreLastOfTest / 990) * 100
     : 0;
 
   // Determine status chip color and text based on score
@@ -387,7 +396,7 @@ export default function TestItem({ toeic }: { toeic: Toeic }) {
                 }}
               >
                 {toeic?.scoreLastOfTest !== null
-                  ? `${toeic.scoreLastOfTest}/100`
+                  ? `${toeic.scoreLastOfTest}/990`
                   : "Not taken"}
               </Typography>
             </Box>
@@ -433,7 +442,7 @@ export default function TestItem({ toeic }: { toeic: Toeic }) {
               }}
               onClick={(e) => {
                 e.stopPropagation();
-                // Handle history view
+                handleGoToHistory();
               }}
             >
               History

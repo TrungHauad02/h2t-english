@@ -8,11 +8,14 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route element={<Layouts.StudentLayout />}>
+        <Route path="/" element={<Pages.HomePage />} />
         <Route path="/login" element={<Pages.LoginPage />} />
         <Route path="/register" element={<Pages.RegisterPage />} />
         <Route path="/forgot-password" element={<Pages.ResetPasswordPage />} />
-
-        <Route path="/" element={<Pages.HomePage />} />
+        <Route
+          path="/ai-response-feedback"
+          element={<Pages.AIResponseFeedbackPage />}
+        />
       </Route>
       {/* Student-only routes */}
       <Route
@@ -30,7 +33,7 @@ const AppRoutes = () => {
             path="/history-test/:type/:id"
             element={<Pages.HistoryTestPage />}
           />
-            <Route
+          <Route
             path="/history-test/competition/:id"
             element={<Pages.HistoryCompetitionPage />}
           />

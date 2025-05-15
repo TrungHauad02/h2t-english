@@ -88,6 +88,7 @@ const Part3And4History: React.FC<Props> = ({ questions, submitToeicId, partNumbe
             questionNumberStart={startIndex + index * 3}
             userAnswers={userAnswers}
             isReview={true}
+            partNumber={partNumber}
           />
         </Box>
       ))}
