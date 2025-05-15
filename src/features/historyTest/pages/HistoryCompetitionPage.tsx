@@ -1,5 +1,11 @@
 import React from "react";
-import { Box, Typography, Paper, CircularProgress, Container } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Paper,
+  CircularProgress,
+  Container,
+} from "@mui/material";
 import { MainPictureSection } from "components/sections";
 import { SiteInfo } from "components/sections/types";
 import HistoryCompetitionTest from "../components/historyTest/HistoryCompetitionTest";
@@ -12,39 +18,35 @@ export default function HistoryCompetitionPage() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
-  const {
-    competition,
-    submitCompetition,
-    loading,
-    sectionScores,
-  } = useHistoryCompetitionTest();
+  const { competition, submitCompetition, loading, sectionScores } =
+    useHistoryCompetitionTest();
 
   if (loading) {
     return (
-      <Box 
-        sx={{ 
-          display: 'flex', 
-          flexDirection: 'column',
-          justifyContent: 'center', 
-          alignItems: 'center',
-          height: '80vh',
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "80vh",
           backgroundColor: isDarkMode ? color.gray900 : color.gray50,
-          gap: 2
+          gap: 2,
         }}
       >
-        <CircularProgress 
+        <CircularProgress
           size={60}
           thickness={4}
-          sx={{ 
+          sx={{
             color: isDarkMode ? color.teal400 : color.teal600,
-          }} 
+          }}
         />
-        <Typography 
-          variant="h6" 
-          sx={{ 
-            mt: 2, 
+        <Typography
+          variant="h6"
+          sx={{
+            mt: 2,
             color: isDarkMode ? color.gray300 : color.gray700,
-            fontWeight: 500
+            fontWeight: 500,
           }}
         >
           Loading competition history...
@@ -55,18 +57,18 @@ export default function HistoryCompetitionPage() {
 
   if (!competition) {
     return (
-      <Box 
-        component={Paper} 
+      <Box
+        component={Paper}
         elevation={3}
-        sx={{ 
-          p: 4, 
-          textAlign: "center", 
+        sx={{
+          p: 4,
+          textAlign: "center",
           mt: 4,
-          maxWidth: '600px',
-          mx: 'auto',
-          borderRadius: '1rem',
+          maxWidth: "600px",
+          mx: "auto",
+          borderRadius: "1rem",
           backgroundColor: isDarkMode ? color.gray800 : color.white,
-          color: isDarkMode ? color.gray100 : color.gray900
+          color: isDarkMode ? color.gray100 : color.gray900,
         }}
       >
         <Typography variant="h5" gutterBottom>
@@ -80,17 +82,17 @@ export default function HistoryCompetitionPage() {
   }
 
   const siteInfo: SiteInfo = {
-    bgUrl: "http://138.2.91.94:9000/h2t-english/static%2Fmain_picture_competition.jpg",
+    bgUrl: "/h2t-english-competitions-banner.svg",
     title: competition.title || "Competition History",
   };
 
   return (
-    <Box 
-      sx={{ 
+    <Box
+      sx={{
         width: "100%",
-        minHeight: '100vh',
+        minHeight: "100vh",
         backgroundColor: isDarkMode ? color.gray900 : color.gray50,
-        transition: 'background-color 0.3s ease'
+        transition: "background-color 0.3s ease",
       }}
     >
       <MainPictureSection siteInfo={siteInfo} />
