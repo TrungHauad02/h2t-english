@@ -1,5 +1,6 @@
 import { Box, Stack, Typography, CircularProgress, Paper } from "@mui/material";
 import { useEffect, useState, useRef } from "react";
+import { MenuBook } from "@mui/icons-material";
 import AnswerQuestionSection from "../common/answerQuestion/AnswerQuestionSectionHistory";
 import { testReadingService, questionService } from "services/test";
 import WEDocumentViewer from "components/display/document/WEDocumentViewer";
@@ -36,7 +37,7 @@ export default function ReadingSection({
       try {
         setLoading(true);
         
-        const readingItemsResponse = await testReadingService.getByIdsAndStatus(testItemIds,true);
+        const readingItemsResponse = await testReadingService.getByIdsAndStatus(testItemIds, true);
         const items = readingItemsResponse.data || [];
         
         let currentSerial = startSerial;
@@ -44,10 +45,9 @@ export default function ReadingSection({
         const readingItemsWithQuestions = await Promise.all(
           items.map(async (item: TestReading) => {
             if (item.questions && item.questions.length > 0) {
-              const questionsResponse = await questionService.getByIdsAndStatus(item.questions,true);
+              const questionsResponse = await questionService.getByIdsAndStatus(item.questions, true);
               
               const itemStartSerial = currentSerial;
-             
               currentSerial += item.questions.length;
               
               return {
@@ -95,65 +95,85 @@ export default function ReadingSection({
   }
 
   return (
-    <Box>
+    <Box sx={{ pb: 4 }}>
       {readingItems.map((readingItem, index) => {
         const { file, questions, startSerial: itemStartSerial } = readingItem;
         
         return (
           <Paper 
             key={index}
-            elevation={3}
+            elevation={4}
             sx={{
-              mb: 4,
-              borderRadius: '1rem',
+              mb: 5,
+              borderRadius: '20px',
               overflow: 'hidden',
               bgcolor: isDarkMode ? color.gray800 : color.white,
+              boxShadow: isDarkMode 
+                ? '0 8px 32px rgba(0,0,0,0.3)'
+                : '0 8px 32px rgba(0,0,0,0.08)',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: isDarkMode 
+                  ? '0 12px 40px rgba(0,0,0,0.4)'
+                  : '0 12px 40px rgba(0,0,0,0.12)',
+              },
             }}
           >
-            <Stack 
-              sx={{ 
-                p: { xs: 2, sm: 3 },
-                borderBottom: '1px solid',
-                borderColor: isDarkMode ? color.gray700 : color.gray300
+            {/* Header Section */}
+            <Box
+              sx={{
+                p: 3,
+                background: isDarkMode 
+                  ? `linear-gradient(135deg, ${color.emerald900}, ${color.emerald800})`
+                  : `linear-gradient(135deg, ${color.emerald500}, ${color.emerald600})`,
+                color: color.white,
               }}
             >
-              <Typography 
-                variant="h6" 
-                sx={{ 
-                  fontWeight: "bold", 
-                  mb: 2,
-                  color: isDarkMode ? color.gray100 : color.gray900
-                }}
-              >
-                Reading Passage {index + 1}
-              </Typography>
-              
-              <Box sx={{ p: 1 }}>
-                <WEDocumentViewer 
-                  fileUrl={file} 
-                  lineHeight="2" 
-                  sx={{ 
-                    my: 2,
-                    p: 2,
-                    bgcolor: isDarkMode ? color.gray900 : color.gray50,
-                    borderRadius: '0.5rem'
-                  }} 
-                />
-              </Box>
-            </Stack>
+              <Stack direction="row" alignItems="center" spacing={2}>
+                <MenuBook sx={{ fontSize: 32 }} />
+                <Typography
+                  variant="h6"
+                  sx={{
+                    ml: 'auto',
+                    fontWeight: 600,
+                    opacity: 0.95,
+                  }}
+                >
+                  Questions {itemStartSerial} - {itemStartSerial + questions.length - 1}
+                </Typography>
+              </Stack>
+            </Box>
 
-            <Box sx={{ p: { xs: 2, sm: 3 } }}>
-              <Typography 
-                variant="h6" 
+            {/* Document Section */}
+            <Box 
+              sx={{ 
+                p: 3,
+                borderBottom: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+                backgroundColor: isDarkMode ? color.gray800 : color.gray50,
+              }}
+            >
+              <WEDocumentViewer 
+                fileUrl={file} 
+                lineHeight="2" 
                 sx={{ 
-                  fontWeight: "bold", 
-                  mb: 2,
-                  color: isDarkMode ? color.gray100 : color.gray900
-                }}
-              >
-                Questions {itemStartSerial} - {itemStartSerial + questions.length - 1}
-              </Typography>
-              
+                  p: 3,
+                  bgcolor: isDarkMode ? color.gray900 : color.white,
+                  borderRadius: '12px',
+                  boxShadow: isDarkMode 
+                    ? '0 2px 8px rgba(0,0,0,0.2)' 
+                    : '0 2px 8px rgba(0,0,0,0.05)',
+                  '& .document-viewer': {
+                    fontFamily: 'Georgia, serif',
+                    fontSize: '1.1rem',
+                    color: isDarkMode ? color.gray200 : color.gray800,
+                  }
+                }} 
+              />
+            </Box>
+
+            {/* Questions Section */}
+            <Box sx={{ p: 3 }}>
               <AnswerQuestionSection 
                 questions={questions} 
                 startSerial={itemStartSerial} 
@@ -163,7 +183,6 @@ export default function ReadingSection({
                 setQuestionRef={setQuestionRef}
                 isCompetitionTest={isCompetitionTest}
               />
-
             </Box>
           </Paper>
         );

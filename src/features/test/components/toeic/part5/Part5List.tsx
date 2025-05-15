@@ -117,7 +117,7 @@ const Part5List: React.FC<Props> = ({
   const currentQuestion = questions[currentIndex];
 
   return (
-    <Box sx={{ px: 2, py: 2, width: '90vw' }}>
+    <Box >
       <Part5Item
         questionNumber={startIndex + currentIndex}
         question={currentQuestion}

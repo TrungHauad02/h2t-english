@@ -44,6 +44,7 @@ export interface CompetitionTest extends BaseEntity {
   startTime: Date;
   endTime: Date;
   parts: number[];
+  ownerId : number;
 }
 export interface TestPart extends BaseEntity {
   type: TestPartTypeEnum;
@@ -92,6 +93,7 @@ export interface Toeic extends BaseEntity {
   questionsPart7?: number[];  
   totalQuestions?: 200;
   scoreLastOfTest?: number | null ;
+  ownerId : number;
 }
 
 export interface ToeicPart1 extends BaseEntity {

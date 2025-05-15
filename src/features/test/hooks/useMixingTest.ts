@@ -207,9 +207,9 @@ const useMixingTest = (mixingTestParts: TestPart[], submitTestId: number) => {
       SPEAKING: 0,
       WRITING: 0,
     };
-
+  
     const currentAnsweredQuestions = answeredQuestionsRef.current;
-
+  
     for (const type of tabOrder) {
       let part;
       switch (type) {
@@ -220,66 +220,102 @@ const useMixingTest = (mixingTestParts: TestPart[], submitTestId: number) => {
         case TestPartTypeEnum.SPEAKING: part = speakingPart; break;
         case TestPartTypeEnum.WRITING: part = writingPart; break;
       }
-
+  
       if (!part || !part.questions?.length) continue;
-
+  
       tempStartSerials[type] = currentSerial;
-
-      if (type === TestPartTypeEnum.VOCABULARY || type === TestPartTypeEnum.GRAMMAR || type === TestPartTypeEnum.WRITING) {
-        for (const qId of part.questions) {
-          tempQuestions.push({
-            serialNumber: currentSerial++,
-            questionId: qId,
-            partType: type,
-            isAnswered: currentAnsweredQuestions[qId] || false,
-          });
+  
+      if (type === TestPartTypeEnum.VOCABULARY || type === TestPartTypeEnum.GRAMMAR) {
+        // Call questionService for vocabulary and grammar
+        const res = await questionService.getByIdsAndStatus(part.questions, true);
+        for (const question of res.data || []) {
+          if (question.status) { // Only add questions with status = true
+            tempQuestions.push({
+              serialNumber: currentSerial++,
+              questionId: question.id,
+              partType: type,
+              isAnswered: currentAnsweredQuestions[question.id] || false,
+            });
+          }
         }
       }
-
+  
+      if (type === TestPartTypeEnum.WRITING) {
+        // Call testWritingService for writing
+        const res = await testWritingService.getByIdsAndStatus(part.questions, true);
+        for (const writingItem of res.data || []) {
+          if (writingItem.status) { // Only add writing items with status = true
+            tempQuestions.push({
+              serialNumber: currentSerial++,
+              questionId: writingItem.id,
+              partType: type,
+              isAnswered: currentAnsweredQuestions[writingItem.id] || false,
+            });
+          }
+        }
+      }
+  
       if (type === TestPartTypeEnum.READING) {
-        const res = await testReadingService.getByIdsAndStatus(part.questions,true);
+        const res = await testReadingService.getByIdsAndStatus(part.questions, true);
         for (const item of res.data || []) {
-          for (const qId of item.questions || []) {
-            tempQuestions.push({
-              serialNumber: currentSerial++,
-              questionId: qId,
-              partType: type,
-              isAnswered: currentAnsweredQuestions[qId] || false,
-            });
+          if (item.questions?.length) {
+            // Get question details to check status
+            const questionRes = await questionService.getByIdsAndStatus(item.questions, true);
+            for (const question of questionRes.data || []) {
+              if (question.status) { // Only add questions with status = true
+                tempQuestions.push({
+                  serialNumber: currentSerial++,
+                  questionId: question.id,
+                  partType: type,
+                  isAnswered: currentAnsweredQuestions[question.id] || false,
+                });
+              }
+            }
           }
         }
       }
-
+  
       if (type === TestPartTypeEnum.LISTENING) {
-        const res = await testListeningService.getByIdsAndStatus(part.questions,true);
+        const res = await testListeningService.getByIdsAndStatus(part.questions, true);
         for (const item of res.data || []) {
-          for (const qId of item.questions || []) {
-            tempQuestions.push({
-              serialNumber: currentSerial++,
-              questionId: qId,
-              partType: type,
-              isAnswered: currentAnsweredQuestions[qId] || false,
-            });
+          if (item.questions?.length) {
+            // Get question details to check status
+            const questionRes = await questionService.getByIdsAndStatus(item.questions, true);
+            for (const question of questionRes.data || []) {
+              if (question.status) { // Only add questions with status = true
+                tempQuestions.push({
+                  serialNumber: currentSerial++,
+                  questionId: question.id,
+                  partType: type,
+                  isAnswered: currentAnsweredQuestions[question.id] || false,
+                });
+              }
+            }
           }
         }
       }
-
+  
       if (type === TestPartTypeEnum.SPEAKING) {
-        const res = await testSpeakingService.getByIdsAndStatus(part.questions,true);
-     
-        
+        const res = await testSpeakingService.getByIdsAndStatus(part.questions, true);
         for (const item of res.data || []) {
-          for (const qId of item.questions || []) {
-            tempQuestions.push({
-              serialNumber: currentSerial++,
-              questionId: qId,
-              partType: type,
-              isAnswered: currentAnsweredQuestions[qId] || false,
-            });
+          if (item.questions?.length) {
+            // Get question details to check status
+            const questionRes = await questionService.getByIdsAndStatus(item.questions, true);
+            for (const question of questionRes.data || []) {
+              if (question.status) { // Only add questions with status = true
+                tempQuestions.push({
+                  serialNumber: currentSerial++,
+                  questionId: question.id,
+                  partType: type,
+                  isAnswered: currentAnsweredQuestions[question.id] || false,
+                });
+              }
+            }
           }
         }
       }
     }
+    
     setStartSerials(tempStartSerials);
     setAllQuestions(tempQuestions);
     setIsInitialDataLoaded(true);

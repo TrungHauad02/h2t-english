@@ -8,8 +8,6 @@ import {
   Paper,
   Chip,
   alpha,
-  useMediaQuery,
-  useTheme
 } from '@mui/material';
 import HearingIcon from '@mui/icons-material/Hearing';
 import { useDarkMode } from 'hooks/useDarkMode';
@@ -35,59 +33,60 @@ export default function ListeningPart3And4Item({
 }: Props) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  const questionNumberEnd = questionNumberStart + questions.length - 1;
 
   return (
     <Box
       sx={{
-        width: { xs: '90vw', md: '80vw' },
-        maxHeight: { xs: '70vh', md: '60vh' },
+        width: '100%',
+        maxHeight: '500px',
         borderRadius: 3,
         overflow: 'hidden',
-        boxShadow: `0 12px 32px ${alpha(isDarkMode ? color.black : color.gray900, 0.12)}`,
+        boxShadow: `0 6px 18px ${alpha(isDarkMode ? color.black : color.gray900, 0.1)}`,
         bgcolor: isDarkMode ? color.gray900 : color.white,
-        border: '2px solid',
-        borderColor: isDarkMode ? color.emerald700 : color.emerald500,
-        position: 'relative',
+        border: '1px solid',
+        borderColor: isDarkMode ? color.teal600 : color.teal400,
+        mx: 'auto',
       }}
     >
       <audio src={audio} autoPlay onEnded={onAudioEnded} style={{ display: 'none' }} />
       
-      <Box
-        sx={{
-          background: isDarkMode
-            ? `linear-gradient(135deg, ${color.emerald800} 0%, ${color.teal800} 100%)`
-            : `linear-gradient(135deg, ${color.emerald500} 0%, ${color.teal500} 100%)`,
+
+      <Box 
+        sx={{ 
+          background: isDarkMode 
+            ? `linear-gradient(135deg, ${color.teal700} 0%, ${color.teal900} 100%)`
+            : `linear-gradient(135deg, ${color.teal400} 0%, ${color.teal600} 100%)`,
           color: color.white,
-          px: 3,
-          py: 2,
+          px: 2.5,
+          py: 1.5,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          boxShadow: `0 4px 16px ${alpha(color.emerald600, 0.25)}`,
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <HearingIcon sx={{ fontSize: 28 }} />
-          <Typography
-            sx={{
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <HearingIcon />
+          <Typography 
+            sx={{ 
               fontWeight: 700,
-              fontSize: { xs: '1.1rem', md: '1.25rem' },
-              textShadow: '0 3px 6px rgba(0,0,0,0.2)',
+              fontSize: '1rem',
             }}
           >
-            Choose the correct answer
+            Questions {questionNumberStart}–{questionNumberEnd}
           </Typography>
         </Box>
-        <Chip
-          label={`Questions ${questionNumberStart}–${questionNumberStart + questions.length - 1}`}
+        <Chip 
+          label={`${questions.length} questions`}
+          size="small"
           sx={{
             bgcolor: alpha(color.white, 0.2),
             color: color.white,
             fontWeight: 600,
             backdropFilter: 'blur(10px)',
-            border: `1px solid ${alpha(color.white, 0.3)}`,
+            height: 24,
+            fontSize: '0.75rem'
           }}
         />
       </Box>
@@ -95,22 +94,19 @@ export default function ListeningPart3And4Item({
       <Box
         sx={{
           p: 3,
-          overflowY: 'auto',
-          maxHeight: { xs: '60vh', md: '50vh' },
           bgcolor: isDarkMode ? color.gray800 : color.gray50,
+          maxHeight: '500px',
+          overflowY: 'auto',
           '&::-webkit-scrollbar': {
-            width: '8px',
+            width: '6px',
           },
           '&::-webkit-scrollbar-track': {
             bgcolor: isDarkMode ? color.gray700 : color.gray100,
-            borderRadius: '4px',
+            borderRadius: '3px',
           },
           '&::-webkit-scrollbar-thumb': {
-            bgcolor: isDarkMode ? color.emerald700 : color.emerald400,
-            borderRadius: '4px',
-            '&:hover': {
-              bgcolor: isDarkMode ? color.emerald600 : color.emerald500,
-            }
+            bgcolor: isDarkMode ? color.teal700 : color.teal400,
+            borderRadius: '3px',
           }
         }}
       >
@@ -118,35 +114,31 @@ export default function ListeningPart3And4Item({
           const questionKey = `${question.id}`;
           const questionNumber = questionNumberStart + index;
           const selected = selectedAnswers[questionKey];
-          const isAnswered = !!selected;
 
           return (
             <Box
               key={question.id}
               mb={3}
               sx={{
-                p: 3,
-                borderRadius: 3,
+                p: 2,
+                borderRadius: 2,
                 bgcolor: isDarkMode ? color.gray900 : color.white,
-                border: '2px solid',
-                borderColor: isAnswered
-                  ? isDarkMode ? color.teal600 : color.teal400
-                  : isDarkMode ? color.gray700 : color.gray300,
-                transition: 'all 0.3s ease',
-                boxShadow: isAnswered
-                  ? `0 4px 16px ${alpha(isDarkMode ? color.teal900 : color.teal200, 0.3)}`
-                  : `0 2px 8px ${alpha(isDarkMode ? color.black : color.gray400, 0.1)}`,
+                border: '1px solid',
+                borderColor: selected
+                  ? (isDarkMode ? color.teal600 : color.teal400)
+                  : (isDarkMode ? color.gray700 : color.gray200),
+                transition: 'all 0.2s ease',
               }}
             >
               <Typography
                 sx={{
                   fontWeight: 700,
-                  mb: 2.5,
-                  fontSize: '1.1rem',
-                  color: isDarkMode ? color.emerald300 : color.emerald700,
+                  mb: 1.5,
+                  fontSize: '0.95rem',
+                  color: isDarkMode ? color.teal300 : color.teal700,
                   display: 'flex',
-                  alignItems: 'center',
-                  gap: 2,
+                  alignItems: 'flex-start',
+                  gap: 1.5,
                 }}
               >
                 <Box
@@ -155,28 +147,26 @@ export default function ListeningPart3And4Item({
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: 36,
-                    height: 36,
+                    width: 28,
+                    height: 28,
                     borderRadius: '50%',
-                    background: isDarkMode
-                      ? `linear-gradient(135deg, ${color.emerald800} 0%, ${color.teal800} 100%)`
-                      : `linear-gradient(135deg, ${color.emerald200} 0%, ${color.teal200} 100%)`,
-                    color: isDarkMode ? color.white : color.emerald900,
+                    bgcolor: isDarkMode ? color.teal800 : color.teal100,
+                    color: isDarkMode ? color.teal200 : color.teal700,
                     fontWeight: 800,
-                    fontSize: '0.95rem',
-                    boxShadow: `0 2px 8px ${alpha(color.emerald600, 0.3)}`,
+                    fontSize: '0.85rem',
+                    flexShrink: 0,
                   }}
                 >
                   {questionNumber}
                 </Box>
-                {question.content}
+                <Box flex={1} sx={{ fontSize: '0.9rem' }}>{question.content}</Box>
               </Typography>
 
               <RadioGroup
                 name={questionKey}
                 value={selected || ''}
                 onChange={(e) => onChange(questionKey, e.target.value as AnswerEnum)}
-                sx={{ ml: 1 }}
+                sx={{ pl: 4 }}
               >
                 {question.answers.map((answer, idx) => {
                   const optionLetter = (['A', 'B', 'C', 'D'][idx]) as AnswerEnum;
@@ -188,46 +178,40 @@ export default function ListeningPart3And4Item({
                       value={optionLetter}
                       control={
                         <Radio
+                          size="small"
                           sx={{
                             color: isDarkMode ? color.gray600 : color.gray400,
                             '&.Mui-checked': {
                               color: isDarkMode ? color.teal400 : color.teal600,
                             },
+                            padding: '6px',
                           }}
                         />
                       }
                       label={
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                          <Box
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Chip
+                            label={optionLetter}
+                            size="small"
                             sx={{
-                              width: 32,
-                              height: 32,
-                              borderRadius: '8px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
                               bgcolor: isOptionSelected
-                                ? isDarkMode ? color.teal700 : color.teal500
-                                : isDarkMode ? color.gray700 : color.gray200,
+                                ? (isDarkMode ? color.teal700 : color.teal500)
+                                : (isDarkMode ? color.gray700 : color.gray200),
                               color: isOptionSelected
                                 ? color.white
-                                : isDarkMode ? color.gray300 : color.gray700,
-                              fontWeight: 700,
-                              fontSize: '0.9rem',
-                              transition: 'all 0.2s ease',
-                              boxShadow: isOptionSelected
-                                ? `0 2px 8px ${alpha(color.teal600, 0.3)}`
-                                : 'none',
+                                : (isDarkMode ? color.gray300 : color.gray700),
+                              fontWeight: 600,
+                              width: 24,
+                              height: 24,
+                              transition: 'all 0.2s ease'
                             }}
-                          >
-                            {optionLetter}
-                          </Box>
+                          />
                           <Typography
                             sx={{
                               color: isDarkMode ? color.gray200 : color.gray800,
                               fontWeight: isOptionSelected ? 600 : 400,
-                              fontSize: '1rem',
-                              transition: 'all 0.2s ease',
+                              fontSize: '0.85rem',
+                              transition: 'all 0.2s ease'
                             }}
                           >
                             {answer.content}
@@ -235,23 +219,24 @@ export default function ListeningPart3And4Item({
                         </Box>
                       }
                       sx={{
-                        mb: 2,
+                        mb: 1,
                         ml: 0,
-                        px: 2,
-                        py: 1.5,
-                        borderRadius: 2.5,
+                        p: 1,
+                        borderRadius: 1.5,
                         transition: 'all 0.2s ease',
-                        background: isOptionSelected
-                          ? isDarkMode
-                            ? `linear-gradient(135deg, ${alpha(color.teal900, 0.3)} 0%, ${alpha(color.emerald900, 0.3)} 100%)`
-                            : `linear-gradient(135deg, ${alpha(color.teal100, 0.8)} 0%, ${alpha(color.emerald100, 0.8)} 100%)`
-                          : 'transparent',
                         '&:hover': {
                           bgcolor: isDarkMode
-                            ? alpha(color.teal900, 0.15)
-                            : alpha(color.teal100, 0.4),
-                          transform: 'translateX(8px)',
+                            ? alpha(color.teal900, 0.2)
+                            : alpha(color.teal100, 0.5),
+                          transform: 'translateX(4px)',
                         },
+                        ...(isOptionSelected && {
+                          bgcolor: isDarkMode
+                            ? alpha(color.teal900, 0.3)
+                            : alpha(color.teal100, 0.8),
+                          border: '1px solid',
+                          borderColor: isDarkMode ? color.teal700 : color.teal300
+                        })
                       }}
                     />
                   );

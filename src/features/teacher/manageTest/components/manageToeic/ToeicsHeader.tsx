@@ -57,13 +57,14 @@ export default function ToeicsHeader({
 
   const onCreateToeic = async () => {
     try {
-      await createToeicTest(newToeic);
       setNewToeic({
         title: "",
         duration: 120,
         totalQuestions: 200,
-        status: true,
+        status: false,
       });
+      await createToeicTest(newToeic);
+
       handleOpenCreateDialog();
     } catch (error) {
       console.error("Error creating TOEIC test:", error);

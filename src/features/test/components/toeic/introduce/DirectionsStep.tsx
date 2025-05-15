@@ -21,37 +21,21 @@ export default function DirectionsStep() {
           justifyContent: 'center', 
           alignItems: 'center', 
           display: 'flex',
-          minHeight: '60vh',
+          height: '100%',
           px: 2,
-          py: 4
+          py: 2
         }}
       >
         <Paper
           sx={{
-            maxWidth: 800,
+            maxWidth: 700,
             width: '100%',
-            borderRadius: 3,
+            borderRadius: 2,
             overflow: 'hidden',
             bgcolor: isDarkMode ? color.gray900 : color.white,
-            boxShadow: `0 12px 32px ${alpha(isDarkMode ? color.black : color.gray900, 0.12)}`,
-            border: '2px solid',
+            boxShadow: `0 4px 16px ${alpha(isDarkMode ? color.black : color.gray900, 0.1)}`,
+            border: '1px solid',
             borderColor: isDarkMode ? color.emerald700 : color.emerald500,
-            transition: 'all 0.3s ease',
-            position: 'relative',
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              height: '4px',
-              background: `linear-gradient(90deg, ${color.emerald400} 0%, ${color.teal500} 100%)`,
-              opacity: isDarkMode ? 0.8 : 1,
-            },
-            '&:hover': {
-              transform: 'translateY(-2px)',
-              boxShadow: `0 16px 40px ${alpha(isDarkMode ? color.black : color.gray900, 0.15)}`
-            }
           }}
         >
           <Box 
@@ -59,30 +43,17 @@ export default function DirectionsStep() {
               background: isDarkMode
                 ? `linear-gradient(135deg, ${color.emerald800} 0%, ${color.teal800} 100%)`
                 : `linear-gradient(135deg, ${color.emerald500} 0%, ${color.teal500} 100%)`,
-              px: 4, 
-              py: 3,
-              position: 'relative',
-              overflow: 'hidden',
-              '&::after': {
-                content: '""',
-                position: 'absolute',
-                top: '-50%',
-                right: '-50%',
-                width: '200%',
-                height: '200%',
-                background: `radial-gradient(circle, ${alpha(color.white, 0.1)} 0%, transparent 70%)`,
-                transform: 'rotate(45deg)',
-              }
+              px: 3, 
+              py: 2,
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, position: 'relative', zIndex: 1 }}>
-              <HeadsetIcon sx={{ fontSize: 32, color: color.white }} />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <HeadsetIcon sx={{ fontSize: 24, color: color.white }} />
               <Typography 
-                variant="h5" 
+                variant="h6" 
                 fontWeight={700} 
                 sx={{
                   color: color.white,
-                  textShadow: '0 3px 6px rgba(0,0,0,0.2)',
                   letterSpacing: 0.5
                 }}
               >
@@ -93,17 +64,17 @@ export default function DirectionsStep() {
           
           <Box 
             sx={{ 
-              p: 4,
+              p: 3,
               bgcolor: isDarkMode ? color.gray800 : color.gray50,
             }}
           >
             <Typography 
               sx={{
-                fontSize: '1.125rem',
-                lineHeight: 1.8,
+                fontSize: '1rem',
+                lineHeight: 1.7,
                 color: isDarkMode ? color.gray200 : color.gray800,
                 fontWeight: 500,
-                mb: 3
+                mb: 2
               }}
             >
               In the Listening test, you will be asked to demonstrate how well you understand spoken English. The entire Listening test will last approximately 45 minutes.
@@ -111,8 +82,8 @@ export default function DirectionsStep() {
             
             <Typography 
               sx={{
-                fontSize: '1.125rem',
-                lineHeight: 1.8,
+                fontSize: '1rem',
+                lineHeight: 1.7,
                 color: isDarkMode ? color.gray200 : color.gray800,
                 fontWeight: 500,
                 mb: 3
@@ -123,9 +94,8 @@ export default function DirectionsStep() {
             
             <Box 
               sx={{ 
-                mt: 4, 
-                p: 3, 
-                borderRadius: 2,
+                p: 2, 
+                borderRadius: 1.5,
                 background: isDarkMode
                   ? `linear-gradient(135deg, ${alpha(color.emerald900, 0.3)} 0%, ${alpha(color.teal900, 0.3)} 100%)`
                   : `linear-gradient(135deg, ${alpha(color.emerald100, 0.8)} 0%, ${alpha(color.teal100, 0.8)} 100%)`,
@@ -135,7 +105,7 @@ export default function DirectionsStep() {
             >
               <Typography 
                 sx={{
-                  fontSize: '1rem',
+                  fontSize: '0.875rem',
                   color: isDarkMode ? color.emerald300 : color.emerald700,
                   fontWeight: 600,
                   textAlign: 'center'

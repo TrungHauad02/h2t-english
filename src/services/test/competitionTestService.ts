@@ -121,10 +121,11 @@ const getCompetitionTestsForStudent = async (
 const getCompetitionTestsByTeacher = async (
   page: number,
   itemsPerPage: number,
-  filter?: CompetitionTestFilter
+  filter?: CompetitionTestFilter,
+  ownerId?: number,
 ) => {
   try {
-    let url = `/competition-tests?page=${page - 1}&size=${itemsPerPage}`;
+    let url = `/competition-tests?page=${page - 1}&size=${itemsPerPage}&ownerId=${ownerId}`;
 
     if (filter) {
       if (filter.status !== undefined && filter.status !== null) {

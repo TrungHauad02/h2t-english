@@ -1,5 +1,6 @@
 import { Box, Stack, Typography } from "@mui/material";
 import RadioGroupTest from "./RadioGroupTest";
+import QuestionExplanation from "./QuestionExplanation";
 import { useDarkMode } from "hooks/useDarkMode";
 import { Question } from "interfaces";
 import useColor from "theme/useColor";
@@ -10,6 +11,7 @@ interface QuestionTestProps {
   selectedAnswerId?: number;
   onAnswerChange: (answerId: number) => void;
   isDisabled?: boolean;
+  showExplanation?: boolean;
 }
 
 export default function QuestionTest({
@@ -17,7 +19,8 @@ export default function QuestionTest({
   index,
   selectedAnswerId,
   onAnswerChange,
-  isDisabled = false
+  isDisabled = false,
+  showExplanation = false,
 }: QuestionTestProps) {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
@@ -32,7 +35,6 @@ export default function QuestionTest({
     onAnswerChange(answerId);
   };
 
-
   return (
     <Stack
       sx={{
@@ -40,7 +42,8 @@ export default function QuestionTest({
         boxShadow: 3,
         borderRadius: 5,
         bgcolor: isDarkMode ? color.gray800 : color.gray100,
-        transition: 'background-color 0.3s ease',
+        transition: "background-color 0.3s ease",
+        overflow: "hidden",
       }}
     >
       <Typography
@@ -48,8 +51,8 @@ export default function QuestionTest({
         fontWeight="bold"
         sx={{
           color: isDarkMode ? color.gray100 : color.gray900,
-          display: 'flex',
-          alignItems: 'center',
+          display: "flex",
+          alignItems: "center",
           p: { xs: 1, sm: 2 },
         }}
       >
@@ -84,11 +87,16 @@ export default function QuestionTest({
         <RadioGroupTest
           name={question.id}
           options={options}
-          selectedValue={selectedAnswerId} 
+          selectedValue={selectedAnswerId}
           onChange={handleChange}
           disabled={isDisabled}
         />
       </Stack>
+
+      <QuestionExplanation
+        explanation={question.explanation || ""}
+        showExplanation={showExplanation}
+      />
     </Stack>
   );
 }

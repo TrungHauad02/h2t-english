@@ -26,7 +26,14 @@ export default function CompetitionTestItem({
   const [hovered, setHovered] = useState(false);
   const navigate = useNavigate();
 
-  // Check if competition is active, upcoming, or ended
+  const handleGoToHistory = () => {
+    navigate('/history-test', {
+      state: {
+        title: test.title,
+        type: 'competition',
+      }
+    });
+  };
   const now = new Date();
   const startTime = new Date(test?.startTime);
   const endTime = new Date(test?.endTime);
@@ -497,7 +504,7 @@ export default function CompetitionTestItem({
               }}
               onClick={(e) => {
                 e.stopPropagation();
-                // Handle history view
+                handleGoToHistory();
               }}
             >
               History

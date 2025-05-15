@@ -88,6 +88,7 @@ export default function AnswerQuestionSectionHistory({
               selectedAnswerId={selectedAnswers[item.question.id]}
               onAnswerChange={() => {}}
               isDisabled={true}
+              showExplanation={true}
             />
           </Box>
         )}

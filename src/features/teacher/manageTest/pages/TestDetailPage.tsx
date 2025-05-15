@@ -170,7 +170,7 @@ export default function TestDetailPage() {
           onCancelUnpublish={() => hooks.setOpenUnpublishDialog(false)}
           onConfirmPublish={hooks.handlePublish}
           onConfirmUnpublish={hooks.handleUnpublish}
-          title="Test"
+          title="test"
         />
       </Container>
     </Box>

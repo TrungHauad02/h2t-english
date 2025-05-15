@@ -2,14 +2,10 @@ import React, { useState } from 'react';
 import {
   Box,
   Typography,
-  Chip,
   Paper,
   Tabs,
   Tab,
   alpha,
-  Divider,
-  useTheme,
-  useMediaQuery
 } from '@mui/material';
 import { 
   Article as ArticleIcon,
@@ -47,8 +43,7 @@ export default function ToeicHistory({ toeic, submitToeic }: Props) {
   const [selectedTab, setSelectedTab] = useState(0);
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
@@ -162,73 +157,7 @@ export default function ToeicHistory({ toeic, submitToeic }: Props) {
       border: '1px solid',
       borderColor: isDarkMode ? color.gray800 : color.gray100,
     }}>
-      {/* Header */}
-      <Box
-        sx={{
-          color: color.white,
-          px: { xs: 3, md: 4 },
-          py: 3,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 2,
-          background: isDarkMode
-            ? `linear-gradient(135deg, ${color.teal700} 0%, ${color.emerald800} 100%)`
-            : `linear-gradient(135deg, ${color.teal500} 0%, ${color.emerald600} 100%)`,
-          borderBottom: '2px solid',
-          borderColor: isDarkMode ? color.teal800 : color.teal600,
-        }}
-      >
-        <Box>
-          <Typography 
-            variant="h4" 
-            fontWeight={800}
-            sx={{
-              letterSpacing: '-0.5px',
-              textShadow: '0 2px 4px rgba(0,0,0,0.1)'
-            }}
-          >
-            TOEIC Test Review
-          </Typography>
-          <Typography 
-            variant="body2" 
-            sx={{ 
-              opacity: 0.9,
-              mt: 0.5,
-              fontWeight: 500
-            }}
-          >
-            {new Date(submitToeic.createdAt || Date.now()).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
-          </Typography>
-        </Box>
-        
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-          <Chip
-            label={submitToeic.status ? 'Completed' : 'In Progress'}
-            sx={{
-              bgcolor: submitToeic.status 
-                ? alpha(color.green500, 0.2) 
-                : alpha(color.yellow, 0.2),
-              color: color.white,
-              fontWeight: 700,
-              fontSize: '0.9rem',
-              backdropFilter: 'blur(10px)',
-              border: `1px solid ${alpha(color.white, 0.3)}`,
-              height: 36,
-              px: 2,
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px'
-            }}
-          />
-        </Box>
-      </Box>
 
-      {/* Test Result Summary */}
       {submitToeic.score !== null && (
         <Box sx={{ 
           bgcolor: isDarkMode ? color.gray800 : color.gray50,

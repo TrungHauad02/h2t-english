@@ -2,14 +2,14 @@ import { Toeic, ToeicFilter } from "interfaces";
 import { useEffect, useState } from "react";
 import { toeicService } from "services/test/toeicService";
 import { toast } from "react-toastify";
-
+import useAuth from "hooks/useAuth";
 export default function useManageToeicPage() {
   const [filter, setFilter] = useState<ToeicFilter>({
     title: "",
     sortBy: "-createdAt",
     status: true,
   });
-
+  const userId = Number(useAuth().userId);
   const [toeicTests, setToeicTests] = useState<Toeic[]>([]);
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
@@ -24,6 +24,7 @@ export default function useManageToeicPage() {
         page , 
         itemsPerPage,
         filter,
+        userId,
       );
       
       setToeicTests(response.data.content || []);
@@ -73,9 +74,11 @@ export default function useManageToeicPage() {
 
   const createToeicTest = async (toeicData: Partial<Toeic>) => {
     try {
+      toeicData.ownerId = userId;
+   
       const newToeic = await toeicService.create(toeicData as Toeic);
       
-      await fetchData(); // Refresh data instead of manually updating state
+      await fetchData();
       toast.success("TOEIC test created successfully");
       return newToeic;
     } catch (error) {

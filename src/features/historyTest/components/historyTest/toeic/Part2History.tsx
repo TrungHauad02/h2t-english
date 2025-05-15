@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, CircularProgress, Typography, Grid } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
 import { ToeicPart2, AnswerEnum, SubmitToeicPart2 } from 'interfaces/TestInterfaces';
 import { submitToeicPart2Service, toeicPart2Service } from 'services';
 import ListeningPart2HistoryItem from './ListeningPart2HistoryItem';
@@ -61,18 +61,17 @@ const Part2History: React.FC<Props> = ({ questionsPart2, submitToeicId }) => {
       <Typography variant="h5" fontWeight={700} mb={3}>
         Part 2 - Question Response
       </Typography>
-      <Grid container spacing={3}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {questions.map((question, index) => (
-          <Grid item xs={12} md={6} key={question.id}>
-            <ListeningPart2HistoryItem
-              questionNumber={7 + index} // Part 2 starts from question 7
-              question={question}
-              selectedAnswer={userAnswers[question.id]}
-              isReview={true}
-            />
-          </Grid>
+          <ListeningPart2HistoryItem
+            key={question.id}
+            questionNumber={7 + index} // Part 2 starts from question 7
+            question={question}
+            selectedAnswer={userAnswers[question.id]}
+            isReview={true}
+          />
         ))}
-      </Grid>
+      </Box>
     </Box>
   );
 };
