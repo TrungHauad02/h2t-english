@@ -2,7 +2,7 @@ import React from "react";
 import { Stack } from "@mui/material";
 import { WEDialog } from "components/display";
 import { WETextField } from "components/input";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import WEDateTimeField from "components/input/WEDateTimeField";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { CompetitionTest } from "interfaces";
@@ -62,41 +62,29 @@ export default function CreateCompetitionDialog({
             required
           />
           
-          <DateTimePicker
-            label="Start Time"
-            value={data.startTime || null}
-            onChange={onChangeStartTime}
-            slotProps={{
-              textField: {
-                fullWidth: true,
-                variant: "outlined",
-                required: true,
-                sx: {
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: getInputBackground(),
-                  },
-                },
-              },
-            }}
-          />
-          
-          <DateTimePicker
-            label="End Time"
-            value={data.endTime || null}
-            onChange={onChangeEndTime}
-            slotProps={{
-              textField: {
-                fullWidth: true,
-                variant: "outlined",
-                required: true,
-                sx: {
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: getInputBackground(),
-                  },
-                },
-              },
-            }}
-          />
+      <WEDateTimeField
+        label="Start Time"
+        value={new Date(data.startTime || new Date())}
+        onChange={onChangeStartTime}
+        name="startTime"
+        required={true}
+        placeholder="Select start time"
+        sx={{
+          width: "100%",
+        }}
+      />
+
+      <WEDateTimeField
+        label="End Time"
+        value={new Date(data.endTime || new Date())}
+        onChange={onChangeEndTime}
+        name="endTime"
+        required={true}
+        placeholder="Select end time"
+        sx={{
+          width: "100%",
+        }}
+      />
         </Stack>
       </WEDialog>
     </LocalizationProvider>

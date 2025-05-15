@@ -21,7 +21,15 @@ export  function TestItem({ test }: { test: Test }) {
   const { isDarkMode } = useDarkMode();
   const [hovered, setHovered] = useState(false);
   const navigate = useNavigate();
-
+  const handleGoToHistory = () => {
+    navigate('/history-test', {
+      state: {
+        title: test.title,
+        type: 'test',
+        testType: test.type,
+      }
+    });
+  };
   // Calculate score percentage for progress bar
   const scorePercentage = test?.scoreLastOfTest
     ? (test.scoreLastOfTest / 100) * 100
@@ -454,7 +462,7 @@ export  function TestItem({ test }: { test: Test }) {
               mt: "auto",
             }}
           >
-            <Button
+           <Button
               sx={{
                 color: isDarkMode ? color.gray300 : color.gray600,
                 textTransform: "none",
@@ -469,11 +477,12 @@ export  function TestItem({ test }: { test: Test }) {
               }}
               onClick={(e) => {
                 e.stopPropagation();
-                // Handle history view
+                handleGoToHistory();
               }}
             >
               History
             </Button>
+
             <Button
               variant="contained"
               sx={{

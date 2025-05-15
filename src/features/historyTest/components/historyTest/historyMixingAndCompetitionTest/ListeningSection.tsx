@@ -1,6 +1,9 @@
 import { Box, Stack, Typography, CircularProgress, Paper } from "@mui/material";
 import { useEffect, useState, useRef } from "react";
+import { Headphones } from "@mui/icons-material";
 import AnswerQuestionSection from "../common/answerQuestion/AnswerQuestionSectionHistory";
+import AudioPlayer from "../common/AudioPlayer";
+import TranscriptSection from "../common/TranscriptSection";
 import { testListeningService, questionService } from "services/test";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
@@ -21,7 +24,7 @@ export default function ListeningSection({
   submitTestId,
   selectedQuestionId,
   startSerial,
-  isCompetitionTest= false,
+  isCompetitionTest = false,
 }: ListeningSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -35,21 +38,17 @@ export default function ListeningSection({
       try {
         setLoading(true);
     
-        const listeningItemsResponse = await testListeningService.getByIdsAndStatus(testItemIds,true);
+        const listeningItemsResponse = await testListeningService.getByIdsAndStatus(testItemIds, true);
         const items = listeningItemsResponse.data || [];
         
         let currentSerial = startSerial;
         
-        // Fetch questions for each listening item
         const listeningItemsWithQuestions = await Promise.all(
           items.map(async (item: TestListening) => {
             if (item.questions && item.questions.length > 0) {
-              const questionsResponse = await questionService.getByIdsAndStatus(item.questions,true);
+              const questionsResponse = await questionService.getByIdsAndStatus(item.questions, true);
               
-              // Store current serial number for this item
               const itemStartSerial = currentSerial;
-              
-              // Update current serial for next item
               currentSerial += item.questions.length;
               
               return {
@@ -75,12 +74,10 @@ export default function ListeningSection({
     }
   }, [testItemIds, startSerial]);
 
-  // Function to store references to each question element
   const setQuestionRef = (id: number, element: HTMLDivElement | null) => {
     questionRefs.current[id] = element;
   };
 
-  // Scroll to selected question when it changes
   useEffect(() => {
     if (selectedQuestionId && questionRefs.current[selectedQuestionId]) {
       questionRefs.current[selectedQuestionId]?.scrollIntoView({
@@ -99,68 +96,64 @@ export default function ListeningSection({
   }
 
   return (
-    <Box>
+    <Box sx={{ pb: 4 }}>
       {listeningItems.map((listeningItem, index) => {
-        const { audio, questions, startSerial: itemStartSerial } = listeningItem;
+        const { audio, questions, startSerial: itemStartSerial, transcript } = listeningItem;
         
         return (
           <Paper 
             key={index}
-            elevation={3}
+            elevation={4}
             sx={{
-              mb: 4,
-              borderRadius: '1rem',
+              mb: 5,
+              borderRadius: '20px',
               overflow: 'hidden',
               bgcolor: isDarkMode ? color.gray800 : color.white,
+              boxShadow: isDarkMode 
+                ? '0 8px 32px rgba(0,0,0,0.3)'
+                : '0 8px 32px rgba(0,0,0,0.08)',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: isDarkMode 
+                  ? '0 12px 40px rgba(0,0,0,0.4)'
+                  : '0 12px 40px rgba(0,0,0,0.12)',
+              },
             }}
           >
-            <Stack 
-              sx={{ 
-                p: { xs: 2, sm: 3 },
-                borderBottom: '1px solid',
-                borderColor: isDarkMode ? color.gray700 : color.gray300
+            {/* Header Section */}
+            <Box
+              sx={{
+                p: 3,
+                background: isDarkMode 
+                  ? `linear-gradient(135deg, ${color.teal900}, ${color.teal800})`
+                  : `linear-gradient(135deg, ${color.teal500}, ${color.teal600})`,
+                color: color.white,
               }}
             >
-              <Typography 
-                variant="h6" 
-                sx={{ 
-                  fontWeight: "bold", 
-                  mb: 2,
-                  color: isDarkMode ? color.gray100 : color.gray900
-                }}
-              >
-                Listening {index + 1}
-              </Typography>
-              
-              <Box sx={{ p: 1 }}>
-                <audio 
-                  controls 
-                  style={{ 
-                    width: "100%", 
-                    borderRadius: "8px", 
-                    backgroundColor: isDarkMode ? color.gray900 : color.gray200,
+              <Stack direction="row" alignItems="center" spacing={2}>
+                <Headphones sx={{ fontSize: 32 }} />
+                <Typography
+                  variant="h6"
+                  sx={{
+                    ml: 'auto',
+                    fontWeight: 600,
+                    opacity: 0.95,
                   }}
                 >
-                  <source src={audio} type="audio/mpeg" />
-                  Your browser does not support the audio element.
-                </audio>
-                
-    
-              </Box>
-            </Stack>
+                  Questions {itemStartSerial} - {itemStartSerial + questions.length - 1}
+                </Typography>
+              </Stack>
+            </Box>
 
-            <Box sx={{ p: { xs: 2, sm: 3 } }}>
-              <Typography 
-                variant="h6" 
-                sx={{ 
-                  fontWeight: "bold", 
-                  mb: 2,
-                  color: isDarkMode ? color.gray100 : color.gray900
-                }}
-              >
-                Questions {itemStartSerial} - {itemStartSerial + questions.length - 1}
-              </Typography>
-              
+            {/* Audio Section */}
+            <Box sx={{ p: 3, borderBottom: `1px solid ${isDarkMode ? color.gray700 : color.gray200}` }}>
+              <AudioPlayer src={audio} />
+              {transcript && <TranscriptSection transcript={transcript} />}
+            </Box>
+
+            {/* Questions Section */}
+            <Box sx={{ p: 3 }}>
               <AnswerQuestionSection 
                 questions={questions} 
                 startSerial={itemStartSerial} 

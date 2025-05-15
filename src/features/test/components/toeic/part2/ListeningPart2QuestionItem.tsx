@@ -33,8 +33,7 @@ export default function ListeningPart2QuestionItem({
 }: Props) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
 
   return (
     <Box
@@ -122,7 +121,7 @@ export default function ListeningPart2QuestionItem({
           >
             {questionNumber}
           </Box>
-          Question {questionNumber}
+     
         </Typography>
         
         <RadioGroup
@@ -180,7 +179,7 @@ export default function ListeningPart2QuestionItem({
                         fontSize: '1rem',
                       }}
                     >
-                      Option {option}
+                
                     </Typography>
                   </Box>
                 }

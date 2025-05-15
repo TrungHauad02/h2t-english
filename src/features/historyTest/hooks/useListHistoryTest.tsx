@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SelectChangeEvent } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { 
+import { useNavigate, useLocation } from "react-router-dom";
+import {
   submitTestService,
   submitCompetitionService,
   submitToeicService,
@@ -16,15 +16,30 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import useAuth from "hooks/useAuth";
 
 export default function useListHistoryTest() {
+  const location = useLocation();
+  const { title, type, testType } = location.state || {};
+  
+  // Use initialization flag to prevent fetchTestData from running before state is set
+  const isInitialized = useRef(false);
+  
+  // Initialize state with values from location.state
+  const [filterType, setFilterType] = useState<string>(testType || "all");
+  const [activeTab, setActiveTab] = useState<number>(() => {
+    if (type === "test") return 1;
+    if (type === "toeic") return 2;
+    if (type === "competition") return 3;
+    return 0;
+  });
+  
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<number>(0);
+
   const [rowsPerPage, setRowsPerPage] = useState(8);
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>(title || "");
   const [sortBy, setSortBy] = useState<string>("date");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-  const [filterType, setFilterType] = useState<string>("all");
+
   const [page, setPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -32,20 +47,19 @@ export default function useListHistoryTest() {
   const [paginatedHistory, setPaginatedHistory] = useState<HistoryRecord[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [testStats, setTestStats] = useState<any>(null);
-  
+
   const userId = Number(useAuth().userId);
 
   const fetchTestData = async () => {
     setLoading(true);
     try {
       let activeTabData: HistoryRecord[] = [];
-  
+
       if (activeTab === 0) {
- 
         const regularTests = (await submitTestService.getSubmitTestsForStudent(1, 10, userId, {
           sortBy: "-createdAt"
         })).data;
- 
+
         const toeicTests = (await submitToeicService.getSubmitToeicsForStudent(1, 10, userId, {
           sortBy: "-createdAt"
         })).data;
@@ -53,28 +67,28 @@ export default function useListHistoryTest() {
         const competitionTests = (await submitCompetitionService.getSubmitCompetitionsForStudent(1, 10, userId, {
           sortBy: "-createdAt"
         })).data;
-  
+
         const regularRecords = mapRegularTests(regularTests.content);
         const toeicRecords = mapToeicTests(toeicTests.content);
         const competitionRecords = mapCompetitionTests(competitionTests.content);
-  
+
         activeTabData = [...regularRecords, ...toeicRecords, ...competitionRecords]
           .sort((a, b) => b.date.getTime() - a.date.getTime());
-          setPaginatedHistory(activeTabData);
+        setPaginatedHistory(activeTabData);
         setFilteredHistory(activeTabData);
         setTotalPages(1);
-        
+
       } else {
         // Tạo filter
         const filter: any = {
           sortBy: mapSortByToApiParam(sortBy, sortDirection),
           title: searchTerm || undefined,
         };
-  
+
         if (filterType !== "all") {
           filter.type = filterType;
         }
-  
+
         let response;
         if (activeTab === 1) {
           response = (await submitTestService.getSubmitTestsForStudent(page, rowsPerPage, userId, filter)).data;
@@ -86,16 +100,15 @@ export default function useListHistoryTest() {
           response = (await submitCompetitionService.getSubmitCompetitionsForStudent(page, rowsPerPage, userId, filter)).data;
           activeTabData = mapCompetitionTests(response.content);
         }
-  
+
         setFilteredHistory(activeTabData);
         setPaginatedHistory(activeTabData);
         setTotalPages(response.totalPages || 1);
       }
-  
-    
+
       const statsResponse = (await testHistoryStatsService.getTestHistoryStats(userId, true)).data;
       console.log(statsResponse);
-      
+
       setTestStats(statsResponse);
     } catch (error) {
       console.error("Error fetching test history:", error);
@@ -103,7 +116,7 @@ export default function useListHistoryTest() {
       setLoading(false);
     }
   };
-  
+
   // Helper functions to map API data to HistoryRecord
   const mapRegularTests = (tests: any[]): HistoryRecord[] => {
     return tests.map(test => ({
@@ -142,14 +155,14 @@ export default function useListHistoryTest() {
       maxScore: 100,
       date: new Date(test.createdAt),
       testType: "COMPETITION",
-      duration: test.competition_duration|| 0,
+      duration: test.competition_duration || 0,
     }));
   };
 
   // Convert UI sort param to API param
   const mapSortByToApiParam = (sortField: string, direction: "asc" | "desc"): string => {
     let apiField = "";
-    
+
     switch (sortField) {
       case "date":
         apiField = "createdAt";
@@ -163,13 +176,50 @@ export default function useListHistoryTest() {
       default:
         apiField = "createdAt";
     }
-    
+
     return direction === "asc" ? apiField : `-${apiField}`;
   };
 
-  // Fetch data when dependencies change
+  // Set initialization flag after first render
   useEffect(() => {
-    fetchTestData();
+    isInitialized.current = true;
+  }, []);
+
+  // Update states when location changes
+  useEffect(() => {
+    let tabChanged = false;
+    let filterChanged = false;
+
+    if (type === "test" && activeTab !== 1) {
+      setActiveTab(1);
+      tabChanged = true;
+    } else if (type === "toeic" && activeTab !== 2) {
+      setActiveTab(2);
+      tabChanged = true;
+    } else if (type === "competition" && activeTab !== 3) {
+      setActiveTab(3);
+      tabChanged = true;
+    }
+
+    if (testType && filterType !== testType) {
+      setFilterType(testType);
+      filterChanged = true;
+    } else if (!testType && filterType !== "all") {
+      setFilterType("all");
+      filterChanged = true;
+    }
+
+    // Only fetch data if something changed and we're already initialized
+    if ((tabChanged || filterChanged) && isInitialized.current) {
+      fetchTestData();
+    }
+  }, [type, testType]);
+
+  // Fetch data when dependencies change (excluding activeTab and filterType in initial render)
+  useEffect(() => {
+    if (isInitialized.current) {
+      fetchTestData();
+    }
   }, [activeTab, page, rowsPerPage, sortBy, sortDirection, searchTerm, filterType, userId]);
 
   // Handler functions
@@ -203,7 +253,7 @@ export default function useListHistoryTest() {
   const handleItemsPerPageChange = (value: number) => {
     setRowsPerPage(value);
     setPage(1);
-  };   
+  };
 
   const handleClickRow = (testId: number, type: string) => {
     const lowerType = type.toLowerCase();
@@ -236,10 +286,10 @@ export default function useListHistoryTest() {
         return <AssignmentIcon />;
     }
   };
-  
+
   // UI flags
   const showFilters = activeTab !== 0;
-  const showFiltersTest = activeTab !== 1
+  const showFiltersTest = activeTab !== 1;
 
   return {
     filteredHistory,

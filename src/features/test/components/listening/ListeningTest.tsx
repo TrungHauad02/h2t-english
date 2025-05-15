@@ -29,12 +29,14 @@ import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import { Test } from "interfaces";
 interface ListeningTestProps {
   testListenings: number[];
   submitTestId: number;
+  test: Test ;
 }
 
-export default function ListeningTest({ testListenings, submitTestId }: ListeningTestProps) {
+export default function ListeningTest({ testListenings, submitTestId,test }: ListeningTestProps) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const color = useColor();
@@ -220,9 +222,11 @@ export default function ListeningTest({ testListenings, submitTestId }: Listenin
       <IntroducePartTest type={TestPartTypeEnum.LISTENING} />
       
       <Grid container spacing={3}>
-        {/* Top section with TimeRemaining for both mobile and desktop */}
+  
         <Grid item xs={12}>
-          <TimeRemaining timeUsed={timeUsed} />
+        <TimeRemaining timeUsed={timeUsed}
+        duration={test.duration}
+        onTimeUp={handleSubmitTest} />
         </Grid>
         
         {/* Main content */}

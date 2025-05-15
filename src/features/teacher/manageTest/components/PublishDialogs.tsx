@@ -24,12 +24,12 @@ export default function LessonPublishDialogs({
     <>
       <WEDialog
         open={openPublish}
-        title={"Publish " + {title}}
+        title={"Publish " + title}
         onCancel={onCancelPublish}
         onOk={onConfirmPublish}
       >
         <Typography variant="body1">
-          Are you sure you want to publish this toeic? Published toeics will
+          Are you sure you want to publish this {title}? Published {title}s will
           be visible to students.
         </Typography>
       </WEDialog>

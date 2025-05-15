@@ -25,13 +25,14 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import CreateIcon from "@mui/icons-material/Create";
-
+import { Test } from "interfaces";
 interface WritingTestProps {
   testWritings: number[];
   submitTestId: number;
+  test : Test,
 }
 
-export default function WritingTest({ testWritings, submitTestId }: WritingTestProps) {
+export default function WritingTest({ testWritings, submitTestId,test }: WritingTestProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const color = useColor();
@@ -62,7 +63,7 @@ export default function WritingTest({ testWritings, submitTestId }: WritingTestP
     getWordCount,
     getCurrentPrompt,
     handleEssayChange,
-    getCurrentEssay
+    getCurrentEssay,
   } = useWritingTest(testWritings, submitTestId);
 
   const totalQuestions = allQuestions.length;
@@ -185,7 +186,9 @@ export default function WritingTest({ testWritings, submitTestId }: WritingTestP
       
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <TimeRemaining timeUsed={timeUsed} />
+          <TimeRemaining timeUsed={timeUsed}
+        duration={test.duration}
+        onTimeUp={handleSubmitTest} />
         </Grid>
         
         {/* Horizontal Layout Grid */}

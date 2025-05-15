@@ -2,8 +2,9 @@ import { Box, Grid, Paper, Stack, Typography } from "@mui/material";
 import {
   WETextField,
   WESaveChangeButtons,
+  WEDateTimeField,
 } from "components/input";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useDarkMode } from "hooks/useDarkMode";
@@ -137,22 +138,17 @@ export default function CompetitionEditForm({
               }}
             >
               <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DateTimePicker
-                  label="Start Time"
-                  value={editData?.startTime || null}
-                  onChange={(date) => handleInputChange("startTime", date)}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      variant: 'outlined',
-                      sx: {
-                        "& .MuiOutlinedInput-root": {
-                          borderRadius: 2,
-                        },
-                      }
-                    }
-                  }}
-                />
+              <WEDateTimeField
+                label="Start Time"
+                value={editData?.startTime ? new Date(editData.startTime) : new Date()}
+                onChange={(date) => handleInputChange("startTime", date)} 
+                name="startTime"
+                required={true}  
+                placeholder="Select start time"
+                sx={{
+                  width: "100%",  
+                }}
+              />
               </LocalizationProvider>
             </Box>
 
@@ -166,22 +162,17 @@ export default function CompetitionEditForm({
               }}
             >
               <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DateTimePicker
-                  label="End Time"
-                  value={editData?.endTime || null}
-                  onChange={(date) => handleInputChange("endTime", date)}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      variant: 'outlined',
-                      sx: {
-                        "& .MuiOutlinedInput-root": {
-                          borderRadius: 2,
-                        },
-                      }
-                    }
-                  }}
-                />
+              <WEDateTimeField
+              label="End Time"
+              value={editData?.endTime ? new Date(editData.endTime) : new Date()}
+              onChange={(date) => handleInputChange("endTime", date)}  
+              name="endTime"
+              required={true}  
+              placeholder="Select end time"
+              sx={{
+                width: "100%",  
+              }}
+            />
               </LocalizationProvider>
             </Box>
           </Stack>

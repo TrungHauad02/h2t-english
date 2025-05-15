@@ -133,7 +133,7 @@ const Part6List: React.FC<Props> = ({
     .reduce((acc, d) => acc + d.questions.length, 0);
 
   return (
-    <Box sx={{ gap: 4, px: 2, py: 4 }}>
+    <Box sx={{ gap: 4, px: 2, py: 4,   width: '100%', }}>
       <Part6Item
         key={currentGroup.passage.id}
         questionNumberStart={questionNumberStart}

@@ -28,7 +28,7 @@ export default function useToeicDetailPage() {
             setData(toeic.data);
             setEditData({ ...toeic.data });
 
-            // Load all parts data - sub-questions will now be loaded automatically
+          
             await loadToeicPartsData(toeic.data);
           }
         } catch (e) {

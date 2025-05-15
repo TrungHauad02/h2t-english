@@ -97,10 +97,11 @@ const getToeicsForStudent = async (
 const getToeicsByTeacher = async (
   page: number,
   itemsPerPage: number,
-  filter?: ToeicFilter
+  filter?: ToeicFilter,
+  ownerId?: number,
 ) => {
   try {
-    let url = `/toeic?page=${page - 1}&size=${itemsPerPage}`;
+    let url = `/toeic?page=${page - 1}&size=${itemsPerPage}&ownerId=${ownerId}`;
 
     if (filter) {
       if (filter.status !== undefined && filter.status !== null) {

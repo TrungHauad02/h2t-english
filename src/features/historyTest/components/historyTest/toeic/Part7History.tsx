@@ -103,7 +103,6 @@ const Part7History: React.FC<Props> = ({ questionsPart7, submitToeicId }) => {
               questions={group.questions}
               questionNumberStart={questionNumberStart}
               selectedAnswers={userAnswers}
-              correctAnswers={correctAnswers}
               isReview={true}
             />
           </Box>

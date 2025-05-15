@@ -2,13 +2,14 @@ import { CompetitionTest, CompetitionTestFilter } from "interfaces";
 import { useEffect, useState } from "react";
 import { competitionTestService } from "services";
 import { toast } from "react-toastify";
-
+import useAuth from "hooks/useAuth";
 export default function useManageCompetitionsPage() {
   const [filter, setFilter] = useState<CompetitionTestFilter>({
     status: null,
     title: "",
     sortBy: "-createdAt",
   });
+  const userId = Number(useAuth().userId);
 
   const [competitions, setCompetitions] = useState<CompetitionTest[]>([]);
   const [page, setPage] = useState(1);
@@ -28,7 +29,9 @@ export default function useManageCompetitionsPage() {
       const responseData = await competitionTestService.getCompetitionTestsByTeacher(
         page,
         itemsPerPage,
-        filter
+        filter,
+        userId,
+
       );
       
       setCompetitions(responseData.data.content || []);
@@ -97,7 +100,7 @@ export default function useManageCompetitionsPage() {
 
   const createCompetition = async (data: Partial<CompetitionTest>) => {
     try {
-   
+      data.ownerId = userId;
    
       const response = await competitionTestService.create(data as CompetitionTest);
       

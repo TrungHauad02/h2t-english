@@ -21,26 +21,21 @@ export default function VolumeTestStep() {
           justifyContent: 'center', 
           alignItems: 'center', 
           display: 'flex',
-          minHeight: '60vh',
+          height: '100%',
           px: 2,
-          py: 4
+          py: 2
         }}
       >
         <Paper
           sx={{
-            maxWidth: 800,
+            maxWidth: 600,
             width: '100%',
-            borderRadius: 3,
+            borderRadius: 2,
             overflow: 'hidden',
             bgcolor: isDarkMode ? color.gray900 : color.white,
-            boxShadow: `0 12px 32px ${alpha(isDarkMode ? color.black : color.gray900, 0.12)}`,
-            border: '2px solid',
+            boxShadow: `0 4px 16px ${alpha(isDarkMode ? color.black : color.gray900, 0.1)}`,
+            border: '1px solid',
             borderColor: isDarkMode ? color.teal700 : color.teal500,
-            transition: 'all 0.3s ease',
-            '&:hover': {
-              transform: 'translateY(-2px)',
-              boxShadow: `0 16px 40px ${alpha(isDarkMode ? color.black : color.gray900, 0.15)}`
-            }
           }}
         >
           <Box 
@@ -48,30 +43,17 @@ export default function VolumeTestStep() {
               background: isDarkMode
                 ? `linear-gradient(135deg, ${color.teal800} 0%, ${color.emerald800} 100%)`
                 : `linear-gradient(135deg, ${color.teal500} 0%, ${color.emerald500} 100%)`,
-              px: 4, 
-              py: 3,
-              position: 'relative',
-              overflow: 'hidden',
-              '&::before': {
-                content: '""',
-                position: 'absolute',
-                top: '-50%',
-                right: '-50%',
-                width: '200%',
-                height: '200%',
-                background: `radial-gradient(circle, ${alpha(color.white, 0.1)} 0%, transparent 70%)`,
-                transform: 'rotate(45deg)',
-              }
+              px: 3, 
+              py: 2,
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, position: 'relative', zIndex: 1 }}>
-              <VolumeUpIcon sx={{ fontSize: 32, color: color.white }} />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <VolumeUpIcon sx={{ fontSize: 24, color: color.white }} />
               <Typography 
-                variant="h5" 
+                variant="h6" 
                 fontWeight={700} 
                 sx={{
                   color: color.white,
-                  textShadow: '0 3px 6px rgba(0,0,0,0.2)',
                   letterSpacing: 0.5
                 }}
               >
@@ -82,20 +64,17 @@ export default function VolumeTestStep() {
           
           <Box 
             sx={{ 
-              p: 4,
+              p: 3,
               bgcolor: isDarkMode ? color.gray800 : color.gray50,
-              borderTop: '1px solid',
-              borderColor: isDarkMode ? color.gray700 : color.gray200,
             }}
           >
             <Typography 
               sx={{
-                fontSize: '1.125rem',
-                lineHeight: 1.8,
+                fontSize: '1rem',
+                lineHeight: 1.7,
                 color: isDarkMode ? color.gray200 : color.gray800,
                 textAlign: 'center',
                 fontWeight: 500,
-                px: 2
               }}
             >
               This is the Volume Test. If you don't hear clearly, adjust the volume control on your computer, or contact the administrators for assistance.
@@ -103,9 +82,9 @@ export default function VolumeTestStep() {
             
             <Box 
               sx={{ 
-                mt: 3, 
-                p: 2, 
-                borderRadius: 2,
+                mt: 2, 
+                p: 1.5, 
+                borderRadius: 1.5,
                 bgcolor: isDarkMode 
                   ? alpha(color.teal900, 0.3) 
                   : alpha(color.teal100, 0.5),
