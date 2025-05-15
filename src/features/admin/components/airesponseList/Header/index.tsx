@@ -3,7 +3,7 @@ import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import SmartToyOutlinedIcon from "@mui/icons-material/SmartToyOutlined";
 
-export default function AIResponseHeader() {
+export default function SystemHeader() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 

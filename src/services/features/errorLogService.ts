@@ -36,7 +36,6 @@ const getErrorLogs = async (
         url += `&sortFields=${encodeURIComponent(filter.sortBy)}`;
       }
 
-      // Xử lý ngày tháng với múi giờ địa phương
       if (filter.startCreatedAt) {
         const formattedStartDate = formatLocalDateForFilter(
           filter.startCreatedAt,
@@ -53,7 +52,6 @@ const getErrorLogs = async (
         url += `&endCreatedAt=${formattedEndDate}`;
       }
 
-      // UpdatedAt fields
       if (filter.startUpdatedAt) {
         const formattedStartUpdateDate = formatLocalDateForFilter(
           filter.startUpdatedAt,

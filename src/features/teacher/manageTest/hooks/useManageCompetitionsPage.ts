@@ -2,7 +2,9 @@ import { CompetitionTest, CompetitionTestFilter } from "interfaces";
 import { useEffect, useState } from "react";
 import { competitionTestService } from "services";
 import { toast } from "react-toastify";
+
 import useAuth from "hooks/useAuth";
+
 export default function useManageCompetitionsPage() {
   const [filter, setFilter] = useState<CompetitionTestFilter>({
     status: null,
@@ -25,6 +27,7 @@ export default function useManageCompetitionsPage() {
   const fetchData = async () => {
     try {
       setIsLoading(true);
+
       
       const responseData = await competitionTestService.getCompetitionTestsByTeacher(
         page,
@@ -34,6 +37,7 @@ export default function useManageCompetitionsPage() {
 
       );
       
+
       setCompetitions(responseData.data.content || []);
       setTotalPages(responseData.data.totalPages || 1);
     } catch (error) {
@@ -96,18 +100,19 @@ export default function useManageCompetitionsPage() {
     setPage(1); // Reset to first page when changing items per page
   };
 
-
-
   const createCompetition = async (data: Partial<CompetitionTest>) => {
     try {
+
       data.ownerId = userId;
+
    
       const response = await competitionTestService.create(data as CompetitionTest);
       
  
+
       await fetchData();
       toast.success("Competition created successfully");
-      
+
       return response;
     } catch (error) {
       console.error("Error creating competition:", error);
@@ -115,18 +120,22 @@ export default function useManageCompetitionsPage() {
       throw error;
     }
   };
-  
 
   // Update an existing competition
-  const updateCompetition = async (id: number, data: Partial<CompetitionTest>) => {
+  const updateCompetition = async (
+    id: number,
+    data: Partial<CompetitionTest>
+  ) => {
     try {
       const updatedCompetition = await competitionTestService.patch(id, data);
-      
+
       // Update the list of competitions
-      setCompetitions(prevCompetitions => 
-        prevCompetitions.map(comp => comp.id === id ? { ...comp, ...data } : comp)
+      setCompetitions((prevCompetitions) =>
+        prevCompetitions.map((comp) =>
+          comp.id === id ? { ...comp, ...data } : comp
+        )
       );
-      
+
       toast.success("Competition updated successfully");
       return updatedCompetition;
     } catch (error) {
@@ -140,15 +149,15 @@ export default function useManageCompetitionsPage() {
   const deleteCompetition = async (id: number) => {
     try {
       await competitionTestService.remove(id);
-      
+
       // If current page is empty after deletion, go to previous page
       if (competitions.length === 1 && page > 1) {
-        setPage(prev => prev - 1);
+        setPage((prev) => prev - 1);
       } else {
         // Otherwise refresh the current page
         await fetchData();
       }
-      
+
       toast.success("Competition deleted successfully");
       return true;
     } catch (error) {
@@ -177,7 +186,7 @@ export default function useManageCompetitionsPage() {
     fetchData,
     updateFilter,
     setCompetitions,
-    
+
     // For backward compatibility
     searchText,
     setSearchText,
@@ -192,9 +201,9 @@ export default function useManageCompetitionsPage() {
     deleteCompetition,
     publishCompetition,
     displayedCompetitions,
-    
+
     // Control UI elements
     setPage,
-    setItemsPerPage
+    setItemsPerPage,
   };
 }

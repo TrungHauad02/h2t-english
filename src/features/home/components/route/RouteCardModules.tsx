@@ -18,6 +18,9 @@ export default function RouteCardModules({
 }: RouteCardModulesProps) {
   const { isDarkMode } = useDarkMode();
   const colors = useColor();
+
+  const sortedNodes = visibleNodes.sort((a, b) => a.serial - b.serial);
+
   return (
     <>
       <Typography
@@ -40,7 +43,7 @@ export default function RouteCardModules({
           minHeight: "80px",
         }}
       >
-        {visibleNodes.map((node, index) => (
+        {sortedNodes.map((node, index) => (
           <Chip
             key={node.id}
             label={`${node.serial}. ${node.type}`}

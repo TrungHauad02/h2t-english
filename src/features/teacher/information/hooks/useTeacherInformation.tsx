@@ -34,6 +34,11 @@ export default function useTeacherInformation() {
           level: e.target.value as LevelsEnum,
         });
       } else {
+        if (e.target.name === "phoneNumber") {
+          if (e.target.value.length > 10 || /[a-zA-Z]/.test(e.target.value)) {
+            return;
+          }
+        }
         setFormData({
           ...formData,
           [e.target.name]: e.target.value,

@@ -83,6 +83,16 @@ export const useRegisterForm = () => {
     }
   };
 
+  const handleChangePhoneNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    if (value.length > 10 || /[a-zA-Z]/.test(value)) {
+      return;
+    }
+
+    setPhoneNumber(value);
+  };
+
   return {
     showPassword,
     setShowPassword,
@@ -106,5 +116,6 @@ export const useRegisterForm = () => {
     handleChooseAvatar,
     isLoading,
     handleDateChange,
+    handleChangePhoneNumber,
   };
 };

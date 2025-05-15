@@ -1,6 +1,7 @@
 import { User, UserFilter } from "interfaces";
 import apiClient from "services/apiClient";
 import { fileHandlerService } from "services/features";
+import { formatLocalDateForFilter } from "utils/format";
 
 const findAll = async (
   page: number,
@@ -32,24 +33,35 @@ const findAll = async (
         url += `&sortFields=${encodeURIComponent(filter.sortBy)}`;
       }
       if (filter.startCreatedAt) {
-        url += `&startCreatedAt=${filter.startCreatedAt
-          .toISOString()
-          .slice(0, -1)}`;
+        const formattedStartDate = formatLocalDateForFilter(
+          filter.startCreatedAt,
+          false
+        );
+        url += `&startCreatedAt=${formattedStartDate}`;
       }
+
       if (filter.endCreatedAt) {
-        url += `&endCreatedAt=${filter.endCreatedAt
-          .toISOString()
-          .slice(0, -1)}`;
+        const formattedEndDate = formatLocalDateForFilter(
+          filter.endCreatedAt,
+          true
+        );
+        url += `&endCreatedAt=${formattedEndDate}`;
       }
+
       if (filter.startUpdatedAt) {
-        url += `&startUpdatedAt=${filter.startUpdatedAt
-          .toISOString()
-          .slice(0, -1)}`;
+        const formattedStartUpdateDate = formatLocalDateForFilter(
+          filter.startUpdatedAt,
+          false
+        );
+        url += `&startUpdatedAt=${formattedStartUpdateDate}`;
       }
+
       if (filter.endUpdatedAt) {
-        url += `&endUpdatedAt=${filter.endUpdatedAt
-          .toISOString()
-          .slice(0, -1)}`;
+        const formattedEndUpdateDate = formatLocalDateForFilter(
+          filter.endUpdatedAt,
+          true
+        );
+        url += `&endUpdatedAt=${formattedEndUpdateDate}`;
       }
     }
 
@@ -149,7 +161,7 @@ const remove = async (id: number) => {
 const findByIdsAndStatus = async (ids: number[], status: boolean) => {
   try {
     const params = new URLSearchParams();
-    ids.forEach(id => params.append("ids", id.toString()));
+    ids.forEach((id) => params.append("ids", id.toString()));
     params.append("status", status.toString());
 
     const response = await apiClient.post(
@@ -162,7 +174,6 @@ const findByIdsAndStatus = async (ids: number[], status: boolean) => {
     throw error;
   }
 };
-
 
 export const userService = {
   findAll,

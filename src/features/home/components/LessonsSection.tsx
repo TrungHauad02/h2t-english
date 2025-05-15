@@ -66,12 +66,12 @@ export default function LessonsSection() {
         </Fade>
 
         <Grid container spacing={3}>
-          {hooks.lessons.map((lesson, index) => (
-            <Grid item key={lesson.id} xs={12} sm={6} md={3}>
+          {hooks.nodes.map((node, index) => (
+            <Grid item key={index} xs={12} sm={6} md={3}>
               <LessonCard
-                lesson={lesson}
+                node={node}
                 index={index}
-                isSelected={hooks.selectedLessonId === lesson.id}
+                isSelected={hooks.selectedLessonId === index}
                 onSelect={hooks.setSelectedLessonId}
               />
             </Grid>
