@@ -46,6 +46,6 @@ export const features = [
     description:
       "Get instant evaluations and personalized insights on your speaking and writing from our advanced AI.",
     icon: <SmartToyIcon fontSize="inherit" />,
-    path: "/",
+    path: "/ai-response-feedback",
   },
 ];
