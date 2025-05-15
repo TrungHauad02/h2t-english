@@ -47,22 +47,38 @@ export default function useAIResponse(): UseAIResponseResult {
       setLoading(true);
       setError(null);
 
-      // Sử dụng endpoint teacher-view với điều kiện OR được xử lý ở backend
+      // Kiểm tra userId
+      if (!userId) {
+        throw new Error("User ID is required");
+      }
+
+      // Sử dụng endpoint teacher-view với teacherId
+      console.log("Fetching data with params:", { page, itemsPerPage, filter, teacherId: userId });
+      
       const result = await aiResponseService.getTeacherViewResponses(
         page,
         itemsPerPage,
-        filter
+        filter,
+        Number(userId) // Truyền userId làm teacherId
       );
 
+      console.log("API Response:", result);
+      
       setAiResponses(result.content || []);
       setTotalPage(result.totalPages || 1);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching AI responses:", error);
-      setError("Failed to fetch AI responses. Please try again.");
+      console.error("Error details:", error.response?.data);
+      
+      // Hiển thị lỗi chi tiết hơn
+      const errorMessage = error.response?.data?.message || 
+                          error.message || 
+                          "Failed to fetch AI responses. Please try again.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
-  }, [page, itemsPerPage, filter]);
+  }, [page, itemsPerPage, filter, userId]);
 
   const handlePageChange = useCallback(
     (_event: React.ChangeEvent<unknown>, value: number) => {
@@ -77,9 +93,8 @@ export default function useAIResponse(): UseAIResponseResult {
   }, []);
 
   const handleFilterChange = useCallback((newFilter: AIResponseFilter) => {
-    // Loại bỏ status và userId khỏi filter vì backend đã xử lý logic OR
-    const { status, userId, ...rest } = newFilter;
-    setFilter(rest);
+    // Giữ nguyên filter không loại bỏ gì vì BE đã xử lý logic
+    setFilter(newFilter);
     setPage(1);
   }, []);
 

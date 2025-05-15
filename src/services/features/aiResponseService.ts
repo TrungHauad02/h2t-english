@@ -66,7 +66,6 @@ const getAIResponses = async (
     
     const response = await apiClient.get(url);
     
-    // Truy cập đúng vào dữ liệu trong response
     return response.data.data;
   } catch (error) {
     console.error("Error fetching AIResponse:", error);
@@ -74,19 +73,28 @@ const getAIResponses = async (
   }
 };
 
-// Thêm method mới cho teacher view
+// Sửa lại method để khớp với BE
 const getTeacherViewResponses = async (
   page: number,
   itemsPerPage: number,
-  filter?: AIResponseFilter
+  filter?: AIResponseFilter,
+  teacherId?: number // Thêm teacherId parameter
 ) => {
   try {
+    // Sửa URL để khớp với BE endpoint
     let url = `/ai-response/teacher-view?page=${page - 1}&size=${itemsPerPage}`;
+    
+    // Thêm teacherId vào URL (required param ở BE)
+    if (teacherId) {
+      url += `&teacherId=${teacherId}`;
+    } else {
+      throw new Error("Teacher ID is required for teacher view");
+    }
 
     if (filter) {
-      // SortBy
+      // SortFields thay vì sortBy
       if (filter.sortBy) {
-        url += `&sort=${encodeURIComponent(filter.sortBy)}`;
+        url += `&sortFields=${encodeURIComponent(filter.sortBy)}`;
       }
 
       // Xử lý ngày tháng với múi giờ địa phương
@@ -124,14 +132,15 @@ const getTeacherViewResponses = async (
       }
     }
 
-    console.log("API Request URL:", url);
+    console.log("Teacher View API Request URL:", url);
     
     const response = await apiClient.get(url);
+    console.log("Teacher View API Response:", response);
     
-    // Truy cập đúng vào dữ liệu trong response
     return response.data.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching teacher view AIResponse:", error);
+    console.error("Error response:", error.response);
     throw error;
   }
 };
@@ -139,7 +148,6 @@ const getTeacherViewResponses = async (
 const patch = async (id: number, data: Partial<AIResponse>) => {
   try {
     const response = await apiClient.patch(`/ai-response/${id}`, data);
-    // Truy cập đúng dữ liệu trong response
     return response.data.data || response.data;
   } catch (error) {
     console.error("Error updating ai-response:", error);
@@ -150,7 +158,6 @@ const patch = async (id: number, data: Partial<AIResponse>) => {
 const findById = async (id: number) => {
   try {
     const response = await apiClient.get(`/ai-response/${id}`);
-    // Truy cập đúng dữ liệu trong response
     return response.data.data || response.data;
   } catch (error) {
     console.error("Error getting ai-response by id:", error);
@@ -161,7 +168,6 @@ const findById = async (id: number) => {
 const update = async (id: number, data: AIResponse) => {
   try {
     const response = await apiClient.put(`/ai-response/${id}`, data);
-    // Truy cập đúng dữ liệu trong response
     return response.data.data || response.data;
   } catch (error) {
     console.error("Error updating ai-response:", error);
@@ -181,7 +187,7 @@ const remove = async (id: number) => {
 
 export const aiResponseService = {
   getAIResponses,
-  getTeacherViewResponses, // Thêm method mới
+  getTeacherViewResponses,
   findById,
   update,
   patch,
