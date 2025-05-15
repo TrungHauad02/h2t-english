@@ -8,9 +8,8 @@ import SearchTests from "../components/listCompetitionTest/SearchCompetitionTest
 
 export default function ListTestPage() {
   const siteInfo = {
+    bgUrl: "/h2t-english-competitions-banner.svg",
     title: "Competition",
-    bgUrl:
-      "http://138.2.91.94:9000/h2t-english/static%2Fmain_picture_competition.jpg",
   };
 
   const { isDarkMode } = useDarkMode();
@@ -39,24 +38,23 @@ export default function ListTestPage() {
         overflow: "hidden",
       }}
     >
-      <Container maxWidth="xl" sx={{ position: "relative",}}>
-      <Box>
-            <MainPictureSection siteInfo={siteInfo} />
+      <MainPictureSection siteInfo={siteInfo} />
+
+      <Container maxWidth="xl" sx={{ position: "relative" }}>
+        <Fade in timeout={1400}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mb: 4,
+              mt: 4,
+              maxWidth: "100%",
+            }}
+          >
+            <SearchTests onSearch={handleSearch} />
           </Box>
-          <Fade in timeout={1400}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                mb: 4,
-                mt: 4,
-                maxWidth: "100%",
-              }}
-            >
-              <SearchTests onSearch={handleSearch} />
-            </Box>
-          </Fade>
+        </Fade>
         <Fade in timeout={1800}>
           <Box>
             <ListCompetitionTest searchQuery={searchQuery} />
