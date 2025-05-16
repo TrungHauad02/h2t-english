@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { AIResponse, AIResponseFilter } from "interfaces";
 import { aiResponseService } from "services/features/aiResponseService";
-import useAuth from "hooks/useAuth";
+import useAuth from "hooks/useAuth"; 
 
 interface UseAIResponseResult {
   aiResponses: AIResponse[];
@@ -37,9 +37,7 @@ export default function useAIResponse(): UseAIResponseResult {
   const [itemsPerPage, setItemsPerPage] = useState<number>(8);
   const [totalPage, setTotalPage] = useState<number>(1);
   const [filter, setFilter] = useState<AIResponseFilter>({});
-  const [selectedResponse, setSelectedResponse] = useState<AIResponse | null>(
-    null
-  );
+  const [selectedResponse, setSelectedResponse] = useState<AIResponse | null>(null);
   const [evaluateDialogOpen, setEvaluateDialogOpen] = useState<boolean>(false);
   const [detailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const { userId } = useAuth();
@@ -49,21 +47,38 @@ export default function useAIResponse(): UseAIResponseResult {
       setLoading(true);
       setError(null);
 
-      const result = await aiResponseService.getAIResponses(
+      // Kiểm tra userId
+      if (!userId) {
+        throw new Error("User ID is required");
+      }
+
+      // Sử dụng endpoint teacher-view với teacherId
+      console.log("Fetching data with params:", { page, itemsPerPage, filter, teacherId: userId });
+      
+      const result = await aiResponseService.getTeacherViewResponses(
         page,
         itemsPerPage,
-        filter
+        filter,
+        Number(userId) // Truyền userId làm teacherId
       );
 
+      console.log("API Response:", result);
+      
       setAiResponses(result.content || []);
       setTotalPage(result.totalPages || 1);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching AI responses:", error);
-      setError("Failed to fetch AI responses. Please try again.");
+      console.error("Error details:", error.response?.data);
+      
+      // Hiển thị lỗi chi tiết hơn
+      const errorMessage = error.response?.data?.message || 
+                          error.message || 
+                          "Failed to fetch AI responses. Please try again.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
-  }, [page, itemsPerPage, filter]);
+  }, [page, itemsPerPage, filter, userId]);
 
   const handlePageChange = useCallback(
     (_event: React.ChangeEvent<unknown>, value: number) => {
@@ -72,18 +87,17 @@ export default function useAIResponse(): UseAIResponseResult {
     []
   );
 
-  // Handle items per page change
   const handleItemsPerPageChange = useCallback((value: number) => {
     setItemsPerPage(value);
     setPage(1);
   }, []);
 
   const handleFilterChange = useCallback((newFilter: AIResponseFilter) => {
+    // Giữ nguyên filter không loại bỏ gì vì BE đã xử lý logic
     setFilter(newFilter);
     setPage(1);
   }, []);
 
-  // Open evaluate dialog
   const openEvaluateDialog = useCallback((response: AIResponse) => {
     setSelectedResponse(response);
     setEvaluateDialogOpen(true);
@@ -104,20 +118,17 @@ export default function useAIResponse(): UseAIResponseResult {
     setDetailDialogOpen(false);
   }, []);
 
-  // Save evaluation
   const saveEvaluation = useCallback(
     async (evaluate: string) => {
       if (selectedResponse) {
         try {
-          await aiResponseService.patch(selectedResponse.id, {
+          await aiResponseService.patch(Number(selectedResponse.id), {
             evaluate,
             userId: Number(userId),
-            status: true,
+            status: true, // Đánh dấu là đã đánh giá
           });
 
           await fetchData();
-
-          // Close dialog
           closeEvaluateDialog();
         } catch (error) {
           console.error("Error updating evaluation:", error);
@@ -126,7 +137,7 @@ export default function useAIResponse(): UseAIResponseResult {
         }
       }
     },
-    [selectedResponse, fetchData, closeEvaluateDialog]
+    [selectedResponse, userId, fetchData, closeEvaluateDialog]
   );
 
   useEffect(() => {
@@ -152,8 +163,8 @@ export default function useAIResponse(): UseAIResponseResult {
     setFilter,
     openEvaluateDialog,
     closeEvaluateDialog,
-    openDetailDialog, // Add open detail dialog action to return
-    closeDetailDialog, // Add close detail dialog action to return
+    openDetailDialog,
+    closeDetailDialog,
     saveEvaluation,
     fetchData,
     handlePageChange,
