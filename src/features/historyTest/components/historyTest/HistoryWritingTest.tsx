@@ -1,23 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Box,
   Typography,
-  CircularProgress,
-  Grid,
   Paper,
+  CircularProgress,
+  Chip,
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Chip,
+  Grid,
   Alert,
-  useTheme,
-  useMediaQuery,
 } from "@mui/material";
+import { testWritingService } from "services/test";
+import {
+  submitTestWritingService,
+  submitCompetitionWritingService,
+} from "services";
 import TestQuestionGridHistory from "./common/TestQuestionGridHistory";
 import { TestPartTypeEnum } from "interfaces";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import useHistoryWritingTest from "../../hooks/useHistoryWritingTest";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import GradingIcon from "@mui/icons-material/Grading";
@@ -26,41 +28,101 @@ import CommentIcon from "@mui/icons-material/Comment";
 interface HistoryWritingTestProps {
   testWritingIds: number[];
   submitTestId: number;
+  isCompetitionTest?: boolean;
+  selectedQuestionId?: number | null;
 }
 
 export default function HistoryWritingTest({
   testWritingIds,
   submitTestId,
+  isCompetitionTest = false,
+  selectedQuestionId: initialSelectedQuestionId = null,
 }: HistoryWritingTestProps) {
-  const { isDarkMode } = useDarkMode();
   const color = useColor();
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const { isDarkMode } = useDarkMode();
 
-  const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(
-    null
-  );
+  const [loading, setLoading] = useState(true);
+  const [items, setItems] = useState<any[]>([]);
+  const [allQuestions, setAllQuestions] = useState<any[]>([]);
+  const [submissions, setSubmissions] = useState<Record<number, any>>({});
   const [expandedAccordions, setExpandedAccordions] = useState<
     Record<string, boolean>
   >({});
-
-  const { loading, writingItems, allQuestions } = useHistoryWritingTest({
-    testWritingIds,
-    submitTestId,
-  });
+  const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(
+    initialSelectedQuestionId
+  );
+  const questionRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
   useEffect(() => {
-    if (selectedQuestionId) {
-      // Expand the selected accordion
-      setExpandedAccordions({
-        [`panel-${selectedQuestionId}`]: true,
-      });
+    async function fetchData() {
+      try {
+        setLoading(true);
+        const res = await testWritingService.getByIdsAndStatus(
+          testWritingIds,
+          true
+        );
+        const testItems = res.data || [];
+        setItems(testItems);
+        
+        // Create the allQuestions array for the grid
+        const questions = testItems.map((item: any, index: number) => ({
+          id: item.id,
+          serial: index + 1,
+          isAnswered: false, // Will be updated below when we fetch submissions
+        }));
+        setAllQuestions(questions);
 
-      // Scroll to question
-      const element = document.getElementById(`question-${selectedQuestionId}`);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "center" });
+        const ids = testItems.map((item: any) => item.id);
+        const submitRes = isCompetitionTest
+          ? await submitCompetitionWritingService.findBySubmitCompetitionIdAndTestWritingIds(
+              submitTestId,
+              ids
+            )
+          : await submitTestWritingService.findBySubmitTestIdAndTestWritingIds(
+              submitTestId,
+              ids
+            );
+
+        const map: Record<number, any> = {};
+        for (const entry of submitRes.data || []) {
+          const key = isCompetitionTest
+            ? entry.competitionWriting_id
+            : entry.testWriting_id;
+          map[key] = entry;
+          
+          // Update the isAnswered status in allQuestions
+          const questionIndex = questions.findIndex((q: any) => q.id === key);
+          if (questionIndex !== -1 && entry.content) {
+            questions[questionIndex].isAnswered = true;
+          }
+        }
+        setSubmissions(map);
+        setAllQuestions([...questions]); // Update with isAnswered status
+
+        // Expand selected accordion if provided
+        if (selectedQuestionId) {
+          setExpandedAccordions({
+            [`panel-${selectedQuestionId}`]: true,
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching writing history:", err);
+      } finally {
+        setLoading(false);
       }
+    }
+
+    if (testWritingIds.length > 0) {
+      fetchData();
+    }
+  }, [testWritingIds, submitTestId, isCompetitionTest, selectedQuestionId]);
+
+  useEffect(() => {
+    if (selectedQuestionId && questionRefs.current[selectedQuestionId]) {
+      questionRefs.current[selectedQuestionId]?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
     }
   }, [selectedQuestionId]);
 
@@ -71,6 +133,13 @@ export default function HistoryWritingTest({
         [panel]: isExpanded,
       }));
     };
+
+  const handleQuestionSelect = (item: any) => {
+    setSelectedQuestionId(item.questionId);
+    setExpandedAccordions({
+      [`panel-${item.questionId}`]: true,
+    });
+  };
 
   const getScoreColor = (score: number, maxScore: number) => {
     const percentage = (score / maxScore) * 100;
@@ -90,8 +159,8 @@ export default function HistoryWritingTest({
   };
 
   const calculateMaxScore = (totalQuestions: number) => {
-    // Total points for Writing is 100
-    const sectionTotalPoints = 100;
+ 
+    const sectionTotalPoints = 100 
     // Each question's max score is proportional to total questions
     return sectionTotalPoints / totalQuestions;
   };
@@ -120,14 +189,14 @@ export default function HistoryWritingTest({
     );
   }
 
-  if (writingItems.length === 0) {
+  if (items.length === 0) {
     return (
       <Box
         component={Paper}
         elevation={2}
         sx={{
+          p: 3,
           borderRadius: "1rem",
-          p: 4,
           bgcolor: isDarkMode ? color.gray800 : color.white,
           textAlign: "center",
         }}
@@ -145,20 +214,24 @@ export default function HistoryWritingTest({
     );
   }
 
-  // Calculate max score per question based on total questions
-  const totalQuestions = writingItems.length;
-  const maxScorePerQuestion = calculateMaxScore(totalQuestions);
-  const totalMaxScore = 100; // Total writing score
-
-  // Group items by title if possible
+  // Group items by title
   const itemsByTitle: Record<string, any[]> = {};
-  writingItems.forEach((item) => {
+  items.forEach((item) => {
     const title = item.title || "Writing Test";
     if (!itemsByTitle[title]) {
       itemsByTitle[title] = [];
     }
     itemsByTitle[title].push(item);
   });
+
+  // Calculate continuous serial numbers
+  let currentSerial = 1;
+  const titleKeys = Object.keys(itemsByTitle);
+
+  // Calculate max score per question based on total questions across all tests
+  const totalQuestions = items.length;
+  const maxScorePerQuestion = calculateMaxScore(totalQuestions);
+  const totalMaxScore = 100 / 6; // Total writing section score (adjusted to match WritingSection)
 
   return (
     <Box
@@ -173,460 +246,551 @@ export default function HistoryWritingTest({
     >
       <Grid container spacing={3}>
         <Grid item xs={12} md={9} lg={8}>
-          {Object.entries(itemsByTitle).map(([title, items]) => (
-            <Box key={title} sx={{ mb: 4 }}>
-              <Box
-                sx={{
-                  bgcolor: isDarkMode ? color.teal700 : color.teal500,
-                  borderRadius: "8px 8px 0 0",
-                  px: 3,
-                  py: 2,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography
-                  variant="h6"
+          {titleKeys.map((title) => {
+            const questions = itemsByTitle[title];
+
+            // Create an array to store the serial numbers for this test
+            const serialNumbers = questions.map(() => {
+              const serial = currentSerial;
+              currentSerial++;
+              return serial;
+            });
+
+            return (
+              <Box key={title} sx={{ mb: 4 }}>
+                <Box
                   sx={{
-                    color: color.white,
-                    fontWeight: 600,
-                    fontSize: "1.5rem",
+                    bgcolor: isDarkMode ? color.teal700 : color.teal500,
+                    borderRadius: "8px 8px 0 0",
+                    px: 3,
+                    py: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
                   }}
                 >
-                  {title}
-                </Typography>
-                <Chip
-                  label={`${items.length} Questions`}
-                  size="small"
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      color: color.white,
+                      fontWeight: 600,
+                      fontSize: "1.5rem",
+                    }}
+                  >
+                    {title}
+                  </Typography>
+                  <Chip
+                    label={`${questions.length} Questions`}
+                    size="small"
+                    sx={{
+                      bgcolor: "rgba(255,255,255,0.25)",
+                      color: color.white,
+                      fontWeight: 500,
+                      borderRadius: "16px",
+                      px: 1,
+                    }}
+                  />
+                </Box>
+
+                <Paper
+                  elevation={0}
                   sx={{
-                    bgcolor: "rgba(255,255,255,0.25)",
-                    color: color.white,
-                    fontWeight: 500,
-                    borderRadius: "16px",
-                    px: 1,
+                    borderRadius: "0 0 8px 8px",
+                    overflow: "hidden",
+                    border: `1px solid ${
+                      isDarkMode ? color.gray700 : color.gray200
+                    }`,
+                    borderTop: "none",
                   }}
-                />
-              </Box>
+                >
+                  {questions.map((item, index) => {
+                    const submission = submissions[item.id] || {};
+                    const isPanelExpanded =
+                      expandedAccordions[`panel-${item.id}`] || false;
+                    const questionSerial = serialNumbers[index];
+                    const hasScore = submission.score !== undefined;
 
-              <Paper
-                elevation={0}
-                sx={{
-                  borderRadius: "0 0 8px 8px",
-                  overflow: "hidden",
-                  border: `1px solid ${
-                    isDarkMode ? color.gray700 : color.gray200
-                  }`,
-                  borderTop: "none",
-                }}
-              >
-                {items.map((item, index) => {
-                  const isPanelExpanded =
-                    expandedAccordions[`panel-${item.id}`] || false;
-                  const matchingQuestion = allQuestions.find(
-                    (q) => q.id === item.id
-                  );
-                  const serialNumber = matchingQuestion?.serial || index + 1;
-
-                  return (
-                    <Accordion
-                      key={item.id}
-                      id={`question-${item.id}`}
-                      expanded={isPanelExpanded}
-                      onChange={handleAccordionChange(`panel-${item.id}`)}
-                      disableGutters
-                      elevation={0}
-                      sx={{
-                        borderBottom:
-                          index < items.length - 1
-                            ? `1px solid ${
-                                isDarkMode ? color.gray700 : color.gray200
-                              }`
-                            : "none",
-                        "&:before": {
-                          display: "none",
-                        },
-                        boxShadow:
-                          selectedQuestionId === item.id
-                            ? `0 0 10px ${
-                                isDarkMode
-                                  ? color.teal500 + "80"
-                                  : color.teal400 + "80"
-                              }`
-                            : "none",
-                      }}
-                    >
-                      <AccordionSummary
-                        expandIcon={
-                          <ExpandMoreIcon
-                            sx={{
-                              color: isDarkMode ? color.teal200 : color.teal700,
-                              fontSize: 24,
-                            }}
-                          />
-                        }
+                    return (
+                      <Accordion
+                        key={item.id}
+                        expanded={isPanelExpanded}
+                        onChange={handleAccordionChange(`panel-${item.id}`)}
+                        disableGutters
+                        elevation={0}
+                        ref={(el) => {
+                          if (el) {
+                            questionRefs.current[item.id] = el;
+                          }
+                        }}
                         sx={{
-                          px: 3,
-                          py: 1.5,
-                          minHeight: "48px",
-                          "& .MuiAccordionSummary-content": {
-                            margin: "8px 0",
-                            display: "flex",
-                            alignItems: "center",
-                            flexWrap: "wrap",
-                            gap: 1,
+                          borderBottom:
+                            index < questions.length - 1
+                              ? `1px solid ${
+                                  isDarkMode ? color.gray700 : color.gray200
+                                }`
+                              : "none",
+                          "&:before": {
+                            display: "none",
                           },
+                          scrollMarginTop: "100px",
+                          boxShadow:
+                            selectedQuestionId === item.id
+                              ? `0 0 10px ${
+                                  isDarkMode
+                                    ? color.teal500 + "80"
+                                    : color.teal400 + "80"
+                                }`
+                              : "none",
                         }}
                       >
-                        <Typography
+                        <AccordionSummary
+                          expandIcon={
+                            <ExpandMoreIcon
+                              sx={{
+                                color: isDarkMode ? color.teal200 : color.teal700,
+                                fontSize: 24,
+                              }}
+                            />
+                          }
                           sx={{
-                            fontWeight: 600,
-                            color: isDarkMode ? color.teal200 : color.teal700,
-                            mr: 1,
-                            fontSize: "1.1rem",
+                            px: 3,
+                            py: 1.5,
+                            minHeight: "48px",
+                            "& .MuiAccordionSummary-content": {
+                              margin: "8px 0",
+                              display: "flex",
+                              alignItems: "center",
+                              flexWrap: "wrap",
+                              gap: 1,
+                            },
                           }}
                         >
-                          Question {serialNumber}
-                        </Typography>
-
-                        {item.content && (
-                          <Chip
-                            icon={<AssignmentIcon fontSize="small" />}
-                            label="Response Submitted"
-                            size="small"
+                          <Typography
                             sx={{
-                              bgcolor: isDarkMode
-                                ? "rgba(94, 234, 212, 0.1)"
-                                : "rgba(94, 234, 212, 0.2)",
+                              fontWeight: 600,
                               color: isDarkMode ? color.teal200 : color.teal700,
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              borderRadius: "16px",
+                              mr: 1,
+                              fontSize: "1.1rem",
                             }}
-                          />
-                        )}
+                          >
+                            Question {questionSerial}
+                          </Typography>
 
-                        {item.score !== undefined && (
-                          <Chip
-                            icon={<GradingIcon fontSize="small" />}
-                            label={`Score: ${item.score.toFixed(
-                              1
-                            )}/${maxScorePerQuestion.toFixed(1)}`}
-                            size="small"
-                            sx={{
-                              bgcolor:
-                                item.score > 0
-                                  ? `${getScoreColor(
-                                      item.score,
-                                      maxScorePerQuestion
-                                    )}20`
-                                  : isDarkMode
-                                  ? "rgba(239, 68, 68, 0.2)"
-                                  : "rgba(239, 68, 68, 0.1)",
-                              color:
-                                item.score > 0
-                                  ? getScoreColor(
-                                      item.score,
-                                      maxScorePerQuestion
-                                    )
-                                  : isDarkMode
-                                  ? color.red400
-                                  : color.red600,
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              borderRadius: "16px",
-                            }}
-                          />
-                        )}
-
-                        {item.comment && (
-                          <Chip
-                            icon={<CommentIcon fontSize="small" />}
-                            label="Feedback"
-                            size="small"
-                            sx={{
-                              bgcolor: isDarkMode
-                                ? color.gray700
-                                : color.gray100,
-                              color: isDarkMode ? color.gray200 : color.gray800,
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              borderRadius: "16px",
-                            }}
-                          />
-                        )}
-                      </AccordionSummary>
-
-                      <AccordionDetails sx={{ p: 0 }}>
-                        {isPanelExpanded && (
-                          <>
-                            {/* Writing prompt */}
-                            <Box
+                          {submission.content && (
+                            <Chip
+                              icon={<AssignmentIcon fontSize="small" />}
+                              label="Response Submitted"
+                              size="small"
                               sx={{
                                 bgcolor: isDarkMode
-                                  ? color.gray700
-                                  : color.gray50,
-                                p: 3,
-                                mx: 3,
-                                mb: 3,
-                                borderRadius: 1,
-                                position: "relative",
+                                  ? "rgba(94, 234, 212, 0.1)"
+                                  : "rgba(94, 234, 212, 0.2)",
+                                color: isDarkMode ? color.teal200 : color.teal700,
+                                fontSize: "0.75rem",
+                                fontWeight: 500,
+                                borderRadius: "16px",
                               }}
-                            >
-                              <Typography
-                                variant="subtitle1"
+                            />
+                          )}
+
+                          {hasScore && (
+                            <Chip
+                              icon={<GradingIcon fontSize="small" />}
+                              label={`Score: ${submission.score.toFixed(
+                                1
+                              )}/${maxScorePerQuestion.toFixed(1)}`}
+                              size="small"
+                              sx={{
+                                bgcolor:
+                                  submission.score > 0
+                                    ? `${getScoreColor(
+                                        submission.score,
+                                        maxScorePerQuestion
+                                      )}20`
+                                    : isDarkMode
+                                    ? "rgba(239, 68, 68, 0.2)"
+                                    : "rgba(239, 68, 68, 0.1)",
+                                color:
+                                  submission.score > 0
+                                    ? getScoreColor(
+                                        submission.score,
+                                        maxScorePerQuestion
+                                      )
+                                    : isDarkMode
+                                    ? color.red400
+                                    : color.red600,
+                                fontSize: "0.75rem",
+                                fontWeight: 500,
+                                borderRadius: "16px",
+                              }}
+                            />
+                          )}
+
+                          {submission.comment && (
+                            <Chip
+                              icon={<CommentIcon fontSize="small" />}
+                              label="Feedback"
+                              size="small"
+                              sx={{
+                                bgcolor: isDarkMode ? color.gray700 : color.gray100,
+                                color: isDarkMode ? color.gray200 : color.gray800,
+                                fontSize: "0.75rem",
+                                fontWeight: 500,
+                                borderRadius: "16px",
+                              }}
+                            />
+                          )}
+                        </AccordionSummary>
+
+                        <AccordionDetails sx={{ p: 0 }}>
+                          {isPanelExpanded && (
+                            <>
+                              {/* Question content */}
+                              <Box
                                 sx={{
-                                  fontWeight: 600,
-                                  color: isDarkMode
-                                    ? color.teal200
-                                    : color.teal700,
-                                  mb: 2,
+                                  bgcolor: isDarkMode
+                                    ? color.gray700
+                                    : color.gray50,
+                                  p: 3,
+                                  mx: 3,
+                                  mb: 3,
+                                  borderRadius: 1,
+                                  position: "relative",
                                 }}
                               >
-                                Writing Prompt
-                              </Typography>
-
-                              <Typography
-                                variant="body1"
-                                sx={{
-                                  color: isDarkMode
-                                    ? color.gray200
-                                    : color.gray800,
-                                  whiteSpace: "pre-wrap",
-                                }}
-                              >
-                                {item.topic}
-                              </Typography>
-                            </Box>
-
-                            <Grid container spacing={2} sx={{ px: 3, mb: 3 }}>
-                              {/* Written Response section */}
-                              <Grid item xs={12}>
                                 <Typography
-                                  variant="h6"
+                                  variant="subtitle1"
                                   sx={{
                                     fontWeight: 600,
                                     color: isDarkMode
                                       ? color.teal200
                                       : color.teal700,
                                     mb: 2,
-                                    ml: 1,
                                   }}
                                 >
-                                  Your Response
+                                  Writing Prompt
                                 </Typography>
 
-                                <Box
+                                <Typography
+                                  variant="body1"
                                   sx={{
-                                    p: 3,
-                                    bgcolor: isDarkMode
-                                      ? color.gray800
-                                      : color.white,
-                                    border: `1px solid ${
-                                      isDarkMode ? color.gray700 : color.gray200
-                                    }`,
-                                    borderRadius: 1,
-                                    mb: item.comment ? 2 : 0,
-                                    minHeight: "120px",
+                                    color: isDarkMode
+                                      ? color.gray200
+                                      : color.gray800,
+                                    whiteSpace: "pre-wrap",
                                   }}
                                 >
-                                  {item.content ? (
-                                    <Typography
-                                      variant="body1"
-                                      sx={{
-                                        color: isDarkMode
-                                          ? color.gray200
-                                          : color.gray800,
-                                        whiteSpace: "pre-wrap",
-                                        fontFamily: "monospace",
-                                      }}
-                                    >
-                                      {item.content}
-                                    </Typography>
-                                  ) : (
-                                    <Typography
-                                      variant="body1"
-                                      sx={{
-                                        color: isDarkMode
-                                          ? color.gray400
-                                          : color.gray500,
-                                        fontStyle: "italic",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      No response submitted
-                                    </Typography>
-                                  )}
-                                </Box>
+                                  {item.topic}
+                                </Typography>
+                              </Box>
 
-                                {item.comment && (
-                                  <>
-                                    <Typography
-                                      variant="h6"
-                                      sx={{
-                                        fontWeight: 600,
-                                        color: isDarkMode
-                                          ? color.teal200
-                                          : color.teal700,
-                                        mb: 2,
-                                        ml: 1,
-                                        mt: 2,
-                                      }}
-                                    >
-                                      Teacher Feedback
-                                    </Typography>
-
-                                    <Box
-                                      sx={{
-                                        p: 3,
-                                        bgcolor: isDarkMode
-                                          ? color.gray800
-                                          : color.white,
-                                        border: `1px solid ${
-                                          isDarkMode
-                                            ? color.gray700
-                                            : color.gray200
-                                        }`,
-                                        borderRadius: 1,
-                                        minHeight: "80px",
-                                      }}
-                                    >
+                              <Grid container spacing={2} sx={{ px: 3, mb: 3 }}>
+                                {/* Result section */}
+                                <Grid item xs={12} md={hasScore ? 4 : 0}>
+                                  {hasScore && (
+                                    <>
                                       <Typography
-                                        variant="body1"
+                                        variant="h6"
                                         sx={{
+                                          fontWeight: 600,
                                           color: isDarkMode
-                                            ? color.gray300
-                                            : color.gray700,
+                                            ? color.teal200
+                                            : color.teal700,
+                                          mb: 2,
+                                          ml: 1,
                                         }}
                                       >
-                                        {item.comment}
+                                        Your Result
                                       </Typography>
-                                    </Box>
-                                  </>
-                                )}
 
-                                {item.score !== undefined && (
-                                  <>
-                                    <Typography
-                                      variant="h6"
-                                      sx={{
-                                        fontWeight: 600,
-                                        color: isDarkMode
-                                          ? color.teal200
-                                          : color.teal700,
-                                        mb: 2,
-                                        ml: 1,
-                                        mt: 2,
-                                      }}
-                                    >
-                                      Your Score
-                                    </Typography>
-
-                                    <Box
-                                      sx={{
-                                        p: 3,
-                                        bgcolor: isDarkMode
-                                          ? color.gray800
-                                          : color.white,
-                                        border: `1px solid ${
-                                          isDarkMode
-                                            ? color.gray700
-                                            : color.gray200
-                                        }`,
-                                        borderRadius: 1,
-                                        minHeight: "80px",
-                                      }}
-                                    >
                                       <Box
                                         sx={{
-                                          display: "flex",
-                                          alignItems: "center",
-                                          gap: 2,
+                                          p: 3,
+                                          bgcolor: isDarkMode
+                                            ? color.gray800
+                                            : color.white,
+                                          border: `1px solid ${
+                                            isDarkMode
+                                              ? color.gray700
+                                              : color.gray200
+                                          }`,
+                                          borderRadius: 1,
+                                          height: "100%",
+                                          minHeight: "120px",
                                         }}
                                       >
                                         <Box
                                           sx={{
-                                            width: 60,
-                                            height: 60,
                                             display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            borderRadius: "50%",
-                                            bgcolor: `${getScoreColor(
-                                              item.score,
-                                              maxScorePerQuestion
-                                            )}20`,
-                                            border: `2px solid ${getScoreColor(
-                                              item.score,
-                                              maxScorePerQuestion
-                                            )}`,
-                                            flexShrink: 0,
+                                            flexDirection: "column",
+                                            height: "100%",
                                           }}
                                         >
                                           <Typography
-                                            variant="h5"
+                                            variant="h6"
                                             sx={{
-                                              fontWeight: 600,
                                               color: getScoreColor(
-                                                item.score,
+                                                submission.score || 0,
                                                 maxScorePerQuestion
                                               ),
-                                            }}
-                                          >
-                                            {item.score.toFixed(1)}
-                                          </Typography>
-                                        </Box>
-
-                                        <Box>
-                                          <Typography
-                                            variant="subtitle1"
-                                            sx={{
+                                              mb: 1.5,
                                               fontWeight: 600,
-                                              color: getScoreColor(
-                                                item.score,
-                                                maxScorePerQuestion
-                                              ),
-                                              mb: 0.5,
                                             }}
                                           >
                                             {getScoreLabel(
-                                              item.score,
+                                              submission.score || 0,
                                               maxScorePerQuestion
                                             )}
                                           </Typography>
 
+                                          <Box
+                                            sx={{
+                                              display: "flex",
+                                              alignItems: "center",
+                                              mb: 2,
+                                            }}
+                                          >
+                                            <Box
+                                              sx={{
+                                                position: "relative",
+                                                width: 80,
+                                                height: 80,
+                                                mr: 2,
+                                              }}
+                                            >
+                                              <CircularProgress
+                                                variant="determinate"
+                                                value={100}
+                                                size={80}
+                                                thickness={4}
+                                                sx={{
+                                                  color: isDarkMode
+                                                    ? "rgba(255,255,255,0.1)"
+                                                    : "rgba(0,0,0,0.05)",
+                                                  position: "absolute",
+                                                }}
+                                              />
+                                              <CircularProgress
+                                                variant="determinate"
+                                                value={
+                                                  (submission.score /
+                                                    maxScorePerQuestion) *
+                                                  100
+                                                }
+                                                size={80}
+                                                thickness={4}
+                                                sx={{
+                                                  color: getScoreColor(
+                                                    submission.score || 0,
+                                                    maxScorePerQuestion
+                                                  ),
+                                                  position: "absolute",
+                                                }}
+                                              />
+                                              <Box
+                                                sx={{
+                                                  textAlign: "center",
+                                                  position: "absolute",
+                                                  top: "50%",
+                                                  left: "50%",
+                                                  transform:
+                                                    "translate(-50%, -50%)",
+                                                }}
+                                              >
+                                                <Typography
+                                                  variant="h5"
+                                                  sx={{
+                                                    fontWeight: 600,
+                                                    color: getScoreColor(
+                                                      submission.score || 0,
+                                                      maxScorePerQuestion
+                                                    ),
+                                                    lineHeight: 1,
+                                                  }}
+                                                >
+                                                  {submission.score
+                                                    ? submission.score.toFixed(1)
+                                                    : "0"}
+                                                </Typography>
+                                                <Typography
+                                                  variant="caption"
+                                                  sx={{
+                                                    color: isDarkMode
+                                                      ? color.gray400
+                                                      : color.gray600,
+                                                    display: "block",
+                                                    fontSize: "0.7rem",
+                                                    mt: -0.5,
+                                                  }}
+                                                >
+                                                  /{maxScorePerQuestion.toFixed(1)}
+                                                </Typography>
+                                              </Box>
+                                            </Box>
+
+                                            <Box sx={{ flex: 1 }}>
+                                              <Typography
+                                                variant="body2"
+                                                sx={{
+                                                  color: isDarkMode
+                                                    ? color.gray300
+                                                    : color.gray700,
+                                                  mb: 0.5,
+                                                }}
+                                              >
+                                                Writing section total:{" "}
+                                                {totalMaxScore.toFixed(1)} points
+                                              </Typography>
+                                              <Typography
+                                                variant="body2"
+                                                sx={{
+                                                  color: isDarkMode
+                                                    ? color.gray400
+                                                    : color.gray600,
+                                                  fontSize: "0.8rem",
+                                                }}
+                                              >
+                                                Each question:{" "}
+                                                {maxScorePerQuestion.toFixed(1)}{" "}
+                                                points
+                                              </Typography>
+                                            </Box>
+                                          </Box>
+
                                           <Typography
-                                            variant="body2"
+                                            variant="body1"
                                             sx={{
                                               color: isDarkMode
                                                 ? color.gray300
                                                 : color.gray700,
                                             }}
                                           >
-                                            Score out of{" "}
-                                            {maxScorePerQuestion.toFixed(1)}{" "}
-                                            points (Total writing section:{" "}
-                                            {totalMaxScore} points)
+                                            This score contributes to your overall
+                                            writing assessment.
                                           </Typography>
                                         </Box>
                                       </Box>
-                                    </Box>
-                                  </>
-                                )}
+                                    </>
+                                  )}
+                                </Grid>
+
+                                {/* Response section */}
+                                <Grid item xs={12} md={hasScore ? 8 : 12}>
+                                  <Typography
+                                    variant="h6"
+                                    sx={{
+                                      fontWeight: 600,
+                                      color: isDarkMode
+                                        ? color.teal200
+                                        : color.teal700,
+                                      mb: 2,
+                                      ml: 1,
+                                    }}
+                                  >
+                                    Your Response
+                                  </Typography>
+
+                                  <Box
+                                    sx={{
+                                      p: 3,
+                                      bgcolor: isDarkMode
+                                        ? color.gray800
+                                        : color.white,
+                                      border: `1px solid ${
+                                        isDarkMode ? color.gray700 : color.gray200
+                                      }`,
+                                      borderRadius: 1,
+                                      mb: submission.comment ? 2 : 0,
+                                      minHeight: "120px",
+                                    }}
+                                  >
+                                    {submission.content ? (
+                                      <Typography
+                                        variant="body1"
+                                        sx={{
+                                          color: isDarkMode
+                                            ? color.gray200
+                                            : color.gray800,
+                                        }}
+                                      >
+                                        {submission.content}
+                                      </Typography>
+                                    ) : (
+                                      <Typography
+                                        variant="body1"
+                                        sx={{
+                                          color: isDarkMode
+                                            ? color.gray400
+                                            : color.gray500,
+                                          fontStyle: "italic",
+                                          textAlign: "center",
+                                        }}
+                                      >
+                                        No response submitted
+                                      </Typography>
+                                    )}
+                                  </Box>
+
+                                  {submission.comment && (
+                                    <>
+                                      <Typography
+                                        variant="h6"
+                                        sx={{
+                                          fontWeight: 600,
+                                          color: isDarkMode
+                                            ? color.teal200
+                                            : color.teal700,
+                                          mb: 2,
+                                          ml: 1,
+                                          mt: 2,
+                                        }}
+                                      >
+                                        AI Feedback
+                                      </Typography>
+
+                                      <Box
+                                        sx={{
+                                          p: 3,
+                                          bgcolor: isDarkMode
+                                            ? color.gray800
+                                            : color.white,
+                                          border: `1px solid ${
+                                            isDarkMode
+                                              ? color.gray700
+                                              : color.gray200
+                                          }`,
+                                          borderRadius: 1,
+                                          minHeight: "80px",
+                                        }}
+                                      >
+                                        <Typography
+                                          variant="body1"
+                                          sx={{
+                                            color: isDarkMode
+                                              ? color.gray300
+                                              : color.gray700,
+                                          }}
+                                        >
+                                          {submission.comment}
+                                        </Typography>
+                                      </Box>
+                                    </>
+                                  )}
+                                </Grid>
                               </Grid>
-                            </Grid>
-                          </>
-                        )}
-                      </AccordionDetails>
-                    </Accordion>
-                  );
-                })}
-              </Paper>
-            </Box>
-          ))}
+                            </>
+                          )}
+                        </AccordionDetails>
+                      </Accordion>
+                    );
+                  })}
+                </Paper>
+              </Box>
+            );
+          })}
         </Grid>
 
-        <Grid item md={3} lg={4} sx={{ display: { xs: "none", md: "block" } }}>
+        <Grid item xs={12} md={3} lg={4}>
           <TestQuestionGridHistory
             questionItems={allQuestions.map((q) => ({
               serialNumber: q.serial,
@@ -635,28 +799,10 @@ export default function HistoryWritingTest({
               isAnswered: q.isAnswered || false,
               isCorrect: false,
             }))}
-            onQuestionSelect={(item) => setSelectedQuestionId(item.questionId)}
+            onQuestionSelect={handleQuestionSelect}
             isTitle
           />
         </Grid>
-
-        {isSmallScreen && (
-          <Grid item xs={12} sx={{ mt: 3 }}>
-            <TestQuestionGridHistory
-              questionItems={allQuestions.map((q) => ({
-                serialNumber: q.serial,
-                questionId: q.id,
-                partType: TestPartTypeEnum.WRITING,
-                isAnswered: q.isAnswered || false,
-                isCorrect: false,
-              }))}
-              onQuestionSelect={(item) =>
-                setSelectedQuestionId(item.questionId)
-              }
-              isTitle
-            />
-          </Grid>
-        )}
       </Grid>
     </Box>
   );

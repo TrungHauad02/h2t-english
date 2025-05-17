@@ -8,3 +8,5 @@ export * from "./emailService";
 export * from "./commentTestService";
 export * from "./errorLogService";
 export * from "./adminDashboardService";
+export * from "./toeicCommentService";
+

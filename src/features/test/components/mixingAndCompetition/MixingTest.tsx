@@ -13,7 +13,7 @@ import {
 import TestQuestionGrid from "./TestQuestionGrid";
 import IntroducePartTest from "./InroducePartTest";
 import TimeRemaining from "../common/TimeRemaining";
-import SubmitTestDialog from "./SubmitTestDialog";
+import SubmitTestDialog from "../common/SubmitTestDialog";
 import ConfirmSubmitDialog from "./ConfirmSubmitDialog";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
@@ -229,6 +229,7 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId,t
         onTimeUp={handleSubmitTest} />
             <Box sx={{ mt: 3 }}>
               <TestQuestionGrid 
+                  key={submitTestId}
                 questionItems={allQuestions}
                 onQuestionSelect={handleQuestionSelect}
                 onSubmitTest={handleOpenConfirmDialog}

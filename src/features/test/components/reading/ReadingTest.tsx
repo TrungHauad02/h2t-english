@@ -44,7 +44,7 @@ export default function ReadingTest({ testReadings, submitTestId,test }: Reading
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  
+
   // Tab state for mobile view
   const [tabValue, setTabValue] = useState(0);
   

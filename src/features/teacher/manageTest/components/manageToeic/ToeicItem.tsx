@@ -44,24 +44,8 @@ export default function ToeicItem({
     }, 300);
     return () => clearTimeout(timer);
   }, []);
-  
-  // Count total questions across all parts
-  const calculateTotalQuestions = () => {
-    const parts = [
-      toeic.questionsPart1 || [],
-      toeic.questionsPart2 || [],
-      toeic.questionsPart3 || [],
-      toeic.questionsPart4 || [],
-      toeic.questionsPart5 || [],
-      toeic.questionsPart6 || [],
-      toeic.questionsPart7 || []
-    ];
-    
-    return parts.reduce((sum, part) => sum + part.length, 0);
-  };
-  
-  const totalQuestions = toeic.totalQuestions || calculateTotalQuestions();
-  
+
+
   // Count listening and reading parts
   const listeningQuestions = [
     ...(toeic.questionsPart1 || []),
@@ -259,7 +243,7 @@ export default function ToeicItem({
                 variant="body2"
                 sx={{ color: isDarkMode ? color.gray300 : color.gray700 }}
               >
-                Total Questions: {totalQuestions || "200"}
+                Total Questions: {toeic.totalQuestions || "0"}
               </Typography>
             </Box>
 
@@ -272,7 +256,7 @@ export default function ToeicItem({
                 variant="body2"
                 sx={{ color: isDarkMode ? color.gray300 : color.gray700 }}
               >
-                Listening: {listeningQuestions} questions
+                Listening: {toeic.listeningQuestionTotal || 0} questions
               </Typography>
             </Box>
 
@@ -285,7 +269,7 @@ export default function ToeicItem({
                 variant="body2"
                 sx={{ color: isDarkMode ? color.gray300 : color.gray700 }}
               >
-                Reading: {readingQuestions} questions
+                Reading: {toeic.readingQuestionTotal || 0} questions
               </Typography>
             </Box>
           </Box>

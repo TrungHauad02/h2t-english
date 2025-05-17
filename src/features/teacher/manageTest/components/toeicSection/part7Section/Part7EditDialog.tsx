@@ -65,7 +65,7 @@ export default function Part7EditDialog({
     toeicQuestions,
     mode,
     onSave,
-    maxQuestions: 4
+    maxQuestions: 5
   });
 
   const tabs = [
@@ -123,10 +123,10 @@ export default function Part7EditDialog({
             variant="contained"
             startIcon={<AddIcon />}
             onClick={handleAddQuestion}
-            disabled={subQuestions.length >= 4}
+            disabled={subQuestions.length >= 5}
             sx={{
               ml: 2,
-              backgroundColor: subQuestions.length >= 4
+              backgroundColor: subQuestions.length >= 5
                 ? (isDarkMode ? color.gray600 : color.gray400)
                 : (isDarkMode ? color.emerald700 : color.emerald600),
               color: subQuestions.length >= 4
@@ -142,7 +142,7 @@ export default function Part7EditDialog({
               height: '36px'
             }}
           >
-            Add Question {subQuestions.length >= 4 ? '(Max 4)' : ''}
+            Add Question {subQuestions.length >= 5 ? '(Max 5)' : ''}
           </Button>
         </Box>
 

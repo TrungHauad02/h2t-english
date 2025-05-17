@@ -381,34 +381,7 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
                       <DescriptionIcon /> Listening Questions
                     </Typography>
                     
-                    {isEditMode && (
-                      <Tooltip title="Add a new question">
-                        <Button
-                          variant="contained"
-                          startIcon={<AddIcon />}
-                          onClick={() => {/* Add question handler */}}
-                          sx={{
-                            backgroundColor: isDarkMode ? color.emerald700 : color.emerald600,
-                            color: color.white,
-                            '&:hover': {
-                              backgroundColor: isDarkMode ? color.emerald600 : color.emerald500,
-                              transform: 'translateY(-2px)',
-                              boxShadow: isDarkMode
-                              ? '0 6px 16px rgba(0, 0, 0, 0.3)' 
-                                : '0 6px 16px rgba(20, 184, 166, 0.25)',
-                            },
-                            transition: 'all 0.2s ease',
-                            borderRadius: '0.75rem',
-                            textTransform: 'none',
-                            fontWeight: 600,
-                            px: 2.5,
-                            py: 1,
-                          }}
-                        >
-                          Add Question
-                        </Button>
-                      </Tooltip>
-                    )}
+                  
                   </Box>
                   
                   {selectedListeningId && (

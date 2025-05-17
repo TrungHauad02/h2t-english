@@ -312,19 +312,6 @@ const SubmitTestDialog: React.FC<SubmitTestDialogProps> = ({
                       </Box>
                     </Box>
                     
-                    <Typography
-                      variant="body1"
-                      sx={{ 
-                        mt: 2, 
-                        color: isDarkMode ? color.gray300 : color.gray700,
-                        textAlign: 'center'
-                      }}
-                    >
-                      <Box component="span" sx={{ fontWeight: 600 }}>
-                        {result.correctAnswers}
-                      </Box>{" "}
-                      / {result.totalQuestions} correct answers
-                    </Typography>
                     
                     {result.answeredQuestions !== undefined && result.answeredQuestions !== result.totalQuestions && (
                       <Typography
@@ -629,7 +616,7 @@ const SubmitTestDialog: React.FC<SubmitTestDialogProps> = ({
                       },
                     }}
                   >
-                    {showComment ? "Hide Teacher's Comment" : "Show Teacher's Comment"}
+                    {showComment ? "Hide AI Comment" : "Show AI Comment"}
                   </Button>
                   
                   <Collapse in={showComment}>
@@ -650,7 +637,7 @@ const SubmitTestDialog: React.FC<SubmitTestDialogProps> = ({
                           mb: 2
                         }}
                       >
-                        Teacher's Comment
+                        AI Comment
                       </Typography>
                       
                       <Typography

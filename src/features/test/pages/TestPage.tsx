@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Box, Typography, Paper, CircularProgress, Alert } from "@mui/material";
 import { MainPictureSection } from "components/sections";
 import { SiteInfo } from "components/sections/types";
@@ -28,6 +29,139 @@ export default function TestPage() {
     loading,
     error
   } = useStudentTest();
+
+  // Tạo site info một lần với useMemo để tránh tính toán lại khi render
+  const siteInfo = useMemo(() => ({
+    bgUrl: "https://firebasestorage.googleapis.com/v0/b/englishweb-5a6ce.appspot.com/o/static%2Fbg_test.png?alt=media",
+    title: test?.title || "Test",
+  }), [test?.title]);
+
+  // Chỉ tính toán lại renderTest khi các dependency thay đổi
+  const renderTest = useMemo(() => {
+    if (!submitTest || !test) return null;
+
+    switch (test.type) {
+      case TestTypeEnum.MIXING:
+        if (testParts && testParts.length > 0) {
+          return (
+            <MixingTest 
+              test={test}
+              mixingTestParts={testParts}
+              submitTestId={submitTest.id}
+            />
+          );
+        }
+        break;
+        
+      case TestTypeEnum.READING:
+        if (readingPart && readingPart.questions && readingPart.questions.length > 0) {
+          return (
+            <ReadingTest 
+              test={test}
+              testReadings={readingPart.questions}
+              submitTestId={submitTest.id}
+            />
+          );
+        }
+        break;
+        
+      case TestTypeEnum.LISTENING:
+        if (listeningPart && listeningPart.questions && listeningPart.questions.length > 0) {
+          return (
+            <ListeningTest 
+              test={test}
+              testListenings={listeningPart.questions}
+              submitTestId={submitTest.id}
+            />
+          );
+        }
+        break;
+        
+      case TestTypeEnum.SPEAKING:
+        if (speakingPart && speakingPart.questions && speakingPart.questions.length > 0) {
+          return (
+            <SpeakingTest 
+              test={test}
+              testSpeakings={speakingPart.questions}
+              submitTestId={submitTest.id}
+            />
+          );
+        }
+        break;
+        
+      case TestTypeEnum.WRITING:
+        if (writingPart && writingPart.questions && writingPart.questions.length > 0) {
+          return (
+            <WritingTest 
+              test={test}
+              testWritings={writingPart.questions}
+              submitTestId={submitTest.id}
+            />
+          );
+        }
+        break;
+        
+      default:
+        return (
+          <Box 
+            component={Paper} 
+            elevation={3}
+            sx={{ 
+              p: 4, 
+              textAlign: "center", 
+              mt: 4,
+              maxWidth: '600px',
+              mx: 'auto',
+              borderRadius: '1rem',
+              backgroundColor: isDarkMode ? color.gray800 : color.white,
+              color: isDarkMode ? color.gray100 : color.gray900
+            }}
+          >
+            <Typography variant="h5" gutterBottom>
+              Unsupported test type
+            </Typography>
+            <Typography variant="body1">
+              This test type is not yet supported or no content is available.
+            </Typography>
+          </Box>
+        );
+    }
+    
+    // Fallback in case the specific test part is not available
+    return (
+      <Box 
+        component={Paper} 
+        elevation={3}
+        sx={{ 
+          p: 4, 
+          textAlign: "center", 
+          mt: 4,
+          maxWidth: '600px',
+          mx: 'auto',
+          borderRadius: '1rem',
+          backgroundColor: isDarkMode ? color.gray800 : color.white,
+          color: isDarkMode ? color.gray100 : color.gray900
+        }}
+      >
+        <Typography variant="h5" gutterBottom>
+          Test content unavailable
+        </Typography>
+        <Typography variant="body1">
+          The content for this test is not available. Please try another test.
+        </Typography>
+      </Box>
+    );
+  }, [
+    test, 
+    submitTest, 
+    testParts, 
+    readingPart, 
+    listeningPart, 
+    speakingPart, 
+    writingPart, 
+    isDarkMode, 
+    color
+  ]);
 
   if (loading) {
     return (
@@ -124,128 +258,6 @@ export default function TestPage() {
     );
   }
 
-  const siteInfo: SiteInfo = {
-    bgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/englishweb-5a6ce.appspot.com/o/static%2Fbg_test.png?alt=media",
-    title: test.title || "Test",
-  };
-
-  const renderTest = () => {
-    if (!submitTest || !test) return null;
-
-    switch (test.type) {
-      case TestTypeEnum.MIXING:
-        if (testParts && testParts.length > 0) {
-          return (
-            <MixingTest 
-            test={test}
-              mixingTestParts={testParts}
-              submitTestId={submitTest.id}
-            />
-          );
-        }
-        break;
-        
-      case TestTypeEnum.READING:
-        if (readingPart && readingPart.questions && readingPart.questions.length > 0) {
-          return (
-            <ReadingTest 
-            test={test}
-              testReadings={readingPart.questions}
-              submitTestId={submitTest.id}
-            />
-          );
-        }
-        break;
-        
-      case TestTypeEnum.LISTENING:
-        if (listeningPart && listeningPart.questions && listeningPart.questions.length > 0) {
-          return (
-            <ListeningTest 
-            test={test}
-              testListenings={listeningPart.questions}
-              submitTestId={submitTest.id}
-            />
-          );
-        }
-        break;
-        
-      case TestTypeEnum.SPEAKING:
-        if (speakingPart && speakingPart.questions && speakingPart.questions.length > 0) {
-          return (
-            <SpeakingTest 
-            test={test}
-              testSpeakings={speakingPart.questions}
-              submitTestId={submitTest.id}
-            />
-          );
-        }
-        break;
-        
-      case TestTypeEnum.WRITING:
-        if (writingPart && writingPart.questions && writingPart.questions.length > 0) {
-          return (
-            <WritingTest 
-            test={test}
-              testWritings={writingPart.questions}
-              submitTestId={submitTest.id}
-            />
-          );
-        }
-        break;
-        
-      default:
-        return (
-          <Box 
-            component={Paper} 
-            elevation={3}
-            sx={{ 
-              p: 4, 
-              textAlign: "center", 
-              mt: 4,
-              maxWidth: '600px',
-              mx: 'auto',
-              borderRadius: '1rem',
-              backgroundColor: isDarkMode ? color.gray800 : color.white,
-              color: isDarkMode ? color.gray100 : color.gray900
-            }}
-          >
-            <Typography variant="h5" gutterBottom>
-              Unsupported test type
-            </Typography>
-            <Typography variant="body1">
-              This test type is not yet supported or no content is available.
-            </Typography>
-          </Box>
-        );
-    }
-    
-    // Fallback in case the specific test part is not available
-    return (
-      <Box 
-        component={Paper} 
-        elevation={3}
-        sx={{ 
-          p: 4, 
-          textAlign: "center", 
-          mt: 4,
-          maxWidth: '600px',
-          mx: 'auto',
-          borderRadius: '1rem',
-          backgroundColor: isDarkMode ? color.gray800 : color.white,
-          color: isDarkMode ? color.gray100 : color.gray900
-        }}
-      >
-        <Typography variant="h5" gutterBottom>
-          Test content unavailable
-        </Typography>
-        <Typography variant="body1">
-          The content for this test is not available. Please try another test.
-        </Typography>
-      </Box>
-    );
-  };
-
   return (
     <Box 
       sx={{ 
@@ -266,7 +278,7 @@ export default function TestPage() {
           px: { xs: 2, md: 4 }
         }}
       >
-        {renderTest()}
+        {renderTest}
       </Box>
     </Box>
   );
