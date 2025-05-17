@@ -85,14 +85,6 @@ export default function CompetitionsHeader({
   const handleCreateCompetition = async () => {
     try {
       await createCompetition(newCompetition);
-      setNewCompetition({
-        title: "",
-        duration: 60,
-        totalQuestions: null,
-        status: true,
-        startTime: new Date(new Date().setHours(new Date().getHours() + 1)),
-        endTime: new Date(new Date().setHours(new Date().getHours() + 3)),
-      });
       handleOpenCreateDialog();
     } catch (error) {
       console.error("Error creating competition:", error);

@@ -151,8 +151,7 @@ const useWritingTest = (testWritingIds: number[], submitTestId: number) => {
       setIsSubmitDialogOpen(true);
       
       const totalQuestions = allQuestions.length;
- 
-      const testWritingRes = await testWritingService.getByIdsAndStatus(testWritingIds,true);
+      const testWritingRes = await testWritingService.getByIdsAndStatus(testWritingIds, true);
       const testWritings = testWritingRes.data || [];
       
       const writingRes = await submitTestWritingService.findBySubmitTestIdAndTestWritingIds(
@@ -170,14 +169,20 @@ const useWritingTest = (testWritingIds: number[], submitTestId: number) => {
         setSubmissionResult(result);
         
         if (submitTestId) {
-          await submitTestService.patch(submitTestId, { 
+          await submitTestService.patch(submitTestId, {
             score: 0,
-            status: true 
+            status: true
           });
         }
         
         return;
       }
+      
+
+      const writingCount = testWritings.length;
+      
+  
+      const maxScorePerWriting = writingCount > 0 ? 100 / writingCount : 0;
       
       let totalScore = 0;
       let answeredQuestions = 0;
@@ -191,60 +196,58 @@ const useWritingTest = (testWritingIds: number[], submitTestId: number) => {
         writing: []
       };
       
-      // Xử lý từng câu trả lời writing
+
       for (const answer of writingRes.data as SubmitTestWriting[]) {
         if (answer.content && answer.content.trim()) {
           const testWriting = testWritings.find((tw: TestWriting) => tw.id === answer.testWriting_id);
           
           if (testWriting?.topic) {
-            // Thêm vào dữ liệu comment
+   
             commentRequestData.writing.push({
               topic: testWriting.topic,
               userAnswer: answer.content
             });
-            
-            // Chấm điểm
+
             const scoreResult = await scoreWritingService.scoreWriting(answer.content, testWriting.topic);
             
             if (scoreResult.data) {
-              const numericScore = parseFloat(scoreResult.data.score);
-              
-              // Cập nhật điểm và comment cho bài viết
+
+              const rawScore = parseFloat(scoreResult.data.score);
+       
+              const actualScore = (rawScore / 100) * maxScorePerWriting;
+    
               await submitTestWritingService.update(answer.id, {
                 ...answer,
-                score: numericScore,
+                score: actualScore, 
                 comment: scoreResult.data.feedback || ""
               });
               
-              totalScore += numericScore;
+              totalScore += actualScore;
               answeredQuestions++;
             }
           }
         }
       }
       
-      // Tính điểm trung bình (thang điểm 100)
-      const avgScore = answeredQuestions > 0 ? totalScore / answeredQuestions : 0;
-      
-      // Lấy comment
+
       const commentResponse = await commentTestService.commentTest(commentRequestData);
       
-      // Kết quả cuối cùng
+
       const result = {
         totalQuestions,
         correctAnswers: answeredQuestions,
-        score: avgScore,
+        score: totalScore,
         comment: commentResponse.data.feedback,
         strengths: commentResponse.data.strengths,
         areasToImprove: commentResponse.data.areasToImprove
       };
       
-      // Cập nhật kết quả vào database
+
       if (submitTestId) {
-        await submitTestService.patch(submitTestId, { 
-          score: avgScore,
+        await submitTestService.patch(submitTestId, {
+          score: totalScore,
           comment: commentResponse.data.feedback,
-          status: true 
+          status: true
         });
       }
       

@@ -24,6 +24,7 @@ export default function QuestionTest({
 }: QuestionTestProps) {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
+console.log(question);
 
   const options = question.answers.map((item) => ({
     value: item.id,

@@ -214,9 +214,10 @@ export default function CompetitionTest() {
         {!isSmallScreen && (
           <Grid item md={3} lg={4}>
         <TimeRemaining endTime={endTime} onTimeout={handleSubmitTest}  duration={competition?.duration || 0}
- />
+        />
             <Box sx={{ mt: 3 }}>
               <TestQuestionGrid
+                key={submitCompetition.id}
                 questionItems={allQuestions}
                 onQuestionSelect={handleQuestionSelect}
                 onSubmitTest={handleOpenConfirmDialog}

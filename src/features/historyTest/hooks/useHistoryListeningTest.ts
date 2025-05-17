@@ -1,69 +1,155 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import {
   testListeningService,
   questionService,
   submitTestAnswerService
 } from "services";
+import { Question, TestPartTypeEnum } from "interfaces";
+
+interface UseHistoryListeningTestProps {
+  testListeningIds: number[];
+  submitTestId: number;
+}
+
+export interface QuestionItemWithMeta extends Question {
+  serial: number;
+  selectedAnswerId?: number;
+  isCorrect: boolean;
+}
+
+export interface ListeningItem {
+  id: number;
+  audio: string;
+  transcript?: string;
+  questions: QuestionItemWithMeta[];
+  startSerial: number;
+  endSerial: number;
+}
 
 export default function useHistoryListeningTest({
   testListeningIds,
-  submitTestId,
-}: {
-  testListeningIds: number[];
-  submitTestId: number;
-}) {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [listeningItems, setListeningItems] = useState<any[]>([]);
-  const [allQuestions, setAllQuestions] = useState<any[]>([]);
+  submitTestId
+}: UseHistoryListeningTestProps) {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<boolean>(false);
+  const [listeningItems, setListeningItems] = useState<ListeningItem[]>([]);
+  const [allQuestions, setAllQuestions] = useState<QuestionItemWithMeta[]>([]);
   const questionRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
+  // Fetch data on component mount
   useEffect(() => {
     const fetchData = async () => {
+      if (!testListeningIds.length || !submitTestId) {
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
-        setError(false);
 
-        const res = await testListeningService.getByIdsAndStatus(testListeningIds,true);
-        const listenings = res.data || [];
-
-        const questionIds = listenings.flatMap((item: any) => item.questions || []);
-        const questionsRes = await questionService.getByIdsAndStatus(questionIds,true);
-        const allQ = questionsRes.data || [];
-
-        const answersRes = await submitTestAnswerService.findBySubmitTestIdAndQuestionIds(
-          submitTestId,
-          questionIds
+        // 1. Fetch listening items
+        const listeningsRes = await testListeningService.getByIdsAndStatus(
+          testListeningIds, 
+          true
         );
+        const listenings = listeningsRes.data || [];
 
-        const selectedMap: Record<number, number> = {};
-        (answersRes?.data || []).forEach((ans: any) => {
-          selectedMap[ans.question_id] = ans.answer_id;
+        if (!listenings.length) {
+          setListeningItems([]);
+          setAllQuestions([]);
+          setLoading(false);
+          return;
+        }
+
+        // 2. Get all question IDs from all listening items
+        const allQuestionIds: number[] = [];
+        listenings.forEach((listening: any) => {
+          if (Array.isArray(listening.questions)) {
+            allQuestionIds.push(...listening.questions);
+          }
         });
 
-        let currentSerial = 1;
-        const result = listenings.map((item: any) => {
-          const questions = (item.questions || []).map((qId: number) => {
-            const q = allQ.find((q: any) => q.id === qId);
-            return {
-              ...q,
-              serial: currentSerial++,
-              selectedAnswerId: selectedMap[qId],
-              isCorrect: q?.answers?.find((a: any) => a.id === selectedMap[qId])?.correct ?? false,
+        if (!allQuestionIds.length) {
+          setListeningItems([]);
+          setAllQuestions([]);
+          setLoading(false);
+          return;
+        }
+
+        // 3. Fetch questions and user answers in parallel
+        const [questionsRes, answersRes] = await Promise.all([
+          questionService.getByIdsAndStatus(allQuestionIds, true),
+          submitTestAnswerService.findBySubmitTestIdAndQuestionIds(
+            submitTestId, 
+            allQuestionIds
+          )
+        ]);
+
+        const questionsData = questionsRes.data || [];
+        const answersData = answersRes.data || [];
+
+        // 4. Create lookup maps
+        const questionsMap: Record<number, Question> = {};
+        questionsData.forEach((q: Question) => {
+          questionsMap[q.id] = q;
+        });
+
+        const answersMap: Record<number, number> = {};
+        answersData.forEach((a: any) => {
+          answersMap[a.question_id] = a.answer_id;
+        });
+
+        // 5. Process listenings with serial numbers
+        let serial = 1;
+        const processedListenings: ListeningItem[] = [];
+        const processedQuestions: QuestionItemWithMeta[] = [];
+
+        for (const listening of listenings) {
+          if (!listening.questions || listening.questions.length === 0) {
+            continue;
+          }
+
+          const listeningQuestions: QuestionItemWithMeta[] = [];
+          const startSerial = serial;
+
+          for (const questionId of listening.questions) {
+            const questionData = questionsMap[questionId];
+            if (!questionData) continue;
+
+            const selectedAnswerId = answersMap[questionId];
+            
+            const correctAnswerId = questionData.answers?.find(
+              (a: any) => a.correct === true
+            )?.id;
+            
+            const isCorrect = selectedAnswerId === correctAnswerId;
+
+            const processedQuestion: QuestionItemWithMeta = {
+              ...questionData,
+              serial,
+              selectedAnswerId,
+              isCorrect
             };
-          });
 
-          return {
-            id: item.id,
-            audio: item.audio,
-            questions,
-            startSerial: questions[0]?.serial || 1,
-            endSerial: questions[questions.length - 1]?.serial || 1,
-          };
-        });
+            listeningQuestions.push(processedQuestion);
+            processedQuestions.push(processedQuestion);
+            serial++;
+          }
 
-        setListeningItems(result);
-        setAllQuestions(result.flatMap((i: any) => i.questions));
+          if (listeningQuestions.length > 0) {
+            processedListenings.push({
+              id: listening.id,
+              audio: listening.audio,
+              transcript: listening.transcript,
+              questions: listeningQuestions,
+              startSerial,
+              endSerial: serial - 1
+            });
+          }
+        }
+
+        setListeningItems(processedListenings);
+        setAllQuestions(processedQuestions);
       } catch (err) {
         console.error("Error loading history listening test:", err);
         setError(true);
@@ -72,18 +158,19 @@ export default function useHistoryListeningTest({
       }
     };
 
-    if (testListeningIds.length > 0 && submitTestId) {
-      fetchData();
-    }
+    fetchData();
   }, [testListeningIds, submitTestId]);
+
+  // Method to set question refs for scrolling - use useCallback to prevent infinite loops
+  const setQuestionRef = useCallback((id: number, el: HTMLDivElement | null) => {
+    questionRefs.current[id] = el;
+  }, []);
 
   return {
     loading,
     error,
     listeningItems,
     allQuestions,
-    setQuestionRef: (id: number, el: HTMLDivElement | null) => {
-      questionRefs.current[id] = el;
-    },
+    setQuestionRef
   };
 }

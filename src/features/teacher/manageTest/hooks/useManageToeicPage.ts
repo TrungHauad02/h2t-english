@@ -75,9 +75,10 @@ export default function useManageToeicPage() {
   const createToeicTest = async (toeicData: Partial<Toeic>) => {
     try {
       toeicData.ownerId = userId;
+      toeicData.status = false;
    
       const newToeic = await toeicService.create(toeicData as Toeic);
-      
+     
       await fetchData();
       toast.success("TOEIC test created successfully");
       return newToeic;

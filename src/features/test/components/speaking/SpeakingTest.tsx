@@ -509,6 +509,7 @@ export default function SpeakingTest({ testSpeakings, submitTestId,test }: Speak
           <Grid item xs={12}>
             <Box sx={{ mt: 2 }}>
               <TestQuestionGrid 
+                key={submitTestId}
                 questionItems={allQuestions.map(q => ({
                   serialNumber: q.serialNumber,
                   questionId: q.id,

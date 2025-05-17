@@ -230,6 +230,7 @@ const ToeicTest: React.FC = () => {
 
   const isReadingSection = [7, 8, 9].includes(step);
   const isListeningSection = [3, 4, 5, 6].includes(step);
+  const showSubmitButton = step >= 3; // Hiện nút Submit từ khi bắt đầu phần thi
 
   // Loading state
   if (loading) {
@@ -398,45 +399,69 @@ const ToeicTest: React.FC = () => {
           Back
         </Button>
         
-        {/* Next/Submit Button */}
-        <Button
-          variant="contained"
-          onClick={() => {
-            if (isLastQuestion()) {
-              handleSubmitClick();
-            } else if (isReadingSection) {
-              nextReading();
-            } else {
-              setStep((prev) => prev + 1);
-            }
-          }}
-          disabled={!canGoNext() && !isLastQuestion()}
-          sx={{
-            px: 3,
-            py: 1.2,
-            bgcolor: isLastQuestion() 
-              ? color.green600 
-              : color.emerald500,
-            color: color.white,
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            borderRadius: 1,
-            minWidth: 100,
-            boxShadow: 2,
-            '&:hover': {
-              bgcolor: isLastQuestion() 
-                ? color.green700 
-                : color.emerald600,
-              boxShadow: 3,
-            },
-            '&:disabled': {
-              bgcolor: isDarkMode ? color.gray700 : color.gray300,
-              color: isDarkMode ? color.gray500 : color.gray400,
-            }
-          }}
-        >
-          {isLastQuestion() ? 'Submit' : 'Next'}
-        </Button>
+        {/* Button Container - Right Side */}
+        <Box sx={{ display: 'flex', gap: 2 }}>
+    
+        {showSubmitButton && (
+            <Button
+              variant="contained"
+              onClick={handleSubmitClick}
+              sx={{
+                px: 3,
+                py: 1.2,
+                bgcolor: color.green600,
+                color: color.white,
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                borderRadius: 1,
+                minWidth: 100,
+                boxShadow: 2,
+                '&:hover': {
+                  bgcolor: color.green700,
+                  boxShadow: 3,
+                }
+              }}
+            >
+              Submit
+            </Button>
+          )}
+          
+          <Button
+            variant="contained"
+            onClick={() => {
+              if (isReadingSection) {
+                nextReading();
+              } else {
+                setStep((prev) => prev + 1);
+              }
+            }}
+            disabled={!canGoNext()}
+            sx={{
+              px: 3,
+              py: 1.2,
+              bgcolor: color.emerald500,
+              color: color.white,
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              borderRadius: 1,
+              minWidth: 100,
+              boxShadow: 2,
+              display: isLastQuestion() ? 'none' : 'block', // Ẩn khi câu hỏi cuối cùng
+              '&:hover': {
+                bgcolor: color.emerald600,
+                boxShadow: 3,
+              },
+              '&:disabled': {
+                bgcolor: isDarkMode ? color.gray700 : color.gray300,
+                color: isDarkMode ? color.gray500 : color.gray400,
+              }
+            }}
+          >
+            Next
+          </Button>
+          
+      
+        </Box>
       </Box>
 
       {/* Dialogs */}

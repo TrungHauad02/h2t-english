@@ -35,50 +35,47 @@ export default function TestItem({ toeic }: { toeic: Toeic }) {
   const scorePercentage = toeic?.scoreLastOfTest
     ? (toeic.scoreLastOfTest / 990) * 100
     : 0;
-
-  // Determine status chip color and text based on score
-  const getStatusInfo = () => {
-    if (!toeic?.scoreLastOfTest) {
-      return {
-        label: "New",
-        color: isDarkMode ? color.infoDarkMode : color.info,
-        textColor: color.white,
-        bgColor: isDarkMode ? `${color.infoDarkMode}20` : `${color.info}15`,
-      };
-    } else if (toeic.scoreLastOfTest >= 80) {
-      return {
-        label: "Excellent",
-        color: isDarkMode ? color.successDarkMode : color.success,
-        textColor: color.white,
-        bgColor: isDarkMode
-          ? `${color.successDarkMode}20`
-          : `${color.success}15`,
-      };
-    } else if (toeic.scoreLastOfTest >= 60) {
-      return {
-        label: "Good",
-        color: isDarkMode ? color.teal700 : color.teal600,
-        textColor: color.white,
-        bgColor: isDarkMode ? `${color.teal700}20` : `${color.teal600}15`,
-      };
-    } else if (toeic.scoreLastOfTest >= 40) {
-      return {
-        label: "Average",
-        color: isDarkMode ? color.warningDarkMode : color.warning,
-        textColor: isDarkMode ? color.gray900 : color.gray900,
-        bgColor: isDarkMode
-          ? `${color.warningDarkMode}20`
-          : `${color.warning}15`,
-      };
-    } else {
-      return {
-        label: "Need Practice",
-        color: isDarkMode ? color.errorDarkMode : color.error,
-        textColor: color.white,
-        bgColor: isDarkMode ? `${color.errorDarkMode}20` : `${color.error}15`,
-      };
-    }
-  };
+    const getStatusInfo = () => {
+      const score = toeic?.scoreLastOfTest;
+    
+      if (!score) {
+        return {
+          label: "New",
+          color: isDarkMode ? color.infoDarkMode : color.info,
+          textColor: color.white,
+          bgColor: isDarkMode ? `${color.infoDarkMode}20` : `${color.info}15`,
+        };
+      } else if (score >= 905) {
+        return {
+          label: "Excellent",
+          color: isDarkMode ? color.successDarkMode : color.success,
+          textColor: color.white,
+          bgColor: isDarkMode ? `${color.successDarkMode}20` : `${color.success}15`,
+        };
+      } else if (score >= 785) {
+        return {
+          label: "Good",
+          color: isDarkMode ? color.teal700 : color.teal600,
+          textColor: color.white,
+          bgColor: isDarkMode ? `${color.teal700}20` : `${color.teal600}15`,
+        };
+      } else if (score >= 605) {
+        return {
+          label: "Average",
+          color: isDarkMode ? color.warningDarkMode : color.warning,
+          textColor: color.gray900,
+          bgColor: isDarkMode ? `${color.warningDarkMode}20` : `${color.warning}15`,
+        };
+      } else {
+        return {
+          label: "Need Practice",
+          color: isDarkMode ? color.errorDarkMode : color.error,
+          textColor: color.white,
+          bgColor: isDarkMode ? `${color.errorDarkMode}20` : `${color.error}15`,
+        };
+      }
+    };
+    
 
   const statusInfo = getStatusInfo();
 

@@ -354,7 +354,6 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
   
     return file;
   };
-  
   const handleSubmitTest = useCallback(async () => {
     if (!submitTestId) return;
     
@@ -364,7 +363,7 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
       setIsSubmitDialogOpen(true);
       
       const totalQuestions = allQuestions.length;
-      const speakingRes = await testSpeakingService.getByIdsAndStatus(testSpeakingIds,true);
+      const speakingRes = await testSpeakingService.getByIdsAndStatus(testSpeakingIds, true);
       const speakingItems = speakingRes.data || [];
       
       const allQuestionIds: number[] = [];
@@ -387,17 +386,23 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
         setSubmissionResult(result);
         
         if (submitTestId) {
-          await submitTestService.patch(submitTestId, { 
+          await submitTestService.patch(submitTestId, {
             score: 0,
-            status: true 
+            status: true
           });
         }
         
         return;
       }
       
-      const questionRes = await questionService.getByIdsAndStatus(allQuestionIds,true);
+      const questionRes = await questionService.getByIdsAndStatus(allQuestionIds, true);
       const questions = questionRes.data || [];
+      
+  
+      const questionCount = questions.length;
+      
+
+      const maxScorePerQuestion = questionCount > 0 ? 100 / questionCount : 0;
       
       let totalScore = 0;
       let answeredQuestions = 0;
@@ -423,18 +428,23 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
             const scoreResult = await scoreSpeakingService.evaluateSpeechInTopic(file, expectedText);
             
             if (scoreResult.data) {
-              const numericScore = parseFloat(scoreResult.data.score);
+            
+              const rawScore = parseFloat(scoreResult.data.score);
               
+         
+              const actualScore = (rawScore / 100) * maxScorePerQuestion;
+              
+
               await submitTestSpeakingService.update(answer.id, {
                 ...answer,
-                score: numericScore,
+                score: actualScore, 
                 transcript: scoreResult.data.transcript,
                 comment: scoreResult.data.feedback
               });
-              
-              totalScore += numericScore;
+     
+              totalScore += actualScore;
               answeredQuestions++;
-         
+              
               commentRequestData.speaking.push({
                 question: expectedText,
                 transcript: scoreResult.data.transcript || ""
@@ -445,27 +455,24 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
           }
         }
       }
- 
-      const avgScore = answeredQuestions > 0 ? totalScore / answeredQuestions : 0;
       
-    
+
       const commentResponse = await commentTestService.commentTest(commentRequestData);
       
       const result = {
         totalQuestions,
         correctAnswers: answeredQuestions,
-        score: avgScore,
+        score: totalScore, 
         comment: commentResponse.data.feedback,
         strengths: commentResponse.data.strengths,
         areasToImprove: commentResponse.data.areasToImprove
       };
       
-
       if (submitTestId) {
-        await submitTestService.patch(submitTestId, { 
-          score: avgScore,
+        await submitTestService.patch(submitTestId, {
+          score: totalScore,
           comment: commentResponse.data.feedback,
-          status: true 
+          status: true
         });
       }
       
@@ -477,7 +484,6 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
       setIsSubmitting(false);
     }
   }, [submitTestId, testSpeakingIds, allQuestions]);
-  
   const closeSubmitDialog = () => {
     setIsSubmitDialogOpen(false);
   };

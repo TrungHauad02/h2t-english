@@ -106,7 +106,8 @@ const useReadingTest = (testReadingIds: number[], submitTestId: number) => {
       setLoading(false);
       setError(true);
     }
-  }, [testReadingIds, submitTestId]);
+    
+  }, [submitTestId]);
 
   // Update time counter
   useEffect(() => {
@@ -172,7 +173,7 @@ const useReadingTest = (testReadingIds: number[], submitTestId: number) => {
           submitTestId,
           questionIds
         );
-        
+
         if (answersRes?.data?.length) {
  
           const questionRes = await questionService.getByIdsAndStatus(questionIds,true);

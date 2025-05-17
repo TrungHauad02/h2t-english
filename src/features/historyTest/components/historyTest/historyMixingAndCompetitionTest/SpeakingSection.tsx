@@ -794,7 +794,7 @@ export default function SpeakingSection({
                                       mt: 2
                                     }}
                                   >
-                                    Teacher Feedback
+                                    AI Feedback
                                   </Typography>
                                   
                                   <Box 

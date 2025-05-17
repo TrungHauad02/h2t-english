@@ -91,7 +91,9 @@ export interface Toeic extends BaseEntity {
   questionsPart5?: number[];
   questionsPart6?: number[];
   questionsPart7?: number[];  
-  totalQuestions?: 200;
+  totalQuestions: number;
+  readingQuestionTotal: number;
+  listeningQuestionTotal: number;
   scoreLastOfTest?: number | null ;
   ownerId : number;
 }

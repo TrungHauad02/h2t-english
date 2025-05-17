@@ -104,6 +104,7 @@ export default function useManageCompetitionsPage() {
     try {
 
       data.ownerId = userId;
+      data.status = false;
 
    
       const response = await competitionTestService.create(data as CompetitionTest);

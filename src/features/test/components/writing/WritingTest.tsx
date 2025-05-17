@@ -555,6 +555,7 @@ export default function WritingTest({ testWritings, submitTestId,test }: Writing
         </Grid>
         <Grid item xs={3}>
           <TestQuestionGrid 
+            key={submitTestId}
             questionItems={allQuestions.map(q => ({
               serialNumber: q.serialNumber,
               questionId: q.id,
@@ -562,7 +563,6 @@ export default function WritingTest({ testWritings, submitTestId,test }: Writing
               isAnswered: q.isAnswered
             }))}
             onQuestionSelect={(item) => {
-              console.log("Selected question:", item.questionId);
               setSelectedQuestionId(item.questionId);
             }}
             onSubmitTest={handleOpenConfirmDialog}
