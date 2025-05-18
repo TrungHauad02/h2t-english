@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { Box, Typography, Paper, CircularProgress, Alert } from "@mui/material";
 import { MainPictureSection } from "components/sections";
-import { SiteInfo } from "components/sections/types";
 import { TestTypeEnum } from "interfaces";
 import MixingTest from "../components/mixingAndCompetition/MixingTest";
 import {
@@ -47,7 +46,7 @@ export default function TestPage() {
             <MixingTest 
               test={test}
               mixingTestParts={testParts}
-              submitTestId={submitTest.id}
+              submitTest={submitTest}
             />
           );
         }
@@ -59,7 +58,7 @@ export default function TestPage() {
             <ReadingTest 
               test={test}
               testReadings={readingPart.questions}
-              submitTestId={submitTest.id}
+              submitTest={submitTest}
             />
           );
         }
@@ -71,7 +70,7 @@ export default function TestPage() {
             <ListeningTest 
               test={test}
               testListenings={listeningPart.questions}
-              submitTestId={submitTest.id}
+              submitTest={submitTest}
             />
           );
         }
@@ -83,7 +82,7 @@ export default function TestPage() {
             <SpeakingTest 
               test={test}
               testSpeakings={speakingPart.questions}
-              submitTestId={submitTest.id}
+              submitTest={submitTest}
             />
           );
         }
@@ -95,7 +94,7 @@ export default function TestPage() {
             <WritingTest 
               test={test}
               testWritings={writingPart.questions}
-              submitTestId={submitTest.id}
+              submitTest={submitTest}
             />
           );
         }

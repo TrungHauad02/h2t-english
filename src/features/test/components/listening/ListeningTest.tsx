@@ -29,14 +29,14 @@ import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import { Test } from "interfaces";
+import { Test, SubmitTest } from "interfaces";
 interface ListeningTestProps {
   testListenings: number[];
-  submitTestId: number;
+  submitTest : SubmitTest
   test: Test ;
 }
 
-export default function ListeningTest({ testListenings, submitTestId,test }: ListeningTestProps) {
+export default function ListeningTest({ testListenings, submitTest,test }: ListeningTestProps) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const color = useColor();
@@ -56,7 +56,6 @@ export default function ListeningTest({ testListenings, submitTestId,test }: Lis
     loading,
     error,
     allQuestions,
-    timeUsed,
     isSubmitting,
     isSubmitDialogOpen,
     isConfirmDialogOpen,
@@ -68,7 +67,7 @@ export default function ListeningTest({ testListenings, submitTestId,test }: Lis
     handleCloseConfirmDialog,
     handleSubmitTest,
     closeSubmitDialog
-  } = useListeningTest(testListenings, submitTestId);
+  } = useListeningTest(testListenings, submitTest.id);
 
   // Stats for confirm dialog
   const totalQuestions = allQuestions.length;
@@ -224,7 +223,7 @@ export default function ListeningTest({ testListenings, submitTestId,test }: Lis
       <Grid container spacing={3}>
   
         <Grid item xs={12}>
-        <TimeRemaining timeUsed={timeUsed}
+        <TimeRemaining createAt={submitTest?.createdAt ? new Date(submitTest.createdAt) : new Date()}
         duration={test.duration}
         onTimeUp={handleSubmitTest} />
         </Grid>
@@ -465,7 +464,7 @@ export default function ListeningTest({ testListenings, submitTestId,test }: Lis
                 <AnswerQuestionSection 
                   questions={listeningItem.questions} 
                   startSerial={listeningItem.startSerial} 
-                  submitTestId={submitTestId}
+                  submitTestId={submitTest.id}
                   partId={listeningItem.id}
                   selectedQuestionId={selectedQuestionId}
                   setQuestionRef={setQuestionRef}
@@ -585,7 +584,7 @@ export default function ListeningTest({ testListenings, submitTestId,test }: Lis
           <Grid item xs={12}>
             <Box sx={{ mt: 2 }}>
               <TestQuestionGrid 
-                     key={submitTestId}
+                     key={submitTest.id}
                 questionItems={allQuestions.map(q => ({
                   serialNumber: q.serialNumber,
                   questionId: q.id,
@@ -606,7 +605,7 @@ export default function ListeningTest({ testListenings, submitTestId,test }: Lis
       {/* Sử dụng SubmitTestDialogSingle thay vì SubmitTestDialog */}
       <SubmitTestDialogSingle
         open={isSubmitDialogOpen}
-        submitTestId={submitTestId}
+        submitTestId={submitTest.id}
         onClose={closeSubmitDialog}
         isLoading={isSubmitting}
         result={submissionResult}
