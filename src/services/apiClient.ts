@@ -35,8 +35,12 @@ apiClient.interceptors.response.use(
     };
 
     if (error.response?.status === 401 && !originalRequest._retry) {
+      const publicRoutes = ['/', '/login', '/register', '/forgot-password', '/ai-response-feedback'];
+      const currentPath = window.location.pathname;
+      if (publicRoutes.includes(currentPath)) {
+        return Promise.reject(error); // Chỉ reject lỗi, không chuyển hướng
+      }
       originalRequest._retry = true;
-
       try {
         const refreshToken =
           localStorage.getItem("refreshToken") ||
