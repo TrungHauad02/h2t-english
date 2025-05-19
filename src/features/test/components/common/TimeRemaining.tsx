@@ -6,30 +6,46 @@ import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 
 interface TimeRemainingProps {
-  timeUsed: number; // Time used in seconds (passed from parent)
-  duration: number; // Total duration in MINUTES
-  onTimeUp?: () => void; // Optional callback when time is up
+  createAt: Date;
+  duration: number;
+  onTimeUp?: () => void;
 }
 
 export default function TimeRemaining({ 
-  timeUsed,
+  createAt,
   duration,
   onTimeUp
 }: TimeRemainingProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   
+  const [timeUsed, setTimeUsed] = useState(0);
   const [isWarning, setIsWarning] = useState(false);
   const [hasTimeExpired, setHasTimeExpired] = useState(false);
   
-  // Convert duration from minutes to seconds
-  const durationInSeconds = duration * 60;
+  useEffect(() => {
+    if (!createAt) return;
+    
+    const updateTimeUsed = () => {
+      const createTime = new Date(createAt).getTime();
+      const currentTime = new Date().getTime();
+      const elapsedTimeInSeconds = Math.floor((currentTime - createTime) / 1000);
+      
+      setTimeUsed(elapsedTimeInSeconds);
+    };
+    
+    updateTimeUsed();
+    
+    const intervalId = setInterval(updateTimeUsed, 1000);
+    
+    return () => clearInterval(intervalId);
+  }, [createAt]);
   
-  // Calculate time remaining
+  const durationInSeconds = (duration || 0) * 60;
+  
   const timeRemaining = Math.max(0, durationInSeconds - timeUsed);
   const percentageUsed = Math.min(100, (timeUsed / durationInSeconds) * 100);
   
-  // Format time as HH:MM:SS
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -39,23 +55,19 @@ export default function TimeRemaining({
       .toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
   
-  // Determine color based on time remaining
   const getProgressColor = () => {
     if (percentageUsed > 90) return isDarkMode ? color.red500 : color.red600;
     if (percentageUsed > 75) return isDarkMode ? color.warning : color.warning;
     return isDarkMode ? color.emerald500 : color.emerald600;
   };
 
-  // Handle time warnings and expiration
   useEffect(() => {
-    // Show warning in last 5 minutes
     if (timeRemaining <= 300 && timeRemaining > 0) {
       setIsWarning(true);
     } else {
       setIsWarning(false);
     }
     
-    // Handle time expiration
     if (timeRemaining === 0 && !hasTimeExpired) {
       setHasTimeExpired(true);
       if (onTimeUp) {
@@ -64,7 +76,6 @@ export default function TimeRemaining({
     }
   }, [timeRemaining, hasTimeExpired, onTimeUp]);
 
-  // Flash effect for warning
   const warningAnimation = isWarning ? {
     animation: 'pulse 2s ease-in-out infinite',
     '@keyframes pulse': {

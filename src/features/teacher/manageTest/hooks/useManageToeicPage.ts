@@ -126,7 +126,7 @@ export default function useManageToeicPage() {
   };
 
   const publishToeicTest = (id: number, publish: boolean = true) => {
-    return updateToeicTest(id, { status: publish });
+    return toeicService.patch(id, { status: publish });
   };
 
   // Derive properties for backward compatibility with components

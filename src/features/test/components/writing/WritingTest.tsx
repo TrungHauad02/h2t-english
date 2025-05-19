@@ -25,14 +25,14 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import CreateIcon from "@mui/icons-material/Create";
-import { Test } from "interfaces";
+import { Test, SubmitTest } from "interfaces";
 interface WritingTestProps {
   testWritings: number[];
-  submitTestId: number;
+  submitTest : SubmitTest
   test : Test,
 }
 
-export default function WritingTest({ testWritings, submitTestId,test }: WritingTestProps) {
+export default function WritingTest({ testWritings, submitTest,test }: WritingTestProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const color = useColor();
@@ -46,7 +46,6 @@ export default function WritingTest({ testWritings, submitTestId,test }: Writing
     loading,
     error,
     allQuestions,
-    timeUsed,
     isSubmitting,
     isSubmitDialogOpen,
     isConfirmDialogOpen,
@@ -64,7 +63,7 @@ export default function WritingTest({ testWritings, submitTestId,test }: Writing
     getCurrentPrompt,
     handleEssayChange,
     getCurrentEssay,
-  } = useWritingTest(testWritings, submitTestId);
+  } = useWritingTest(testWritings, submitTest.id);
 
   const totalQuestions = allQuestions.length;
   const answeredQuestions = allQuestions.filter(q => q.isAnswered).length;
@@ -186,7 +185,7 @@ export default function WritingTest({ testWritings, submitTestId,test }: Writing
       
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <TimeRemaining timeUsed={timeUsed}
+        <TimeRemaining createAt={submitTest?.createdAt ? new Date(submitTest.createdAt) : new Date()} 
         duration={test.duration}
         onTimeUp={handleSubmitTest} />
         </Grid>
@@ -555,7 +554,7 @@ export default function WritingTest({ testWritings, submitTestId,test }: Writing
         </Grid>
         <Grid item xs={3}>
           <TestQuestionGrid 
-            key={submitTestId}
+            key={submitTest.id}
             questionItems={allQuestions.map(q => ({
               serialNumber: q.serialNumber,
               questionId: q.id,
@@ -573,7 +572,7 @@ export default function WritingTest({ testWritings, submitTestId,test }: Writing
 
       <SubmitTestDialogSingle
         open={isSubmitDialogOpen}
-        submitTestId={submitTestId}
+        submitTestId={submitTest.id}
         onClose={closeSubmitDialog}
         isLoading={isSubmitting}
         result={submissionResult}

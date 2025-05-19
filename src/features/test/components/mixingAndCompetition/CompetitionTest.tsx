@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { Grid, useMediaQuery, useTheme, Box } from "@mui/material";
 import TestTabs from "./TestTabs";
 import { TestPartTypeEnum } from "interfaces";
@@ -24,7 +24,6 @@ export default function CompetitionTest() {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  const [hasSubmitted, setHasSubmitted] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   const {
@@ -166,7 +165,7 @@ export default function CompetitionTest() {
       <Grid container spacing={2}>
         {isSmallScreen && (
           <Grid item xs={12}>
-         <TimeRemaining endTime={endTime} onTimeout={handleSubmitTest} 
+         <TimeRemaining createAt={submitCompetition?.createdAt ? new Date(submitCompetition.createdAt) : new Date()} endTime={endTime} onTimeout={handleSubmitTest} 
          duration={competition?.duration || 0}
  />
 
@@ -213,7 +212,9 @@ export default function CompetitionTest() {
 
         {!isSmallScreen && (
           <Grid item md={3} lg={4}>
-        <TimeRemaining endTime={endTime} onTimeout={handleSubmitTest}  duration={competition?.duration || 0}
+        <TimeRemaining
+        createAt={submitCompetition?.createdAt ? new Date(submitCompetition.createdAt) : new Date()}
+         endTime={endTime} onTimeout={handleSubmitTest}  duration={competition?.duration || 0}
         />
             <Box sx={{ mt: 3 }}>
               <TestQuestionGrid

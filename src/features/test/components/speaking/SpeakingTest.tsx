@@ -27,14 +27,14 @@ import {
   NavigationFooter, 
   TestSpeakingHeader 
 } from "../mixingAndCompetition/speakingSection/";
-import { Test } from "interfaces";
+import { Test, SubmitTest } from "interfaces";
 interface SpeakingTestProps {
   testSpeakings: number[];
-  submitTestId: number;
+  submitTest : SubmitTest
   test : Test,
 }
 
-export default function SpeakingTest({ testSpeakings, submitTestId,test }: SpeakingTestProps) {
+export default function SpeakingTest({ testSpeakings, submitTest,test }: SpeakingTestProps) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const color = useColor();
@@ -55,7 +55,6 @@ export default function SpeakingTest({ testSpeakings, submitTestId,test }: Speak
     loading,
     error,
     allQuestions,
-    timeUsed,
     isSubmitting,
     isSubmitDialogOpen,
     isConfirmDialogOpen,
@@ -79,7 +78,7 @@ export default function SpeakingTest({ testSpeakings, submitTestId,test }: Speak
     closeSubmitDialog,
     getCurrentTest,
     getCurrentQuestion,
-  } = useSpeakingTest(testSpeakings, submitTestId);
+  } = useSpeakingTest(testSpeakings, submitTest.id);
 
   const totalQuestions = allQuestions.length;
   const answeredQuestions = allQuestions.filter(q => q.isAnswered).length;
@@ -268,7 +267,7 @@ export default function SpeakingTest({ testSpeakings, submitTestId,test }: Speak
       <Grid container spacing={3}>
         {/* Top section with TimeRemaining and progress for both mobile and desktop */}
         <Grid item xs={12}>
-        <TimeRemaining timeUsed={timeUsed}
+        <TimeRemaining createAt={submitTest?.createdAt ? new Date(submitTest.createdAt) : new Date()}
         duration={test.duration}
         onTimeUp={handleSubmitTest} />
         </Grid>
@@ -509,7 +508,7 @@ export default function SpeakingTest({ testSpeakings, submitTestId,test }: Speak
           <Grid item xs={12}>
             <Box sx={{ mt: 2 }}>
               <TestQuestionGrid 
-                key={submitTestId}
+                key={submitTest.id}
                 questionItems={allQuestions.map(q => ({
                   serialNumber: q.serialNumber,
                   questionId: q.id,
@@ -530,7 +529,7 @@ export default function SpeakingTest({ testSpeakings, submitTestId,test }: Speak
       {/* Sử dụng SubmitTestDialogSingle thay vì SubmitTestDialog */}
       <SubmitTestDialogSingle
         open={isSubmitDialogOpen}
-        submitTestId={submitTestId}
+        submitTestId={submitTest.id}
         onClose={closeSubmitDialog}
         isLoading={isSubmitting}
         result={submissionResult}

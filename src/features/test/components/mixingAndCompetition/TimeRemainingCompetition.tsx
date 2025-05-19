@@ -5,55 +5,75 @@ import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 
 interface TimeRemainingProps {
+  createAt: Date | string;
   endTime: Date | string;
-  onTimeout?: () => void; 
   duration: number; 
+  onTimeout?: () => void;
 }
 
-export default function TimeRemaining({ endTime, onTimeout,duration }: TimeRemainingProps) {
+export default function TimeRemaining({ 
+  createAt, 
+  endTime, 
+  duration, 
+  onTimeout 
+}: TimeRemainingProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+console.log(createAt, endTime, duration);
 
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [percentageRemaining, setPercentageRemaining] = useState<number>(100);
-  const [hasSubmitted, setHasSubmitted] = useState<boolean>(false); // Tránh gọi lại nhiều lần
+  const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
 
   useEffect(() => {
-    const endDateObj = typeof endTime === "string" ? new Date(endTime) : endTime;
+    const createAtObj = typeof createAt === "string" ? new Date(createAt) : createAt;
+    const endTimeObj = typeof endTime === "string" ? new Date(endTime) : endTime;
+    const durationInMs = duration * 60 * 1000;
 
     const calculateTimeRemaining = () => {
       const now = new Date();
-      const diff = endDateObj.getTime() - now.getTime();
+      let remainingTime;
 
-      if (diff <= 0) {
-        setTimeRemaining(0);
-        setPercentageRemaining(0);
-
-        if (!hasSubmitted && onTimeout) {
-          onTimeout();
-          setHasSubmitted(true); // Đánh dấu đã gọi
-        }
-
-        return;
+      const timeBetweenEndAndCreate = endTimeObj.getTime() - createAtObj.getTime();
+      
+      if (timeBetweenEndAndCreate < durationInMs) {
+    
+        remainingTime = endTimeObj.getTime() - now.getTime();
+      } else {
+     
+        const expectedEndTime = new Date(createAtObj.getTime() + durationInMs);
+        remainingTime = expectedEndTime.getTime() - now.getTime();
       }
 
-      const seconds = Math.floor(diff / 1000);
-      setTimeRemaining(seconds);
+      // Chuyển từ ms sang seconds và đảm bảo không âm
+      const remainingSeconds = Math.max(0, Math.floor(remainingTime / 1000));
+      setTimeRemaining(remainingSeconds);
 
-      const totalDuration = (duration !== undefined && duration > 0) ? duration * 60 : 2 * 60 * 60;
-
-      const remainingPercentage = (seconds / totalDuration) * 100;
+      const totalDurationInSeconds = duration * 60;
+      const remainingPercentage = (remainingSeconds / totalDurationInSeconds) * 100;
       setPercentageRemaining(Math.min(100, Math.max(0, remainingPercentage)));
+
+  
+      if (remainingSeconds <= 0 && !hasSubmitted && onTimeout) {
+        onTimeout();
+        setHasSubmitted(true);
+      }
     };
 
     calculateTimeRemaining();
     const timer = setInterval(calculateTimeRemaining, 1000);
     return () => clearInterval(timer);
-  }, [endTime, onTimeout, hasSubmitted]);
+  }, [createAt, endTime, duration, onTimeout, hasSubmitted]);
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
+    const hours = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
+    
+    if (hours > 0) {
+      return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    }
+    
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
@@ -131,6 +151,33 @@ export default function TimeRemaining({ endTime, onTimeout,duration }: TimeRemai
       >
         <Typography variant="caption">
           {timeRemaining <= 0 ? "Time's up!" : "Competition in progress"}
+        </Typography>
+      </Box>
+          {/* Thời gian tổng cộng */}
+          <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center", 
+          mt: 2,
+          py: 0.75,
+          px: 1.5,
+          borderRadius: "8px",
+          backgroundColor: isDarkMode ? `${color.gray700}40` : `${color.gray100}90`,
+          fontSize: "0.75rem",
+        }}
+      >
+        <Typography 
+          variant="caption" 
+          sx={{ 
+            display: "flex",
+            alignItems: "center",
+            color: isDarkMode ? color.gray300 : color.gray700,
+            fontWeight: 500
+          }}
+        >
+          <AccessTimeIcon sx={{ fontSize: 14, mr: 0.5 }} />
+          Total Duration: {formatTime(duration * 60)}
         </Typography>
       </Box>
     </Paper>
