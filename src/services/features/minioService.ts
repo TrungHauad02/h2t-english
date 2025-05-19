@@ -8,7 +8,7 @@ const uploadFile = async (
   fileName: string
 ) => {
   try {
-    const response = await apiClient.post("minio", {
+    const response = await apiClient.post("/minio", {
       base64,
       path,
       randomName,
@@ -23,7 +23,7 @@ const uploadFile = async (
 
 const deleteFile = async (objectName: string) => {
   try {
-    const response = await apiClient.delete(`minio?objectName=${objectName}`);
+    const response = await apiClient.delete(`/minio?objectName=${objectName}`);
     return response.data;
   } catch (error) {
     console.error("Error deleting file:", error);

@@ -40,12 +40,12 @@ export default function ExpertiseSection({
     <Paper
       elevation={3}
       sx={{
-        width: "100%",
+        width: "85%",
         p: 2,
         borderRadius: 2,
         backgroundColor: isDarkMode
-          ? `${levelColors.primary}15` // 15% opacity version of the color
-          : `${levelColors.primary}10`, // 10% opacity version of the color
+          ? `${levelColors.primary}15`
+          : `${levelColors.primary}10`,
         border: `1px solid ${
           isDarkMode ? levelColors.primary : levelColors.secondary
         }`,

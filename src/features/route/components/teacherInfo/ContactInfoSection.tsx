@@ -18,11 +18,7 @@ export default function ContactInfoSection({
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   return (
-    <Stack
-      direction={isMobile ? "column" : "row"}
-      spacing={2}
-      sx={{ width: "100%", mb: 3 }}
-    >
+    <Stack direction={"column"} spacing={2} sx={{ width: "100%", mb: 3 }}>
       <Paper
         elevation={2}
         sx={{

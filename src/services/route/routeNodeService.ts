@@ -1,4 +1,4 @@
-import { RouteNode } from "interfaces";
+import { RouteNode, RouteNodeEnum } from "interfaces";
 import apiClient from "services/apiClient";
 
 const create = async (data: RouteNode) => {
@@ -41,9 +41,28 @@ const remove = async (id: number) => {
   }
 };
 
+const findByNodeIdAndRouteNodeType = async (
+  nodeId: number,
+  routeNodeType: RouteNodeEnum
+) => {
+  try {
+    const response = await apiClient.get(
+      `/routeNodes?nodeId=${nodeId}&type=${routeNodeType}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error getting route node by node id and route node type:",
+      error
+    );
+    throw error;
+  }
+};
+
 export const routeNodeService = {
   create,
   remove,
   update,
   patch,
+  findByNodeIdAndRouteNodeType,
 };
