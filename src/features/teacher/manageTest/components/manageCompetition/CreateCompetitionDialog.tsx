@@ -6,8 +6,6 @@ import WEDateTimeField from "components/input/WEDateTimeField";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { CompetitionTest } from "interfaces";
-import useColor from "theme/useColor";
-import { useDarkMode } from "hooks/useDarkMode";
 
 interface CreateCompetitionDialogProps {
   isOpenCreateDialog: boolean;
@@ -31,13 +29,7 @@ export default function CreateCompetitionDialog({
   onChangeEndTime,
   onCreateCompetition,
 }: CreateCompetitionDialogProps) {
-  const color = useColor();
-  const { isDarkMode } = useDarkMode();
-
-  const getInputBackground = () => {
-    return isDarkMode ? color.gray800 : color.white;
-  };
-
+ 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <WEDialog

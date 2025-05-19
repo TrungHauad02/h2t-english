@@ -33,8 +33,8 @@ export default function HistoryTestDashboard({
                 }}
             >
                 <StatCard
-                    title="Average Score"
-                    value={testStats?.averageScore?.toString() ?? "0"}
+                   title="Average Score (%)"
+                    value={testStats?.averageScore != null ? `${testStats.averageScore}%` : "0%"}
                     icon={<TrendingUpIcon />}
                     color={isDarkMode ? color.teal400 : color.teal600}
                     isDarkMode={isDarkMode}
@@ -49,8 +49,11 @@ export default function HistoryTestDashboard({
                     paperBgColor={paperBgColor}
                 />
                 <StatCard
-                    title="High Score"
-                    value={testStats?.highestScore.toString()  ?? "0"}
+                    title="Highest Percentage"
+                    value={testStats?.highestScore != null
+                        ? `${testStats.highestScore}%`
+                        : "0%"}
+                      
                     icon={<EmojiEventsIcon />}
                     color={isDarkMode ? color.green400 : color.green600}
                     isDarkMode={isDarkMode}

@@ -13,7 +13,7 @@ const useListeningTest = (testListeningIds: number[], submitTestId: number) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<boolean>(false);
   const [allQuestions, setAllQuestions] = useState<QuestionItem[]>([]);
-  const [timeUsed, setTimeUsed] = useState(0);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
@@ -108,14 +108,6 @@ const useListeningTest = (testListeningIds: number[], submitTestId: number) => {
     }
   }, [testListeningIds, submitTestId]);
 
-  // Update time counter
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeUsed(prev => prev + 1);
-    }, 1000);
-    
-    return () => clearInterval(timer);
-  }, []);
 
   const handleNext = () => {
     if (currentIndex < questionsList.length - 1) {
@@ -288,7 +280,6 @@ const useListeningTest = (testListeningIds: number[], submitTestId: number) => {
     loading,
     error,
     allQuestions,
-    timeUsed,
     isSubmitting,
     isSubmitDialogOpen,
     isConfirmDialogOpen,

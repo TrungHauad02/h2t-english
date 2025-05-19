@@ -22,9 +22,11 @@ import {
 } from "../components";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import useAuth from "hooks/useAuth";
 
 export default function LessonPage() {
   const { type, id } = useParams();
+  const { userId } = useAuth();
   const [lesson, setLesson] = useState<Lesson | null>();
   const [siteInfo, setSiteInfo] = useState<SiteInfo>({
     bgUrl: "",
@@ -33,11 +35,12 @@ export default function LessonPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (id && type) {
+      if (id && type && userId) {
         try {
           const resData = await lessonService.findLessonById(
-            parseInt(id),
-            type
+            Number(id),
+            type,
+            Number(userId)
           );
           setLesson(resData.data);
           setSiteInfo({
@@ -51,7 +54,7 @@ export default function LessonPage() {
       }
     };
     fetchData();
-  }, [id, type]);
+  }, [id, type, userId]);
 
   const renderLesson = () => {
     if (!lesson) return null;

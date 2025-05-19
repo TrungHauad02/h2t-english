@@ -53,7 +53,7 @@ const TestQuestionGridHistory: React.FC<TestQuestionGridHistoryProps> = ({
     const textCorrect = isDarkMode ? color.green100 : color.green700;
     const textWrong = isDarkMode ? color.red100 : color.red700;
 
-    // Hiển thị màu đỏ cho câu hỏi không được trả lời hoặc trả lời sai
+  
     if (!item.isAnswered) {
       return {
         bg: wrongColor,
@@ -64,7 +64,6 @@ const TestQuestionGridHistory: React.FC<TestQuestionGridHistoryProps> = ({
       };
     }
 
-    // Speaking và Writing luôn được đánh giá là đúng nếu có trả lời
     if (
       item.partType === TestPartTypeEnum.SPEAKING ||
       item.partType === TestPartTypeEnum.WRITING
@@ -78,7 +77,6 @@ const TestQuestionGridHistory: React.FC<TestQuestionGridHistoryProps> = ({
       };
     }
 
-    // Câu hỏi có isCorrect là true hoặc false
     if (item.isCorrect) {
       return {
         bg: correctColor,

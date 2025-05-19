@@ -29,12 +29,22 @@ interface QuestionItem {
   partType: TestPartTypeEnum;
   isAnswered: boolean;
   isCorrect?: boolean;
+  score?: number;
+}
+
+interface PartScore {
+  type: TestPartTypeEnum;
+  correctAnswers: number;
+  totalQuestions: number;
+  score: number;
+  weightedScore: number;
 }
 
 const useHistoryCompetitionTest = () => {
   const { id } = useParams();
   const submitCompetitionId = Number(id);
   const [allQuestions, setAllQuestions] = useState<QuestionItem[]>([]);
+  const [partScores, setPartScores] = useState<PartScore[]>([]);
   const [startSerials, setStartSerials] = useState<Record<TestPartTypeEnum, number>>({
     [TestPartTypeEnum.VOCABULARY]: 0,
     [TestPartTypeEnum.GRAMMAR]: 0,
@@ -149,8 +159,10 @@ const useHistoryCompetitionTest = () => {
           const res = await submitCompetitionSpeakingService.findBySubmitCompetitionIdAndQuestionIds(submitCompetitionId, speakingQuestionIds);
         
           const answeredMap: Record<number, boolean> = {};
+          const scoreMap: Record<number, number> = {};
           res.data.forEach((r: SubmitCompetitionSpeaking) => {
             answeredMap[r.question_id] = true;
+            scoreMap[r.question_id] = r.score || 0;
           });
         
           questionRes.data.forEach((q: Question) => {
@@ -158,7 +170,8 @@ const useHistoryCompetitionTest = () => {
               serialNumber: serial++,
               questionId: q.id,
               partType: type,
-              isAnswered: !!answeredMap[q.id]
+              isAnswered: !!answeredMap[q.id],
+              score: scoreMap[q.id] || 0
             });
           });
         }
@@ -166,10 +179,12 @@ const useHistoryCompetitionTest = () => {
         if (type === TestPartTypeEnum.WRITING && part?.questions?.length) {
           const wrappers = await testWritingService.getByIdsAndStatus(part.questions, true);
           const res = await submitCompetitionWritingService.findBySubmitCompetitionIdAndTestWritingIds(submitCompetitionId, part.questions);
-        
+     
           const answerMap: Record<number, string> = {};
+          const scoreMap: Record<number, number> = {};
           res.data.forEach((r: SubmitCompetitionWriting) => {
             answerMap[r.competitionWriting_id] = r.content || '';
+            scoreMap[r.competitionWriting_id] = r.score || 0;
           });
         
           wrappers.data.forEach((w: any) => {
@@ -177,7 +192,8 @@ const useHistoryCompetitionTest = () => {
               serialNumber: serial++,
               questionId: w.id,
               partType: type,
-              isAnswered: !!answerMap[w.id]?.trim()
+              isAnswered: !!answerMap[w.id]?.trim(),
+              score: scoreMap[w.id] || 0
             });
           });
         }
@@ -197,7 +213,8 @@ const useHistoryCompetitionTest = () => {
     if (submitCompetition && competitionParts.length > 0) {
       fetchData();
     }
-  }, [submitCompetitionId, submitCompetition, competitionParts]);
+  }, [submitCompetitionId, submitCompetition, competitionParts, vocabularyPart, grammarPart, readingPart, listeningPart, speakingPart, writingPart]);
+
   const sectionScores = useMemo(() => {
     const TOTAL_SCORE = 100;
     const PART_COUNT = 6;
@@ -221,7 +238,6 @@ const useHistoryCompetitionTest = () => {
       return acc;
     }, {} as Record<TestPartTypeEnum, typeof allQuestions>);
   
-   
     Object.entries(questionsByPart).forEach(([partType, questions]) => {
       const totalQuestions = questions.length;
       
@@ -230,13 +246,35 @@ const useHistoryCompetitionTest = () => {
         return;
       }
   
-      if (partType === TestPartTypeEnum.SPEAKING || partType === TestPartTypeEnum.WRITING) {
-  
+      if (partType === TestPartTypeEnum.SPEAKING) {
         const answeredQuestions = questions.filter(q => q.isAnswered).length;
-        const answerRate = answeredQuestions / totalQuestions;
-        scores[partType as TestPartTypeEnum] = answerRate * PART_MAX_SCORE;
-      } else {
-     
+        const questionCount = totalQuestions;
+        const maxScorePerQuestion = PART_MAX_SCORE / questionCount;
+        
+        if (questions.some(q => q.score !== undefined)) {
+          // Nếu có điểm đã được đánh giá, sử dụng điểm đó
+          const totalScore = questions.reduce((sum, q) => sum + (q.score || 0), 0);
+          scores[partType as TestPartTypeEnum] = totalScore;
+        } else {
+          // Nếu chưa có điểm, dự đoán dựa trên số câu trả lời
+          scores[partType as TestPartTypeEnum] = answeredQuestions * maxScorePerQuestion;
+        }
+      }
+      else if (partType === TestPartTypeEnum.WRITING) {
+        const answeredQuestions = questions.filter(q => q.isAnswered).length;
+        const questionCount = totalQuestions;
+        const maxScorePerQuestion = PART_MAX_SCORE / questionCount;
+        
+        if (questions.some(q => q.score !== undefined)) {
+          // Nếu có điểm đã được đánh giá, sử dụng điểm đó
+          const totalScore = questions.reduce((sum, q) => sum + (q.score || 0), 0);
+          scores[partType as TestPartTypeEnum] = totalScore;
+        } else {
+          // Nếu chưa có điểm, dự đoán dựa trên số câu trả lời
+          scores[partType as TestPartTypeEnum] = answeredQuestions * maxScorePerQuestion;
+        }
+      } 
+      else {
         const correctAnswers = questions.filter(q => q.isCorrect === true).length;
         const partScore = (correctAnswers / totalQuestions) * 100;
         scores[partType as TestPartTypeEnum] = (partScore / 100) * PART_MAX_SCORE;
@@ -244,7 +282,7 @@ const useHistoryCompetitionTest = () => {
     });
   
     return scores;
-  }, [allQuestions])
+  }, [allQuestions]);
 
   return {
     allQuestions,

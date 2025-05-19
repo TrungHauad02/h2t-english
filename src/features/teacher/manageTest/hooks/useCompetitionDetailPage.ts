@@ -62,14 +62,12 @@ export default function useCompetitionDetailPage() {
   const handleSaveChanges = async () => { 
     if (editData && data?.id) {
       try {
-        setLoading(true);
         await competitionTestService.update(data.id, editData);
         setData(editData); 
-        setIsEditMode(false);
       } catch (error) {
         console.error("Error updating competition test:", error);
       } finally {
-        setLoading(false);
+
       }
     } 
   }; 
@@ -86,7 +84,6 @@ export default function useCompetitionDetailPage() {
   const handlePublish = async () => { 
     if (data && data.id) {
       try {
-        setLoading(true);
   
         const verifyResult = await competitionTestService.verify(data.id);
         if (verifyResult.status !== "SUCCESS") {
@@ -102,7 +99,6 @@ export default function useCompetitionDetailPage() {
       } catch (error) {
         console.error("Error publishing competition test:", error);
       } finally {
-        setLoading(false);
         setOpenPublishDialog(false);
       }
     }
@@ -112,7 +108,6 @@ export default function useCompetitionDetailPage() {
   const handleUnpublish = async () => { 
     if (data && data.id) {
       try {
-        setLoading(true);
         const updatedData = { ...data, status: false };
         await competitionTestService.patch(data.id, { status: false });
         setData(updatedData); 
@@ -120,7 +115,6 @@ export default function useCompetitionDetailPage() {
       } catch (error) {
         console.error("Error unpublishing competition test:", error);
       } finally {
-        setLoading(false);
         setOpenUnpublishDialog(false); 
       }
     } 

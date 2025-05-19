@@ -76,7 +76,7 @@ export default function WritingSection({
         const map: Record<number, any> = {};
         for (const entry of submitRes.data || []) {
           const key = isCompetitionTest
-            ? entry.CompetitionWriting_id
+            ? entry.competitionWriting_id
             : entry.testWriting_id;
           map[key] = entry;
         }
@@ -709,7 +709,7 @@ export default function WritingSection({
                                       mt: 2,
                                     }}
                                   >
-                                    Teacher Feedback
+                                    AI Feedback
                                   </Typography>
 
                                   <Box

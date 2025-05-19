@@ -62,14 +62,12 @@ export default function useTestDetailPage() {
   const handleSaveChanges = async () => { 
     if (editData && data?.id) {
       try {
-        setLoading(true);
         await testService.update(data.id, editData);
         setData(editData); 
         setIsEditMode(false);
       } catch (error) {
         console.error("Error updating test:", error);
       } finally {
-        setLoading(false);
       }
     } 
   }; 
@@ -86,7 +84,6 @@ export default function useTestDetailPage() {
   const handlePublish = async () => { 
     if (data && data.id) {
       try {
-        setLoading(true);
  
         const verifyResult = await testService.verify(data.id);
         if (verifyResult.status !== "SUCCESS") {
@@ -102,7 +99,6 @@ export default function useTestDetailPage() {
       } catch (error) {
         console.error("Error publishing test:", error);
       } finally {
-        setLoading(false);
         setOpenPublishDialog(false);
       }
     }
@@ -112,7 +108,6 @@ export default function useTestDetailPage() {
   const handleUnpublish = async () => { 
     if (data && data.id) {
       try {
-        setLoading(true);
         const updatedData = { ...data, status: false };
         await testService.patch(data.id, { status: false });
         setData(updatedData); 
@@ -120,7 +115,6 @@ export default function useTestDetailPage() {
       } catch (error) {
         console.error("Error unpublishing test:", error);
       } finally {
-        setLoading(false);
         setOpenUnpublishDialog(false); 
       }
     } 

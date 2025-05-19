@@ -13,19 +13,19 @@ import {
 import TestQuestionGrid from "./TestQuestionGrid";
 import IntroducePartTest from "./InroducePartTest";
 import TimeRemaining from "../common/TimeRemaining";
-import SubmitTestDialog from "./SubmitTestDialog";
+import SubmitTestDialog from "../common/SubmitTestDialog";
 import ConfirmSubmitDialog from "./ConfirmSubmitDialog";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import useMixingTest from "../../hooks/useMixingTest";
-import { Test } from "interfaces";
+import { Test, SubmitTest } from "interfaces";
 interface MixingTestProps {
   mixingTestParts: TestPart[];
-  submitTestId: number;
+  submitTest : SubmitTest
   test: Test ;
 }
 
-const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId,test}) => {
+const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTest,test}) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const color = useColor();
@@ -33,8 +33,7 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId,t
   
   // State for managing submit flow
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [timeUsed, setTimeUsed] = useState(0); // In seconds
-  
+
   const {
     allQuestions,
     startSerials,
@@ -55,7 +54,7 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId,t
     listeningPart,
     speakingPart,
     writingPart
-  } = useMixingTest(mixingTestParts, submitTestId);
+  } = useMixingTest(mixingTestParts, submitTest.id);
 
   // Callbacks for submit flow
   const handleOpenConfirmDialog = useCallback(() => {
@@ -83,7 +82,7 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId,t
           <VocabularySection 
             partId={vocabularyPart.id}
             questionIds={vocabularyPart.questions || []}
-            submitTestId={submitTestId}
+            submitTestId={submitTest.id}
             selectedQuestionId={selectedQuestionId}
             startSerial={startSerials[TestPartTypeEnum.VOCABULARY]}
             setAnsweredQuestions={handleUpdateAnsweredQuestions}
@@ -95,7 +94,7 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId,t
           <GrammarSection 
             partId={grammarPart.id}
             questionIds={grammarPart.questions || []}
-            submitTestId={submitTestId}
+            submitTestId={submitTest.id}
             selectedQuestionId={selectedQuestionId}
             startSerial={startSerials[TestPartTypeEnum.GRAMMAR]}
             setAnsweredQuestions={handleUpdateAnsweredQuestions}
@@ -107,7 +106,7 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId,t
           <ReadingSection 
             partId={readingPart.id}
             testItemIds={readingPart.questions || []}
-            submitTestId={submitTestId}
+            submitTestId={submitTest.id}
             selectedQuestionId={selectedQuestionId}
             startSerial={startSerials[TestPartTypeEnum.READING]}
             setAnsweredQuestions={handleUpdateAnsweredQuestions}
@@ -119,7 +118,7 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId,t
           <ListeningSection 
             partId={listeningPart.id}
             testItemIds={listeningPart.questions || []}
-            submitTestId={submitTestId}
+            submitTestId={submitTest.id}
             selectedQuestionId={selectedQuestionId}
             startSerial={startSerials[TestPartTypeEnum.LISTENING]}
             setAnsweredQuestions={handleUpdateAnsweredQuestions}
@@ -131,7 +130,7 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId,t
           <SpeakingSection 
             partId={speakingPart.id}
             testItemIds={speakingPart.questions || []}
-            submitTestId={submitTestId}
+            submitTestId={submitTest.id}
             selectedQuestionId={selectedQuestionId}
             startSerial={startSerials[TestPartTypeEnum.SPEAKING]}
             setAnsweredQuestions={handleUpdateAnsweredQuestions}
@@ -143,7 +142,7 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId,t
           <WritingSection 
             partId={writingPart.id}
             testItemIds={writingPart.questions || []}
-            submitTestId={submitTestId}
+            submitTestId={submitTest.id}
             selectedQuestionId={selectedQuestionId}
             startSerial={startSerials[TestPartTypeEnum.WRITING]}
             setAnsweredQuestions={handleUpdateAnsweredQuestions}
@@ -161,20 +160,11 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId,t
     listeningPart,
     speakingPart,
     writingPart,
-    submitTestId,
+    submitTest,
     selectedQuestionId,
     startSerials,
     handleUpdateAnsweredQuestions
   ]);
-
-  // Update time used (would be connected to a timer in real implementation)
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeUsed(prev => prev + 1);
-    }, 1000);
-    
-    return () => clearInterval(timer);
-  }, []);
 
   return (
     <Box 
@@ -188,7 +178,7 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId,t
       <Grid container spacing={2}>
         {isSmallScreen && (
           <Grid item xs={12}>
-           <TimeRemaining timeUsed={timeUsed}
+           <TimeRemaining createAt={submitTest?.createdAt ? new Date(submitTest.createdAt) : new Date()} 
         duration={test.duration}
         onTimeUp={handleSubmitTest} />
           </Grid>
@@ -224,11 +214,12 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId,t
         
         {!isSmallScreen && (
           <Grid item md={3} lg={4}>
-               <TimeRemaining timeUsed={timeUsed}
+               <TimeRemaining createAt={submitTest?.createdAt ? new Date(submitTest.createdAt) : new Date()}
         duration={test.duration}
         onTimeUp={handleSubmitTest} />
             <Box sx={{ mt: 3 }}>
               <TestQuestionGrid 
+                  key={submitTest.id}
                 questionItems={allQuestions}
                 onQuestionSelect={handleQuestionSelect}
                 onSubmitTest={handleOpenConfirmDialog}
@@ -241,7 +232,7 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTestId,t
       {/* Submit Test Dialog */}
       <SubmitTestDialog 
         open={isSubmitDialogOpen}
-        submitTestId={submitTestId}
+        submitTestId={submitTest.id}
         onClose={closeSubmitDialog}
         isLoading={isSubmitting}
         result={submissionResult}

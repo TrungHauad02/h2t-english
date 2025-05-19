@@ -4,6 +4,7 @@ import { competitionTestService } from "services";
 import { toast } from "react-toastify";
 
 import useAuth from "hooks/useAuth";
+import { patch } from "@mui/material";
 
 export default function useManageCompetitionsPage() {
   const [filter, setFilter] = useState<CompetitionTestFilter>({
@@ -104,6 +105,7 @@ export default function useManageCompetitionsPage() {
     try {
 
       data.ownerId = userId;
+      data.status = false;
 
    
       const response = await competitionTestService.create(data as CompetitionTest);
@@ -169,7 +171,7 @@ export default function useManageCompetitionsPage() {
 
   // Publish or unpublish a competition
   const publishCompetition = async (id: number, publish: boolean = true) => {
-    return updateCompetition(id, { status: publish });
+    return competitionTestService.patch(id, { status: publish });
   };
 
   // Calculate displayed competitions for current page

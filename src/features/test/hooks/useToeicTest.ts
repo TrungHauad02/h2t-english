@@ -11,8 +11,9 @@ import {
   toeicQuestionService,
   toeicPart3_4Service,
   toeicPart6Service,
-  toeicPart7Service
-} from 'services/test';
+  toeicPart7Service,
+  toeicCommentService,
+} from 'services';
 import { Toeic, SubmitToeic } from 'interfaces';
 import useAuth from 'hooks/useAuth';
 
@@ -271,12 +272,29 @@ export default function useToeicPage() {
       totalScore
     };
   };
+
   const submitToeicTest = async (): Promise<SubmitResult | null> => {
+    console.log(12);
+    
     if (!submitToeic?.id || !toeic) return null;
-  
+    console.log(12);
+    
     try {
       let listeningCorrect = 0;
       let readingCorrect = 0;
+
+
+
+      const partStats = {
+        part1: { total: 0, correct: 0 },
+        part2: { total: 0, correct: 0 },
+        part3: { total: 0, correct: 0 },
+        part4: { total: 0, correct: 0 },
+        part5: { total: 0, correct: 0 },
+        part6: { total: 0, correct: 0 },
+        part7: { total: 0, correct: 0 },
+      };
+
   
       // Part 1
       if (toeic.questionsPart1?.length) {
@@ -425,7 +443,6 @@ export default function useToeicPage() {
           ),
           toeicQuestionService.getByIdsAndStatus(toeic.questionsPart5, true)
         ]);
-  
         const answers = Array.isArray(answersRes?.data) ? answersRes.data : [];
         const questions = Array.isArray(questionsRes?.data) ? questionsRes.data : [];
   
@@ -540,16 +557,45 @@ export default function useToeicPage() {
         readingCorrect
       };
 
-  
-      await submitToeicService.patch(submitToeic.id, {
-        score: toeicScore.totalScore,
-        status: true
-      });
+   
+      const partAccuracy = {
+        part1Accuracy: partStats.part1.total > 0 ? (partStats.part1.correct / partStats.part1.total) * 100 : 0,
+        part2Accuracy: partStats.part2.total > 0 ? (partStats.part2.correct / partStats.part2.total) * 100 : 0,
+        part3Accuracy: partStats.part3.total > 0 ? (partStats.part3.correct / partStats.part3.total) * 100 : 0,
+        part4Accuracy: partStats.part4.total > 0 ? (partStats.part4.correct / partStats.part4.total) * 100 : 0,
+        part5Accuracy: partStats.part5.total > 0 ? (partStats.part5.correct / partStats.part5.total) * 100 : 0,
+        part6Accuracy: partStats.part6.total > 0 ? (partStats.part6.correct / partStats.part6.total) * 100 : 0,
+        part7Accuracy: partStats.part7.total > 0 ? (partStats.part7.correct / partStats.part7.total) * 100 : 0,
+      };
+
+      const commentRequestData = {
+        submitToeicId: submitToeic.id,
+        toeicId: toeic.id,
+        totalScore: toeicScore.totalScore,
+        listeningScore: toeicScore.listeningScore,
+        readingScore: toeicScore.readingScore,
+        listeningCorrect,
+        readingCorrect,
+        correctAnswers: listeningCorrect + readingCorrect,
+        answeredQuestions: totalAnswered,
+        partAccuracy
+      };
+
+      const commentResponse = await toeicCommentService.generateComment(commentRequestData);
+    const comment = commentResponse.data.feedback;
+    console.log(12222);
+    
+    await submitToeicService.patch(submitToeic.id, {
+      score: toeicScore.totalScore,
+      comment: comment,
+      status: true
+    });
   
  
       setSubmitToeic({
         ...submitToeic,
         score: toeicScore.totalScore,
+        comment: comment,
         status: true
       });
   

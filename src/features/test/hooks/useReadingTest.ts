@@ -13,7 +13,6 @@ const useReadingTest = (testReadingIds: number[], submitTestId: number) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<boolean>(false);
   const [allQuestions, setAllQuestions] = useState<QuestionItem[]>([]);
-  const [timeUsed, setTimeUsed] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
@@ -106,16 +105,9 @@ const useReadingTest = (testReadingIds: number[], submitTestId: number) => {
       setLoading(false);
       setError(true);
     }
-  }, [testReadingIds, submitTestId]);
-
-  // Update time counter
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeUsed(prev => prev + 1);
-    }, 1000);
     
-    return () => clearInterval(timer);
-  }, []);
+  }, [submitTestId]);
+
 
   const handleNext = () => {
     if (currentIndex < questionsList.length - 1) {
@@ -172,7 +164,7 @@ const useReadingTest = (testReadingIds: number[], submitTestId: number) => {
           submitTestId,
           questionIds
         );
-        
+
         if (answersRes?.data?.length) {
  
           const questionRes = await questionService.getByIdsAndStatus(questionIds,true);
@@ -293,7 +285,6 @@ const useReadingTest = (testReadingIds: number[], submitTestId: number) => {
     loading,
     error,
     allQuestions,
-    timeUsed,
     isSubmitting,
     isSubmitDialogOpen,
     isConfirmDialogOpen,

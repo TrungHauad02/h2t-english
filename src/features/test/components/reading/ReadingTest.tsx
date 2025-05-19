@@ -32,19 +32,19 @@ import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrow
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import WEDocumentViewer from "components/display/document/WEDocumentViewer";
-import { Test } from "interfaces";
+import { Test, SubmitTest } from "interfaces";
 interface ReadingTestProps {
   testReadings: number[];
-  submitTestId: number;
+  submitTest : SubmitTest
   test : Test,
 }
 
-export default function ReadingTest({ testReadings, submitTestId,test }: ReadingTestProps) {
+export default function ReadingTest({ testReadings, submitTest,test }: ReadingTestProps) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  
+
   // Tab state for mobile view
   const [tabValue, setTabValue] = useState(0);
   
@@ -56,7 +56,6 @@ export default function ReadingTest({ testReadings, submitTestId,test }: Reading
     loading,
     error,
     allQuestions,
-    timeUsed,
     isSubmitting,
     isSubmitDialogOpen,
     isConfirmDialogOpen,
@@ -68,7 +67,7 @@ export default function ReadingTest({ testReadings, submitTestId,test }: Reading
     handleCloseConfirmDialog,
     handleSubmitTest,
     closeSubmitDialog
-  } = useReadingTest(testReadings, submitTestId);
+  } = useReadingTest(testReadings, submitTest.id);
 
   // Stats for confirm dialog and progress display
   const totalQuestions = allQuestions.length;
@@ -190,7 +189,7 @@ export default function ReadingTest({ testReadings, submitTestId,test }: Reading
       <Grid container spacing={3}>
   
         <Grid item xs={12}>
-        <TimeRemaining timeUsed={timeUsed}
+        <TimeRemaining createAt={submitTest?.createdAt ? new Date(submitTest.createdAt) : new Date()}
         duration={test.duration}
         onTimeUp={handleSubmitTest} />
         </Grid>
@@ -492,7 +491,7 @@ export default function ReadingTest({ testReadings, submitTestId,test }: Reading
                 <AnswerQuestionSection 
                   questions={readingItem.questions} 
                   startSerial={readingItem.startSerial} 
-                  submitTestId={submitTestId}
+                  submitTestId={submitTest.id}
                   partId={readingItem.id}
                   selectedQuestionId={selectedQuestionId}
                   setQuestionRef={setQuestionRef}
@@ -633,7 +632,7 @@ export default function ReadingTest({ testReadings, submitTestId,test }: Reading
       {/* Sử dụng SubmitTestDialogSingle thay vì SubmitTestDialog */}
       <SubmitTestDialogSingle
         open={isSubmitDialogOpen}
-        submitTestId={submitTestId}
+        submitTestId={submitTest.id}
         onClose={closeSubmitDialog}
         isLoading={isSubmitting}
         result={submissionResult}

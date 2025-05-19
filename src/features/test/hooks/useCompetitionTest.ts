@@ -500,7 +500,6 @@ export default function useCompetitionTest() {
     });
   }, []);
 
-
   const handleSubmitTest = useCallback(async () => {
     if (!submitCompetition?.id) return;
     
@@ -665,6 +664,10 @@ export default function useCompetitionTest() {
           score: number;
           updated: boolean;
         }
+        
+        // Tính điểm tối đa cho mỗi bài speaking (100/6/số bài)
+        const questionCount = allQuestionIds.length;
+        const maxScorePerQuestion = PART_MAX_SCORE / questionCount;
   
         const evaluationResults = await Promise.all(
           (speakingAnswersRes.data || []).map(async (answer: SubmitCompetitionSpeaking): Promise<EvaluationResult> => {
@@ -678,11 +681,14 @@ export default function useCompetitionTest() {
               const scoreResult = await scoreSpeakingService.evaluateSpeechInTopic(file, expectedText);
               
               if (scoreResult.data) {
-                const numericScore = parseFloat(scoreResult.data.score);
+                // Chuyển đổi điểm từ thang 100 sang thang điểm theo từng câu hỏi
+                const rawScore = parseFloat(scoreResult.data.score);
+                // Điểm cho mỗi câu là tỷ lệ phần trăm * điểm tối đa cho mỗi câu
+                const numericScore = (rawScore / 100) * maxScorePerQuestion;
                 
                 await submitCompetitionSpeakingService.update(answer.id, {
                   ...answer,
-                  score: numericScore,
+                  score: numericScore, // Lưu điểm đã tính toán
                   transcript: scoreResult.data.transcript,
                 });
                 
@@ -699,21 +705,22 @@ export default function useCompetitionTest() {
         const totalScore = evaluationResults.reduce<number>((sum, result) => sum + result.score, 0);
         const answeredQuestions = evaluationResults.filter(result => result.updated).length;
         
-        const avgScore = answeredQuestions > 0 ? totalScore / answeredQuestions : 0;
-        const weightedScore = (avgScore / 100) * PART_MAX_SCORE;
+        // Điểm trung bình đã được tính theo thang điểm của phần
+        const avgScore = totalScore; // Giữ nguyên tổng điểm vì đã tính theo maxScorePerQuestion
+        const weightedScore = totalScore; // Điểm đã được tính theo trọng số rồi
   
         result.parts.push({
           type: TestPartTypeEnum.SPEAKING,
           correctAnswers: answeredQuestions,
           totalQuestions: allQuestionIds.length,
-          score: avgScore,
-          weightedScore
+          score: (avgScore / PART_MAX_SCORE) * 100, // Chuyển về thang 100 để hiển thị
+          weightedScore: weightedScore
         });
   
         result.totalQuestions += allQuestionIds.length;
         
         // Convert speaking score to equivalent correct answers
-        const equivalentCorrectAnswers = (avgScore / 100) * allQuestionIds.length;
+        const equivalentCorrectAnswers = (avgScore / PART_MAX_SCORE) * allQuestionIds.length;
         result.correctAnswers += equivalentCorrectAnswers;
       };
   
@@ -746,6 +753,10 @@ export default function useCompetitionTest() {
           },
           {} as Record<number, TestWriting>
         );
+        
+     
+        const questionCount = part.questions.length;
+        const maxScorePerQuestion = PART_MAX_SCORE / questionCount;
   
         interface EvaluationResult {
           score: number;
@@ -763,11 +774,13 @@ export default function useCompetitionTest() {
               const scoreResult = await scoreWritingService.scoreWriting(answer.content, testWriting.topic);
               
               if (scoreResult.data) {
-                const numericScore = parseFloat(scoreResult.data.score);
+                // Chuyển đổi điểm từ thang 100 sang thang điểm theo từng câu hỏi
+                const rawScore = parseFloat(scoreResult.data.score);
+                // Điểm cho mỗi câu là tỷ lệ phần trăm * điểm tối đa cho mỗi câu
+                const numericScore = (rawScore / 100) * maxScorePerQuestion;
                 
-                await submitCompetitionWritingService.update(answer.id, {
-                  ...answer,
-                  score: numericScore,
+                await submitCompetitionWritingService.patch(answer.id, {
+                  score: numericScore, // Lưu điểm đã tính toán
                 });
                 
                 return { score: numericScore, updated: true };
@@ -783,21 +796,22 @@ export default function useCompetitionTest() {
         const totalScore = evaluationResults.reduce<number>((sum, result) => sum + result.score, 0);
         const answeredQuestions = evaluationResults.filter(result => result.updated).length;
         
-        const avgScore = answeredQuestions > 0 ? totalScore / answeredQuestions : 0;
-        const weightedScore = (avgScore / 100) * PART_MAX_SCORE;
+        // Điểm trung bình đã được tính theo thang điểm của phần
+        const avgScore = totalScore; // Giữ nguyên tổng điểm vì đã tính theo maxScorePerQuestion
+        const weightedScore = totalScore; // Điểm đã được tính theo trọng số rồi
   
         result.parts.push({
           type: TestPartTypeEnum.WRITING,
           correctAnswers: answeredQuestions,
           totalQuestions: part.questions.length,
-          score: avgScore,
-          weightedScore
+          score: (avgScore / PART_MAX_SCORE) * 100, // Chuyển về thang 100 để hiển thị
+          weightedScore: weightedScore
         });
   
         result.totalQuestions += part.questions.length;
         
         // Convert writing score to equivalent correct answers
-        const equivalentCorrectAnswers = (avgScore / 100) * part.questions.length;
+        const equivalentCorrectAnswers = (avgScore / PART_MAX_SCORE) * part.questions.length;
         result.correctAnswers += equivalentCorrectAnswers;
       };
   

@@ -15,11 +15,13 @@ import {
   useTheme,
   Zoom,
   Fade,
+  Tooltip,
 } from "@mui/material";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { styled } from "@mui/material";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import VocabularyIcon from "@mui/icons-material/MenuBook";
 import GrammarIcon from "@mui/icons-material/AutoAwesomeMotion";
 import ReadingIcon from "@mui/icons-material/ImportContacts";
@@ -34,6 +36,7 @@ import { useDarkMode } from "hooks/useDarkMode";
 
 interface LearningPathTimelineProps {
   route: Route;
+  process: number[];
 }
 
 const AnimatedNodeIcon = styled(Box)(({ theme }) => ({
@@ -48,6 +51,7 @@ const AnimatedNodeIcon = styled(Box)(({ theme }) => ({
 
 export default function LearningPathTimeline({
   route,
+  process,
 }: LearningPathTimelineProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -169,6 +173,16 @@ export default function LearningPathTimeline({
     return type.includes("TEST");
   };
 
+  const isNodeCompleted = (nodeId: number) => {
+    return process.includes(nodeId);
+  };
+
+  // Calculate total progress
+  const totalCompletedNodes = process.length;
+  const totalNodes = sortedNodes.length;
+  const progressPercentage =
+    totalNodes > 0 ? Math.round((totalCompletedNodes / totalNodes) * 100) : 0;
+
   return (
     <Card
       sx={{
@@ -234,7 +248,7 @@ export default function LearningPathTimeline({
           <Stack
             direction="row"
             justifyContent="space-between"
-            alignItems="flex-start"
+            alignItems="center"
           >
             <Box>
               <Typography
@@ -263,6 +277,22 @@ export default function LearningPathTimeline({
                 />
               </Typography>
             </Box>
+
+            <Chip
+              icon={<CheckCircleIcon fontSize="small" />}
+              label={`${progressPercentage}% Complete`}
+              sx={{
+                backgroundColor: isDarkMode
+                  ? `${color.teal600}22`
+                  : `${color.teal500}15`,
+                color: isDarkMode ? color.teal300 : color.teal600,
+                fontWeight: "bold",
+                border: `1px solid ${
+                  isDarkMode ? color.teal700 : color.teal300
+                }33`,
+                height: 32,
+              }}
+            />
           </Stack>
         </Box>
 
@@ -294,6 +324,7 @@ export default function LearningPathTimeline({
           {sortedNodes.map((node, index) => {
             const nodeColor = getNodeColor(node.type);
             const isExpanded = expandedNodes[node.id] || false;
+            const completed = isNodeCompleted(node.id);
 
             return (
               <Zoom
@@ -314,15 +345,29 @@ export default function LearningPathTimeline({
                   <Paper
                     elevation={isExpanded ? 8 : 2}
                     sx={{
-                      background: isDarkMode ? color.gray800 : color.white,
-                      border: `2px solid ${
-                        isDarkMode ? color.teal800 : color.teal200
-                      }`,
+                      background: isDarkMode
+                        ? completed
+                          ? `linear-gradient(145deg, ${color.gray800} 0%, ${color.gray900} 100%)`
+                          : color.gray800
+                        : completed
+                        ? `linear-gradient(145deg, ${color.white} 0%, ${color.gray50} 100%)`
+                        : color.white,
+                      border: completed
+                        ? `2px solid ${
+                            isDarkMode ? color.emerald800 : color.emerald200
+                          }`
+                        : `2px solid ${
+                            isDarkMode ? color.teal800 : color.teal200
+                          }`,
                       borderRadius: "16px",
                       overflow: "hidden",
                       transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                       "&:hover": {
-                        borderColor: nodeColor,
+                        borderColor: completed
+                          ? isDarkMode
+                            ? color.emerald600
+                            : color.emerald400
+                          : nodeColor,
                         transform: "scale(1.02)",
                         boxShadow: `0 8px 20px rgba(${
                           isDarkMode
@@ -342,25 +387,51 @@ export default function LearningPathTimeline({
                       }}
                     >
                       {/* Node dot with icon */}
-                      <Box
-                        sx={{
-                          position: "relative",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          width: { xs: 40, md: 48 },
-                          height: { xs: 40, md: 48 },
-                          borderRadius: "50%",
-                          backgroundColor: nodeColor,
-                          color: isDarkMode ? color.gray900 : color.white,
-                          mr: 3,
-                          flexShrink: 0,
-                        }}
+                      <Tooltip
+                        title={completed ? "Completed" : "Not completed yet"}
                       >
-                        <AnimatedNodeIcon>
-                          {getNodeIcon(node.type)}
-                        </AnimatedNodeIcon>
-                      </Box>
+                        <Box
+                          sx={{
+                            position: "relative",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: { xs: 40, md: 48 },
+                            height: { xs: 40, md: 48 },
+                            borderRadius: "50%",
+                            backgroundColor: completed
+                              ? isDarkMode
+                                ? color.emerald500
+                                : color.emerald500
+                              : nodeColor,
+                            color: isDarkMode ? color.gray900 : color.white,
+                            mr: 3,
+                            flexShrink: 0,
+                            border: completed
+                              ? `2px solid ${
+                                  isDarkMode
+                                    ? color.emerald300
+                                    : color.emerald300
+                                }`
+                              : "none",
+                            boxShadow: completed
+                              ? `0 0 10px ${
+                                  isDarkMode
+                                    ? color.emerald500 + "50"
+                                    : color.emerald400 + "40"
+                                }`
+                              : "none",
+                          }}
+                        >
+                          <AnimatedNodeIcon>
+                            {completed ? (
+                              <CheckCircleIcon />
+                            ) : (
+                              getNodeIcon(node.type)
+                            )}
+                          </AnimatedNodeIcon>
+                        </Box>
+                      </Tooltip>
 
                       <Box sx={{ flexGrow: 1, mr: 1 }}>
                         <Stack
@@ -373,7 +444,7 @@ export default function LearningPathTimeline({
                             variant="body1"
                             sx={{
                               color: textColor,
-                              fontWeight: "medium",
+                              fontWeight: completed ? "medium" : "normal",
                               fontSize: {
                                 xs: "0.9rem",
                                 md: "1rem",
@@ -383,23 +454,52 @@ export default function LearningPathTimeline({
                             {node.title}
                           </Typography>
 
-                          <Fade in={true}>
-                            <Chip
-                              label={node.type.replace("_", " ")}
-                              size="small"
-                              sx={{
-                                backgroundColor: isDarkMode
-                                  ? `${nodeColor}22` // 22 is hex for 13% opacity
-                                  : `${nodeColor}15`, // 15 is hex for 8% opacity
-                                color: nodeColor,
-                                borderRadius: "12px",
-                                height: 24,
-                                fontSize: "0.7rem",
-                                fontWeight: "bold",
-                                border: `1px solid ${nodeColor}33`, // 33 is hex for 20% opacity
-                              }}
-                            />
-                          </Fade>
+                          <Stack direction="row" spacing={1}>
+                            <Fade in={true}>
+                              <Chip
+                                label={node.type.replace("_", " ")}
+                                size="small"
+                                sx={{
+                                  backgroundColor: isDarkMode
+                                    ? `${nodeColor}22` // 22 is hex for 13% opacity
+                                    : `${nodeColor}15`, // 15 is hex for 8% opacity
+                                  color: nodeColor,
+                                  borderRadius: "12px",
+                                  height: 24,
+                                  fontSize: "0.7rem",
+                                  fontWeight: "bold",
+                                  border: `1px solid ${nodeColor}33`, // 33 is hex for 20% opacity
+                                }}
+                              />
+                            </Fade>
+
+                            {completed && (
+                              <Fade in={true}>
+                                <Chip
+                                  icon={<CheckCircleIcon fontSize="small" />}
+                                  label="Completed"
+                                  size="small"
+                                  sx={{
+                                    backgroundColor: isDarkMode
+                                      ? `${color.emerald600}22`
+                                      : `${color.emerald500}15`,
+                                    color: isDarkMode
+                                      ? color.emerald300
+                                      : color.emerald600,
+                                    borderRadius: "12px",
+                                    height: 24,
+                                    fontSize: "0.7rem",
+                                    fontWeight: "bold",
+                                    border: `1px solid ${
+                                      isDarkMode
+                                        ? color.emerald700
+                                        : color.emerald300
+                                    }33`,
+                                  }}
+                                />
+                              </Fade>
+                            )}
+                          </Stack>
                         </Stack>
 
                         {node.description && (
@@ -434,9 +534,23 @@ export default function LearningPathTimeline({
                           endIcon={<KeyboardArrowRightIcon />}
                           onClick={() => handleLearnClick(node)}
                           sx={{
-                            bgcolor: "transparent",
-                            color: nodeColor,
-                            border: `2px solid ${nodeColor}`,
+                            bgcolor: completed
+                              ? isDarkMode
+                                ? `${color.emerald600}22`
+                                : `${color.emerald500}15`
+                              : "transparent",
+                            color: completed
+                              ? isDarkMode
+                                ? color.emerald400
+                                : color.emerald600
+                              : nodeColor,
+                            border: `2px solid ${
+                              completed
+                                ? isDarkMode
+                                  ? color.emerald600
+                                  : color.emerald500
+                                : nodeColor
+                            }`,
                             fontWeight: "600",
                             borderRadius: "12px",
                             whiteSpace: "nowrap",
@@ -446,15 +560,31 @@ export default function LearningPathTimeline({
                             textTransform: "none",
                             transition: "all 0.2s ease",
                             "&:hover": {
-                              bgcolor: `${nodeColor}22`,
-                              borderColor: nodeColor,
+                              bgcolor: completed
+                                ? `${
+                                    isDarkMode
+                                      ? color.emerald600
+                                      : color.emerald500
+                                  }22`
+                                : `${nodeColor}22`,
+                              borderColor: completed
+                                ? isDarkMode
+                                  ? color.emerald500
+                                  : color.emerald600
+                                : nodeColor,
                               transform: "translateY(-2px)",
                               boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
                             },
                           }}
                         >
                           {isSmall
-                            ? "Start"
+                            ? completed
+                              ? "Review"
+                              : "Start"
+                            : completed
+                            ? isTestNode(node.type)
+                              ? "Retake Test"
+                              : "Review"
                             : isTestNode(node.type)
                             ? "Take Test"
                             : "Learn Now"}
@@ -516,6 +646,48 @@ export default function LearningPathTimeline({
                         >
                           {node.description}
                         </Typography>
+
+                        {completed && (
+                          <Box
+                            sx={{
+                              mt: 2,
+                              p: 2,
+                              borderRadius: "12px",
+                              backgroundColor: isDarkMode
+                                ? `${color.emerald900}77`
+                                : `${color.emerald50}99`,
+                              border: `1px solid ${
+                                isDarkMode ? color.emerald800 : color.emerald100
+                              }`,
+                            }}
+                          >
+                            <Stack
+                              direction="row"
+                              spacing={1}
+                              alignItems="center"
+                            >
+                              <CheckCircleIcon
+                                sx={{
+                                  color: isDarkMode
+                                    ? color.emerald400
+                                    : color.emerald500,
+                                  fontSize: 20,
+                                }}
+                              />
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  color: isDarkMode
+                                    ? color.emerald300
+                                    : color.emerald700,
+                                  fontWeight: "medium",
+                                }}
+                              >
+                                You completed this lesson
+                              </Typography>
+                            </Stack>
+                          </Box>
+                        )}
                       </Box>
                     </Collapse>
                   </Paper>

@@ -89,25 +89,28 @@ export function useSubQuestionManagement({
     }
   ) => {
     try {
+      // 1. Update existing questions sequentially
       if (changes.toUpdate.length > 0 && onUpdateSubQuestion) {
-        await Promise.all(
-          changes.toUpdate.map(q => onUpdateSubQuestion(q, questionId))
-        );
+        for (const question of changes.toUpdate) {
+          await onUpdateSubQuestion(question, questionId);
+        }
       }
       
+      // 2. Delete questions sequentially
       if (changes.toDelete.length > 0 && onDeleteSubQuestion) {
-        await Promise.all(
-          changes.toDelete.map(id => onDeleteSubQuestion(id, questionId))
-        );
+        for (const id of changes.toDelete) {
+          await onDeleteSubQuestion(id, questionId);
+        }
       }
-
+  
       let newQuestionIds: number[] = [];
       
+      // 3. Add new questions sequentially
       if (changes.toAdd.length > 0 && onAddSubQuestion) {
-        const newQuestions = await Promise.all(
-          changes.toAdd.map(q => onAddSubQuestion(questionId, q))
-        );
-        newQuestionIds = newQuestions.map(q => q.id);
+        for (const question of changes.toAdd) {
+          const newQuestion = await onAddSubQuestion(questionId, question);
+          newQuestionIds.push(newQuestion.id);
+        }
       }
       
       return newQuestionIds;
@@ -116,7 +119,6 @@ export function useSubQuestionManagement({
       return [];
     }
   }, [onAddSubQuestion, onUpdateSubQuestion, onDeleteSubQuestion]);
-
   return {
     activeSubQuestion,
     currentSubQuestions,
