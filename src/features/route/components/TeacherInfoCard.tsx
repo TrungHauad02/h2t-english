@@ -109,7 +109,7 @@ export default function TeacherInfoCard({ userId }: TeacherInfoCardProps) {
       <CardContent
         sx={{
           pt: 8,
-          px: 3,
+          px: 1,
           pb: 3,
           display: "flex",
           flexDirection: "column",
@@ -152,7 +152,6 @@ export default function TeacherInfoCard({ userId }: TeacherInfoCardProps) {
             }}
           />
         </Divider>
-
         <ContactInfoSection teacher={teacher} isMobile={isMobile} />
 
         <ExpertiseSection teacher={teacher} levelColors={levelColors} />

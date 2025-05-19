@@ -102,5 +102,16 @@ export default function useColor() {
     red700: "#b91c1c",
     red800: "#991b1b",
     red900: "#b71c1c",
+
+    yellow50: "#fffbeb",
+    yellow100: "#fef3c7",
+    yellow200: "#fde68a",
+    yellow300: "#fcd34d",
+    yellow400: "#fbbf24",
+    yellow500: "#f59e0b",
+    yellow600: "#d97706",
+    yellow700: "#b45309",
+    yellow800: "#92400e",
+    yellow900: "#78350f",
   };
 }

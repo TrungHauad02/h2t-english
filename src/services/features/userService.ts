@@ -175,6 +175,30 @@ const findByIdsAndStatus = async (ids: number[], status: boolean) => {
   }
 };
 
+const completeRouteNode = async (userId: number, routeNodeId: number) => {
+  try {
+    const response = await apiClient.get(
+      `/users/${userId}/complete-route-node/${routeNodeId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error completing route node:", error);
+    throw error;
+  }
+};
+
+const getProcessByRouteId = async (userId: number, routeId: number) => {
+  try {
+    const response = await apiClient.get(
+      `/users/${userId}/process-by-route-id/${routeId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error getting process by route id:", error);
+    throw error;
+  }
+};
+
 export const userService = {
   findAll,
   findById,
@@ -183,4 +207,6 @@ export const userService = {
   patch,
   remove,
   findByIdsAndStatus,
+  completeRouteNode,
+  getProcessByRouteId,
 };
