@@ -51,7 +51,7 @@ export default function StatsSummaryCards({
       textColor: isDarkMode ? color.white : color.gray900,
     },
     {
-      title: "High Severity Errors",
+      title: "High Severity Active Errors",
       value: highSeverityErrors,
       icon: <WarningAmberIcon sx={{ fontSize: 40 }} />,
       backgroundColor: isDarkMode ? color.red700 : color.red100,
