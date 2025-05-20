@@ -20,6 +20,7 @@ export default function AdminDashboardPage() {
   const [dashboardData, setDashboardData] = useState<{
     errorLogStats: {
       total: number;
+      highActiveCount: number;
       bySeverity: Record<SeverityEnum, number>;
       recentLogs: ErrorLog[];
     };
@@ -36,6 +37,7 @@ export default function AdminDashboardPage() {
   }>({
     errorLogStats: {
       total: 0,
+      highActiveCount: 0,
       bySeverity: {
         [SeverityEnum.LOW]: 0,
         [SeverityEnum.MEDIUM]: 0,
@@ -111,9 +113,7 @@ export default function AdminDashboardPage() {
         errorCount={dashboardData.errorLogStats.total}
         userCount={dashboardData.userStats.total}
         teacherAdvanceCount={dashboardData.userStats.teacherAdvance.total}
-        highSeverityErrors={
-          dashboardData.errorLogStats.bySeverity[SeverityEnum.HIGH]
-        }
+        highSeverityErrors={dashboardData.errorLogStats.highActiveCount}
         isLoading={isLoading}
       />
 
