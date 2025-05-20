@@ -18,7 +18,6 @@ const AppRoutes = () => {
         />
       </Route>
 
-      {/* Student-only routes - Sử dụng ProtectedRoute */}
       <Route
         element={
           <ProtectedRoute
