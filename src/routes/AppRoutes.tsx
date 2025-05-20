@@ -17,7 +17,8 @@ const AppRoutes = () => {
           element={<Pages.AIResponseFeedbackPage />}
         />
       </Route>
-      {/* Student-only routes */}
+
+      {/* Student-only routes - Sử dụng ProtectedRoute */}
       <Route
         element={
           <ProtectedRoute
