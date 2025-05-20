@@ -1,7 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { RolesEnum } from "interfaces";
-import { useAuthContext } from "security/AuthContext";
-import React from "react";
 
 interface ProtectedRouteProps {
   allowedRoles: RolesEnum[];
