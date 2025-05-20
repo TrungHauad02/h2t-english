@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { RolesEnum } from "interfaces";
 import { useAuthContext } from "security/AuthContext";
+import React from "react";
 
 interface ProtectedRouteProps {
   allowedRoles: RolesEnum[];
@@ -12,7 +13,12 @@ export default function ProtectedRoute({
   redirectPath = "/login",
 }: ProtectedRouteProps) {
   const location = useLocation();
-  const { isAuthenticated, userRole } = useAuthContext();
+
+  const userRole =
+    localStorage.getItem("role") || sessionStorage.getItem("role");
+  const isAuthenticated =
+    localStorage.getItem("accessToken") ||
+    sessionStorage.getItem("accessToken");
 
   if (!isAuthenticated) {
     const currentPath = location.pathname + location.search;
@@ -22,7 +28,7 @@ export default function ProtectedRoute({
     return <Navigate to={redirectPath} replace />;
   }
 
-  if (!userRole || !allowedRoles.includes(userRole)) {
+  if (!allowedRoles.includes(userRole as RolesEnum)) {
     switch (userRole) {
       case RolesEnum.STUDENT:
         return <Navigate to="/" replace />;

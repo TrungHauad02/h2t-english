@@ -6,32 +6,45 @@ import { useDarkMode } from "hooks/useDarkMode";
 import { ThemeProvider } from "@emotion/react";
 import theme from "theme";
 import { WEErrorDisplay } from "components/display";
-import { AuthProvider } from "security/AuthContext";
 
 function App() {
   const { isDarkMode } = useDarkMode();
 
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <ThemeProvider theme={theme(isDarkMode)}>
-          <AppRoutes />
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            closeOnClick
-            pauseOnHover
-            aria-label="Toast container"
-            theme={isDarkMode ? "dark" : "light"}
-          />
-          <WEErrorDisplay
-            position={{ vertical: "bottom", horizontal: "right" }}
-            autoHideTimeout={6000}
-            maxErrors={5}
-          />
-        </ThemeProvider>
-      </AuthProvider>
+      <ThemeProvider theme={theme(isDarkMode)}>
+        <AppRoutes />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          closeOnClick
+          pauseOnHover
+          aria-label="Toast container"
+          theme={isDarkMode ? "dark" : "light"}
+        />
+        <WEErrorDisplay
+          position={{ vertical: "bottom", horizontal: "right" }}
+          autoHideTimeout={6000}
+          maxErrors={5}
+        />
+      </ThemeProvider><ThemeProvider theme={theme(isDarkMode)}>
+        <AppRoutes />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          closeOnClick
+          pauseOnHover
+          aria-label="Toast container"
+          theme={isDarkMode ? "dark" : "light"}
+        />
+        <WEErrorDisplay
+          position={{ vertical: "bottom", horizontal: "right" }}
+          autoHideTimeout={6000}
+          maxErrors={5}
+        />
+      </ThemeProvider>
     </BrowserRouter>
   );
 }
