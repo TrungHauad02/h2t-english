@@ -39,11 +39,8 @@ export default function useRouteSection() {
     const fetchRecentRoutes = async () => {
       if (!isRecentRoutesLoaded && activeTab === 1) {
         try {
-          const resData = await routeService.getRoutesForStudent(1, 3, {
-            sortBy: "-createdAt",
-            status: true,
-          });
-          setRecentRoutes(resData.data.content);
+          const resData = await routeService.getRecentRoutes();
+          setRecentRoutes(resData.data);
           setIsRecentRoutesLoaded(true);
         } catch (error) {
           console.log(error);

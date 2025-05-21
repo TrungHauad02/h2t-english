@@ -18,7 +18,7 @@ import { writingService } from "services/lesson/writingService";
 export interface LessonCreationService<T> {
   createLesson: (lesson: T) => Promise<{ data: T & { id: number } }>;
   patchLesson: (id: number, lesson: T) => Promise<{ data: T & { id: number } }>;
-  findById: (id: number) => Promise<ServiceResponse<T>>;
+  findByIdInHome: (id: number) => Promise<ServiceResponse<T>>;
 }
 
 // Topic creation service
@@ -29,8 +29,8 @@ const topicCreationService: LessonCreationService<Topic> = {
   patchLesson: (id: number, topic: Topic) => {
     return topicService.patch(id, topic);
   },
-  findById: (id: number) => {
-    return topicService.findById(id);
+  findByIdInHome: (id: number) => {
+    return topicService.findByIdInHome(id);
   },
 };
 
@@ -42,8 +42,8 @@ const grammarCreationService: LessonCreationService<Grammar> = {
   patchLesson: (id: number, grammar: Grammar) => {
     return grammarService.patch(id, grammar);
   },
-  findById: (id: number) => {
-    return grammarService.findById(id);
+  findByIdInHome: (id: number) => {
+    return grammarService.findByIdInHome(id);
   },
 };
 
@@ -55,8 +55,8 @@ const readingCreationService: LessonCreationService<Reading> = {
   patchLesson: (id: number, reading: Reading) => {
     return readingService.patch(id, reading);
   },
-  findById: (id: number) => {
-    return readingService.findById(id);
+  findByIdInHome: (id: number) => {
+    return readingService.findByIdInHome(id);
   },
 };
 
@@ -68,8 +68,8 @@ const listeningCreationService: LessonCreationService<Listening> = {
   patchLesson: (id: number, listening: Listening) => {
     return listeningService.patch(id, listening);
   },
-  findById: (id: number) => {
-    return listeningService.findById(id);
+  findByIdInHome: (id: number) => {
+    return listeningService.findByIdInHome(id);
   },
 };
 
@@ -81,8 +81,8 @@ const speakingCreationService: LessonCreationService<Speaking> = {
   patchLesson: (id: number, speaking: Speaking) => {
     return speakingService.patch(id, speaking);
   },
-  findById: (id: number) => {
-    return speakingService.findById(id);
+  findByIdInHome: (id: number) => {
+    return speakingService.findByIdInHome(id);
   },
 };
 
@@ -94,8 +94,8 @@ const writingCreationService: LessonCreationService<Writing> = {
   patchLesson: (id: number, writing: Writing) => {
     return writingService.patch(id, writing);
   },
-  findById: (id: number) => {
-    return writingService.findById(id);
+  findByIdInHome: (id: number) => {
+    return writingService.findByIdInHome(id);
   },
 };
 // Factory function to get the appropriate service based on node type
@@ -123,7 +123,7 @@ export const createLessonFactory = <T>(
           Promise.reject(new Error(`Unsupported node type: ${nodeType}`)),
         patchLesson: () =>
           Promise.reject(new Error(`Unsupported node type: ${nodeType}`)),
-        findById: () =>
+        findByIdInHome: () =>
           Promise.reject(new Error(`Unsupported node type: ${nodeType}`)),
       } as LessonCreationService<T>;
   }

@@ -6,23 +6,18 @@ import { useEffect, useState } from "react";
 import { CompetitionTest } from "interfaces";
 import { competitionTestService } from "services";
 import { toast } from "react-toastify";
-import useAuth from "hooks/useAuth";
+
 export default function CompetitionsSection() {
   const { isDarkMode } = useDarkMode();
   const colors = useColor();
   const [competitions, setCompetitions] = useState<CompetitionTest[]>([]);
-  const userId = Number(useAuth().userId);
-
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const resData =
-          await competitionTestService.getCompetitionTestsForStudent(1, 3, userId, {
-            sortBy: "-createdAt",
-            status: true,
-          });
-        setCompetitions(resData.data.content);
+          await competitionTestService.getRecentCompetitionTests();
+        setCompetitions(resData.data);
       } catch (error) {
         toast.error("Failed to fetch competition data");
       }

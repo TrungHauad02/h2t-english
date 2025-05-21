@@ -83,6 +83,16 @@ const findById = async (id: number) => {
   }
 };
 
+const findOwnerById = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/home/users/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting user by id:", error);
+    throw error;
+  }
+};
+
 const create = async (data: User) => {
   try {
     if (data.avatar) {
@@ -202,6 +212,7 @@ const getProcessByRouteId = async (userId: number, routeId: number) => {
 export const userService = {
   findAll,
   findById,
+  findOwnerById,
   create,
   update,
   patch,

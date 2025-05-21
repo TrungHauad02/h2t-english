@@ -62,7 +62,9 @@ const getTestsForStudent = async (
   filter?: TestFilter
 ) => {
   try {
-    let url = `/tests?page=${page - 1}&size=${itemsPerPage}&userId=${userId}&status=true`;
+    let url = `/tests?page=${
+      page - 1
+    }&size=${itemsPerPage}&userId=${userId}&status=true`;
 
     if (filter) {
       if (filter.title) {
@@ -75,16 +77,24 @@ const getTestsForStudent = async (
         url += `&sortFields=${encodeURIComponent(filter.sortBy)}`;
       }
       if (filter.startCreatedAt) {
-        url += `&startCreatedAt=${filter.startCreatedAt.toISOString().slice(0, -1)}`;
+        url += `&startCreatedAt=${filter.startCreatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.endCreatedAt) {
-        url += `&endCreatedAt=${filter.endCreatedAt.toISOString().slice(0, -1)}`;
+        url += `&endCreatedAt=${filter.endCreatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.startUpdatedAt) {
-        url += `&startUpdatedAt=${filter.startUpdatedAt.toISOString().slice(0, -1)}`;
+        url += `&startUpdatedAt=${filter.startUpdatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.endUpdatedAt) {
-        url += `&endUpdatedAt=${filter.endUpdatedAt.toISOString().slice(0, -1)}`;
+        url += `&endUpdatedAt=${filter.endUpdatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
     }
 
@@ -119,16 +129,24 @@ const getTestsByTeacher = async (
         url += `&sortFields=${encodeURIComponent(filter.sortBy)}`;
       }
       if (filter.startCreatedAt) {
-        url += `&startCreatedAt=${filter.startCreatedAt.toISOString().slice(0, -1)}`;
+        url += `&startCreatedAt=${filter.startCreatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.endCreatedAt) {
-        url += `&endCreatedAt=${filter.endCreatedAt.toISOString().slice(0, -1)}`;
+        url += `&endCreatedAt=${filter.endCreatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.startUpdatedAt) {
-        url += `&startUpdatedAt=${filter.startUpdatedAt.toISOString().slice(0, -1)}`;
+        url += `&startUpdatedAt=${filter.startUpdatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.endUpdatedAt) {
-        url += `&endUpdatedAt=${filter.endUpdatedAt.toISOString().slice(0, -1)}`;
+        url += `&endUpdatedAt=${filter.endUpdatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
     }
 
@@ -149,6 +167,15 @@ const verify = async (id: number) => {
   }
 };
 
+const getRecentTest = async () => {
+  try {
+    const response = await apiClient.get("/home/tests/recent");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching recent tests:", error);
+    throw error;
+  }
+};
 
 export const testService = {
   findById,
@@ -159,4 +186,5 @@ export const testService = {
   getTestsForStudent,
   getTestsByTeacher,
   verify,
+  getRecentTest,
 };

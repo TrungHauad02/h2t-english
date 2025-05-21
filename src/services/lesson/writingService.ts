@@ -128,8 +128,19 @@ const verify = async (id: number) => {
   }
 };
 
+const findByIdInHome = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/home/writings/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting writing by id:", error);
+    throw error;
+  }
+};
+
 export const writingService = {
   findById,
+  findByIdInHome,
   create,
   update,
   patch,

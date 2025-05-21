@@ -15,11 +15,8 @@ export default function TestsSection() {
   useEffect(() => {
     const fetchTests = async () => {
       try {
-        const resData = await testService.getTestsByTeacher(1, 3, {
-          sortBy: "-createdAt",
-          status: true,
-        });
-        setTests(resData.data.content);
+        const resData = await testService.getRecentTest();
+        setTests(resData.data);
       } catch (error) {
         toast.error("Fail to fetch tests data");
       }

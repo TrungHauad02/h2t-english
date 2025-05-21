@@ -52,7 +52,7 @@ export default function LessonCard({
         const lessonService = createLessonFactory(
           node.type
         ) as LessonCreationService<Lesson>;
-        const response = await lessonService.findById(node.nodeId);
+        const response = await lessonService.findByIdInHome(node.nodeId);
         setLesson(response.data);
       } catch (error) {
         console.error(error);

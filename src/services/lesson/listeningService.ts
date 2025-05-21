@@ -128,8 +128,19 @@ const verify = async (id: number) => {
   }
 };
 
+const findByIdInHome = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/home/listenings/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting listening by id:", error);
+    throw error;
+  }
+};
+
 export const listeningService = {
   findById,
+  findByIdInHome,
   create,
   update,
   patch,

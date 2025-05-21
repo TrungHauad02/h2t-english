@@ -2,7 +2,7 @@ import apiClient from "services/apiClient";
 
 const getHeroInfo = async () => {
   try {
-    const response = await apiClient.get("/hero-info");
+    const response = await apiClient.get("/home/hero-info");
     return response.data;
   } catch (error) {
     console.error("Error getting hero info:", error);

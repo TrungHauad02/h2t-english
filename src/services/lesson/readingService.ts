@@ -128,8 +128,19 @@ const verify = async (id: number) => {
   }
 };
 
+const findByIdInHome = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/home/readings/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting reading by id:", error);
+    throw error;
+  }
+};
+
 export const readingService = {
   findById,
+  findByIdInHome,
   create,
   update,
   patch,

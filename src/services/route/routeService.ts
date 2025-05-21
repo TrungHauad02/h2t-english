@@ -115,10 +115,20 @@ const getRoutesByTeacherId = async (
 
 const getLongestRoute = async () => {
   try {
-    const response = await apiClient.get("/routes/longest");
+    const response = await apiClient.get("/home/routes/longest");
     return response.data;
   } catch (error) {
     console.error("Error fetching longest route:", error);
+    throw error;
+  }
+};
+
+const getRecentRoutes = async () => {
+  try {
+    const response = await apiClient.get("/home/routes/recent");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching recent routes:", error);
     throw error;
   }
 };
@@ -241,4 +251,5 @@ export const routeService = {
   remove,
   verify,
   getLongestRoute,
+  getRecentRoutes,
 };

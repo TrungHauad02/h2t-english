@@ -128,8 +128,19 @@ const verify = async (id: number) => {
   }
 };
 
+const findByIdInHome = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/home/grammars/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting grammar by id:", error);
+    throw error;
+  }
+};
+
 export const grammarService = {
   findById,
+  findByIdInHome,
   create,
   update,
   patch,
