@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { testReadingService, questionService, submitTestAnswerService,submitTestService,commentTestService,TestCommentRequestDTO } from "services";
-
+import {completeRouteNode} from "utils/updateProcess";
+import { RouteNodeEnum } from "interfaces";
 interface QuestionItem {
   id: number;
   serialNumber: number;
   isAnswered: boolean;
 }
 
-const useReadingTest = (testReadingIds: number[], submitTestId: number) => {
+const useReadingTest = (testReadingIds: number[], submitTestId: number,routeNodeId: number) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [questionsList, setQuestionsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -265,7 +266,7 @@ const useReadingTest = (testReadingIds: number[], submitTestId: number) => {
       await submitTestService.patch(submitTestId, { comment: commentResponse.data.feedback });
       await submitTestService.patch(submitTestId, { status: true });
       
-      // Cập nhật kết quả vào UI
+      await completeRouteNode(routeNodeId, submitTestId,RouteNodeEnum.READING_TEST );
       setSubmissionResult(result);
       
     } catch (error) {

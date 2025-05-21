@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { testWritingService, submitTestWritingService, scoreWritingService,submitTestService,commentTestService } from "services";
 import { TestWriting, SubmitTestWriting } from "interfaces";
-
+import {completeRouteNode} from "utils/updateProcess";
+import { RouteNodeEnum } from "interfaces";
 interface QuestionItem {
   id: number;
   serialNumber: number;
@@ -11,7 +12,7 @@ interface QuestionItem {
   maxWords?: number;
 }
 
-const useWritingTest = (testWritingIds: number[], submitTestId: number) => {
+const useWritingTest = (testWritingIds: number[], submitTestId: number,routeNodeId: number) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [questionsList, setQuestionsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -245,7 +246,7 @@ const useWritingTest = (testWritingIds: number[], submitTestId: number) => {
           status: true
         });
       }
-      
+      await completeRouteNode(routeNodeId, submitTestId,RouteNodeEnum.WRITING_TEST );
       setSubmissionResult(result);
       
     } catch (error) {

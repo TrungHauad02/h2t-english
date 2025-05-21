@@ -68,8 +68,8 @@ export default function useToeicDetailPage() {
     if (editData && editData.id) {
       try {
         await toeicService.update(editData.id, editData);
-        setData(editData);
-        setIsEditMode(false);
+        setData(editData); 
+        setIsEditMode(!isEditMode);
       } catch (error) {
         console.error("Error saving TOEIC data:", error);
       }

@@ -64,7 +64,7 @@ export default function useTestDetailPage() {
       try {
         await testService.update(data.id, editData);
         setData(editData); 
-        setIsEditMode(false);
+        setIsEditMode(!isEditMode);
       } catch (error) {
         console.error("Error updating test:", error);
       } finally {

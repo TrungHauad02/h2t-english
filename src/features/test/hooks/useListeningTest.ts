@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { testListeningService, questionService, submitTestAnswerService,commentTestService,submitTestService } from "services";
-
+import {completeRouteNode} from "utils/updateProcess";
+import { RouteNodeEnum } from "interfaces";
 interface QuestionItem {
   id: number;
   serialNumber: number;
   isAnswered: boolean;
 }
 
-const useListeningTest = (testListeningIds: number[], submitTestId: number) => {
+const useListeningTest = (testListeningIds: number[], submitTestId: number,routeNodeId: number) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [questionsList, setQuestionsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -260,7 +261,7 @@ const useListeningTest = (testListeningIds: number[], submitTestId: number) => {
           status: true 
         });
       }
-      
+      await completeRouteNode(routeNodeId, submitTestId,RouteNodeEnum.LISTENING_TEST );
       setSubmissionResult(result);
       
     } catch (error) {

@@ -28,8 +28,7 @@ export default function AnswerQuestionSectionHistory({
 }: AnswerQuestionSectionHistoryProps) {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
-
-
+  
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -89,6 +88,7 @@ export default function AnswerQuestionSectionHistory({
               selectedAnswerId={selectedAnswers[item.question.id]}
               onAnswerChange={() => {}}
               isDisabled={true}
+              isReview={true}
               showExplanation={true}
             />
           </Box>

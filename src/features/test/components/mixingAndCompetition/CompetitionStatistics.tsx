@@ -616,7 +616,7 @@ export default function CompetitionStatistics({ competitionId }: CompetitionStat
                               mb: 1
                             }}
                           >
-                            Question Difficulty
+                          Accuracy Distribution
                           </Typography>
                           
                           <Grid container spacing={1}>
@@ -626,11 +626,12 @@ export default function CompetitionStatistics({ competitionId }: CompetitionStat
                               let difficultyLabel = '';
                               
                               // Assign difficulty label based on accuracy range
-                              if (min < 20) difficultyLabel = 'Very Hard';
-                              else if (min < 40) difficultyLabel = 'Hard';
-                              else if (min < 60) difficultyLabel = 'Medium';
-                              else if (min < 80) difficultyLabel = 'Easy';
-                              else difficultyLabel = 'Very Easy';
+                              if (min < 20) difficultyLabel = '0–20% correct';
+                                else if (min < 40) difficultyLabel = '20–40% correct';
+                                else if (min < 60) difficultyLabel = '40–60% correct';
+                                else if (min < 80) difficultyLabel = '60–80% correct';
+                                else difficultyLabel = '80–100% correct';
+
                               
                               return (
                                 <Grid item xs={12} key={range}>
