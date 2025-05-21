@@ -37,7 +37,7 @@ export default function useRouteCard(route: Route) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await userService.findById(route.ownerId);
+        const response = await userService.findOwnerById(route.ownerId);
         setOwner(response.data);
       } catch (error) {
         console.error("Error fetching owner:", error);

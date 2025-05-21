@@ -2,7 +2,7 @@ import apiClient from "services/apiClient";
 
 const getRandomQuote = async () => {
   try {
-    const response = await apiClient.get("/quotes");
+    const response = await apiClient.get("/home/quotes");
     return response.data;
   } catch (error) {
     console.error("Error getting random quote:", error);

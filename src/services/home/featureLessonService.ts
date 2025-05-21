@@ -2,7 +2,7 @@ import apiClient from "services/apiClient";
 
 const getMostViewedLessons = async () => {
   try {
-    const response = await apiClient.get("/feature-lesson/most-viewed");
+    const response = await apiClient.get("/home/feature-lesson/most-viewed");
     return response.data;
   } catch (error) {
     console.error("Error getting most viewed lessons:", error);
@@ -12,7 +12,7 @@ const getMostViewedLessons = async () => {
 
 const getMostRecentLessons = async () => {
   try {
-    const response = await apiClient.get("/feature-lesson/most-recent");
+    const response = await apiClient.get("/home/feature-lesson/most-recent");
     return response.data;
   } catch (error) {
     console.error("Error getting most recent lessons:", error);

@@ -122,10 +122,12 @@ const getCompetitionTestsByTeacher = async (
   page: number,
   itemsPerPage: number,
   filter?: CompetitionTestFilter,
-  ownerId?: number,
+  ownerId?: number
 ) => {
   try {
-    let url = `/competition-tests?page=${page - 1}&size=${itemsPerPage}&ownerId=${ownerId}`;
+    let url = `/competition-tests?page=${
+      page - 1
+    }&size=${itemsPerPage}&ownerId=${ownerId}`;
 
     if (filter) {
       if (filter.status !== undefined && filter.status !== null) {
@@ -196,10 +198,22 @@ const verify = async (id: number) => {
 
 const getLastCompletedCompetition = async () => {
   try {
-    const response = await apiClient.get("/competition-tests/recent-completed");
+    const response = await apiClient.get(
+      "/home/competition-tests/recent-completed"
+    );
     return response.data;
   } catch (error) {
     console.error("Error get last completed CompetitionTest:", error);
+    throw error;
+  }
+};
+
+const getRecentCompetitionTests = async () => {
+  try {
+    const response = await apiClient.get("/home/competition-tests/recent");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching recent CompetitionTests:", error);
     throw error;
   }
 };
@@ -214,4 +228,5 @@ export const competitionTestService = {
   getCompetitionTestsByTeacher,
   verify,
   getLastCompletedCompetition,
+  getRecentCompetitionTests,
 };

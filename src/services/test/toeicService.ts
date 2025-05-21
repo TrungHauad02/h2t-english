@@ -62,7 +62,9 @@ const getToeicsForStudent = async (
   filter?: ToeicFilter
 ) => {
   try {
-    let url = `/toeic?page=${page - 1}&size=${itemsPerPage}&userId=${userId}&status=true`;
+    let url = `/toeic?page=${
+      page - 1
+    }&size=${itemsPerPage}&userId=${userId}&status=true`;
 
     if (filter) {
       if (filter.title) {
@@ -72,16 +74,24 @@ const getToeicsForStudent = async (
         url += `&sortFields=${encodeURIComponent(filter.sortBy)}`;
       }
       if (filter.startCreatedAt) {
-        url += `&startCreatedAt=${filter.startCreatedAt.toISOString().slice(0, -1)}`;
+        url += `&startCreatedAt=${filter.startCreatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.endCreatedAt) {
-        url += `&endCreatedAt=${filter.endCreatedAt.toISOString().slice(0, -1)}`;
+        url += `&endCreatedAt=${filter.endCreatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.startUpdatedAt) {
-        url += `&startUpdatedAt=${filter.startUpdatedAt.toISOString().slice(0, -1)}`;
+        url += `&startUpdatedAt=${filter.startUpdatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.endUpdatedAt) {
-        url += `&endUpdatedAt=${filter.endUpdatedAt.toISOString().slice(0, -1)}`;
+        url += `&endUpdatedAt=${filter.endUpdatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
     }
 
@@ -98,7 +108,7 @@ const getToeicsByTeacher = async (
   page: number,
   itemsPerPage: number,
   filter?: ToeicFilter,
-  ownerId?: number,
+  ownerId?: number
 ) => {
   try {
     let url = `/toeic?page=${page - 1}&size=${itemsPerPage}&ownerId=${ownerId}`;
@@ -114,16 +124,24 @@ const getToeicsByTeacher = async (
         url += `&sortFields=${encodeURIComponent(filter.sortBy)}`;
       }
       if (filter.startCreatedAt) {
-        url += `&startCreatedAt=${filter.startCreatedAt.toISOString().slice(0, -1)}`;
+        url += `&startCreatedAt=${filter.startCreatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.endCreatedAt) {
-        url += `&endCreatedAt=${filter.endCreatedAt.toISOString().slice(0, -1)}`;
+        url += `&endCreatedAt=${filter.endCreatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.startUpdatedAt) {
-        url += `&startUpdatedAt=${filter.startUpdatedAt.toISOString().slice(0, -1)}`;
+        url += `&startUpdatedAt=${filter.startUpdatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
       if (filter.endUpdatedAt) {
-        url += `&endUpdatedAt=${filter.endUpdatedAt.toISOString().slice(0, -1)}`;
+        url += `&endUpdatedAt=${filter.endUpdatedAt
+          .toISOString()
+          .slice(0, -1)}`;
       }
     }
 
@@ -131,6 +149,16 @@ const getToeicsByTeacher = async (
     return response.data;
   } catch (error) {
     console.error("Error fetching TOEIC for teacher:", error);
+    throw error;
+  }
+};
+
+const getRecentToeic = async () => {
+  try {
+    const response = await apiClient.get(`/home/toeic/recent`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching recent Toeic:", error);
     throw error;
   }
 };
@@ -143,4 +171,5 @@ export const toeicService = {
   remove,
   getToeicsForStudent,
   getToeicsByTeacher,
+  getRecentToeic,
 };

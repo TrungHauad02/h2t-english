@@ -6,23 +6,19 @@ import { useEffect, useState } from "react";
 import { Toeic } from "interfaces";
 import { toeicService } from "services";
 import { toast } from "react-toastify";
-import useAuth from "hooks/useAuth";
+
 export default function ToeicSection() {
   const { isDarkMode } = useDarkMode();
   const colors = useColor();
   const [toeics, setToeics] = useState<Toeic[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const userId = Number(useAuth().userId);
 
   useEffect(() => {
     const fetchToeics = async () => {
       setLoading(true);
       try {
-        const resData = await toeicService.getToeicsForStudent(1, 5, userId , {
-          sortBy: "-createdAt",
-          status: true,
-        });
-        setToeics(resData.data.content);
+        const resData = await toeicService.getRecentToeic();
+        setToeics(resData.data);
       } catch (error) {
         console.error("Error fetching toeics:", error);
         toast.error("Failed to load TOEIC tests");
