@@ -29,3 +29,4 @@ export * from "./toeicQuestionService";
 export * from "./toeicService";
 export * from "./testPartQuestionServiceFactory";
 export * from "./testHistoryStatsService";
+export * from "./competitionStatsService";

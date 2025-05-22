@@ -62,7 +62,15 @@ export default function CompetitionScoreSummary({
     if (score >= 90) return color.yellow;
     if (score >= 75) return color.gray400;
     if (score >= 60) return '#CD7F32'; // bronze
-    return isDarkMode ? color.gray500 : color.gray400;
+    return '#9CA3AF'; // gray for participation
+  };
+
+  // Get progress color based on score
+  const getProgressColor = (score: number) => {
+    if (score >= 80) return '#4ADE80'; // Green
+    if (score >= 60) return '#60A5FA'; // Blue
+    if (score >= 40) return '#FCD34D'; // Yellow
+    return '#FF6B6B'; // Red
   };
 
   // Achievement label based on score
@@ -75,10 +83,10 @@ export default function CompetitionScoreSummary({
 
   // Get color for section based on score
   const getSectionColor = (percentage: number) => {
-    if (percentage >= 80) return isDarkMode ? color.emerald400 : color.emerald600;
-    if (percentage >= 60) return isDarkMode ? color.teal400 : color.teal600;
-    if (percentage >= 40) return isDarkMode ? color.warning : color.warningDarkMode;
-    return isDarkMode ? color.red400 : color.red600;
+    if (percentage >= 80) return '#4ADE80'; // Green
+    if (percentage >= 60) return '#60A5FA'; // Blue
+    if (percentage >= 40) return '#FCD34D'; // Yellow
+    return '#FF6B6B'; // Red
   };
 
   // Get icon for each section tab
@@ -166,108 +174,193 @@ export default function CompetitionScoreSummary({
       {/* Main Score Cards */}
       <Grid container spacing={3}>
         {/* Total Score Card */}
-        <Grid item xs={12} md={4}>
-          <Card
-            elevation={0}
-            sx={{ 
-              height: '100%',
-              borderRadius: '1rem',
-              bgcolor: isDarkMode ? color.gray800 : color.white,
-              border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
-              boxShadow: isDarkMode 
-                ? '0 4px 16px rgba(0,0,0,0.2)'
-                : '0 4px 16px rgba(0,0,0,0.06)',
+        {/* Total Score Card */}
+<Grid item xs={12} md={4}>
+  {/* Calculate score percentage */}
+  {(() => {
+    const scorePercentage = (totalScore / maxTotalScore) * 100;
+    return (
+  <Card
+    elevation={0}
+    sx={{
+      height: '100%',
+      borderRadius: '1.5rem',
+      bgcolor: isDarkMode ? color.gray800 : color.white,
+      border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+      boxShadow: isDarkMode
+        ? '0 8px 24px rgba(0,0,0,0.25)'
+        : '0 8px 24px rgba(0,0,0,0.08)',
+      transition: 'all 0.3s ease-in-out',
+      '&:hover': {
+        transform: 'translateY(-4px)',
+        boxShadow: isDarkMode
+          ? '0 12px 28px rgba(0,0,0,0.3)'
+          : '0 12px 28px rgba(0,0,0,0.1)',
+      }
+    }}
+  >
+    <CardContent
+      sx={{
+        p: 4,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        height: '100%',
+        justifyContent: 'center'
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{
+          mb: 4,
+          fontWeight: 700,
+          color: isDarkMode ? color.teal300 : '#4F8A8B',
+          textAlign: 'center',
+          letterSpacing: '0.01em'
+        }}
+      >
+        Overall Performance
+      </Typography>
+      
+      <Box sx={{
+        position: 'relative',
+        width: { xs: 200, md: 240 },
+        height: { xs: 200, md: 240 },
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        mb: 3
+      }}>
+        {/* Background circle */}
+        <CircularProgress
+          variant="determinate"
+          value={100}
+          size={isMobile ? 200 : 240}
+          thickness={12}
+          sx={{
+            color: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+            position: 'absolute'
+          }}
+        />
+        
+        {/* Animated progress circle */}
+        <CircularProgress
+          variant="determinate"
+          value={scorePercentage}
+          size={isMobile ? 200 : 240}
+          thickness={12}
+          sx={{
+            color: getProgressColor(totalScore),
+            position: 'absolute',
+            transition: 'all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            '& .MuiCircularProgress-circle': {
+              strokeLinecap: 'round',
+              filter: isDarkMode ? 'drop-shadow(0 0 6px rgba(239, 68, 68, 0.5))' : 'none'
+            }
+          }}
+        />
+        
+        {/* Gradient overlay for progress (optional) */}
+        <Box 
+          sx={{
+            position: 'absolute',
+            width: isMobile ? 200 : 240,
+            height: isMobile ? 200 : 240,
+            borderRadius: '50%',
+            background: `conic-gradient(${getProgressColor(totalScore)} 0% ${scorePercentage}%, transparent ${scorePercentage}% 100%)`,
+            opacity: 0.15,
+            filter: 'blur(10px)'
+          }}
+        />
+        
+        {/* Center content */}
+        <Box sx={{
+          textAlign: 'center',
+          position: 'absolute',
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 2
+        }}>
+          <Typography
+            variant={isMobile ? "h1" : "h1"}
+            sx={{
+              fontSize: { xs: '4rem', md: '5rem' },
+              fontWeight: 800,
+              color: isDarkMode ? color.gray100 : '#111827',
+              lineHeight: 0.9,
+              mb: 1
             }}
           >
-            <CardContent
-              sx={{ 
-                p: 3, 
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'center',
-                height: '100%',
-                justifyContent: 'center'
-              }}
-            >
-              <Typography 
-                variant="subtitle1" 
-                sx={{ 
-                  mb: 3, 
-                  fontWeight: 'bold', 
-                  color: isDarkMode ? color.teal300 : color.teal700,
-                  textAlign: 'center'
-                }}
-              >
-                Overall Performance
-              </Typography>
-              
-              <Box sx={{ 
-                position: 'relative', 
-                width: { xs: 140, md: 180 }, 
-                height: { xs: 140, md: 180 }, 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                mb: 2
-              }}>
-                <CircularProgress
-                  variant="determinate"
-                  value={100}
-                  size={isMobile ? 140 : 180}
-                  thickness={4}
-                  sx={{ 
-                    color: isDarkMode ? color.gray700 : color.gray200,
-                    position: 'absolute'
-                  }}
-                />
-                <CircularProgress
-                  variant="determinate"
-                  value={(totalScore / maxTotalScore) * 100}
-                  size={isMobile ? 140 : 180}
-                  thickness={6}
-                  sx={{ 
-                    color: getMedalColor(totalScore),
-                    position: 'absolute',
-                    '& .MuiCircularProgress-circle': {
-                      strokeLinecap: 'round',
-                    }
-                  }}
-                />
-                <Box sx={{ textAlign: 'center' }}>
-                  <Typography 
-                    variant={isMobile ? "h2" : "h1"} 
-                    sx={{ 
-                      fontWeight: 'bold',
-                      color: isDarkMode ? color.gray100 : color.gray900,
-                      lineHeight: 1
-                    }}
-                  >
-                    {totalScore}
-                  </Typography>
-                  <Typography 
-                    variant="body2" 
-                    sx={{ 
-                      color: isDarkMode ? color.gray400 : color.gray600,
-                      mt: 0.5
-                    }}
-                  >
-                    out of {maxTotalScore}
-                  </Typography>
-                  <Typography 
-                    variant="body2" 
-                    sx={{ 
-                      color: getMedalColor(totalScore),
-                      fontWeight: 'bold',
-                      mt: 1
-                    }}
-                  >
-                    {Math.round((totalScore / maxTotalScore) * 100)}%
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+            {totalScore}
+          </Typography>
+          
+          <Typography
+            variant="body1"
+            sx={{
+              color: isDarkMode ? color.gray400 : '#6B7280',
+              fontWeight: 500,
+              opacity: 0.9
+            }}
+          >
+            out of {maxTotalScore}
+          </Typography>
+          
+          <Typography
+            variant="h6"
+            sx={{
+              color: getProgressColor(totalScore),
+              fontWeight: 700,
+              mt: 1,
+              fontSize: { xs: '1.25rem', md: '1.5rem' }
+            }}
+          >
+            {Math.round(scorePercentage)}%
+          </Typography>
+        </Box>
+      </Box>
+      
+      {/* Optional status indicator */}
+      <Box 
+        sx={{
+          mt: 2,
+          px: 3,
+          py: 1,
+          borderRadius: 'full',
+          backgroundColor: `${getProgressColor(totalScore)}15`,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1
+        }}
+      >
+        <Box 
+          sx={{
+            width: 8,
+            height: 8,
+            borderRadius: '50%',
+            backgroundColor: getProgressColor(totalScore),
+            boxShadow: `0 0 8px ${getProgressColor(totalScore)}`
+          }}
+        />
+        <Typography
+          variant="body2"
+          sx={{
+            color: getProgressColor(totalScore),
+            fontWeight: 600
+          }}
+        >
+          {scorePercentage < 40 ? 'Needs Improvement' : 
+           scorePercentage < 70 ? 'Making Progress' : 'Excellent'}
+        </Typography>
+      </Box>
+    </CardContent>
+  </Card>
+    );
+  })()}
+</Grid>
         
         {/* Section Scores */}
         <Grid item xs={12} md={8}>
@@ -359,7 +452,7 @@ export default function CompetitionScoreSummary({
                         sx={{
                           height: 8,
                           borderRadius: 4,
-                          bgcolor: isDarkMode ? color.gray700 : color.gray200,
+                          bgcolor: isDarkMode ? color.gray700 : '#F0F0F0',
                           '& .MuiLinearProgress-bar': {
                             borderRadius: 4,
                             bgcolor: getSectionColor(percentage),

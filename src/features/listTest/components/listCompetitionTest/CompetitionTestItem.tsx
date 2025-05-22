@@ -46,7 +46,7 @@ export default function CompetitionTestItem({
         textColor: color.white,
         bgColor: isDarkMode ? `${color.infoDarkMode}20` : `${color.info}15`,
       };
-    } else if (now >= startTime && now <= endTime) {
+    } else if (now >= startTime ) {
       return {
         label: "Active",
         color: isDarkMode ? color.successDarkMode : color.success,
@@ -511,7 +511,6 @@ export default function CompetitionTestItem({
             </Button>
             <Button
               variant="contained"
-              disabled={now < startTime || now > endTime}
               sx={{
                 backgroundColor: competitionStatus.color,
                 color: competitionStatus.textColor,
@@ -522,22 +521,9 @@ export default function CompetitionTestItem({
                 transition: "all 0.3s ease",
                 boxShadow: "none",
                 "&:hover": {
-                  backgroundColor:
-                    now >= startTime && now <= endTime
-                      ? `${competitionStatus.color}e0`
-                      : competitionStatus.color,
-                  boxShadow:
-                    now >= startTime && now <= endTime
-                      ? `0 4px 12px ${competitionStatus.color}50`
-                      : "none",
-                  transform:
-                    now >= startTime && now <= endTime
-                      ? "translateY(-2px)"
-                      : "none",
-                },
-                "&.Mui-disabled": {
-                  backgroundColor: isDarkMode ? color.gray700 : color.gray300,
-                  color: isDarkMode ? color.gray500 : color.gray500,
+                  backgroundColor: `${competitionStatus.color}e0`,
+                  boxShadow: `0 4px 12px ${competitionStatus.color}50`,
+                  transform: "translateY(-2px)",
                 },
               }}
               onClick={() => navigate(`${test.id}`)}
@@ -545,9 +531,10 @@ export default function CompetitionTestItem({
               {now < startTime
                 ? "Coming Soon"
                 : now > endTime
-                ? "Ended"
+                ? "View Statistics"
                 : "Enter Competition"}
             </Button>
+
           </Box>
         </CardContent>
 

@@ -12,6 +12,7 @@ import {
   CardContent,
   Button,
   IconButton,
+  Divider,
 } from '@mui/material';
 import useColor from 'theme/useColor';
 import { useDarkMode } from 'hooks/useDarkMode';
@@ -23,8 +24,11 @@ import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
 import StarsIcon from '@mui/icons-material/Stars';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import InsightsIcon from '@mui/icons-material/Insights';
 import { useNavigate } from 'react-router-dom';
-import { userService,submitCompetitionService } from 'services';
+import { userService, submitCompetitionService } from 'services';
+import CompetitionStatistics from './CompetitionStatistics';
+
 interface CompetitionResult extends SubmitCompetition {
   user?: User;
   rank?: number;
@@ -46,19 +50,20 @@ export default function CompetitionResults({
   const navigate = useNavigate();
   const [results, setResults] = useState<CompetitionResult[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showStatistics, setShowStatistics] = useState(false);
 
   useEffect(() => {
     const fetchResults = async () => {
       try {
         setLoading(true);
-        const submissionsRes = await submitCompetitionService.findByTestIdAndStatus(competition.id,true);
+        const submissionsRes = await submitCompetitionService.findByTestIdAndStatus(competition.id, true);
         const submissions = submissionsRes.data || [];
       
         
         const completedSubmissions = submissions.filter((s: SubmitCompetition) => s.status && s.score !== null);
         
         const userIds = [...new Set(completedSubmissions.map((s: SubmitCompetition) => s.user_id))] as number[];
-        const usersRes = await userService.findByIdsAndStatus(userIds,true);
+        const usersRes = await userService.findByIdsAndStatus(userIds, true);
         const users = usersRes.data || [];
         
         const userMap = users.reduce((map: Record<number, User>, user: User) => {
@@ -262,18 +267,6 @@ export default function CompetitionResults({
         >
           {competition.title}
         </Typography>
-        <Chip
-          icon={<TrendingUpIcon />}
-          label={`${results.length} Participants • ${competition?.totalQuestions} Questions`}
-          sx={{
-            fontWeight: 600,
-            fontSize: '1rem',
-            py: 2.5,
-            px: 3,
-            bgcolor: isDarkMode ? color.teal900 : color.teal100,
-            color: isDarkMode ? color.teal200 : color.teal800,
-          }}
-        />
       </Box>
 
       {/* Top 3 Winners */}
@@ -564,134 +557,144 @@ export default function CompetitionResults({
         </Grid>
       )}
 
+
+        <Box sx={{ mb: 6 }}>
+          <CompetitionStatistics competitionId={competition.id} />
+        </Box>
+
+
       {/* Rest of participants */}
       {results.length > 3 && (
         <>
-          <Typography 
-            variant="h5" 
-            sx={{ 
-              fontWeight: 700,
-              color: isDarkMode ? color.gray100 : color.gray900,
-              mb: 3,
-              textAlign: 'center'
-            }}
-          >
-            Other Participants
-          </Typography>
-          <Stack spacing={2}>
-            {results.slice(3).map((result) => (
-              <Paper
-                key={result.id}
-                elevation={0}
-                sx={{
-                  p: 3,
-                  borderRadius: '16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 3,
-                  bgcolor: isDarkMode ? color.gray800 : color.white,
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-                  }
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                  <Box 
-                    sx={{ 
-                      width: 56, 
-                      height: 56,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: '50%',
-                      bgcolor: isDarkMode ? color.gray700 : color.gray100,
-                      fontWeight: 700,
-                      fontSize: '1.2rem',
-                      color: isDarkMode ? color.gray300 : color.gray700,
-                    }}
-                  >
-                    {result.rank}
-                  </Box>
-                  
-                  <Avatar
-                    sx={{
-                      width: 48,
-                      height: 48,
-                      bgcolor: isDarkMode ? color.teal800 : color.teal100,
-                      color: isDarkMode ? color.teal200 : color.teal800,
-                      fontWeight: 600,
-                    }}
-                  >
-                    {result.user?.name?.[0] || '?'}
-                  </Avatar>
-                  
-                  <Box>
-                    <Typography 
-                      variant="h6" 
+          <Box sx={{ mb: 4 }}>
+            <Divider sx={{ mb: 4 }}>
+              <Chip 
+                label="Other Participants" 
+                sx={{ 
+                  fontWeight: 600,
+                  px: 2,
+                  py: 3,
+                  fontSize: '1rem',
+                  bgcolor: isDarkMode ? color.gray700 : color.gray200,
+                  color: isDarkMode ? color.gray100 : color.gray900
+                }} 
+              />
+            </Divider>
+            <Stack spacing={2}>
+              {results.slice(3).map((result) => (
+                <Paper
+                  key={result.id}
+                  elevation={0}
+                  sx={{
+                    p: 3,
+                    borderRadius: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 3,
+                    bgcolor: isDarkMode ? color.gray800 : color.white,
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                    }
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                    <Box 
                       sx={{ 
-                        fontWeight: 600,
-                        color: isDarkMode ? color.gray100 : color.gray900,
+                        width: 56, 
+                        height: 56,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '50%',
+                        bgcolor: isDarkMode ? color.gray700 : color.gray100,
+                        fontWeight: 700,
+                        fontSize: '1.2rem',
+                        color: isDarkMode ? color.gray300 : color.gray700,
                       }}
                     >
-                      {result.user?.name || 'Unknown User'}
-                    </Typography>
-                    {result.user?.email && (
+                      {result.rank}
+                    </Box>
+                    
+                    <Avatar
+                      sx={{
+                        width: 48,
+                        height: 48,
+                        bgcolor: isDarkMode ? color.teal800 : color.teal100,
+                        color: isDarkMode ? color.teal200 : color.teal800,
+                        fontWeight: 600,
+                      }}
+                    >
+                      {result.user?.name?.[0] || '?'}
+                    </Avatar>
+                    
+                    <Box>
                       <Typography 
-                        variant="body2" 
+                        variant="h6" 
                         sx={{ 
+                          fontWeight: 600,
+                          color: isDarkMode ? color.gray100 : color.gray900,
+                        }}
+                      >
+                        {result.user?.name || 'Unknown User'}
+                      </Typography>
+                      {result.user?.email && (
+                        <Typography 
+                          variant="body2" 
+                          sx={{ 
+                            color: isDarkMode ? color.gray400 : color.gray600,
+                          }}
+                        >
+                          {result.user.email}
+                        </Typography>
+                      )}
+                    </Box>
+                  </Box>
+
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{ textAlign: 'right' }}>
+                      <Typography
+                        variant="h5"
+                        sx={{
+                          fontWeight: 700,
+                          color: getScoreColor(result.score || 0),
+                        }}
+                      >
+                        {Math.round(result.score || 0)}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
                           color: isDarkMode ? color.gray400 : color.gray600,
                         }}
                       >
-                        {result.user.email}
+                        points
                       </Typography>
+                    </Box>
+                    
+                    {currentUserId === result.user_id && (
+                      <IconButton
+                        onClick={() => navigate(`/history-test/competition/${result.id}`)}
+                        sx={{
+                          ml: 1,
+                          color: isDarkMode ? color.teal300 : color.teal600,
+                          bgcolor: isDarkMode ? color.teal900 : color.teal50,
+                          '&:hover': {
+                            bgcolor: isDarkMode ? color.teal800 : color.teal100,
+                          },
+                        }}
+                      >
+                        <RemoveRedEyeIcon />
+                      </IconButton>
                     )}
                   </Box>
-                </Box>
-
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Box sx={{ textAlign: 'right' }}>
-                    <Typography
-                      variant="h5"
-                      sx={{
-                        fontWeight: 700,
-                        color: getScoreColor(result.score || 0),
-                      }}
-                    >
-                      {Math.round(result.score || 0)}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: isDarkMode ? color.gray400 : color.gray600,
-                      }}
-                    >
-                      points
-                    </Typography>
-                  </Box>
-                  
-                  {currentUserId === result.user_id && (
-                    <IconButton
-                      onClick={() => navigate(`/history-test/competition/${result.id}`)}
-                      sx={{
-                        ml: 1,
-                        color: isDarkMode ? color.teal300 : color.teal600,
-                        bgcolor: isDarkMode ? color.teal900 : color.teal50,
-                        '&:hover': {
-                          bgcolor: isDarkMode ? color.teal800 : color.teal100,
-                        },
-                      }}
-                    >
-                      <RemoveRedEyeIcon />
-                    </IconButton>
-                  )}
-                </Box>
-              </Paper>
-            ))}
-          </Stack>
+                </Paper>
+              ))}
+            </Stack>
+          </Box>
         </>
       )}
     </Box>

@@ -31,7 +31,8 @@ import {
 } from "services";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
-
+import {completeRouteNode} from "utils/updateProcess";
+import { RouteNodeEnum } from "interfaces";
 interface QuestionItem {
   serialNumber: number;
   questionId: number;
@@ -73,10 +74,8 @@ const initialRenderedSections: Record<TestPartTypeEnum, React.ReactNode> = {
   [TestPartTypeEnum.WRITING]: null,
 };
 
-const useMixingTest = (mixingTestParts: TestPart[], submitTestId: number) => {
-  const color = useColor();
-  const { isDarkMode } = useDarkMode();
-  
+const useMixingTest = (mixingTestParts: TestPart[], submitTestId: number,routeNodeId: number) => {
+
   const [allQuestions, setAllQuestions] = useState<QuestionItem[]>([]);
   const [startSerials, setStartSerials] = useState<Record<TestPartTypeEnum, number>>(initialStartSerials);
   const [activeTab, setActiveTab] = useState<TestPartTypeEnum>(TestPartTypeEnum.VOCABULARY);
@@ -881,6 +880,7 @@ const useMixingTest = (mixingTestParts: TestPart[], submitTestId: number) => {
         comment: commentResponse.data.feedback,
         status: true 
       });
+      await completeRouteNode(routeNodeId, submitTestId,RouteNodeEnum.MIXING_TEST );
 
       // Set result with feedback
       setSubmissionResult({

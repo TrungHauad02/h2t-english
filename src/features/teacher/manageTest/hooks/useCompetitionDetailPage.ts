@@ -64,6 +64,7 @@ export default function useCompetitionDetailPage() {
       try {
         await competitionTestService.update(data.id, editData);
         setData(editData); 
+        setIsEditMode(!isEditMode);
       } catch (error) {
         console.error("Error updating competition test:", error);
       } finally {

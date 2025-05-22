@@ -78,7 +78,7 @@ export default function SpeakingTest({ testSpeakings, submitTest,test }: Speakin
     closeSubmitDialog,
     getCurrentTest,
     getCurrentQuestion,
-  } = useSpeakingTest(testSpeakings, submitTest.id);
+  } = useSpeakingTest(testSpeakings, submitTest.id,test.routeNodeId);
 
   const totalQuestions = allQuestions.length;
   const answeredQuestions = allQuestions.filter(q => q.isAnswered).length;

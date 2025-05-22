@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef,useCallback } from "react";
 import { testSpeakingService, questionService, submitTestAnswerService, submitTestSpeakingService, scoreSpeakingService,submitTestService,commentTestService } from "services";
 import { TestSpeaking, SubmitTestSpeaking, Question } from "interfaces";
-
+import {completeRouteNode} from "utils/updateProcess";
+import { RouteNodeEnum } from "interfaces";
 interface QuestionItem {
   id: number;
   serialNumber: number;
@@ -12,7 +13,7 @@ interface QuestionItem {
   totalQuestions?: number;
 }
 
-const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
+const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number,routeNodeId: number) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [questionsList, setQuestionsList] = useState<any[]>([]);
   const [speakingTests, setSpeakingTests] = useState<Record<number, TestSpeaking>>({});
@@ -466,6 +467,7 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number) => {
         });
       }
       
+      await completeRouteNode(routeNodeId, submitTestId,RouteNodeEnum.SPEAKING_TEST );
       setSubmissionResult(result);
       
     } catch (error) {

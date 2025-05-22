@@ -4,6 +4,8 @@ import QuestionExplanation from "./QuestionExplanation";
 import { useDarkMode } from "hooks/useDarkMode";
 import { Question } from "interfaces";
 import useColor from "theme/useColor";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 interface QuestionTestProps {
   question: Question;
@@ -12,6 +14,7 @@ interface QuestionTestProps {
   onAnswerChange: (answerId: number) => void;
   isDisabled?: boolean;
   showExplanation?: boolean;
+  isReview?: boolean;
 }
 
 export default function QuestionTest({
@@ -21,14 +24,21 @@ export default function QuestionTest({
   onAnswerChange,
   isDisabled = false,
   showExplanation = false,
+  isReview = false,
 }: QuestionTestProps) {
   const { isDarkMode } = useDarkMode();
   const color = useColor();
-console.log(question);
+
+  // Find the correct answer
+  const correctAnswerId = question.answers.find(answer => answer.correct)?.id;
+  
+  // Determine if the selected answer is correct
+  const isCorrect = selectedAnswerId === correctAnswerId;
 
   const options = question.answers.map((item) => ({
     value: item.id,
     label: item.content,
+    isCorrect: item.correct
   }));
 
   const handleChange = (value: string | number) => {
@@ -45,6 +55,18 @@ console.log(question);
         bgcolor: isDarkMode ? color.gray800 : color.gray100,
         transition: "background-color 0.3s ease",
         overflow: "hidden",
+        position: 'relative',
+        '&::before': isReview ? {
+          content: '""',
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: '4px',
+          height: '100%',
+          backgroundColor: isCorrect 
+            ? '#4ADE80' // light green color
+            : '#FF6B6B', // light red color
+        } : {}
       }}
     >
       <Typography
@@ -66,13 +88,50 @@ console.log(question);
             width: { xs: 40, sm: 60 },
             height: { xs: 30, sm: 40 },
             mr: 2,
-            bgcolor: isDarkMode ? color.teal700 : color.teal400,
+            bgcolor: isReview
+              ? (isCorrect 
+                ? "#4ADE80" // light green
+                : "#FF6B6B") // light red
+              : (isDarkMode ? color.teal700 : color.teal400),
             color: "white",
             fontWeight: "bold",
             transition: "background-color 0.3s ease",
+            position: 'relative'
           }}
         >
           {index}
+          {isReview && (
+            <Box 
+              sx={{ 
+                position: 'absolute', 
+                right: -7, 
+                top: -7,
+                width: 16,
+                height: 16,
+                borderRadius: '50%',
+                bgcolor: isDarkMode ? color.gray800 : 'white',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              {isCorrect ? (
+                <CheckCircleIcon 
+                  sx={{ 
+                    fontSize: 18,
+                    color: isDarkMode ? color.green300 : color.green400 
+                  }} 
+                />
+              ) : (
+                <CancelIcon 
+                  sx={{ 
+                    fontSize: 18,
+                    color: isDarkMode ? color.red300 : color.red400 
+                  }} 
+                />
+              )}
+            </Box>
+          )}
         </Box>
         {question.content}
       </Typography>
@@ -91,6 +150,7 @@ console.log(question);
           selectedValue={selectedAnswerId}
           onChange={handleChange}
           disabled={isDisabled}
+          isReview={isReview}
         />
       </Stack>
 
