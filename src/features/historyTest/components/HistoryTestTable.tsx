@@ -131,7 +131,7 @@ interface HistoryTestTableProps {
                                     )}
                                     <TableCell>
                                         <Chip
-                                            label={record.score !== null ? `${record.score}/${record.maxScore}` : "Pending"}
+                                            label={record.score !== null ? `${record.score}/${record.maxScore}` : "Not evaluated"}
                                             size="small"
                                             sx={{ bgcolor: getScoreColor(record.score, record.maxScore, isDarkMode, color), color: "white", fontWeight: "bold", fontSize: "0.75rem", "& .MuiChip-label": { px: 1.5 } }}
                                         />
