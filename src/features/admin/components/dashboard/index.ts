@@ -4,3 +4,5 @@ export { default as UserRoleDistribution } from "./UserRoleDistribution";
 export { default as RecentErrorLogs } from "./RecentErrorLogs";
 export { default as RecentUsers } from "./RecentUsers";
 export { default as StatsSummaryCards } from "./StatsSummaryCards";
+export { default as RecentAIResponses } from "./RecentAIResponses";
+export { default as AIResponseStats } from "./AIResponseStats";

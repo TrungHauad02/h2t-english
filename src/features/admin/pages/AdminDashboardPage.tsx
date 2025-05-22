@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Box, Grid, Stack, Typography } from "@mui/material";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
-import { ErrorLog, RolesEnum, SeverityEnum, User } from "interfaces";
+import { ErrorLog, RolesEnum, SeverityEnum, User, AIResponse } from "interfaces";
 import {
   ErrorLogStats,
   TeacherAdvanceStats,
@@ -10,6 +10,8 @@ import {
   RecentErrorLogs,
   RecentUsers,
   StatsSummaryCards,
+  AIResponseStats,
+  RecentAIResponses,
 } from "../components/dashboard";
 import { adminDashboardService } from "services/features/adminDashboardService";
 
@@ -33,6 +35,13 @@ export default function AdminDashboardPage() {
         byLevel: Record<string, number>;
         activeCount: number;
       };
+    };
+    aiResponseStats: {
+      total: number;
+      evaluatedCount: number;
+      notEvaluatedCount: number;
+      recentEvaluated: AIResponse[];
+      recentNotEvaluated: AIResponse[];
     };
   }>({
     errorLogStats: {
@@ -59,6 +68,13 @@ export default function AdminDashboardPage() {
         byLevel: {},
         activeCount: 0,
       },
+    },
+    aiResponseStats: {
+      total: 0,
+      evaluatedCount: 0,
+      notEvaluatedCount: 0,
+      recentEvaluated: [],
+      recentNotEvaluated: [],
     },
   });
 
@@ -129,6 +145,11 @@ export default function AdminDashboardPage() {
               logs={dashboardData.errorLogStats.recentLogs}
               isLoading={isLoading}
             />
+            <RecentAIResponses
+              evaluatedResponses={dashboardData.aiResponseStats.recentEvaluated}
+              notEvaluatedResponses={dashboardData.aiResponseStats.recentNotEvaluated}
+              isLoading={isLoading}
+            />
           </Stack>
         </Grid>
 
@@ -157,6 +178,10 @@ export default function AdminDashboardPage() {
                 />
               </Grid>
             </Grid>
+            <AIResponseStats
+              data={dashboardData.aiResponseStats}
+              isLoading={isLoading}
+            />
           </Stack>
         </Grid>
       </Grid>
