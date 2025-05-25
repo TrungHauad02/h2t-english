@@ -124,63 +124,64 @@ export default function Part6Section({
   const toggleExplanation = () => {
     setShowExplanation(!showExplanation);
   };
+const handleSaveQuestion = async (
+ updatedQuestion: ToeicPart6 & {
+   _changes?: {
+     toAdd: ToeicQuestion[];
+     toUpdate: ToeicQuestion[];
+     toDelete: number[];
+   };
+   subQuestions?: ToeicQuestion[];
+ }
+) => {
+ try {
+   const { _changes, subQuestions, ...mainQuestion } = updatedQuestion;
+   handleCloseEditDialog();
+   if (dialogMode === "edit") {
+     if (_changes && mainQuestion.id > 0) {
+       const newQuestionIds = await handleSaveSubQuestions(
+         mainQuestion.id,
+         _changes
+       );
 
-  const handleSaveQuestion = async (
-    updatedQuestion: ToeicPart6 & {
-      _changes?: {
-        toAdd: ToeicQuestion[];
-        toUpdate: ToeicQuestion[];
-        toDelete: number[];
-      };
-      subQuestions?: ToeicQuestion[];
-    }
-  ) => {
-    try {
-      const { _changes, subQuestions, ...mainQuestion } = updatedQuestion;
+       const existingQuestionIds = (mainQuestion.questions || []).filter(
+         (id) => id > 0 && !_changes.toDelete.includes(id)
+       );
 
-      if (dialogMode === "edit") {
-        if (_changes && mainQuestion.id > 0) {
-          const newQuestionIds = await handleSaveSubQuestions(
-            mainQuestion.id,
-            _changes
-          );
+       mainQuestion.questions = [...existingQuestionIds, ...newQuestionIds];
+     }
 
-          const existingQuestionIds = (mainQuestion.questions || []).filter(
-            (id) => id > 0 && !_changes.toDelete.includes(id)
-          );
+     if (onUpdateQuestion) {
+       await onUpdateQuestion(mainQuestion);
+     }
+   } else if (dialogMode === "add") {
+     let subQuestionIds: number[] = [];
 
-          mainQuestion.questions = [...existingQuestionIds, ...newQuestionIds];
-        }
+     if (subQuestions && subQuestions.length > 0 && onAddSubQuestion) {
+       const tempPartId = -1;
 
-        if (onUpdateQuestion) {
-          await onUpdateQuestion(mainQuestion);
-        }
-      } else if (dialogMode === "add") {
-        let subQuestionIds: number[] = [];
+       const createdQuestions: ToeicQuestion[] = [];
+       for (const question of subQuestions) {
+         const createdQuestion = await onAddSubQuestion(tempPartId, question);
+         createdQuestions.push(createdQuestion);
+       }
 
-        if (subQuestions && subQuestions.length > 0 && onAddSubQuestion) {
-          const tempPartId = -1;
+       subQuestionIds = createdQuestions.map((q) => q.id);
+     }
 
-          const createdQuestions = await Promise.all(
-            subQuestions.map((q) => onAddSubQuestion(tempPartId, q))
-          );
+     mainQuestion.questions = subQuestionIds;
 
-          subQuestionIds = createdQuestions.map((q) => q.id);
-        }
+     if (onAddQuestion) {
+       await onAddQuestion(mainQuestion);
+     }
+   }
 
-        mainQuestion.questions = subQuestionIds;
 
-        if (onAddQuestion) {
-          await onAddQuestion(mainQuestion);
-        }
-      }
-
-      handleCloseEditDialog();
-      setEmptyQuestion(null);
-    } catch (error) {
-      console.error("Error saving question:", error);
-    }
-  };
+   setEmptyQuestion(null);
+ } catch (error) {
+   console.error("Error saving question:", error);
+ }
+};
 
   if (questions.length === 0) {
     return (

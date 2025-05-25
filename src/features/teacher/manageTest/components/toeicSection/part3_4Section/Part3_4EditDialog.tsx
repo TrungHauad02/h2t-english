@@ -80,7 +80,7 @@ export default function Part3_4EditDialog({
       icon: <ListAltIcon fontSize="small" />
     },
     ...subQuestions.map((q, index) => ({
-      label: `Question ${index + 1}${q.id < 0 ? ' (New)' : ''}`,
+      label: `Question ${index + 1}${q.id < 0 ? '' : ''}`,
       id: `question-${index + 1}`,
       icon: <QuestionAnswerIcon fontSize="small" />
     }))
@@ -108,51 +108,54 @@ export default function Part3_4EditDialog({
             <Typography color="error">{error}</Typography>
           </Box>
         )}
-        
-        {success && (
-          <Box sx={{ mb: 2 }}>
-            <Typography color="success.main">{success}</Typography>
-          </Box>
-        )}
-        
-        <Box sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          mb: 3
-        }}>
-          <EditTabs
-            tabs={tabs}
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-            baseId="part3-4-edit"
-          />
-          
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleAddQuestion}
-            disabled={subQuestions.length >= 3}
-            sx={{
-              ml: 2,
-              backgroundColor: subQuestions.length >= 3
-                ? (isDarkMode ? color.gray600 : color.gray400)
-                : (isDarkMode ? color.emerald700 : color.emerald600),
-              color: subQuestions.length >= 3
-                ? (isDarkMode ? color.gray400 : color.gray600)
-                : color.white,
-              '&:hover': {
+        <Box sx={{ mb: 3 }}>
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            flexWrap: 'wrap',
+            gap: 2
+          }}>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <EditTabs
+                tabs={tabs}
+                activeTab={activeTab}
+                onTabChange={handleTabChange}
+                baseId="part3-4-edit"
+              />
+            </Box>
+            
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={handleAddQuestion}
+              disabled={subQuestions.length >= 3}
+              sx={{
                 backgroundColor: subQuestions.length >= 3
                   ? (isDarkMode ? color.gray600 : color.gray400)
-                  : (isDarkMode ? color.emerald600 : color.emerald500)
-              },
-              borderRadius: '0.75rem',
-              px: 2,
-              height: '36px'
-            }}
-          >
-            Add Question {subQuestions.length >= 3 ? '(Max 3)' : ''}
-          </Button>
+                  : (isDarkMode ? color.emerald700 : color.emerald600),
+                color: subQuestions.length >= 3
+                  ? (isDarkMode ? color.gray400 : color.gray600)
+                  : color.white,
+                '&:hover': {
+                  backgroundColor: subQuestions.length >= 3
+                    ? (isDarkMode ? color.gray600 : color.gray400)
+                    : (isDarkMode ? color.emerald600 : color.emerald500)
+                },
+                borderRadius: '0.75rem',
+                px: 3,
+                py: 1,
+                fontWeight: 'medium',
+                flexShrink: 0,
+                '&.Mui-disabled': {
+                  backgroundColor: isDarkMode ? color.gray600 : color.gray400,
+                  color: isDarkMode ? color.gray400 : color.gray600
+                }
+              }}
+            >
+              Add Question {subQuestions.length >= 3 ? '(Max 3)' : ''}
+            </Button>
+          </Box>
         </Box>
 
         <QuestionTabPanel value={activeTab} index={0} id="part3-4-edit">

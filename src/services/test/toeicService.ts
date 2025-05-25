@@ -152,6 +152,15 @@ const getToeicsByTeacher = async (
     throw error;
   }
 };
+const verify = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/toeic/${id}/verify`);
+    return response.data;
+  } catch (error) {
+    console.error("Error verifying toeic:", error);
+    throw error;
+  }
+};
 
 const getRecentToeic = async () => {
   try {
@@ -172,4 +181,5 @@ export const toeicService = {
   getToeicsForStudent,
   getToeicsByTeacher,
   getRecentToeic,
+  verify,
 };

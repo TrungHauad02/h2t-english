@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { toeicService } from "services/test";
 import { useQuestionSubTypes } from "./useToeicDetailsPage/useQuestionSubTypes";
 import { usePartHandlers } from "./useToeicDetailsPage/usePartHandlers";
-
+import { toast } from "react-toastify";
 export default function useToeicDetailPage() {
   const { id } = useParams();
   const [data, setData] = useState<Toeic | null>(null);
@@ -85,11 +85,18 @@ export default function useToeicDetailPage() {
   const handlePublish = async () => {
     if (data && data.id) {
       try {
-        await toeicService.patch(data.id, { status: true });
+         
+        const verifyResult = await toeicService.verify(data.id);
+        if (verifyResult.status !== "SUCCESS") {
+         toast.error("TOEIC test does not have enough questions (200 required).");
+          return;
+        }
+       await toeicService.patch(data.id, { status: true });
         const updated = { ...data, status: true };
         setData(updated);
         setEditData(updated);
         setOpenPublishDialog(false);
+       toast.success("TOEIC publish success).");
       } catch (error) {
         console.error("Error publishing TOEIC test:", error);
       }
