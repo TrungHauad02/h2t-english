@@ -1,9 +1,19 @@
-import { Stack, Box, Typography, Button, Card } from "@mui/material";
+import React from "react";
+import {
+  Stack,
+  Box,
+  Typography,
+  Button,
+  Card,
+  Fade,
+  Slide,
+} from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
+import SchoolIcon from "@mui/icons-material/School";
 import ViewModeContent from "./ViewModeContent";
 import EditModeContent from "./EditModeContent";
 import useTeacherInformation from "../hooks/useTeacherInformation";
@@ -15,116 +25,242 @@ export default function TeacherInformation() {
 
   if (!hooks.data) {
     return (
-      <Stack
-        sx={{
-          mt: 8,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "50vh",
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{ color: isDarkMode ? color.gray200 : color.gray800 }}
-        >
-          Loading teacher profile...
-        </Typography>
-      </Stack>
-    );
-  }
-
-  const paperBgColor = isDarkMode ? color.gray900 : color.gray50;
-  const borderColor = isDarkMode ? color.gray700 : color.gray300;
-
-  return (
-    <Stack spacing={4} sx={{ mt: 4, px: { xs: 2, sm: 4, md: 6 }, pb: 8 }}>
       <Box
         sx={{
           display: "flex",
-          justifyContent: "flex-end",
+          flexDirection: "column",
           alignItems: "center",
+          justifyContent: "center",
+          minHeight: "60vh",
+          gap: 3,
         }}
       >
-        {!hooks.isEditMode ? (
-          <Button
-            variant="contained"
-            startIcon={<EditIcon />}
-            onClick={() => hooks.setIsEditMode(true)}
+        <Box
+          sx={{
+            width: 80,
+            height: 80,
+            borderRadius: "50%",
+            background: `linear-gradient(135deg, ${color.emerald400} 0%, ${color.teal500} 100%)`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            animation: "pulse 2s infinite",
+            "@keyframes pulse": {
+              "0%": { transform: "scale(1)", opacity: 0.7 },
+              "50%": { transform: "scale(1.1)", opacity: 1 },
+              "100%": { transform: "scale(1)", opacity: 0.7 },
+            },
+          }}
+        >
+          <SchoolIcon sx={{ fontSize: 40, color: color.white }} />
+        </Box>
+        <Typography
+          variant="h5"
+          sx={{
+            color: isDarkMode ? color.gray200 : color.gray800,
+            fontWeight: 600,
+            textAlign: "center",
+          }}
+        >
+          Loading teacher information...
+        </Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <Fade in timeout={800}>
+      <Stack spacing={4}>
+        {/* Header Section */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: 2,
+          }}
+        >
+          <Box>
+            <Typography
+              variant="h3"
+              sx={{
+                fontWeight: "bold",
+                fontSize: { xs: "2rem", md: "2.5rem" },
+                background: `linear-gradient(135deg, ${
+                  isDarkMode ? color.emerald300 : color.emerald600
+                } 0%, ${isDarkMode ? color.teal300 : color.teal600} 100%)`,
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              Teacher Information
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                color: isDarkMode ? color.gray400 : color.gray600,
+                fontSize: "1.1rem",
+                mt: 0.5,
+              }}
+            >
+              Manage your professional profile and teaching credentials
+            </Typography>
+          </Box>
+
+          {/* Action Buttons */}
+          <Slide direction="left" in timeout={600}>
+            <Box>
+              {!hooks.isEditMode ? (
+                <Button
+                  variant="contained"
+                  size="large"
+                  startIcon={<EditIcon />}
+                  onClick={() => hooks.setIsEditMode(true)}
+                  sx={{
+                    background: `linear-gradient(135deg, ${color.edit} 0%, ${color.yellow} 100%)`,
+                    color: color.gray900,
+                    fontWeight: "bold",
+                    px: 4,
+                    py: 1.5,
+                    borderRadius: "2rem",
+                    textTransform: "none",
+                    fontSize: "1rem",
+                    boxShadow: `0 8px 32px ${color.edit}40`,
+                    "&:hover": {
+                      background: `linear-gradient(135deg, ${color.yellow} 0%, ${color.edit} 100%)`,
+                      transform: "translateY(-2px)",
+                      boxShadow: `0 12px 40px ${color.edit}60`,
+                    },
+                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  }}
+                >
+                  Edit Information
+                </Button>
+              ) : (
+                <Stack direction="row" spacing={2}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    startIcon={<SaveIcon />}
+                    onClick={hooks.handleSave}
+                    sx={{
+                      background: `linear-gradient(135deg, ${color.save} 0%, ${color.emerald600} 100%)`,
+                      color: color.white,
+                      fontWeight: "bold",
+                      px: 4,
+                      py: 1.5,
+                      borderRadius: "2rem",
+                      textTransform: "none",
+                      fontSize: "1rem",
+                      boxShadow: `0 8px 32px ${color.save}40`,
+                      "&:hover": {
+                        background: `linear-gradient(135deg, ${color.emerald600} 0%, ${color.save} 100%)`,
+                        transform: "translateY(-2px)",
+                        boxShadow: `0 12px 40px ${color.save}60`,
+                      },
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                    }}
+                  >
+                    Save Changes
+                  </Button>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    startIcon={<CancelIcon />}
+                    onClick={hooks.handleCancel}
+                    sx={{
+                      background: `linear-gradient(135deg, ${color.delete} 0%, ${color.red600} 100%)`,
+                      color: color.white,
+                      fontWeight: "bold",
+                      px: 4,
+                      py: 1.5,
+                      borderRadius: "2rem",
+                      textTransform: "none",
+                      fontSize: "1rem",
+                      boxShadow: `0 8px 32px ${color.delete}40`,
+                      "&:hover": {
+                        background: `linear-gradient(135deg, ${color.red600} 0%, ${color.delete} 100%)`,
+                        transform: "translateY(-2px)",
+                        boxShadow: `0 12px 40px ${color.delete}60`,
+                      },
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </Stack>
+              )}
+            </Box>
+          </Slide>
+        </Box>
+
+        {/* Information Card */}
+        <Slide direction="up" in timeout={800}>
+          <Card
+            elevation={0}
             sx={{
-              bgcolor: color.edit,
-              color: color.gray900,
-              "&:hover": {
-                bgcolor: isDarkMode ? color.emerald700 : color.emerald600,
+              background: isDarkMode
+                ? `linear-gradient(135deg, ${color.gray900}95 0%, ${color.gray800}95 100%)`
+                : `linear-gradient(135deg, ${color.white}95 0%, ${color.gray50}95 100%)`,
+              backdropFilter: "blur(20px)",
+              borderRadius: "2rem",
+              border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+              overflow: "hidden",
+              position: "relative",
+              boxShadow: isDarkMode
+                ? `0 20px 80px ${color.black}40, 0 0 0 1px ${color.gray700}20`
+                : `0 20px 80px ${color.gray900}10, 0 0 0 1px ${color.gray200}40`,
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                height: "6px",
+                background: `linear-gradient(90deg, ${color.emerald400} 0%, ${color.teal500} 50%, ${color.green500} 100%)`,
               },
             }}
           >
-            Edit Profile
-          </Button>
-        ) : (
-          <Stack direction="row" spacing={2}>
-            <Button
-              variant="contained"
-              startIcon={<SaveIcon />}
-              onClick={hooks.handleSave}
-              sx={{
-                bgcolor: color.save,
-                color: color.gray900,
-                "&:hover": {
-                  bgcolor: isDarkMode ? color.successDarkMode : color.success,
-                },
-              }}
-            >
-              Save
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={<CancelIcon />}
-              onClick={hooks.handleCancel}
-              sx={{
-                bgcolor: color.delete,
-                color: color.white,
-                "&:hover": {
-                  bgcolor: isDarkMode ? color.red700 : color.red600,
-                },
-              }}
-            >
-              Cancel
-            </Button>
-          </Stack>
-        )}
-      </Box>
+            {!hooks.isEditMode && (
+              <Box
+                sx={{
+                  height: { xs: 120, md: 160 },
+                  background: isDarkMode
+                    ? `linear-gradient(135deg, ${color.emerald900} 0%, ${color.teal900} 50%, ${color.gray900} 100%)`
+                    : `linear-gradient(135deg, ${color.emerald200} 0%, ${color.teal200} 50%, ${color.green200} 100%)`,
+                  position: "relative",
+                  overflow: "hidden",
+                  "&::before": {
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: isDarkMode
+                      ? `radial-gradient(circle at 40% 60%, ${color.emerald600}20 0%, transparent 70%)`
+                      : `radial-gradient(circle at 40% 60%, ${color.white}30 0%, transparent 70%)`,
+                  },
+                }}
+              />
+            )}
 
-      <Card
-        elevation={3}
-        sx={{
-          bgcolor: paperBgColor,
-          borderRadius: 2,
-          overflow: "hidden",
-          border: `1px solid ${borderColor}`,
-        }}
-      >
-        {!hooks.isEditMode && (
-          <Box
-            sx={{
-              height: 120,
-              bgcolor: isDarkMode ? color.teal900 : color.teal200,
-              position: "relative",
-            }}
-          />
-        )}
-
-        {hooks.isEditMode ? (
-          <EditModeContent
-            formData={hooks.formData}
-            handleChange={hooks.handleChange}
-            handleAvatarChange={hooks.handleAvatarChange}
-            handleDateChange={hooks.handleDateChange}
-          />
-        ) : (
-          <ViewModeContent data={hooks.data} />
-        )}
-      </Card>
-    </Stack>
+            {hooks.isEditMode ? (
+              <EditModeContent
+                formData={hooks.formData}
+                handleChange={hooks.handleChange}
+                handleAvatarChange={hooks.handleAvatarChange}
+                handleDateChange={hooks.handleDateChange}
+              />
+            ) : (
+              <ViewModeContent data={hooks.data} />
+            )}
+          </Card>
+        </Slide>
+      </Stack>
+    </Fade>
   );
 }
