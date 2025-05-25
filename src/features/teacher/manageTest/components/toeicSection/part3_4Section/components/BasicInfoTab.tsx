@@ -3,7 +3,7 @@ import { Grid, Typography} from '@mui/material';
 import { ToeicPart3_4 } from 'interfaces';
 import useColor from 'theme/useColor';
 import { useDarkMode } from 'hooks/useDarkMode';
-import { FormSectionCard, StatusSwitch, MediaFileSelector } from '../../dialogEdit';
+import { StatusSwitch, MediaFileSelector } from '../../dialogEdit';
 
 interface BasicInfoTabProps {
   editedQuestion: ToeicPart3_4;
@@ -27,6 +27,16 @@ export default function BasicInfoTab({
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
+  const sectionTitleStyle = {
+    fontSize: '1.1rem',
+    fontWeight: 600,
+    color: isDarkMode ? color.teal300 : color.teal700,
+    mb: 2,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1
+  };
+
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
@@ -49,7 +59,9 @@ export default function BasicInfoTab({
       </Grid>
 
       <Grid item xs={12}>
-        <FormSectionCard title="Transcript">
+        <Typography sx={sectionTitleStyle}>
+            Transcript <span style={{ color: color.red }}>*</span>
+          </Typography>
           <Typography
             variant="subtitle2"
             sx={{
@@ -80,7 +92,6 @@ export default function BasicInfoTab({
               fontSize: '1rem',
             }}
           />
-        </FormSectionCard>
       </Grid>
     </Grid>
   );

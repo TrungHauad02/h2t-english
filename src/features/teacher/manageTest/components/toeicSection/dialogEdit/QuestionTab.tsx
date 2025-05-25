@@ -37,7 +37,7 @@ export default function QuestionTab({
             fontWeight: 600
           }}
         >
-          Question {index + 1} {question.id < 0 ? '(New)' : ''}
+          Question {index + 1} {question.id < 0 ? '' : ''}
         </Typography>
         
         {canDelete && (

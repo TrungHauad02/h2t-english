@@ -45,15 +45,18 @@ export default function SectionHeader({
           </Typography>
         )}
       </Box>
-      <Chip 
-        label={`Question ${currentIndex + 1} of ${totalItems}`}
-        sx={{
-          backgroundColor: isDarkMode ? color.teal700 : color.teal100,
-          color: isDarkMode ? color.white : color.teal800,
-          fontWeight: 'medium',
-          p: 0.5
-        }}
-      />
+      {totalItems > 0 && (
+        <Chip 
+          label={`Question ${currentIndex + 1} of ${totalItems}`}
+          sx={{
+            backgroundColor: isDarkMode ? color.teal700 : color.teal100,
+            color: isDarkMode ? color.white : color.teal800,
+            fontWeight: 'medium',
+            p: 0.5
+          }}
+        />
+      )}
+
     </Box>
   );
 }
