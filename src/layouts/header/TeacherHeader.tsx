@@ -256,7 +256,7 @@ export default function TeacherHeader({
                     bgcolor: isDarkMode ? color.gray700 : color.gray100,
                   },
                 }}
-                onClick={() => navigate("/teacher/information")}
+                onClick={() => navigate("/teacher-advance/information")}
               >
                 <Info size={18} style={{ marginRight: 8 }} />
                 Information
