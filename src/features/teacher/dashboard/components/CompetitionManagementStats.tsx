@@ -54,6 +54,15 @@ export default function CompetitionManagementStats({ data, isLoading }: Competit
         backgroundColor: isDarkMode ? color.gray800 : color.white,
         border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
         height: 320,
+        cursor: 'pointer',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        '&:hover': {
+          transform: 'translateY(-4px)',
+          boxShadow: isDarkMode 
+            ? `0 12px 40px rgba(20, 184, 166, 0.15)` 
+            : `0 12px 40px rgba(20, 184, 166, 0.12)`,
+          border: `1px solid ${isDarkMode ? color.teal500 : color.teal300}`,
+        }
       }}
     >
       <Box sx={{ 

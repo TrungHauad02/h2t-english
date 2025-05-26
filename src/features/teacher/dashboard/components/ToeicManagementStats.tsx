@@ -57,6 +57,15 @@ export default function ToeicManagementStats({ data, isLoading }: ToeicManagemen
         borderRadius: "1rem",
         backgroundColor: isDarkMode ? color.gray800 : color.white,
         border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+        cursor: 'pointer',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        '&:hover': {
+          transform: 'translateY(-4px)',
+          boxShadow: isDarkMode 
+            ? `0 12px 40px rgba(16, 185, 129, 0.15)` 
+            : `0 12px 40px rgba(16, 185, 129, 0.12)`,
+          border: `1px solid ${isDarkMode ? color.emerald500 : color.emerald300}`,
+        }
       }}
     >
       <Box sx={{ 

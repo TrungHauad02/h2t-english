@@ -110,18 +110,43 @@ export default function RecentManagementActivities({
     if (competitions.length === 0) return renderEmptyState("No competitions found");
 
     return (
-      <List sx={{ py: 0, maxHeight: 400, overflow: 'auto', px: 5 }}>
+      <List sx={{ py: 2, maxHeight: 400, overflow: 'auto', px: 5 }}>
         {competitions.map((competition, index) => (
           <Box key={competition.id}>
-            <ListItem sx={{ py: 1.5, px: 0 }}>
+            <ListItem 
+              sx={{ 
+                py: 1.5, 
+                px: 2,
+                borderRadius: '0.75rem',
+                mx: 1,
+                mb: 1,
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': {
+                  backgroundColor: isDarkMode 
+                    ? `${color.teal900}40` 
+                    : `${color.teal50}80`,
+                  transform: 'translateX(8px)',
+                  boxShadow: isDarkMode 
+                    ? `0 4px 20px rgba(20, 184, 166, 0.15)` 
+                    : `0 4px 20px rgba(20, 184, 166, 0.08)`,
+                  '& .competition-title': {
+                    color: isDarkMode ? color.teal300 : color.teal700,
+                  }
+                }
+              }}
+            >
               <ListItemText
                 primary={
                   <Typography
+                    className="competition-title"
                     variant="body2"
                     sx={{
                       color: isDarkMode ? color.gray200 : color.gray800,
                       fontWeight: 500,
                       mb: 0.5,
+                      transition: 'color 0.25s ease',
                     }}
                   >
                     {truncateText(competition.title)}
@@ -159,6 +184,7 @@ export default function RecentManagementActivities({
                           fontWeight: 500,
                           fontSize: '0.7rem',
                           height: 20,
+                          transition: 'all 0.25s ease',
                         }}
                       />
                     </Box>
@@ -167,7 +193,7 @@ export default function RecentManagementActivities({
               />
             </ListItem>
             {index < competitions.length - 1 && (
-              <Divider sx={{ backgroundColor: isDarkMode ? color.gray700 : color.gray200 }} />
+              <Divider sx={{ backgroundColor: isDarkMode ? color.gray700 : color.gray200, mx: 2 }} />
             )}
           </Box>
         ))}
@@ -180,18 +206,43 @@ export default function RecentManagementActivities({
     if (toeicTests.length === 0) return renderEmptyState("No TOEIC tests found");
 
     return (
-      <List sx={{ py: 0, maxHeight: 400, overflow: 'auto', px: 5 }}>
+      <List sx={{ py: 2, maxHeight: 400, overflow: 'auto', px: 5  }}>
         {toeicTests.map((test, index) => (
           <Box key={test.id}>
-            <ListItem sx={{ py: 1.5, px: 0 }}>
+            <ListItem 
+              sx={{ 
+                py: 1.5, 
+                px: 2,
+                borderRadius: '0.75rem',
+                mx: 1,
+                mb: 1,
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': {
+                  backgroundColor: isDarkMode 
+                    ? `${color.emerald900}40`
+                    : `${color.emerald50}80`,
+                  transform: 'translateX(8px)',
+                  boxShadow: isDarkMode 
+                    ? `0 4px 20px rgba(16, 185, 129, 0.15)` 
+                    : `0 4px 20px rgba(16, 185, 129, 0.08)`,
+                  '& .toeic-title': {
+                    color: isDarkMode ? color.emerald300 : color.emerald700,
+                  }
+                }
+              }}
+            >
               <ListItemText
                 primary={
                   <Typography
+                    className="toeic-title"
                     variant="body2"
                     sx={{
                       color: isDarkMode ? color.gray200 : color.gray800,
                       fontWeight: 500,
                       mb: 0.5,
+                      transition: 'color 0.25s ease',
                     }}
                   >
                     {truncateText(test.title)}
@@ -229,6 +280,7 @@ export default function RecentManagementActivities({
                           fontWeight: 500,
                           fontSize: '0.7rem',
                           height: 20,
+                          transition: 'all 0.25s ease',
                         }}
                       />
                     </Box>
@@ -237,7 +289,7 @@ export default function RecentManagementActivities({
               />
             </ListItem>
             {index < toeicTests.length - 1 && (
-              <Divider sx={{ backgroundColor: isDarkMode ? color.gray700 : color.gray200 }} />
+              <Divider sx={{ backgroundColor: isDarkMode ? color.gray700 : color.gray200, mx: 2 }} />
             )}
           </Box>
         ))}
@@ -250,18 +302,43 @@ export default function RecentManagementActivities({
     if (aiResponses.length === 0) return renderEmptyState("No AI responses found");
 
     return (
-      <List sx={{ py: 0, maxHeight: 400, overflow: 'auto', px: 5 }}>
+      <List sx={{ py: 2, maxHeight: 400, overflow: 'auto', px: 5 }}>
         {aiResponses.map((response, index) => (
           <Box key={response.id}>
-            <ListItem sx={{ py: 1.5, px: 0 }}>
+            <ListItem 
+              sx={{ 
+                py: 1.5, 
+                px: 2,
+                borderRadius: '0.75rem',
+                mx: 1,
+                mb: 1,
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': {
+                  backgroundColor: isDarkMode 
+                    ? `${color.teal900}40`
+                    : `${color.teal50}80`,
+                  transform: 'translateX(8px)',
+                  boxShadow: isDarkMode 
+                    ? `0 4px 20px rgba(20, 184, 166, 0.15)` 
+                    : `0 4px 20px rgba(20, 184, 166, 0.08)`,
+                  '& .ai-request': {
+                    color: isDarkMode ? color.teal300 : color.teal700,
+                  }
+                }
+              }}
+            >
               <ListItemText
                 primary={
                   <Typography
+                    className="ai-request"
                     variant="body2"
                     sx={{
                       color: isDarkMode ? color.gray200 : color.gray800,
                       fontWeight: 500,
                       mb: 0.5,
+                      transition: 'color 0.25s ease',
                     }}
                   >
                     {truncateText(response.request)}
@@ -299,6 +376,7 @@ export default function RecentManagementActivities({
                           fontWeight: 500,
                           fontSize: '0.7rem',
                           height: 20,
+                          transition: 'all 0.25s ease',
                         }}
                       />
                     </Box>
@@ -307,7 +385,7 @@ export default function RecentManagementActivities({
               />
             </ListItem>
             {index < aiResponses.length - 1 && (
-              <Divider sx={{ backgroundColor: isDarkMode ? color.gray700 : color.gray200 }} />
+              <Divider sx={{ backgroundColor: isDarkMode ? color.gray700 : color.gray200, mx: 2 }} />
             )}
           </Box>
         ))}
@@ -318,8 +396,8 @@ export default function RecentManagementActivities({
   const getNavigationPath = (tabIndex: number) => {
     switch(tabIndex) {
       case 0: return "/teacher-advance/competitions";
-      case 1: return "/teacher-advance/toeics";
-      case 2: return "/teacher-advance/ai-response";
+      case 1: return "/teacher-advance/toeic-tests";
+      case 2: return "/teacher-advance/ai-responses";
       default: return "/teacher-advance/dashboard";
     }
   };
@@ -332,6 +410,13 @@ export default function RecentManagementActivities({
         backgroundColor: isDarkMode ? color.gray800 : color.white,
         border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
         overflow: 'hidden',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        '&:hover': {
+          boxShadow: isDarkMode 
+            ? `0 8px 32px rgba(20, 184, 166, 0.12)` 
+            : `0 8px 32px rgba(20, 184, 166, 0.08)`,
+          border: `1px solid ${isDarkMode ? color.teal600 : color.teal200}`,
+        }
       }}
     >
       <Box sx={{ p: 3, pb: 0 }}>
@@ -358,7 +443,15 @@ export default function RecentManagementActivities({
               <IconButton
                 size="small"
                 onClick={() => onNavigate(getNavigationPath(tabValue))}
-                sx={{ color: isDarkMode ? color.gray400 : color.gray600 }}
+                sx={{ 
+                  color: isDarkMode ? color.gray400 : color.gray600,
+                  transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    color: isDarkMode ? color.teal400 : color.teal600,
+                    backgroundColor: isDarkMode ? `${color.teal800}20` : `${color.teal100}60`,
+                    transform: 'scale(1.1)',
+                  }
+                }}
               >
                 <VisibilityIcon />
               </IconButton>
