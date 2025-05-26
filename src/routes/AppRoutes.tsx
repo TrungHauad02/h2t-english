@@ -152,6 +152,7 @@ const AppRoutes = () => {
           <Route path="toeics" element={<Pages.ManageToeicPage />} />
           <Route path="toeics/:id" element={<Pages.ToeicDetailPage />} />
           <Route path="ai-response" element={<Pages.AIResponseTeacherPage />} />
+          <Route path="dashboard" element={<Pages.TeacherAdvanceDashboardPage/>} />
         </Route>
       </Route>
 

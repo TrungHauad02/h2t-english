@@ -49,6 +49,8 @@ export { default as CompetitionDetailPage } from "features/teacher/manageTest/pa
 export { default as ManageToeicPage } from "features/teacher/manageTest/pages/ManageToeicPage";
 export { default as ToeicDetailPage } from "features/teacher/manageTest/pages/ToeicDetailPage";
 export { default as AIResponseTeacherPage } from "features/teacher/manageAIResponse/pages/AIResponseTeacherPage";
+export { default as TeacherAdvanceDashboardPage } from "features/teacher/dashboard/pages/TeacherAdvanceDashboardPage";
+
 // Admin Pages
 export { default as ManageStudentPage } from "features/admin/pages/ManageStudentsPage";
 export { default as ManageTeacherPage } from "features/admin/pages/ManageTeachersPage";
