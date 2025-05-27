@@ -4,3 +4,7 @@ export { default as ContentStatusChart } from "./ContentStatusChart";
 export { default as ContentTypeDistribution } from "./ContentTypeDistribution";
 export { default as TestTypeDistribution } from "./TestTypeDistribution";
 export { default as StatsCardSection } from "./StatsCardSection";
+export { default as CompetitionManagementStats } from "./CompetitionManagementStats";
+export { default as ToeicManagementStats } from "./ToeicManagementStats";
+export { default as AIResponseManagementStats } from "./AIResponseManagementStats";
+export { default as RecentManagementActivities } from "./RecentManagementActivities";
