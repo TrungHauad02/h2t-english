@@ -9,7 +9,6 @@ import {
   Skeleton,
   Tabs,
   Tab,
-  Divider,
   IconButton,
   Tooltip
 } from "@mui/material";
@@ -30,6 +29,7 @@ interface RecentManagementActivitiesProps {
   aiResponses: AIResponse[];
   isLoading: boolean;
   onNavigate?: (path: string) => void;
+  onAIResponseView?: (response: AIResponse) => void;
 }
 
 interface TabPanelProps {
@@ -59,7 +59,8 @@ export default function RecentManagementActivities({
   toeicTests, 
   aiResponses, 
   isLoading,
-  onNavigate 
+  onNavigate,
+  onAIResponseView
 }: RecentManagementActivitiesProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -110,29 +111,40 @@ export default function RecentManagementActivities({
     if (competitions.length === 0) return renderEmptyState("No competitions found");
 
     return (
-      <List sx={{ py: 2, maxHeight: 400, overflow: 'auto', px: 5 }}>
-        {competitions.map((competition, index) => (
+      <List sx={{ py: 0, overflow: 'auto', pt: 1 }}>
+        {competitions.map((competition) => (
           <Box key={competition.id}>
             <ListItem 
               sx={{ 
-                py: 1.5, 
+                py: 2, 
                 px: 2,
                 borderRadius: '0.75rem',
-                mx: 1,
-                mb: 1,
-                backgroundColor: 'transparent',
+                mb: 1.5,
+                mx: 5,
+                width: "auto",
+                backgroundColor: isDarkMode ? color.gray500 : color.gray50,
                 cursor: 'pointer',
+                border: `1px solid ${isDarkMode ? color.gray600 : color.gray200}`,
+                boxShadow: isDarkMode 
+                  ? `0 2px 8px rgba(0, 0, 0, 0.1)` 
+                  : `0 2px 8px rgba(0, 0, 0, 0.05)`,
                 transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                 '&:hover': {
                   backgroundColor: isDarkMode 
                     ? `${color.teal900}40` 
                     : `${color.teal50}80`,
-                  transform: 'translateX(8px)',
+                  transform: 'translateY(-4px)',
                   boxShadow: isDarkMode 
-                    ? `0 4px 20px rgba(20, 184, 166, 0.15)` 
-                    : `0 4px 20px rgba(20, 184, 166, 0.08)`,
+                    ? `0 12px 32px rgba(20, 184, 166, 0.25), 0 4px 16px rgba(0, 0, 0, 0.15)` 
+                    : `0 12px 32px rgba(20, 184, 166, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1)`,
+                  border: `1px solid ${isDarkMode ? color.teal500 : color.teal300}`,
                   '& .competition-title': {
                     color: isDarkMode ? color.teal300 : color.teal700,
+                  },
+                  '& .item-view-button': {
+                    color: isDarkMode ? color.teal300 : color.teal700,
+                    backgroundColor: isDarkMode ? `${color.teal800}30` : `${color.teal100}80`,
+                    transform: 'scale(1.1)',
                   }
                 }
               }}
@@ -191,10 +203,32 @@ export default function RecentManagementActivities({
                   </Box>
                 }
               />
+              <Box sx={{ ml: 2, pl: 1 }}>
+                <Tooltip title="View Competition Details">
+                  <IconButton
+                    className="item-view-button"
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onNavigate && onNavigate(`/teacher-advance/competitions/${competition.id}`);
+                    }}
+                    sx={{
+                      opacity: 1,
+                      transform: 'scale(1)',
+                      transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                      color: isDarkMode ? color.teal400 : color.teal600,
+                      '&:hover': {
+                        color: isDarkMode ? color.teal300 : color.teal700,
+                        backgroundColor: isDarkMode ? `${color.teal800}30` : `${color.teal100}80`,
+                        transform: 'scale(1.1)',
+                      }
+                    }}
+                  >
+                    <VisibilityIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
             </ListItem>
-            {index < competitions.length - 1 && (
-              <Divider sx={{ backgroundColor: isDarkMode ? color.gray700 : color.gray200, mx: 2 }} />
-            )}
           </Box>
         ))}
       </List>
@@ -206,29 +240,40 @@ export default function RecentManagementActivities({
     if (toeicTests.length === 0) return renderEmptyState("No TOEIC tests found");
 
     return (
-      <List sx={{ py: 2, maxHeight: 400, overflow: 'auto', px: 5  }}>
-        {toeicTests.map((test, index) => (
+      <List sx={{ py: 0, overflow: 'auto', pt: 1 }}>
+        {toeicTests.map((test) => (
           <Box key={test.id}>
             <ListItem 
               sx={{ 
-                py: 1.5, 
+                py: 2, 
                 px: 2,
                 borderRadius: '0.75rem',
-                mx: 1,
-                mb: 1,
-                backgroundColor: 'transparent',
+                mb: 1.5,
+                mx: 5,
+                width: "auto",
+                backgroundColor: isDarkMode ? color.gray500 : color.gray50,
                 cursor: 'pointer',
+                border: `1px solid ${isDarkMode ? color.gray600 : color.gray200}`,
+                boxShadow: isDarkMode 
+                  ? `0 2px 8px rgba(0, 0, 0, 0.1)` 
+                  : `0 2px 8px rgba(0, 0, 0, 0.05)`,
                 transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                 '&:hover': {
                   backgroundColor: isDarkMode 
                     ? `${color.emerald900}40`
                     : `${color.emerald50}80`,
-                  transform: 'translateX(8px)',
+                  transform: 'translateY(-4px)',
                   boxShadow: isDarkMode 
-                    ? `0 4px 20px rgba(16, 185, 129, 0.15)` 
-                    : `0 4px 20px rgba(16, 185, 129, 0.08)`,
+                    ? `0 12px 32px rgba(16, 185, 129, 0.25), 0 4px 16px rgba(0, 0, 0, 0.15)` 
+                    : `0 12px 32px rgba(16, 185, 129, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1)`,
+                  border: `1px solid ${isDarkMode ? color.emerald500 : color.emerald300}`,
                   '& .toeic-title': {
                     color: isDarkMode ? color.emerald300 : color.emerald700,
+                  },
+                  '& .item-view-button': {
+                    color: isDarkMode ? color.emerald300 : color.emerald700,
+                    backgroundColor: isDarkMode ? `${color.emerald800}30` : `${color.emerald100}80`,
+                    transform: 'scale(1.1)',
                   }
                 }
               }}
@@ -287,10 +332,32 @@ export default function RecentManagementActivities({
                   </Box>
                 }
               />
+              <Box sx={{ ml: 2, pl: 1 }}>
+                <Tooltip title="View TOEIC Test Details">
+                  <IconButton
+                    className="item-view-button"
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onNavigate && onNavigate(`/teacher-advance/toeics/${test.id}`);
+                    }}
+                    sx={{
+                      opacity: 1,
+                      transform: 'scale(1)',
+                      transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                      color: isDarkMode ? color.emerald400 : color.emerald600,
+                      '&:hover': {
+                        color: isDarkMode ? color.emerald300 : color.emerald700,
+                        backgroundColor: isDarkMode ? `${color.emerald800}30` : `${color.emerald100}80`,
+                        transform: 'scale(1.1)',
+                      }
+                    }}
+                  >
+                    <VisibilityIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
             </ListItem>
-            {index < toeicTests.length - 1 && (
-              <Divider sx={{ backgroundColor: isDarkMode ? color.gray700 : color.gray200, mx: 2 }} />
-            )}
           </Box>
         ))}
       </List>
@@ -302,29 +369,40 @@ export default function RecentManagementActivities({
     if (aiResponses.length === 0) return renderEmptyState("No AI responses found");
 
     return (
-      <List sx={{ py: 2, maxHeight: 400, overflow: 'auto', px: 5 }}>
-        {aiResponses.map((response, index) => (
+      <List sx={{ py: 0, overflow: 'auto', pt: 1 }}>
+        {aiResponses.map((response) => (
           <Box key={response.id}>
             <ListItem 
               sx={{ 
-                py: 1.5, 
+                py: 2, 
                 px: 2,
                 borderRadius: '0.75rem',
-                mx: 1,
-                mb: 1,
-                backgroundColor: 'transparent',
+                mb: 1.5,
+                mx: 5,
+                width: "auto",
+                backgroundColor: isDarkMode ? color.gray500 : color.gray50,
                 cursor: 'pointer',
+                border: `1px solid ${isDarkMode ? color.gray600 : color.gray200}`,
+                boxShadow: isDarkMode 
+                  ? `0 2px 8px rgba(0, 0, 0, 0.1)` 
+                  : `0 2px 8px rgba(0, 0, 0, 0.05)`,
                 transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                 '&:hover': {
                   backgroundColor: isDarkMode 
                     ? `${color.teal900}40`
                     : `${color.teal50}80`,
-                  transform: 'translateX(8px)',
+                  transform: 'translateY(-4px)',
                   boxShadow: isDarkMode 
-                    ? `0 4px 20px rgba(20, 184, 166, 0.15)` 
-                    : `0 4px 20px rgba(20, 184, 166, 0.08)`,
+                    ? `0 12px 32px rgba(20, 184, 166, 0.25), 0 4px 16px rgba(0, 0, 0, 0.15)` 
+                    : `0 12px 32px rgba(20, 184, 166, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1)`,
+                  border: `1px solid ${isDarkMode ? color.teal500 : color.teal300}`,
                   '& .ai-request': {
                     color: isDarkMode ? color.teal300 : color.teal700,
+                  },
+                  '& .item-view-button': {
+                    color: isDarkMode ? color.teal300 : color.teal700,
+                    backgroundColor: isDarkMode ? `${color.teal800}30` : `${color.teal100}80`,
+                    transform: 'scale(1.1)',
                   }
                 }
               }}
@@ -383,10 +461,37 @@ export default function RecentManagementActivities({
                   </Box>
                 }
               />
+              <Box sx={{ ml: 2, pl: 1 }}>
+                <Tooltip title="View AI Response Details">
+                  <IconButton
+                    className="item-view-button"
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Navigate to main page first, then show dialog
+                      onNavigate && onNavigate("/teacher-advance/ai-response");
+                      // Small delay to ensure navigation completes, then show dialog
+                      setTimeout(() => {
+                        onAIResponseView && onAIResponseView(response);
+                      }, 100);
+                    }}
+                    sx={{
+                      opacity: 1,
+                      transform: 'scale(1)',
+                      transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                      color: isDarkMode ? color.teal400 : color.teal600,
+                      '&:hover': {
+                        color: isDarkMode ? color.teal300 : color.teal700,
+                        backgroundColor: isDarkMode ? `${color.teal800}30` : `${color.teal100}80`,
+                        transform: 'scale(1.1)',
+                      }
+                    }}
+                  >
+                    <VisibilityIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
             </ListItem>
-            {index < aiResponses.length - 1 && (
-              <Divider sx={{ backgroundColor: isDarkMode ? color.gray700 : color.gray200, mx: 2 }} />
-            )}
           </Box>
         ))}
       </List>
@@ -396,8 +501,8 @@ export default function RecentManagementActivities({
   const getNavigationPath = (tabIndex: number) => {
     switch(tabIndex) {
       case 0: return "/teacher-advance/competitions";
-      case 1: return "/teacher-advance/toeic-tests";
-      case 2: return "/teacher-advance/ai-responses";
+      case 1: return "/teacher-advance/toeics";
+      case 2: return "/teacher-advance/ai-response";
       default: return "/teacher-advance/dashboard";
     }
   };
@@ -438,7 +543,7 @@ export default function RecentManagementActivities({
               Recent Management Activities
             </Typography>
           </Box>
-          {onNavigate && (
+          {onNavigate && ( 
             <Tooltip title={`View All ${['Competitions', 'TOEIC Tests', 'AI Responses'][tabValue]}`}>
               <IconButton
                 size="small"
@@ -466,7 +571,6 @@ export default function RecentManagementActivities({
             minHeight: 'auto',
             '& .MuiTab-root': {
               minHeight: 'auto',
-              py: 1,
               fontSize: '0.875rem',
               fontWeight: 500,
               color: isDarkMode ? color.gray400 : color.gray600,
