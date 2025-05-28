@@ -106,6 +106,7 @@ export default function useAIResponse(): UseAIResponseResult {
 
   const closeEvaluateDialog = useCallback(() => {
     setEvaluateDialogOpen(false);
+    // Don't clear selectedResponse here to allow switching between dialogs
   }, []);
 
   const openDetailDialog = useCallback((response: AIResponse) => {
@@ -116,6 +117,8 @@ export default function useAIResponse(): UseAIResponseResult {
 
   const closeDetailDialog = useCallback(() => {
     setDetailDialogOpen(false);
+    // Clear selectedResponse when closing detail dialog completely
+    setSelectedResponse(null);
   }, []);
 
   const saveEvaluation = useCallback(
@@ -128,8 +131,15 @@ export default function useAIResponse(): UseAIResponseResult {
             status: true, // Đánh dấu là đã đánh giá
           });
 
+          // Update the selected response immediately for UI
+          setSelectedResponse(prev => prev ? { ...prev, evaluate, status: true } : null);
+          
+          // Refresh data to get latest from server
           await fetchData();
-          closeEvaluateDialog();
+          
+          // Close evaluate dialog and return to detail dialog
+          setEvaluateDialogOpen(false);
+          setDetailDialogOpen(true);
         } catch (error) {
           console.error("Error updating evaluation:", error);
           setError("Failed to save evaluation. Please try again.");
@@ -137,7 +147,7 @@ export default function useAIResponse(): UseAIResponseResult {
         }
       }
     },
-    [selectedResponse, userId, fetchData, closeEvaluateDialog]
+    [selectedResponse, userId, fetchData]
   );
 
   useEffect(() => {

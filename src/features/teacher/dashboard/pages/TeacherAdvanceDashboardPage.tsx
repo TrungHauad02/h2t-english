@@ -5,8 +5,13 @@ import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import useAuth from "hooks/useAuth";
 import { CompetitionTest, Toeic, AIResponse } from "interfaces";
+import { 
+  AIResponseManagementStats, 
+  CompetitionManagementStats, 
+  RecentManagementActivities, 
+  ToeicManagementStats 
+} from "../components";
 import { teacherAdvanceDashboardService } from "../services/teacherAdvanceDashboardService";
-import { AIResponseManagementStats, CompetitionManagementStats, RecentManagementActivities, ToeicManagementStats } from "../components";
 
 export default function TeacherAdvanceDashboardPage() {
   const color = useColor();
@@ -83,6 +88,13 @@ export default function TeacherAdvanceDashboardPage() {
     return () => clearInterval(intervalId);
   }, [userId]);
 
+  const handleAIResponseView = (response: AIResponse) => {
+    // Store the response in sessionStorage to be picked up by the AI Response page
+    sessionStorage.setItem('selectedAIResponse', JSON.stringify(response));
+    // Navigate to AI Response page
+    navigate("/teacher-advance/ai-response");
+  };
+
   const handleNavigate = (path: string) => {
     navigate(path);
   };
@@ -92,7 +104,7 @@ export default function TeacherAdvanceDashboardPage() {
       sx={{
         p: { xs: 2, sm: 3, md: 4 },
         backgroundColor: isDarkMode ? color.gray900 : color.gray50,
-        minHeight: "100vh",
+        mt: 4,
       }}
     >
       <Typography
@@ -142,6 +154,7 @@ export default function TeacherAdvanceDashboardPage() {
             aiResponses={dashboardData.aiResponseStats.recentResponses}
             isLoading={isLoading}
             onNavigate={handleNavigate}
+            onAIResponseView={handleAIResponseView}
           />
         </Grid>
       </Grid>
