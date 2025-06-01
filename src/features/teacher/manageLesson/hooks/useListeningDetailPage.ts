@@ -79,7 +79,7 @@ export default function useListeningDetailPage() {
   const handleSaveChanges = async () => {
     try {
       if (editData) {
-        const resData = await listeningService.update(editData.id, editData);
+        const resData = await listeningService.patch(editData.id, editData);
         setData(resData.data);
       }
     } catch (error) {

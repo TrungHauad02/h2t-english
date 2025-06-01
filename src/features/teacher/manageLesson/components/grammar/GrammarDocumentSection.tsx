@@ -9,12 +9,12 @@ import SectionHeader from "../common/SectionHeader";
 
 interface GrammarDocumentSectionProps {
   documentUrl: string;
-  onDocumentChange: (base64: string) => void;
+  handleSaveFile: (value: string) => void;
 }
 
 export default function GrammarDocumentSection({
   documentUrl,
-  onDocumentChange,
+  handleSaveFile,
 }: GrammarDocumentSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -36,7 +36,7 @@ export default function GrammarDocumentSection({
   };
 
   const handleSaveChanges = () => {
-    onDocumentChange(tempDocument);
+    handleSaveFile(tempDocument);
     setIsEditMode(false);
   };
 

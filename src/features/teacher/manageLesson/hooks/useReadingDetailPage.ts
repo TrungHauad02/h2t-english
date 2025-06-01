@@ -79,7 +79,7 @@ export default function useReadingDetailPage() {
   const handleSaveChanges = async () => {
     try {
       if (editData) {
-        const resData = await readingService.update(editData.id, editData);
+        const resData = await readingService.patch(editData.id, editData);
         setData(resData.data);
       }
     } catch (error) {
@@ -87,6 +87,25 @@ export default function useReadingDetailPage() {
       // Display error
       showError({
         message: "Error updating reading",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    } finally {
+      setIsEditMode(false);
+    }
+  };
+
+  const handleSaveFile = async (file: string) => {
+    try {
+      if (editData) {
+        const resData = await readingService.patch(editData.id, { file: file });
+        setData(resData.data);
+      }
+    } catch (error) {
+      console.error("Error updating file reading");
+      // Display error
+      showError({
+        message: "Error updating file reading",
         severity: "error",
         details: extractErrorMessages(error),
       });
@@ -175,6 +194,7 @@ export default function useReadingDetailPage() {
     loading,
     openPublishDialog,
     openUnpublishDialog,
+    handleSaveFile,
     handleEditMode,
     handleSaveChanges,
     handleInputChange,

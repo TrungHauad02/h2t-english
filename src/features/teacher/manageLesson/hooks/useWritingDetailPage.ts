@@ -80,7 +80,7 @@ export default function useWritingDetailPage() {
   const handleSaveChanges = async () => {
     try {
       if (editData) {
-        const resData = await writingService.update(editData.id, editData);
+        const resData = await writingService.patch(editData.id, editData);
         setData(resData.data);
       }
     } catch (error) {

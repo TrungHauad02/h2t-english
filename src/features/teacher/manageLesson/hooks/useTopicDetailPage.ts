@@ -75,7 +75,7 @@ export default function useTopicDetailPage() {
       setIsEditMode(false);
       // Update in db
       try {
-        const resData = await topicService.update(editData.id, editData);
+        const resData = await topicService.patch(editData.id, editData);
         setData(resData.data);
       } catch (error) {
         console.error("Error updating topic");

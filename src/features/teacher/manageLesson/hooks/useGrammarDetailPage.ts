@@ -76,7 +76,7 @@ export default function useGrammarDetailPage() {
   const handleSaveChanges = async () => {
     try {
       if (editData) {
-        const resData = await grammarService.update(editData.id, editData);
+        const resData = await grammarService.patch(editData.id, editData);
         setData(resData.data);
       }
     } catch (error) {
@@ -84,6 +84,28 @@ export default function useGrammarDetailPage() {
       // Display error
       showError({
         message: "Error updating grammar",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    } finally {
+      setIsEditMode(false);
+    }
+  };
+
+  const handleSaveFile = async (file: string) => {
+    try {
+      if (editData) {
+        const resData = await grammarService.patch(editData.id, {
+          file: file,
+        });
+        console.log(resData);
+        setData(resData.data);
+      }
+    } catch (error) {
+      console.error("Error updating file grammar");
+      // Display error
+      showError({
+        message: "Error updating file grammar",
         severity: "error",
         details: extractErrorMessages(error),
       });
@@ -172,6 +194,7 @@ export default function useGrammarDetailPage() {
     loading,
     openPublishDialog,
     openUnpublishDialog,
+    handleSaveFile,
     handleEditMode,
     handleSaveChanges,
     handleInputChange,

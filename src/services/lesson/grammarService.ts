@@ -98,7 +98,6 @@ const patch = async (id: number, data: Partial<Grammar>) => {
       });
       data.image = imageResult.data;
     }
-
     if (data.file) {
       const fileResult = await fileHandlerService.handleFileUpdate({
         base64: data.file,
