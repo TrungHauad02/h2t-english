@@ -95,6 +95,48 @@ export default function useListeningDetailPage() {
     }
   };
 
+  const handleSaveFile = async (audio: string) => {
+    try {
+      if (editData) {
+        const resData = await listeningService.patch(editData.id, {
+          audio: audio,
+        });
+        setData(resData.data);
+      }
+    } catch (error) {
+      console.error("Error updating audio listening");
+      // Display error
+      showError({
+        message: "Error updating audio listening",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    } finally {
+      setIsEditMode(false);
+    }
+  };
+
+  const handleSaveTranscript = async (transcript: string) => {
+    try {
+      if (editData) {
+        const resData = await listeningService.patch(editData.id, {
+          transcript: transcript,
+        });
+        setData(resData.data);
+      }
+    } catch (error) {
+      console.error("Error updating transcript listening");
+      // Display error
+      showError({
+        message: "Error updating transcript listening",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    } finally {
+      setIsEditMode(false);
+    }
+  };
+
   const handleInputChange = (field: keyof Listening, value: any) => {
     if (editData) {
       setEditData({
@@ -169,6 +211,8 @@ export default function useListeningDetailPage() {
     loading,
     openPublishDialog,
     openUnpublishDialog,
+    handleSaveFile,
+    handleSaveTranscript,
     handleEditMode,
     handleSaveChanges,
     handleInputChange,

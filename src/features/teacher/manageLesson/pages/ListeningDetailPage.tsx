@@ -4,6 +4,7 @@ import {
   ListeningAudioSection,
   ListeningDetailsView,
   ListeningEditForm,
+  ListeningTranscriptSection,
 } from "../components/listening";
 import QuestionsSection from "../components/questionsSection/QuestionsSection";
 import WEFloatingNavMenu, {
@@ -11,6 +12,7 @@ import WEFloatingNavMenu, {
 } from "components/pagination/WEFloatingNavMenu";
 import SubjectIcon from "@mui/icons-material/Subject";
 import QuizIcon from "@mui/icons-material/Quiz";
+import DescriptionIcon from "@mui/icons-material/Description";
 import ListenAndWriteAWordSection from "../components/listening/ListenAndWriteAWordSection";
 import {
   NotFoundLesson,
@@ -39,6 +41,11 @@ export default function ListeningDetailPage() {
       id: "listening-audio",
       label: "Listening Audio",
       icon: <SubjectIcon fontSize="small" />,
+    },
+    {
+      id: "listening-transcript",
+      label: "Listening Transcript",
+      icon: <DescriptionIcon fontSize="small" />,
     },
     {
       id: "questions-section",
@@ -92,10 +99,16 @@ export default function ListeningDetailPage() {
         <div id="listening-audio">
           <ListeningAudioSection
             audio={hooks.editData ? hooks.editData.audio : hooks.data.audio}
-            onAudioChange={(base64: string) =>
-              hooks.handleInputChange("audio", base64)
+            handleSaveFile={hooks.handleSaveFile}
+          />
+        </div>
+
+        <div id="listening-transcript">
+          <ListeningTranscriptSection
+            transcript={
+              hooks.editData ? hooks.editData.transcript : hooks.data.transcript
             }
-            onSave={hooks.handleSaveChanges}
+            handleSaveTranscript={hooks.handleSaveTranscript}
           />
         </div>
 

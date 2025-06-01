@@ -11,6 +11,7 @@ import {
 } from "./preparation";
 import usePreparationSection from "../hooks/usePreparationSection";
 import { PreparationType } from "interfaces";
+import { toast } from "react-toastify";
 
 interface PreparationSectionProps {
   preparationId: number | null;
@@ -31,6 +32,9 @@ export default function PreparationSection({
     null
   );
   const [newType, setNewType] = useState<PreparationType | null>(null);
+  const [lastTypeChange, setLastTypeChange] = useState<PreparationType | null>(
+    null
+  );
 
   // Effect to capture original type when data is loaded
   useEffect(() => {
@@ -38,6 +42,18 @@ export default function PreparationSection({
       setOriginalType(hooks.data.type);
     }
   }, [hooks.data]);
+
+  // Effect to show notification when type changes
+  useEffect(() => {
+    if (hooks.editData && lastTypeChange !== hooks.editData.type) {
+      if (lastTypeChange !== null && hooks.editData.type !== lastTypeChange) {
+        toast.info(
+          "Title and tip have been updated to match the new preparation type"
+        );
+      }
+      setLastTypeChange(hooks.editData.type);
+    }
+  }, [hooks.editData?.type, lastTypeChange]);
 
   // Handler for saving changes with type change detection
   const handleSaveWithTypeCheck = () => {

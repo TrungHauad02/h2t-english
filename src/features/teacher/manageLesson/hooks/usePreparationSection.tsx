@@ -16,8 +16,8 @@ import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import { useErrors } from "hooks/useErrors";
 import { extractErrorMessages } from "utils/extractErrorMessages";
+import { getPreparationDefaults } from "../utils/preparationDefaults";
 
-// Define a map of lesson services for cleaner verification logic
 const LESSON_SERVICES = {
   readings: readingService,
   speakings: speakingService,
@@ -42,10 +42,13 @@ export default function usePreparationSection(
 
   // Create initial preparation data
   const createInitialData = useCallback(() => {
+    const defaults = getPreparationDefaults(
+      PreparationType.MATCH_WORD_WITH_SENTENCES
+    );
     const initialData: Preparation = {
       id: 0,
-      title: "",
-      tip: "",
+      title: defaults.title,
+      tip: defaults.tip,
       questions: [],
       type: PreparationType.MATCH_WORD_WITH_SENTENCES,
       status: false,
@@ -93,10 +96,22 @@ export default function usePreparationSection(
 
   const handleInputChange = (field: keyof Preparation, value: any) => {
     if (editData) {
-      setEditData({
+      let updatedData = {
         ...editData,
         [field]: value,
-      });
+      };
+
+      // If changing type, update title and tip with defaults
+      if (field === "type") {
+        const defaults = getPreparationDefaults(value as PreparationType);
+        updatedData = {
+          ...updatedData,
+          title: defaults.title,
+          tip: defaults.tip,
+        };
+      }
+
+      setEditData(updatedData);
     }
   };
 
