@@ -59,6 +59,11 @@ export default function ListRoute({
         ...prevFilter,
         title: searchQuery,
       }));
+    } else {
+      setFilter((prevFilter) => ({
+        ...prevFilter,
+        title: "",
+      }));
     }
   }, [searchQuery]);
 

@@ -229,6 +229,13 @@ export default function AddNodeDialog({
               name="transcript"
               required
               placeholder="Enter listening transcript"
+              rows={4}
+              multiline
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                },
+              }}
             />
           </Stack>
         )}

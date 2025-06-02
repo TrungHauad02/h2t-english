@@ -9,12 +9,12 @@ import SectionHeader from "../common/SectionHeader";
 
 interface WritingDocumentSectionProps {
   documentUrl: string;
-  onDocumentChange: (base64: string) => void;
+  handleSaveFile: (base64: string) => void;
 }
 
 export default function WritingDocumentSection({
   documentUrl,
-  onDocumentChange,
+  handleSaveFile,
 }: WritingDocumentSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -36,7 +36,7 @@ export default function WritingDocumentSection({
   };
 
   const handleSaveChanges = () => {
-    onDocumentChange(tempDocument);
+    handleSaveFile(tempDocument);
     setIsEditMode(false);
   };
 

@@ -79,7 +79,7 @@ export default function useSpeakingDetailPage() {
   const handleSaveChanges = async () => {
     try {
       if (editData) {
-        const resData = await speakingService.update(editData.id, editData);
+        const resData = await speakingService.patch(editData.id, editData);
         setData(resData.data);
       }
     } catch (error) {

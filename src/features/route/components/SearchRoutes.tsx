@@ -36,7 +36,6 @@ export default function SearchRoutes({ onSearch }: SearchRoutesProps) {
 
   const handleClear = () => {
     setLocalSearchQuery("");
-    onSearch("");
   };
 
   const searchButtonSx = {

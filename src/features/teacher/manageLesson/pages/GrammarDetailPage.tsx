@@ -82,9 +82,7 @@ export default function GrammarDetailPage() {
         <div id="grammar-document">
           <GrammarDocumentSection
             documentUrl={hooks.editData ? hooks.editData.file : ""}
-            onDocumentChange={(base64) =>
-              hooks.handleInputChange("file", base64)
-            }
+            handleSaveFile={hooks.handleSaveFile}
           />
         </div>
         <div id="questions-section">

@@ -96,9 +96,7 @@ export default function WritingDetailPage() {
         <div id="writing-document">
           <WritingDocumentSection
             documentUrl={hooks.editData ? hooks.editData.file : hooks.data.file}
-            onDocumentChange={(base64) =>
-              hooks.handleInputChange("file", base64)
-            }
+            handleSaveFile={hooks.handleSaveFile}
           />
         </div>
         <div id="writing-paragraph">

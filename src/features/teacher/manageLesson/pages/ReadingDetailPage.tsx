@@ -79,9 +79,7 @@ export default function ReadingDetailPage() {
         <div id="reading-document">
           <ReadingDocumentSection
             documentUrl={hooks.editData ? hooks.editData.file : ""}
-            onDocumentChange={(base64: string) => {
-              hooks.handleInputChange("file", base64);
-            }}
+            handleSaveFile={hooks.handleSaveFile}
           />
         </div>
         <div id="questions-section">

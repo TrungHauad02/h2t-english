@@ -9,14 +9,12 @@ import SectionHeader from "../common/SectionHeader";
 
 interface ListeningAudioSectionProps {
   audio: string;
-  onAudioChange: (base64: string) => void;
-  onSave: () => void;
+  handleSaveFile: (base64: string) => void;
 }
 
 export default function ListeningAudioSection({
   audio,
-  onAudioChange,
-  onSave,
+  handleSaveFile,
 }: ListeningAudioSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -37,9 +35,8 @@ export default function ListeningAudioSection({
     setTempAudio(base64);
   };
 
-  const handleSaveChanges = () => {
-    onAudioChange(tempAudio);
-    onSave();
+  const handleSaveChanges = async () => {
+    await handleSaveFile(tempAudio);
     setIsEditMode(false);
   };
 

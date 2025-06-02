@@ -80,7 +80,7 @@ export default function useWritingDetailPage() {
   const handleSaveChanges = async () => {
     try {
       if (editData) {
-        const resData = await writingService.update(editData.id, editData);
+        const resData = await writingService.patch(editData.id, editData);
         setData(resData.data);
       }
     } catch (error) {
@@ -88,6 +88,25 @@ export default function useWritingDetailPage() {
       // Display error
       showError({
         message: "Error updating writing",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    } finally {
+      setIsEditMode(false);
+    }
+  };
+
+  const handleSaveFile = async (file: string) => {
+    try {
+      if (editData) {
+        const resData = await writingService.patch(editData.id, { file: file });
+        setData(resData.data);
+      }
+    } catch (error) {
+      console.error("Error updating file writing");
+      // Display error
+      showError({
+        message: "Error updating file writing",
         severity: "error",
         details: extractErrorMessages(error),
       });
@@ -170,6 +189,7 @@ export default function useWritingDetailPage() {
     loading,
     openPublishDialog,
     openUnpublishDialog,
+    handleSaveFile,
     handleEditMode,
     handleSaveChanges,
     handleInputChange,
