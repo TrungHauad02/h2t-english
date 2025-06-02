@@ -23,7 +23,7 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "hooks/useAuth";
 import { userService } from "services";
 import { toast } from "react-toastify";
-import { User } from "interfaces";
+import { RolesEnum, User } from "interfaces";
 
 export default function TeacherHeader({
   drawerWidth,
@@ -39,7 +39,7 @@ export default function TeacherHeader({
   const dispatch = useDispatch();
   const theme = useTheme();
   const navigate = useNavigate();
-  const { userId, logout } = useAuth();
+  const { userId, logout, hasRole } = useAuth();
   const [teacher, setTeacher] = useState<User | null>(null);
 
   useEffect(() => {
@@ -74,6 +74,12 @@ export default function TeacherHeader({
     handleClose();
     logout();
     navigate("/");
+  };
+
+  const handleInfoClick = () => {
+    handleClose();
+    if (hasRole([RolesEnum.TEACHER])) navigate("/teacher/information");
+    else navigate("/teacher-advance/information");
   };
 
   return (
@@ -256,7 +262,7 @@ export default function TeacherHeader({
                     bgcolor: isDarkMode ? color.gray700 : color.gray100,
                   },
                 }}
-                onClick={() => navigate("/teacher-advance/information")}
+                onClick={handleInfoClick}
               >
                 <Info size={18} style={{ marginRight: 8 }} />
                 Information
