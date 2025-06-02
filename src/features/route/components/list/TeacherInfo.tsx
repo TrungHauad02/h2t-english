@@ -22,7 +22,7 @@ export default function TeacherInfo({ teacherId }: { teacherId: number }) {
       }
     };
     fetchTeacher();
-  });
+  }, []);
 
   return (
     <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
