@@ -57,7 +57,7 @@ export default function RouteItem({ route }: { route: Route }) {
           }}
         />
         {/* Footer with teacher info */}
-        <TeacherInfo />
+        <TeacherInfo teacherId={route.ownerId} />
         {/* Explore button */}
         <Button
           fullWidth

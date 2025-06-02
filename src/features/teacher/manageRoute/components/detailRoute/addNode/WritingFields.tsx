@@ -57,6 +57,13 @@ export default function WritingFields({
         name="paragraph"
         required
         placeholder="Enter writing paragraphs"
+        rows={4}
+        multiline
+        sx={{
+          "& .MuiOutlinedInput-root": {
+            borderRadius: 2,
+          },
+        }}
       />
       <Stack
         sx={{

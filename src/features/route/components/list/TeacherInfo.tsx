@@ -1,31 +1,34 @@
 import SchoolIcon from "@mui/icons-material/School";
 import { Avatar, Box, Stack, Typography } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
-import { LevelsEnum, RolesEnum, User } from "interfaces";
+import { User } from "interfaces";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { userService } from "services";
 import useColor from "theme/useColor";
 
-export default function TeacherInfo() {
+export default function TeacherInfo({ teacherId }: { teacherId: number }) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const [teacher, setTeacher] = useState<User | null>(null);
 
-  const mockTeacher: User = {
-    id: 1,
-    avatar: "/image.jpg",
-    email: "teacher@example.com",
-    level: LevelsEnum.BACHELOR,
-    name: "John Doe",
-    password: "",
-    role: RolesEnum.TEACHER,
-    status: true,
-    phoneNumber: "123456789",
-    dateOfBirth: new Date(),
-  };
+  useEffect(() => {
+    const fetchTeacher = async () => {
+      try {
+        const resData = await userService.findOwnerById(teacherId);
+        setTeacher(resData.data);
+      } catch (error) {
+        toast.error("Failed to fetch teacher data");
+      }
+    };
+    fetchTeacher();
+  });
 
   return (
     <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
       <Avatar
-        src={mockTeacher.avatar}
-        alt={mockTeacher.name}
+        src={teacher?.avatar}
+        alt={teacher?.name}
         sx={{
           width: 36,
           height: 36,
@@ -51,7 +54,7 @@ export default function TeacherInfo() {
             color: isDarkMode ? color.gray200 : color.gray800,
           }}
         >
-          {mockTeacher.name}
+          {teacher?.name}
         </Typography>
       </Box>
     </Stack>
