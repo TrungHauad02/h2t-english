@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { testWritingService, submitTestWritingService, scoreWritingService,submitTestService,commentTestService } from "services";
+import { testWritingService, submitTestWritingService, scoreWritingService,submitTestService,commentTestService,  } from "services";
 import { TestWriting, SubmitTestWriting } from "interfaces";
 import {completeRouteNode} from "utils/updateProcess";
 import { RouteNodeEnum } from "interfaces";
+import useAuth from "hooks/useAuth";
+import { id } from "date-fns/locale";
 interface QuestionItem {
   id: number;
   serialNumber: number;
@@ -12,7 +14,8 @@ interface QuestionItem {
   maxWords?: number;
 }
 
-const useWritingTest = (testWritingIds: number[], submitTestId: number,routeNodeId: number) => {
+const useWritingTest = (testWritingIds: number[], submitTestId: number,id: number) => {
+      const userId = Number(useAuth().userId) ;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [questionsList, setQuestionsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -246,7 +249,7 @@ const useWritingTest = (testWritingIds: number[], submitTestId: number,routeNode
           status: true
         });
       }
-      await completeRouteNode(routeNodeId, submitTestId,RouteNodeEnum.WRITING_TEST );
+      await completeRouteNode(id, userId,RouteNodeEnum.WRITING_TEST );
       setSubmissionResult(result);
       
     } catch (error) {

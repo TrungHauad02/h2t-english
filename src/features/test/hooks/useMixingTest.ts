@@ -29,8 +29,7 @@ import {
   ListeningSection,
   TestCommentRequestDTO,
 } from "services";
-import { useDarkMode } from "hooks/useDarkMode";
-import useColor from "theme/useColor";
+import useAuth from "hooks/useAuth";
 import {completeRouteNode} from "utils/updateProcess";
 import { RouteNodeEnum } from "interfaces";
 interface QuestionItem {
@@ -74,8 +73,8 @@ const initialRenderedSections: Record<TestPartTypeEnum, React.ReactNode> = {
   [TestPartTypeEnum.WRITING]: null,
 };
 
-const useMixingTest = (mixingTestParts: TestPart[], submitTestId: number,routeNodeId: number) => {
-
+const useMixingTest = (mixingTestParts: TestPart[], submitTestId: number,id: number) => {
+  const userId = Number(useAuth().userId) ;
   const [allQuestions, setAllQuestions] = useState<QuestionItem[]>([]);
   const [startSerials, setStartSerials] = useState<Record<TestPartTypeEnum, number>>(initialStartSerials);
   const [activeTab, setActiveTab] = useState<TestPartTypeEnum>(TestPartTypeEnum.VOCABULARY);
@@ -880,7 +879,7 @@ const useMixingTest = (mixingTestParts: TestPart[], submitTestId: number,routeNo
         comment: commentResponse.data.feedback,
         status: true 
       });
-      await completeRouteNode(routeNodeId, submitTestId,RouteNodeEnum.MIXING_TEST );
+      await completeRouteNode(id, userId,RouteNodeEnum.MIXING_TEST );
 
       // Set result with feedback
       setSubmissionResult({

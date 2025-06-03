@@ -63,7 +63,7 @@ export default function WritingTest({ testWritings, submitTest,test }: WritingTe
     getCurrentPrompt,
     handleEssayChange,
     getCurrentEssay,
-  } = useWritingTest(testWritings, submitTest.id,test.routeNodeId);
+  } = useWritingTest(testWritings, submitTest.id,test.id);
 
   const totalQuestions = allQuestions.length;
   const answeredQuestions = allQuestions.filter(q => q.isAnswered).length;

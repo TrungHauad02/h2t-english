@@ -12,7 +12,6 @@ export default function ListLessonPage() {
   return (
     <Box sx={{ mt: 8 }}>
       <MainPictureSection siteInfo={listLessonPage.getSiteInfo(type ?? "")} />
-      <QuoteSection quote={listLessonPage.quote} />
       <ListLesson type={type ?? ""} />
     </Box>
   );

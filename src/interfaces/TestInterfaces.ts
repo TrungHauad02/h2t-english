@@ -1,5 +1,5 @@
 import BaseEntity from "./";
-
+import { RouteNode } from "./index";
 export enum TestTypeEnum {
   MIXING = "MIXING",
   READING = "READING",
