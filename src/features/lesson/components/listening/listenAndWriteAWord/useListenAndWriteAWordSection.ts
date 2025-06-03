@@ -44,7 +44,6 @@ export default function useListenAndWriteAWordSection() {
 
   const resetState = () => {
     setCurIndex(0);
-    data.forEach((item) => console.log(item.sentence.split(" ")));
     setStateData(
       data.map((item) => ({
         id: item.id,

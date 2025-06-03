@@ -187,9 +187,6 @@ export default function useDetailRoutePage() {
         createdId = lessonRes.data.id;
       }
 
-      console.log("New lesson: ", newLesson);
-
-      // Cập nhật nodeId từ bài học vừa tạo
       const updatedNode = {
         ...newNode,
         nodeId: createdId,

@@ -41,7 +41,7 @@ export default function LeaderboardItem({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const resData = await userService.findById(userId);
+        const resData = await userService.findOwnerById(userId);
         setUser(resData.data);
         setIsLoaded(true);
       } catch (error) {

@@ -27,7 +27,6 @@ export default function useRouteSection() {
           setLongestRoutes(resData.data);
           setIsLongestRoutesLoaded(true);
         } catch (error) {
-          console.log(error);
           toast.error("Fail to fetch longest routes data");
         }
       }
@@ -43,7 +42,6 @@ export default function useRouteSection() {
           setRecentRoutes(resData.data);
           setIsRecentRoutesLoaded(true);
         } catch (error) {
-          console.log(error);
           toast.error("Fail to fetch recent routes data");
         }
       }

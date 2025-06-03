@@ -17,7 +17,7 @@ const getAIResponses = async (
         url += `&status=${filter.status}`;
       }
 
-      // User_id 
+      // User_id
       if (filter.userId) {
         url += `&userId=${encodeURIComponent(filter.userId)}`;
       }
@@ -62,10 +62,8 @@ const getAIResponses = async (
       }
     }
 
-    console.log("API Request URL:", url);
-    
     const response = await apiClient.get(url);
-    
+
     return response.data.data;
   } catch (error) {
     console.error("Error fetching AIResponse:", error);
@@ -83,7 +81,7 @@ const getTeacherViewResponses = async (
   try {
     // Sửa URL để khớp với BE endpoint
     let url = `/ai-response/teacher-view?page=${page - 1}&size=${itemsPerPage}`;
-    
+
     // Thêm teacherId vào URL (required param ở BE)
     if (teacherId) {
       url += `&teacherId=${teacherId}`;
@@ -131,12 +129,8 @@ const getTeacherViewResponses = async (
         url += `&endUpdatedAt=${formattedEndUpdateDate}`;
       }
     }
-
-    console.log("Teacher View API Request URL:", url);
-    
     const response = await apiClient.get(url);
-    console.log("Teacher View API Response:", response);
-    
+
     return response.data.data;
   } catch (error: any) {
     console.error("Error fetching teacher view AIResponse:", error);

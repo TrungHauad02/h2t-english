@@ -19,7 +19,6 @@ export default function TimeRemaining({
 }: TimeRemainingProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-console.log(createAt, endTime, duration);
 
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [percentageRemaining, setPercentageRemaining] = useState<number>(100);

@@ -51,19 +51,17 @@ export default function Actions({ handleDrawerToggle }: ActionsProps) {
     setAnchorEl(null);
   };
 
-  // Fetch user data if authenticated
   useEffect(() => {
     const fetchUserData = async () => {
       if (isAuthenticated && userId) {
         try {
           const response = await userService.findById(Number(userId));
           if (response && response.data) {
-            console.log(response.data);
             setAvatarUrl(response.data.avatar || "");
             setUserName(response.data.name || "");
           }
         } catch (error) {
-          console.error("Error fetching user data:", error);
+          console.error("Error fetching user data in header:", error);
         }
       }
     };

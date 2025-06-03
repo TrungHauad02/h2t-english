@@ -43,8 +43,6 @@ const ListeningPartList: React.FC<ListeningPartProps> = ({
 
         const questionsData = (await toeicQuestionService.getByIdsAndStatus(allQuestionIds, true)).data;
 
-        console.log(questionsData);
-        
         const map: Record<number, ToeicQuestion[]> = {};
         partData.forEach((part: ToeicPart3_4) => {
           map[part.id] = questionsData.filter((q: ToeicQuestion) => part.questions?.includes(q.id));

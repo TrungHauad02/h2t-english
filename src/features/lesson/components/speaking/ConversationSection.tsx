@@ -128,9 +128,6 @@ export default function ConversationSection() {
               blob.type === "audio/webm" ? "audio/mp3" : blob.type;
             const betterBlob = new Blob([blob], { type: mimeType });
             recordingBlobsRef.current[lineId] = betterBlob;
-            console.log(
-              `Improved blob for line ${lineId} with type: ${mimeType}`
-            );
           })
           .catch((err) => {
             console.error("Error processing recording blob:", err);
@@ -180,10 +177,6 @@ export default function ConversationSection() {
         const file = new File([blob], `recording-${line.id}.${extension}`, {
           type: finalMimeType,
         });
-
-        console.log(
-          `Creating file for line ${line.id} with type: ${finalMimeType}`
-        );
 
         audioFiles.push(file);
       }

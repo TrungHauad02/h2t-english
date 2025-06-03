@@ -49,7 +49,6 @@ export default function useManageRoutePage() {
         filter
       );
       const routeData: Route[] = responseData.data.content;
-      console.log(routeData);
       setListRoutes(responseData.data.content);
     } catch (error) {
       console.error("Error searching routes:", error);

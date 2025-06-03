@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { Fade, Box, Paper } from '@mui/material';
-import { Question, QuestionSupportTestType } from 'interfaces';
-import SpellcheckIcon from '@mui/icons-material/Spellcheck';
+import React, { useEffect, useState } from "react";
+import { Fade, Box, Paper } from "@mui/material";
+import { Question, QuestionSupportTestType } from "interfaces";
+import SpellcheckIcon from "@mui/icons-material/Spellcheck";
 import QuizIcon from "@mui/icons-material/Quiz";
-import TestSectionContainer from './common/TestSectionContainer';
-import SectionHeader from './common/SectionHeader';
-import NoQuestionSection from './questionsSection/NoQuestionSection';
-import ListQuestion from './questionsSection/ListQuestion';
-import AddQuestionDialog from './questionsSection/AddQuestionDialog';
-import useColor from 'theme/useColor';
-import { useDarkMode } from 'hooks/useDarkMode';
-import { questionService, testPartQuestionServiceFactory } from 'services';
+import TestSectionContainer from "./common/TestSectionContainer";
+import SectionHeader from "./common/SectionHeader";
+import NoQuestionSection from "./questionsSection/NoQuestionSection";
+import ListQuestion from "./questionsSection/ListQuestion";
+import AddQuestionDialog from "./questionsSection/AddQuestionDialog";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
+import { questionService, testPartQuestionServiceFactory } from "services";
 import { toast } from "react-toastify";
 import { useErrors } from "hooks/useErrors";
 import { extractErrorMessages } from "utils/extractErrorMessages";
@@ -37,14 +37,12 @@ export function GrammarSection({ partId, questionIds }: GrammarSectionProps) {
   const fetchData = async () => {
     try {
       if (partId) {
-        
-        
         const resData = await questionService.findByTestId(partId, type);
-        console.log(resData);
         setData(resData.data);
-        const newQuestionIds = resData.data.map((question: Question) => question.id);
+        const newQuestionIds = resData.data.map(
+          (question: Question) => question.id
+        );
         setListQuestionId(newQuestionIds);
-    
       }
     } catch (error) {
       console.error("Error fetching questions:", error);
@@ -53,10 +51,9 @@ export function GrammarSection({ partId, questionIds }: GrammarSectionProps) {
 
   useEffect(() => {
     fetchData();
-  }, [type,partId]);
+  }, [type, partId]);
 
   const handleAddQuestion = () => {
-    console.log("Opening dialog");
     setIsAddDialogOpen(true);
   };
 
@@ -107,62 +104,59 @@ export function GrammarSection({ partId, questionIds }: GrammarSectionProps) {
   };
 
   return (
-
-<>
-    <TestSectionContainer
-      id="grammar-section"
-      title="Grammar Section"
-      icon={<SpellcheckIcon />}
-      isEmpty={data.length === 0}
-      isEditMode={isEditMode}
-      onAdd={handleAddQuestion}
-      emptyState={{
-        icon: <SpellcheckIcon />,
-        title: "No Grammar Content Yet",
-        description: "Grammar questions would appear here."
-      }}
-    >
-      <Fade in={true} timeout={500}>
-        <Box>
-          <Box
-            component={Paper}
-            elevation={3}
-            sx={{
-              p: 3,
-              borderRadius: "1rem",
-              backgroundColor: isDarkMode ? color.gray800 : color.gray50,
-            }}
-          >
-            <SectionHeader
-              title={`Questions (${data.length})`}
-              editText="Edit"
-              icon={<QuizIcon />}
-              isEditMode={isEditMode}
-              handleEditMode={handleEditMode}
-              handleCancelEdit={handleEditMode}
-              handleSaveChanges={handleSaveChanges}
-            />
-            {data.length > 0 ? (
-              <ListQuestion
-                data={data}
-                partId={partId}
+    <>
+      <TestSectionContainer
+        id="grammar-section"
+        title="Grammar Section"
+        icon={<SpellcheckIcon />}
+        isEmpty={data.length === 0}
+        isEditMode={isEditMode}
+        onAdd={handleAddQuestion}
+        emptyState={{
+          icon: <SpellcheckIcon />,
+          title: "No Grammar Content Yet",
+          description: "Grammar questions would appear here.",
+        }}
+      >
+        <Fade in={true} timeout={500}>
+          <Box>
+            <Box
+              component={Paper}
+              elevation={3}
+              sx={{
+                p: 3,
+                borderRadius: "1rem",
+                backgroundColor: isDarkMode ? color.gray800 : color.gray50,
+              }}
+            >
+              <SectionHeader
+                title={`Questions (${data.length})`}
+                editText="Edit"
+                icon={<QuizIcon />}
                 isEditMode={isEditMode}
-                fetchData={fetchData}
-                onMoveUp={onMoveUp}
-                onMoveDown={onMoveDown}
-                type={type}
-                questions={questionIds}
+                handleEditMode={handleEditMode}
+                handleCancelEdit={handleEditMode}
+                handleSaveChanges={handleSaveChanges}
               />
-            ) : (
-              <NoQuestionSection secondaryTextColor={secondaryTextColor} />
-            )}
+              {data.length > 0 ? (
+                <ListQuestion
+                  data={data}
+                  partId={partId}
+                  isEditMode={isEditMode}
+                  fetchData={fetchData}
+                  onMoveUp={onMoveUp}
+                  onMoveDown={onMoveDown}
+                  type={type}
+                  questions={questionIds}
+                />
+              ) : (
+                <NoQuestionSection secondaryTextColor={secondaryTextColor} />
+              )}
+            </Box>
           </Box>
-        </Box>
-      </Fade>
-
-     
-    </TestSectionContainer>
-     <AddQuestionDialog
+        </Fade>
+      </TestSectionContainer>
+      <AddQuestionDialog
         type={type}
         questions={listQuestionId}
         open={isAddDialogOpen}
