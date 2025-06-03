@@ -67,7 +67,7 @@ export default function ReadingTest({ testReadings, submitTest,test }: ReadingTe
     handleCloseConfirmDialog,
     handleSubmitTest,
     closeSubmitDialog
-  } = useReadingTest(testReadings, submitTest.id,test.routeNodeId);
+  } = useReadingTest(testReadings, submitTest.id,test.id);
 
   // Stats for confirm dialog and progress display
   const totalQuestions = allQuestions.length;

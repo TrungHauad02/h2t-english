@@ -54,7 +54,7 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTest,tes
     listeningPart,
     speakingPart,
     writingPart
-  } = useMixingTest(mixingTestParts, submitTest.id,test.routeNodeId);
+  } = useMixingTest(mixingTestParts, submitTest.id,test.id);
 
   // Callbacks for submit flow
   const handleOpenConfirmDialog = useCallback(() => {

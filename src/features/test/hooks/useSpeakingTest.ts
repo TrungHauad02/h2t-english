@@ -3,6 +3,7 @@ import { testSpeakingService, questionService, submitTestAnswerService, submitTe
 import { TestSpeaking, SubmitTestSpeaking, Question } from "interfaces";
 import {completeRouteNode} from "utils/updateProcess";
 import { RouteNodeEnum } from "interfaces";
+import useAuth from "hooks/useAuth";
 interface QuestionItem {
   id: number;
   serialNumber: number;
@@ -13,7 +14,8 @@ interface QuestionItem {
   totalQuestions?: number;
 }
 
-const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number,routeNodeId: number) => {
+const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number,id: number) => {
+     const userId = Number(useAuth().userId) ;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [questionsList, setQuestionsList] = useState<any[]>([]);
   const [speakingTests, setSpeakingTests] = useState<Record<number, TestSpeaking>>({});
@@ -467,7 +469,7 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number,routeNo
         });
       }
       
-      await completeRouteNode(routeNodeId, submitTestId,RouteNodeEnum.SPEAKING_TEST );
+      await completeRouteNode(id, userId,RouteNodeEnum.SPEAKING_TEST );
       setSubmissionResult(result);
       
     } catch (error) {

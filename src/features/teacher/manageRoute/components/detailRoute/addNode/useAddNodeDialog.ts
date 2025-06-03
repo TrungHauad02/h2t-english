@@ -212,6 +212,7 @@ function createInitialLesson(
         parts: [],
         totalQuestions: 0,
         scoreLastOfTest: null,
+
       } as Test;
 
     default:

@@ -67,7 +67,7 @@ export default function ListeningTest({ testListenings, submitTest,test }: Liste
     handleCloseConfirmDialog,
     handleSubmitTest,
     closeSubmitDialog
-  } = useListeningTest(testListenings, submitTest.id,test.routeNodeId);
+  } = useListeningTest(testListenings, submitTest.id,test.id);
 
   // Stats for confirm dialog
   const totalQuestions = allQuestions.length;
