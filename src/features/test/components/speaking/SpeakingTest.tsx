@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
   Box,
   Typography,
@@ -28,13 +28,14 @@ import {
   TestSpeakingHeader 
 } from "../mixingAndCompetition/speakingSection/";
 import { Test, SubmitTest } from "interfaces";
+
 interface SpeakingTestProps {
   testSpeakings: number[];
-  submitTest : SubmitTest
-  test : Test,
+  submitTest: SubmitTest;
+  test: Test;
 }
 
-export default function SpeakingTest({ testSpeakings, submitTest,test }: SpeakingTestProps) {
+export default function SpeakingTest({ testSpeakings, submitTest, test }: SpeakingTestProps) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const color = useColor();
@@ -45,9 +46,6 @@ export default function SpeakingTest({ testSpeakings, submitTest,test }: Speakin
   // Refs
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  
-  // Scroll to question if needed
-  const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(null);
   
   const {
     currentIndex,
@@ -78,13 +76,13 @@ export default function SpeakingTest({ testSpeakings, submitTest,test }: Speakin
     closeSubmitDialog,
     getCurrentTest,
     getCurrentQuestion,
-  } = useSpeakingTest(testSpeakings, submitTest.id,test.id);
+  } = useSpeakingTest(testSpeakings, submitTest.id, test.id);
 
   const totalQuestions = allQuestions.length;
   const answeredQuestions = allQuestions.filter(q => q.isAnswered).length;
+
   useEffect(() => {
     if (questionsList.length > 0) {
-
       const allQuestionsFlat: any[] = [];
 
       questionsList.forEach(item => {
@@ -105,24 +103,32 @@ export default function SpeakingTest({ testSpeakings, submitTest,test }: Speakin
       
       setSpeakingQuestions(allQuestionsFlat);
     }
-  }, [questionsList, currentIndex]);
+  }, [questionsList]);
 
-  // Handle question selection
-  useEffect(() => {
-    if (selectedQuestionId && questionRefs.current[selectedQuestionId]) {
-      questionRefs.current[selectedQuestionId]?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      });
-      
-
-      const questionIndex = allQuestions.findIndex(q => q.id === selectedQuestionId);
-      if (questionIndex !== -1) {
-        setCurrentIndex(questionIndex);
-        
+  // Handle question selection with immediate navigation
+  const handleQuestionSelect = useCallback((item: { questionId: number }) => {
+    const questionIndex = allQuestions.findIndex(q => q.id === item.questionId);
+    
+    if (questionIndex !== -1) {
+      // Stop recording if currently recording
+      if (isRecording) {
+        stopRecording();
       }
+      
+      // Update current index immediately
+      setCurrentIndex(questionIndex);
+      
+      // Scroll to question after a small delay to ensure DOM is updated
+      setTimeout(() => {
+        if (questionRefs.current[item.questionId]) {
+          questionRefs.current[item.questionId]?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          });
+        }
+      }, 100);
     }
-  }, [selectedQuestionId, questionRefs, allQuestions, speakingQuestions,setQuestionRef]);
+  }, [allQuestions, isRecording, stopRecording, setCurrentIndex, questionRefs]);
 
   // Recording functions
   const formatTime = (seconds: number): string => {
@@ -131,7 +137,6 @@ export default function SpeakingTest({ testSpeakings, submitTest,test }: Speakin
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  
   // Clean up on unmount
   useEffect(() => {
     return () => {
@@ -153,7 +158,6 @@ export default function SpeakingTest({ testSpeakings, submitTest,test }: Speakin
       stopRecording();
     }
     handleNext();
-    
   };
 
   const handlePreviousQuestion = () => {
@@ -161,7 +165,6 @@ export default function SpeakingTest({ testSpeakings, submitTest,test }: Speakin
       stopRecording();
     }
     handlePrevious();
-    
   };
 
   // Loading state
@@ -238,13 +241,11 @@ export default function SpeakingTest({ testSpeakings, submitTest,test }: Speakin
     );
   }
 
-
   const currentQuestion = getCurrentQuestion();
   const audioSource = audioURLs[currentIndex] || savedRecordings[currentIndex] || null;
-  const currentTest = getCurrentTest()
+  const currentTest = getCurrentTest();
   const progress = ((currentIndex + 1) / speakingQuestions.length) * 100;
   
-
   const questionCount = speakingQuestions.filter(q => q.parentTestId === currentQuestion.parentTestId).length;
   const questionIndex = speakingQuestions.filter(q => 
     q.parentTestId === currentQuestion.parentTestId && 
@@ -267,15 +268,17 @@ export default function SpeakingTest({ testSpeakings, submitTest,test }: Speakin
       <Grid container spacing={3}>
         {/* Top section with TimeRemaining and progress for both mobile and desktop */}
         <Grid item xs={12}>
-        <TimeRemaining createAt={submitTest?.createdAt ? new Date(submitTest.createdAt) : new Date()}
-        duration={test.duration}
-        onTimeUp={handleSubmitTest} />
+          <TimeRemaining 
+            createAt={submitTest?.createdAt ? new Date(submitTest.createdAt) : new Date()}
+            duration={test.duration}
+            onTimeUp={handleSubmitTest} 
+          />
         </Grid>
   
         {/* Main content */}
         <Grid item xs={12} md={9} lg={8}>
           <Box
-          ref={(el) => setQuestionRef(currentQuestion.id, el as HTMLDivElement)}
+            ref={(el) => setQuestionRef(currentQuestion.id, el as HTMLDivElement)}
             component={Paper} 
             elevation={3} 
             sx={{
@@ -292,7 +295,6 @@ export default function SpeakingTest({ testSpeakings, submitTest,test }: Speakin
             }}
           >
             <LinearProgress 
-            
               variant="determinate" 
               value={progress} 
               sx={{
@@ -308,7 +310,6 @@ export default function SpeakingTest({ testSpeakings, submitTest,test }: Speakin
             {/* Test Speaking Header */}
             {currentTest && (
               <TestSpeakingHeader 
-              
                 test={currentTest}
                 currentQuestionNumber={questionIndex}
                 totalQuestions={questionCount}
@@ -316,7 +317,6 @@ export default function SpeakingTest({ testSpeakings, submitTest,test }: Speakin
             )}
             
             <Box
-       
               sx={{
                 py: 1.5,
                 px: 2,
@@ -329,9 +329,7 @@ export default function SpeakingTest({ testSpeakings, submitTest,test }: Speakin
                 borderBottom: `1px solid ${isDarkMode ? color.gray600 : color.gray200}`,
               }}
             >
-              <Box 
-           
-              sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography
                   variant="body2"
                   sx={{
@@ -367,12 +365,10 @@ export default function SpeakingTest({ testSpeakings, submitTest,test }: Speakin
                 px: { xs: 2, sm: 3, md: 4 },
               }}
             >
-   
-            <QuestionCard 
-              content={currentQuestion.content || ''} 
-              isDarkMode={isDarkMode} 
-            />
-       
+              <QuestionCard 
+                content={currentQuestion.content || ''} 
+                isDarkMode={isDarkMode} 
+              />
               
               {/* Recording controls */}
               <RecordingControl
@@ -385,7 +381,6 @@ export default function SpeakingTest({ testSpeakings, submitTest,test }: Speakin
                 audioSource={audioSource}
                 isDarkMode={isDarkMode}
               />
-             
             </Container>
 
             {/* Navigation footer */}
@@ -494,9 +489,7 @@ export default function SpeakingTest({ testSpeakings, submitTest,test }: Speakin
                 partType: TestPartTypeEnum.SPEAKING,
                 isAnswered: q.isAnswered
               }))}
-              onQuestionSelect={(item) => {
-                setSelectedQuestionId(item.questionId);
-              }}
+              onQuestionSelect={handleQuestionSelect}
               onSubmitTest={handleOpenConfirmDialog}
               isTitle={true}
             />
@@ -515,9 +508,7 @@ export default function SpeakingTest({ testSpeakings, submitTest,test }: Speakin
                   partType: TestPartTypeEnum.SPEAKING,
                   isAnswered: q.isAnswered
                 }))}
-                onQuestionSelect={(item) => {
-                  setSelectedQuestionId(item.questionId);
-                }}
+                onQuestionSelect={handleQuestionSelect}
                 onSubmitTest={handleOpenConfirmDialog}
                 isTitle={true}
               />
@@ -526,7 +517,7 @@ export default function SpeakingTest({ testSpeakings, submitTest,test }: Speakin
         )}
       </Grid>
 
-      {/* Sử dụng SubmitTestDialogSingle thay vì SubmitTestDialog */}
+      {/* Submit Test Dialog */}
       <SubmitTestDialogSingle
         open={isSubmitDialogOpen}
         submitTestId={submitTest.id}
