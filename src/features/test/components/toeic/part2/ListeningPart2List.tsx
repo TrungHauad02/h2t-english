@@ -9,31 +9,38 @@ type Props = {
   onFinish: () => void;
   startIndex: number;
   submitToeicId: number;
+  initialIndex?: number; // New prop for resume functionality
 };
 
-const ListeningPart2List: React.FC<Props> = ({ 
-  questionsPart2, 
-  onFinish, 
+const ListeningPart2List: React.FC<Props> = ({
+  questionsPart2,
+  onFinish,
   startIndex,
-  submitToeicId 
+  submitToeicId,
+  initialIndex = 0 // Default to 0 if not provided
 }) => {
   const [questions, setQuestions] = useState<ToeicPart2[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [userAnswers, setUserAnswers] = useState<Record<number, AnswerEnum>>({});
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Update currentIndex when initialIndex changes (for resume functionality)
+  useEffect(() => {
+    setCurrentIndex(initialIndex);
+  }, [initialIndex]);
 
   useEffect(() => {
     const fetchQuestionsAndAnswers = async () => {
       setLoading(true);
       try {
         // Fetch questions
-        const data = await toeicPart2Service.getByIdsAndStatus(questionsPart2,true);
+        const data = await toeicPart2Service.getByIdsAndStatus(questionsPart2, true);
         setQuestions(data.data);
 
         // Fetch existing answers
         if (submitToeicId && questionsPart2.length > 0) {
           const existingAnswers = await submitToeicPart2Service.findBySubmitToeicIdAndToeicPart2Ids(
-            submitToeicId, 
+            submitToeicId,
             questionsPart2
           );
 
@@ -65,7 +72,7 @@ const ListeningPart2List: React.FC<Props> = ({
     try {
       // Check if answer already exists
       const existingAnswers = await submitToeicPart2Service.findBySubmitToeicIdAndToeicPart2Id(
-        submitToeicId, 
+        submitToeicId,
         questionId
       );
 
@@ -110,7 +117,7 @@ const ListeningPart2List: React.FC<Props> = ({
   const currentQuestion = questions[currentIndex];
 
   return (
-    <Box sx={{marginTop:"1rem"}}>
+    <Box sx={{ marginTop: "1rem" }}>
       <ListeningPart2QuestionItem
         questionNumber={startIndex + currentIndex}
         audioSrc={currentQuestion?.audio}

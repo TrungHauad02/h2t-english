@@ -32,6 +32,7 @@ const ToeicTest: React.FC = () => {
     loading, 
     error,
     totalAnswered,
+    resumePosition, // New: get resume position from hook
     calculateTotalAnswered,
     submitToeicTest
   } = useToeicPage();
@@ -44,9 +45,20 @@ const ToeicTest: React.FC = () => {
   const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<any>(null);
+  const [hasResumed, setHasResumed] = useState(false); // Track if we've already resumed
   
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+
+  // Resume to last answered position when data is loaded
+  useEffect(() => {
+    if (resumePosition && !hasResumed && toeic && submitToeic) {
+      console.log('Resuming to position:', resumePosition);
+      setStep(resumePosition.step);
+      setCurrentIndex(resumePosition.currentIndex);
+      setHasResumed(true);
+    }
+  }, [resumePosition, hasResumed, toeic, submitToeic]);
 
   useEffect(() => {
     if (step === 7) {
@@ -72,7 +84,6 @@ const ToeicTest: React.FC = () => {
       setIsConfirmDialogOpen(false);
       setIsSubmitDialogOpen(true);
       
-     
       const result = await submitToeicTest();
   
       setSubmissionResult(result);
@@ -181,24 +192,28 @@ const ToeicTest: React.FC = () => {
         startIndex={1} 
         onFinish={() => setStep(4)} 
         submitToeicId={submitToeic.id}
+        initialIndex={resumePosition?.step === 3 ? resumePosition.currentIndex : 0}
       />;
       case 4: return <ListeningPart2List 
         questionsPart2={toeic.questionsPart2 ?? []} 
         startIndex={7} 
         onFinish={() => setStep(5)} 
         submitToeicId={submitToeic.id}
+        initialIndex={resumePosition?.step === 4 ? resumePosition.currentIndex : 0}
       />;
       case 5: return <ListeningPart3And4List 
         questions={toeic.questionsPart3 ?? []} 
         startIndex={32} 
         onFinish={() => setStep(6)} 
         submitToeicId={submitToeic.id}
+        initialIndex={resumePosition?.step === 5 ? resumePosition.currentIndex : 0}
       />;
       case 6: return <ListeningPart3And4List 
         questions={toeic.questionsPart4 ?? []} 
         startIndex={71} 
         onFinish={() => setStep(7)} 
         submitToeicId={submitToeic.id}
+        initialIndex={resumePosition?.step === 6 ? resumePosition.currentIndex : 0}
       />;
       case 7: return <Part5List 
         questionsPart5={toeic.questionsPart5 ?? []} 
@@ -401,8 +416,7 @@ const ToeicTest: React.FC = () => {
         
         {/* Button Container - Right Side */}
         <Box sx={{ display: 'flex', gap: 2 }}>
-    
-        {showSubmitButton && (
+          {showSubmitButton && (
             <Button
               variant="contained"
               onClick={handleSubmitClick}
@@ -459,8 +473,6 @@ const ToeicTest: React.FC = () => {
           >
             Next
           </Button>
-          
-      
         </Box>
       </Box>
 

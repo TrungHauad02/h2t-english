@@ -45,7 +45,6 @@ export default function useCompetitionTest() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-
   const [allQuestions, setAllQuestions] = useState<QuestionItem[]>([]);
   const [startSerials, setStartSerials] = useState<Record<TestPartTypeEnum, number>>({
     [TestPartTypeEnum.VOCABULARY]: 0,
@@ -62,7 +61,6 @@ export default function useCompetitionTest() {
   const [isInitialDataLoaded, setIsInitialDataLoaded] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   
-
   const [submissionResult, setSubmissionResult] = useState<{
     totalQuestions: number;
     correctAnswers: number;
@@ -77,10 +75,8 @@ export default function useCompetitionTest() {
   
   const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState<boolean>(false);
   
-
   const answeredQuestionsRef = useRef<Record<number, boolean>>({});
   const hasCreatedSubmitCompetitionRef = useRef(false);
-
 
   const renderedSectionsRef = useRef<Record<TestPartTypeEnum, React.ReactNode>>({
     [TestPartTypeEnum.VOCABULARY]: null,
@@ -90,7 +86,6 @@ export default function useCompetitionTest() {
     [TestPartTypeEnum.SPEAKING]: null,
     [TestPartTypeEnum.WRITING]: null,
   });
-
 
   const vocabularyPart = useMemo(() => 
     competitionParts.find(part => part.type === TestPartTypeEnum.VOCABULARY), 
@@ -122,6 +117,18 @@ export default function useCompetitionTest() {
     [competitionParts]
   );
 
+  // Helper function to check if competition has ended
+  const hasCompetitionEnded = useCallback(() => {
+    if (!competition) return false;
+    const now = new Date();
+    const endTime = new Date(competition.endTime);
+    return now > endTime;
+  }, [competition]);
+
+  // Helper function to check if user has completed test
+  const hasCompletedTest = useCallback(() => {
+    return submitCompetition?.status === true;
+  }, [submitCompetition]);
 
   useEffect(() => {
     const initializeCompetition = async () => {
@@ -129,7 +136,6 @@ export default function useCompetitionTest() {
         setLoading(true);
         
         try {
-
           const competitionResponse = await competitionTestService.findById(competitionId);
           const competitionData = competitionResponse.data;
 
@@ -147,6 +153,16 @@ export default function useCompetitionTest() {
             setCompetitionParts(parts);
           }
 
+          // Check if competition has ended - if so, don't search for submissions or create new ones
+          const now = new Date();
+          const endTime = new Date(competitionData.endTime);
+          if (now > endTime) {
+            console.log("Competition has ended, not searching for submissions or creating new ones");
+            setLoading(false);
+            return;
+          }
+
+          // Check for existing submissions only if competition is still active
           try {
             const submitCompetitionTrue = await submitCompetitionService.findByIdAndUserIdAndStatus(
               competitionId, 
@@ -175,6 +191,7 @@ export default function useCompetitionTest() {
             console.log("No submission with status false found");
           }
 
+          // Only create new submission if competition is still active and user hasn't submitted
           if (!hasCreatedSubmitCompetitionRef.current) {
             hasCreatedSubmitCompetitionRef.current = true;
       
@@ -216,11 +233,9 @@ export default function useCompetitionTest() {
     try {
       const allQuestionIds: number[] = [];
  
-
       if (vocabularyPart?.questions) allQuestionIds.push(...vocabularyPart.questions);
       if (grammarPart?.questions) allQuestionIds.push(...grammarPart.questions);
       
-
       if (readingPart?.questions?.length) {
         const readingRes = await testReadingService.getByIdsAndStatus(readingPart.questions,true);
         for (const item of readingRes.data || []) {
@@ -228,7 +243,6 @@ export default function useCompetitionTest() {
         }
       }
       
-
       if (listeningPart?.questions?.length) {
         const listeningRes = await testListeningService.getByIdsAndStatus(listeningPart.questions,true);
         for (const item of listeningRes.data || []) {
@@ -236,7 +250,6 @@ export default function useCompetitionTest() {
         }
       }
       
-
       if (speakingPart?.questions?.length) {
         const speakingRes = await testSpeakingService.getByIdsAndStatus(speakingPart.questions,true);
         for (const item of speakingRes.data || []) {
@@ -244,7 +257,6 @@ export default function useCompetitionTest() {
         }
       }
       
-
       if (allQuestionIds.length > 0) {
         const answersRes = await submitCompetitionAnswerService.findBySubmitCompetitionIdAndQuestionIds(
           submitCompetition.id, 
@@ -262,7 +274,6 @@ export default function useCompetitionTest() {
         answeredQuestionsRef.current = tempAnswered;
       }
       
-
       if (speakingPart?.questions?.length) {
         const speakingAnswersRes = await submitCompetitionSpeakingService.findBySubmitCompetitionIdAndQuestionIds(
           submitCompetition.id,
@@ -280,7 +291,6 @@ export default function useCompetitionTest() {
         }
       }
       
-   
       if (writingPart?.questions?.length) {
         const writingAnswersRes = await submitCompetitionWritingService.findBySubmitCompetitionIdAndTestWritingIds(
           submitCompetition.id,
@@ -311,7 +321,6 @@ export default function useCompetitionTest() {
     speakingPart, 
     writingPart
   ]);
-
 
   const loadQuestions = useCallback(async () => {
     if (!submitCompetition?.id) return;
@@ -345,10 +354,9 @@ export default function useCompetitionTest() {
       tempStartSerials[type] = currentSerial;
   
       if (type === TestPartTypeEnum.VOCABULARY || type === TestPartTypeEnum.GRAMMAR) {
-        // Call questionService for vocabulary and grammar
         const res = await questionService.getByIdsAndStatus(part.questions, true);
         for (const question of res.data || []) {
-          if (question.status) { // Only add questions with status = true
+          if (question.status) {
             tempQuestions.push({
               serialNumber: currentSerial++,
               questionId: question.id,
@@ -360,10 +368,9 @@ export default function useCompetitionTest() {
       }
   
       if (type === TestPartTypeEnum.WRITING) {
-        // Call testWritingService for writing
         const res = await testWritingService.getByIdsAndStatus(part.questions, true);
         for (const writingItem of res.data || []) {
-          if (writingItem.status) { // Only add writing items with status = true
+          if (writingItem.status) {
             tempQuestions.push({
               serialNumber: currentSerial++,
               questionId: writingItem.id,
@@ -378,10 +385,9 @@ export default function useCompetitionTest() {
         const res = await testReadingService.getByIdsAndStatus(part.questions, true);
         for (const item of res.data || []) {
           if (item.questions?.length) {
-            // Get question details to check status
             const questionRes = await questionService.getByIdsAndStatus(item.questions, true);
             for (const question of questionRes.data || []) {
-              if (question.status) { // Only add questions with status = true
+              if (question.status) {
                 tempQuestions.push({
                   serialNumber: currentSerial++,
                   questionId: question.id,
@@ -398,10 +404,9 @@ export default function useCompetitionTest() {
         const res = await testListeningService.getByIdsAndStatus(part.questions, true);
         for (const item of res.data || []) {
           if (item.questions?.length) {
-            // Get question details to check status
             const questionRes = await questionService.getByIdsAndStatus(item.questions, true);
             for (const question of questionRes.data || []) {
-              if (question.status) { // Only add questions with status = true
+              if (question.status) {
                 tempQuestions.push({
                   serialNumber: currentSerial++,
                   questionId: question.id,
@@ -418,10 +423,9 @@ export default function useCompetitionTest() {
         const res = await testSpeakingService.getByIdsAndStatus(part.questions, true);
         for (const item of res.data || []) {
           if (item.questions?.length) {
-            // Get question details to check status
             const questionRes = await questionService.getByIdsAndStatus(item.questions, true);
             for (const question of questionRes.data || []) {
-              if (question.status) { // Only add questions with status = true
+              if (question.status) {
                 tempQuestions.push({
                   serialNumber: currentSerial++,
                   questionId: question.id,
@@ -448,7 +452,6 @@ export default function useCompetitionTest() {
     writingPart
   ]);
 
-
   useEffect(() => {
     const initializeData = async () => {
       if (submitCompetition?.id) {
@@ -459,7 +462,6 @@ export default function useCompetitionTest() {
     
     initializeData();
   }, [submitCompetition?.id, loadInitialAnsweredQuestions, loadQuestions]);
-
 
   useEffect(() => {
     answeredQuestionsRef.current = answeredQuestions;
@@ -481,12 +483,10 @@ export default function useCompetitionTest() {
     return () => clearTimeout(timeoutId);
   }, [answeredQuestions, isInitialDataLoaded]);
 
-
   const handleQuestionSelect = (questionItem: QuestionItem) => {
     setActiveTab(questionItem.partType);
     setSelectedQuestionId(questionItem.questionId);
   };
-
 
   const handleUpdateAnsweredQuestions = useCallback((questionId: number, isAnswered: boolean) => {
     setAnsweredQuestions(prev => {
@@ -665,7 +665,6 @@ export default function useCompetitionTest() {
           updated: boolean;
         }
         
-        // Tính điểm tối đa cho mỗi bài speaking (100/6/số bài)
         const questionCount = allQuestionIds.length;
         const maxScorePerQuestion = PART_MAX_SCORE / questionCount;
   
@@ -681,14 +680,12 @@ export default function useCompetitionTest() {
               const scoreResult = await scoreSpeakingService.evaluateSpeechInTopic(file, expectedText);
               
               if (scoreResult.data) {
-                // Chuyển đổi điểm từ thang 100 sang thang điểm theo từng câu hỏi
                 const rawScore = parseFloat(scoreResult.data.score);
-                // Điểm cho mỗi câu là tỷ lệ phần trăm * điểm tối đa cho mỗi câu
                 const numericScore = (rawScore / 100) * maxScorePerQuestion;
                 
                 await submitCompetitionSpeakingService.update(answer.id, {
                   ...answer,
-                  score: numericScore, // Lưu điểm đã tính toán
+                  score: numericScore,
                   transcript: scoreResult.data.transcript,
                 });
                 
@@ -705,21 +702,19 @@ export default function useCompetitionTest() {
         const totalScore = evaluationResults.reduce<number>((sum, result) => sum + result.score, 0);
         const answeredQuestions = evaluationResults.filter(result => result.updated).length;
         
-        // Điểm trung bình đã được tính theo thang điểm của phần
-        const avgScore = totalScore; // Giữ nguyên tổng điểm vì đã tính theo maxScorePerQuestion
-        const weightedScore = totalScore; // Điểm đã được tính theo trọng số rồi
+        const avgScore = totalScore;
+        const weightedScore = totalScore;
   
         result.parts.push({
           type: TestPartTypeEnum.SPEAKING,
           correctAnswers: answeredQuestions,
           totalQuestions: allQuestionIds.length,
-          score: (avgScore / PART_MAX_SCORE) * 100, // Chuyển về thang 100 để hiển thị
+          score: (avgScore / PART_MAX_SCORE) * 100,
           weightedScore: weightedScore
         });
   
         result.totalQuestions += allQuestionIds.length;
         
-        // Convert speaking score to equivalent correct answers
         const equivalentCorrectAnswers = (avgScore / PART_MAX_SCORE) * allQuestionIds.length;
         result.correctAnswers += equivalentCorrectAnswers;
       };
@@ -754,7 +749,6 @@ export default function useCompetitionTest() {
           {} as Record<number, TestWriting>
         );
         
-     
         const questionCount = part.questions.length;
         const maxScorePerQuestion = PART_MAX_SCORE / questionCount;
   
@@ -774,13 +768,11 @@ export default function useCompetitionTest() {
               const scoreResult = await scoreWritingService.scoreWriting(answer.content, testWriting.topic);
               
               if (scoreResult.data) {
-                // Chuyển đổi điểm từ thang 100 sang thang điểm theo từng câu hỏi
                 const rawScore = parseFloat(scoreResult.data.score);
-                // Điểm cho mỗi câu là tỷ lệ phần trăm * điểm tối đa cho mỗi câu
                 const numericScore = (rawScore / 100) * maxScorePerQuestion;
                 
                 await submitCompetitionWritingService.patch(answer.id, {
-                  score: numericScore, // Lưu điểm đã tính toán
+                  score: numericScore,
                 });
                 
                 return { score: numericScore, updated: true };
@@ -796,21 +788,19 @@ export default function useCompetitionTest() {
         const totalScore = evaluationResults.reduce<number>((sum, result) => sum + result.score, 0);
         const answeredQuestions = evaluationResults.filter(result => result.updated).length;
         
-        // Điểm trung bình đã được tính theo thang điểm của phần
-        const avgScore = totalScore; // Giữ nguyên tổng điểm vì đã tính theo maxScorePerQuestion
-        const weightedScore = totalScore; // Điểm đã được tính theo trọng số rồi
+        const avgScore = totalScore;
+        const weightedScore = totalScore;
   
         result.parts.push({
           type: TestPartTypeEnum.WRITING,
           correctAnswers: answeredQuestions,
           totalQuestions: part.questions.length,
-          score: (avgScore / PART_MAX_SCORE) * 100, // Chuyển về thang 100 để hiển thị
+          score: (avgScore / PART_MAX_SCORE) * 100,
           weightedScore: weightedScore
         });
   
         result.totalQuestions += part.questions.length;
         
-        // Convert writing score to equivalent correct answers
         const equivalentCorrectAnswers = (avgScore / PART_MAX_SCORE) * part.questions.length;
         result.correctAnswers += equivalentCorrectAnswers;
       };
@@ -843,7 +833,6 @@ export default function useCompetitionTest() {
     }
   }, [submitCompetition?.id, vocabularyPart, grammarPart, readingPart, listeningPart, speakingPart, writingPart]);
   
-
   const closeSubmitDialog = useCallback(() => {
     setIsSubmitDialogOpen(false);
   }, []);
@@ -875,6 +864,9 @@ export default function useCompetitionTest() {
     handleUpdateAnsweredQuestions,
     handleSubmitTest,
     closeSubmitDialog,
-    renderedSectionsRef,userId
+    renderedSectionsRef,
+    userId,
+    hasCompetitionEnded,
+    hasCompletedTest
   };
 }

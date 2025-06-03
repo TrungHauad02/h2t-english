@@ -35,7 +35,7 @@ export interface Test extends BaseEntity {
   parts: number[];
   totalQuestions: number;
   scoreLastOfTest: number | null;
-  routeNodeId: number;
+  routeNodeId?: number;
 }
 export interface CompetitionTest extends BaseEntity {
   title: string;

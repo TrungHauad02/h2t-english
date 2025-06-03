@@ -207,7 +207,6 @@ function createInitialLesson(
         description: data.description || "",
         type: getTestType(data.type),
         duration: 0,
-        routeNodeId: data.id,
         status: false,
         parts: [],
         totalQuestions: 0,

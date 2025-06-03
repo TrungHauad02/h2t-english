@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Box, Typography, Paper, CircularProgress, Alert } from "@mui/material";
+import { Box, Typography, Paper, Alert } from "@mui/material";
 import { MainPictureSection } from "components/sections";
 import { TestTypeEnum } from "interfaces";
 import MixingTest from "../components/mixingAndCompetition/MixingTest";
@@ -9,6 +9,7 @@ import {
   SpeakingTest,
   WritingTest
 } from "../components/";
+import LoadingScreen from "../components/common/LoadingScreen";
 import useStudentTest from "../hooks/useStudentTest";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
@@ -162,101 +163,101 @@ export default function TestPage() {
     color
   ]);
 
+  // Show loading screen
   if (loading) {
     return (
-      <Box 
-        sx={{ 
-          display: 'flex', 
-          flexDirection: 'column',
-          justifyContent: 'center', 
-          alignItems: 'center',
-          height: '80vh',
-          backgroundColor: isDarkMode ? color.gray900 : color.gray50,
-          gap: 2
-        }}
-      >
-        <CircularProgress 
-          size={60}
-          thickness={4}
-          sx={{ 
-            color: isDarkMode ? color.teal400 : color.teal600,
-          }} 
-        />
-        <Typography 
-          variant="h6" 
-          sx={{ 
-            mt: 2, 
-            color: isDarkMode ? color.gray300 : color.gray700,
-            fontWeight: 500
-          }}
-        >
-          Loading test...
-        </Typography>
-      </Box>
+      <LoadingScreen message="Loading Test" />
     );
   }
 
+  // Show error screen
   if (error || !test) {
     return (
-      <Box 
-        component={Paper} 
-        elevation={3}
-        sx={{ 
-          p: 4, 
-          textAlign: "center", 
-          mt: 4,
-          maxWidth: '600px',
-          mx: 'auto',
-          borderRadius: '1rem',
-          backgroundColor: isDarkMode ? color.gray800 : color.white,
-          color: isDarkMode ? color.gray100 : color.gray900
+      <Box
+        sx={{
+          width: "100%",
+          minHeight: "100vh",
+          pt: 8,
+          pb: 6,
+          backgroundColor: isDarkMode ? color.gray900 : color.gray50,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        <Typography variant="h5" gutterBottom>
-          {error || "Test not found"}
-        </Typography>
-        <Typography variant="body1">
-          Please check the test ID and try again.
-        </Typography>
-      </Box>
-    );
-  }
-
-  if (!submitTest) {
-    return (
-      <Box 
-        component={Paper} 
-        elevation={3}
-        sx={{ 
-          p: 4, 
-          textAlign: "center", 
-          mt: 4,
-          maxWidth: '600px',
-          mx: 'auto',
-          borderRadius: '1rem',
-          backgroundColor: isDarkMode ? color.gray800 : color.white,
-          color: isDarkMode ? color.gray100 : color.gray900
-        }}
-      >
-        <Alert 
-          severity="error" 
+        <Box 
+          component={Paper} 
+          elevation={3}
           sx={{ 
-            mb: 2,
-            '& .MuiAlert-icon': {
-              color: isDarkMode ? color.red400 : color.red600
-            },
-            backgroundColor: isDarkMode ? color.gray700 : undefined
+            p: 4, 
+            textAlign: "center", 
+            maxWidth: '600px',
+            mx: 'auto',
+            borderRadius: '1rem',
+            backgroundColor: isDarkMode ? color.gray800 : color.white,
+            color: isDarkMode ? color.gray100 : color.gray900
           }}
         >
-          Unable to create test submission. Please try again.
-        </Alert>
-        <Typography variant="body1">
-          There was an error preparing your test submission. Please refresh or contact support.
-        </Typography>
+          <Typography variant="h5" gutterBottom>
+            {error || "Test not found"}
+          </Typography>
+          <Typography variant="body1">
+            Please check the test ID and try again.
+          </Typography>
+        </Box>
       </Box>
     );
   }
 
+  // Show submission error screen
+  if (!submitTest) {
+    return (
+      <Box
+        sx={{
+          width: "100%",
+          minHeight: "100vh",
+          pt: 8,
+          pb: 6,
+          backgroundColor: isDarkMode ? color.gray900 : color.gray50,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Box 
+          component={Paper} 
+          elevation={3}
+          sx={{ 
+            p: 4, 
+            textAlign: "center", 
+            maxWidth: '600px',
+            mx: 'auto',
+            borderRadius: '1rem',
+            backgroundColor: isDarkMode ? color.gray800 : color.white,
+            color: isDarkMode ? color.gray100 : color.gray900
+          }}
+        >
+          <Alert 
+            severity="error" 
+            sx={{ 
+              mb: 2,
+              '& .MuiAlert-icon': {
+                color: isDarkMode ? color.red400 : color.red600
+              },
+              backgroundColor: isDarkMode ? color.gray700 : undefined
+            }}
+          >
+            Unable to create test submission. Please try again.
+          </Alert>
+          <Typography variant="body1">
+            There was an error preparing your test submission. Please refresh or contact support.
+          </Typography>
+        </Box>
+      </Box>
+    );
+  }
+
+  // Show main test content
   return (
     <Box 
       sx={{ 
