@@ -38,7 +38,7 @@ export default function AddQuestionDialog({
     id: Date.now(),
     content: "",
     explanation: "",
-    status: false,
+    status: true,
     answers: [
       {
         id: Date.now(),

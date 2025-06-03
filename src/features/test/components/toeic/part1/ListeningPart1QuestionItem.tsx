@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -21,6 +21,8 @@ type ListeningPart1QuestionItemProps = {
   onChange?: (value: AnswerEnum) => void;
   onAudioEnded?: () => void;
   isConversation?: boolean;
+  autoPlay?: boolean; // New prop
+  volume?: number; // New prop
 };
 
 export default function ListeningPart1QuestionItem({
@@ -30,10 +32,40 @@ export default function ListeningPart1QuestionItem({
   selectedAnswer,
   onChange,
   onAudioEnded,
-  isConversation = false
+  isConversation = false,
+  autoPlay = false, // Default to false
+  volume = 0.5 // Default volume
 }: ListeningPart1QuestionItemProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Handle autoplay and volume
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.volume = volume;
+
+    if (autoPlay) {
+      const playAudio = async () => {
+        try {
+          await audio.play();
+        } catch (error) {
+          console.warn('Auto-play failed:', error);
+        }
+      };
+      playAudio();
+    }
+  }, [autoPlay, volume, audioSrc]);
+
+  // Update volume when it changes
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.volume = volume;
+    }
+  }, [volume]);
 
   return (
     <Box
@@ -50,7 +82,12 @@ export default function ListeningPart1QuestionItem({
         mx: 'auto'
       }}
     >
-      <audio src={audioSrc} autoPlay onEnded={onAudioEnded} style={{ display: 'none' }} />
+      <audio 
+        ref={audioRef}
+        src={audioSrc} 
+        onEnded={onAudioEnded} 
+        style={{ display: 'none' }} 
+      />
       
       {imageSrc && (
         <Box
@@ -65,7 +102,6 @@ export default function ListeningPart1QuestionItem({
             bgcolor: isDarkMode ? color.gray900 : color.white,
           }}
         >
-       
           <Box
             sx={{
               p: 1.5,

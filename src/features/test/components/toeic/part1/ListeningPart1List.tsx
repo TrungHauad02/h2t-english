@@ -25,10 +25,15 @@ const ListeningPart1List: React.FC<Props> = ({
     {}
   );
   const [loading, setLoading] = useState<boolean>(true);
+  const [shouldAutoPlay, setShouldAutoPlay] = useState(false);
 
   // Update currentIndex when initialIndex changes (for resume functionality)
   useEffect(() => {
     setCurrentIndex(initialIndex);
+    // Set auto play after component loads if resuming
+    if (initialIndex > 0) {
+      setShouldAutoPlay(true);
+    }
   }, [initialIndex]);
 
   useEffect(() => {
@@ -135,6 +140,7 @@ const ListeningPart1List: React.FC<Props> = ({
       selectedAnswer={userAnswers[currentQuestion?.id]}
       onChange={(val) => handleAnswerChange(currentQuestion?.id, val)}
       onAudioEnded={handleAudioEnded}
+      autoPlay={shouldAutoPlay} // Pass autoPlay prop
     />
   );
 };
