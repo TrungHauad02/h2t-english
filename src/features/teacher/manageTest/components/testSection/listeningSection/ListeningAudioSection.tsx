@@ -3,6 +3,7 @@ import { Box, Typography, Stack } from '@mui/material';
 import AudioFileIcon from '@mui/icons-material/AudioFile';
 import GraphicEqIcon from '@mui/icons-material/GraphicEq';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import useColor from 'theme/useColor';
 import { useDarkMode } from 'hooks/useDarkMode';
 import { WEAudioInput } from 'components/input';
@@ -66,13 +67,14 @@ export default function ListeningAudioSection({
               overflow: 'hidden'
             }}
           >
+            {/* Header with icon and title */}
             <Box 
               sx={{ 
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'center',
                 width: '100%',
-                mb: 2,
+                mb: 3,
                 position: 'relative'
               }}
             >
@@ -101,36 +103,68 @@ export default function ListeningAudioSection({
               </Typography>
             </Box>
             
+            {/* Decorative line */}
             <Box 
               sx={{ 
                 width: '100%',
-                position: 'relative',
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  top: -8,
-                  left: 0,
-                  right: 0,
-                  height: '1px',
-                  background: `linear-gradient(90deg, 
-                    transparent 0%, 
-                    ${isDarkMode ? color.teal600 : color.teal400} 50%,
-                    transparent 100%)`
-                }
+                height: '1px',
+                background: `linear-gradient(90deg, 
+                  transparent 0%, 
+                  ${isDarkMode ? color.teal600 : color.teal400} 50%,
+                  transparent 100%)`,
+                mb: 3
+              }}
+            />
+            
+            {/* Audio player container */}
+            <Box
+              sx={{
+                width: '100%',
+                p: 3,
+                backgroundColor: isDarkMode ? color.gray800 : color.white,
+                borderRadius: "0.75rem",
+                border: `1px solid ${isDarkMode ? color.gray600 : color.gray200}`,
+                boxShadow: isDarkMode 
+                  ? '0 4px 12px rgba(0, 0, 0, 0.2)' 
+                  : '0 4px 12px rgba(0, 0, 0, 0.05)',
+                position: 'relative'
               }}
             >
+              {/* Audio icon */}
+              <VolumeUpIcon
+                sx={{
+                  position: 'absolute',
+                  top: 12,
+                  right: 12,
+                  fontSize: '1.5rem',
+                  color: isDarkMode ? color.teal500 : color.teal600,
+                  opacity: 0.6
+                }}
+              />
+              
+              {/* Audio player */}
               <audio 
                 controls 
                 src={audio} 
                 style={{ 
                   width: "100%",
                   borderRadius: "8px",
-                  backgroundColor: isDarkMode ? color.gray800 : color.white,
-                  boxShadow: isDarkMode 
-                    ? '0 4px 12px rgba(0, 0, 0, 0.2)' 
-                    : '0 4px 12px rgba(0, 0, 0, 0.05)'
+                  outline: 'none'
                 }} 
               />
+              
+              {/* Audio info */}
+              <Box sx={{ mt: 2, textAlign: 'center' }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: isDarkMode ? color.gray400 : color.gray600,
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  Click play to start listening
+                </Typography>
+              </Box>
             </Box>
           </Box>
         ) : (

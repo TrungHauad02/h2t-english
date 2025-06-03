@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Fade, Box, Grid, Paper, Typography, Button, Tooltip } from '@mui/material';
+import { Fade, Box, Grid, Paper, Typography, } from '@mui/material';
 import { TestListening, QuestionSupportTestType } from 'interfaces';
 import HeadphonesIcon from '@mui/icons-material/Headphones';
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import DescriptionIcon from '@mui/icons-material/Description';
-import AddIcon from '@mui/icons-material/Add';
 import TestSectionContainer from './common/TestSectionContainer';
 import useColor from 'theme/useColor';
 import { useDarkMode } from 'hooks/useDarkMode';
@@ -112,6 +111,9 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
     // Reset transcript editing state when selecting new listening
     setIsEditingTranscript(false);
     setTempTranscript("");
+    // Reset audio editing state when selecting new listening
+    setIsEditingAudio(false);
+    setTempAudio("");
   };
 
   const handleAddListening = () => {
@@ -307,6 +309,47 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
     setTempTranscript("");
   };
 
+  // Audio handlers
+  const handleEditAudio = () => {
+    const selectedListening = listenings.find(l => l.id === selectedListeningId);
+    setTempAudio(selectedListening?.audio || "");
+    setIsEditingAudio(true);
+  };
+
+  const handleAudioChange = (base64: string) => {
+    setTempAudio(base64);
+  };
+
+  const handleSaveAudio = async () => {
+    if (!selectedListeningId) return;
+    
+    try {
+      await testListeningService.patch(selectedListeningId, { audio: tempAudio });
+      
+      // Update local state
+      setListenings(prev => prev.map(listening => 
+        listening.id === selectedListeningId 
+          ? { ...listening, audio: tempAudio }
+          : listening
+      ));
+      
+      setIsEditingAudio(false);
+      toast.success("Audio saved successfully");
+    } catch (error) {
+      console.error("Error saving audio:", error);
+      showError({
+        message: "Error saving audio",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    }
+  };
+
+  const handleCancelAudioEdit = () => {
+    setIsEditingAudio(false);
+    setTempAudio("");
+  };
+
   const selectedListening = listenings.find(listening => listening.id === selectedListeningId);
   const isEmpty = listenings.length === 0;
   
@@ -387,10 +430,10 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
                       audio={selectedListening.audio}
                       isEditingAudio={isEditingAudio}
                       tempAudio={tempAudio}
-                      handleEditAudio={() => setIsEditingAudio(true)}
-                      handleAudioChange={(base64: string) => setTempAudio(base64)}
-                      handleSaveAudio={() => {/* Implement audio save logic */}}
-                      handleCancelEdit={() => setIsEditingAudio(false)}
+                      handleEditAudio={handleEditAudio}
+                      handleAudioChange={handleAudioChange}
+                      handleSaveAudio={handleSaveAudio}
+                      handleCancelEdit={handleCancelAudioEdit}
                     />
                   </Box>
                 </Paper>
