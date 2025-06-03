@@ -100,6 +100,7 @@ export default function useReadingDetailPage() {
       if (editData) {
         const resData = await readingService.patch(editData.id, { file: file });
         setData(resData.data);
+        setEditData(resData.data);
       }
     } catch (error) {
       console.error("Error updating file reading");

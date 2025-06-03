@@ -101,6 +101,7 @@ export default function useWritingDetailPage() {
       if (editData) {
         const resData = await writingService.patch(editData.id, { file: file });
         setData(resData.data);
+        setEditData(resData.data);
       }
     } catch (error) {
       console.error("Error updating file writing");

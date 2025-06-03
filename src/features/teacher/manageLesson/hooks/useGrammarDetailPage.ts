@@ -98,8 +98,8 @@ export default function useGrammarDetailPage() {
         const resData = await grammarService.patch(editData.id, {
           file: file,
         });
-        console.log(resData);
         setData(resData.data);
+        setEditData(resData.data);
       }
     } catch (error) {
       console.error("Error updating file grammar");
