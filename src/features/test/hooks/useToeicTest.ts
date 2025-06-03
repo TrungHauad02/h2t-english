@@ -34,6 +34,11 @@ interface SubmitResult {
   readingCorrect: number;
 }
 
+interface ResumePosition {
+  step: number;
+  currentIndex: number;
+}
+
 export default function useToeicPage() {
   const { id } = useParams();
   const toeicId = Number(id);
@@ -45,8 +50,208 @@ export default function useToeicPage() {
   const [error, setError] = useState<string | null>(null);
   const [totalAnswered, setTotalAnswered] = useState<number>(0);
   const [isCalculatingAnswers, setIsCalculatingAnswers] = useState<boolean>(false);
+  const [resumePosition, setResumePosition] = useState<ResumePosition | null>(null);
 
   const hasCreatedSubmitToeicRef = useRef(false);
+
+  // Function to find the last answered question position
+  const findLastAnsweredPosition = async (toeicData: Toeic, submitToeicId: number): Promise<ResumePosition> => {
+    try {
+      // Check Part 1 (step 3)
+      if (toeicData.questionsPart1?.length) {
+        const part1Answers = await submitToeicPart1Service.findBySubmitToeicIdAndToeicPart1Ids(
+          submitToeicId,
+          toeicData.questionsPart1
+        );
+        if (part1Answers?.data?.length) {
+          const lastAnswered = part1Answers.data.length - 1;
+          if (lastAnswered < toeicData.questionsPart1.length - 1) {
+            return { step: 3, currentIndex: lastAnswered + 1 };
+          }
+        } else {
+          return { step: 3, currentIndex: 0 };
+        }
+      }
+
+      // Check Part 2 (step 4)
+      if (toeicData.questionsPart2?.length) {
+        const part2Answers = await submitToeicPart2Service.findBySubmitToeicIdAndToeicPart2Ids(
+          submitToeicId,
+          toeicData.questionsPart2
+        );
+        if (part2Answers?.data?.length) {
+          const lastAnswered = part2Answers.data.length - 1;
+          if (lastAnswered < toeicData.questionsPart2.length - 1) {
+            return { step: 4, currentIndex: lastAnswered + 1 };
+          }
+        } else {
+          return { step: 4, currentIndex: 0 };
+        }
+      }
+
+      // Check Part 3 (step 5)
+      if (toeicData.questionsPart3?.length) {
+        const toeicPart3Res = await toeicPart3_4Service.getByIdsAndStatus(toeicData.questionsPart3, true);
+        const toeicPart3Data = Array.isArray(toeicPart3Res?.data) ? toeicPart3Res.data : [];
+        
+        const part3QuestionIds: number[] = [];
+        for (const part3 of toeicPart3Data) {
+          if (part3.questions?.length) {
+            part3QuestionIds.push(...part3.questions);
+          }
+        }
+        
+        if (part3QuestionIds.length) {
+          const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+            submitToeicId,
+            part3QuestionIds
+          );
+          if (answers?.data?.length) {
+            const answeredCount = answers.data.length;
+            const totalPart3Questions = part3QuestionIds.length;
+            if (answeredCount < totalPart3Questions) {
+              // Find which part3 group we're in
+              let currentQuestionCount = 0;
+              for (let i = 0; i < toeicPart3Data.length; i++) {
+                const groupQuestions = toeicPart3Data[i].questions?.length || 0;
+                if (answeredCount < currentQuestionCount + groupQuestions) {
+                  return { step: 5, currentIndex: i };
+                }
+                currentQuestionCount += groupQuestions;
+              }
+            }
+          } else {
+            return { step: 5, currentIndex: 0 };
+          }
+        }
+      }
+
+      // Check Part 4 (step 6)
+      if (toeicData.questionsPart4?.length) {
+        const toeicPart4Res = await toeicPart3_4Service.getByIdsAndStatus(toeicData.questionsPart4, true);
+        const toeicPart4Data = Array.isArray(toeicPart4Res?.data) ? toeicPart4Res.data : [];
+        
+        const part4QuestionIds: number[] = [];
+        for (const part4 of toeicPart4Data) {
+          if (part4.questions?.length) {
+            part4QuestionIds.push(...part4.questions);
+          }
+        }
+        
+        if (part4QuestionIds.length) {
+          const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+            submitToeicId,
+            part4QuestionIds
+          );
+          if (answers?.data?.length) {
+            const answeredCount = answers.data.length;
+            const totalPart4Questions = part4QuestionIds.length;
+            if (answeredCount < totalPart4Questions) {
+              // Find which part4 group we're in
+              let currentQuestionCount = 0;
+              for (let i = 0; i < toeicPart4Data.length; i++) {
+                const groupQuestions = toeicPart4Data[i].questions?.length || 0;
+                if (answeredCount < currentQuestionCount + groupQuestions) {
+                  return { step: 6, currentIndex: i };
+                }
+                currentQuestionCount += groupQuestions;
+              }
+            }
+          } else {
+            return { step: 6, currentIndex: 0 };
+          }
+        }
+      }
+
+      // Check Part 5 (step 7)
+      if (toeicData.questionsPart5?.length) {
+        const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+          submitToeicId,
+          toeicData.questionsPart5
+        );
+        if (answers?.data?.length) {
+          const lastAnswered = answers.data.length - 1;
+          if (lastAnswered < toeicData.questionsPart5.length - 1) {
+            return { step: 7, currentIndex: lastAnswered + 1 };
+          }
+        } else {
+          return { step: 7, currentIndex: 0 };
+        }
+      }
+
+      // Check Part 6 (step 8)
+      if (toeicData.questionsPart6?.length) {
+        const toeicPart6Res = await toeicPart6Service.getByIdsAndStatus(toeicData.questionsPart6, true);
+        const toeicPart6Data = Array.isArray(toeicPart6Res?.data) ? toeicPart6Res.data : [];
+        
+        const part6QuestionIds: number[] = [];
+        for (const part6 of toeicPart6Data) {
+          if (part6.questions?.length) {
+            part6QuestionIds.push(...part6.questions);
+          }
+        }
+        
+        if (part6QuestionIds.length) {
+          const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+            submitToeicId,
+            part6QuestionIds
+          );
+          if (answers?.data?.length) {
+            const answeredCount = answers.data.length;
+            let currentQuestionCount = 0;
+            for (let i = 0; i < toeicPart6Data.length; i++) {
+              const groupQuestions = toeicPart6Data[i].questions?.length || 0;
+              if (answeredCount < currentQuestionCount + groupQuestions) {
+                return { step: 8, currentIndex: i };
+              }
+              currentQuestionCount += groupQuestions;
+            }
+          } else {
+            return { step: 8, currentIndex: 0 };
+          }
+        }
+      }
+
+      // Check Part 7 (step 9)
+      if (toeicData.questionsPart7?.length) {
+        const toeicPart7Res = await toeicPart7Service.getByIdsAndStatus(toeicData.questionsPart7, true);
+        const toeicPart7Data = Array.isArray(toeicPart7Res?.data) ? toeicPart7Res.data : [];
+        
+        const part7QuestionIds: number[] = [];
+        for (const part7 of toeicPart7Data) {
+          if (part7.questions?.length) {
+            part7QuestionIds.push(...part7.questions);
+          }
+        }
+        
+        if (part7QuestionIds.length) {
+          const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+            submitToeicId,
+            part7QuestionIds
+          );
+          if (answers?.data?.length) {
+            const answeredCount = answers.data.length;
+            let currentQuestionCount = 0;
+            for (let i = 0; i < toeicPart7Data.length; i++) {
+              const groupQuestions = toeicPart7Data[i].questions?.length || 0;
+              if (answeredCount < currentQuestionCount + groupQuestions) {
+                return { step: 9, currentIndex: i };
+              }
+              currentQuestionCount += groupQuestions;
+            }
+          } else {
+            return { step: 9, currentIndex: 0 };
+          }
+        }
+      }
+
+      // Default to start of reading section if all listening is complete
+      return { step: 7, currentIndex: 0 };
+    } catch (error) {
+      console.error("Error finding last answered position:", error);
+      return { step: 0, currentIndex: 0 };
+    }
+  };
 
   useEffect(() => {
     const fetchToeicAndSubmit = async () => {
@@ -71,6 +276,10 @@ export default function useToeicPage() {
         try {
           const existingSubmitToeic = await submitToeicService.findByToeicIdAndUserIdAndStatusFalse(toeicId, userId);
           setSubmitToeic(existingSubmitToeic.data);
+          
+          // Find resume position for existing submission
+          const position = await findLastAnsweredPosition(toeicResponse.data, existingSubmitToeic.data.id);
+          setResumePosition(position);
         } catch {
           // If no existing submit Toeic, create a new one
           if (!hasCreatedSubmitToeicRef.current) {
@@ -88,6 +297,8 @@ export default function useToeicPage() {
             try {
               const created = await submitToeicService.create(newSubmitToeic);
               setSubmitToeic(created.data);
+              // For new submission, start from the beginning
+              setResumePosition({ step: 0, currentIndex: 0 });
             } catch (createErr) {
               console.error("Lỗi khi tạo submit toeic:", createErr);
               setError('Failed to create Toeic submission');
@@ -104,6 +315,7 @@ export default function useToeicPage() {
 
     fetchToeicAndSubmit();
   }, [toeicId, userId]);
+
   const calculateTotalAnswered = async (): Promise<number> => {
     if (!submitToeic?.id || !toeic) return 0;
   
@@ -274,16 +486,11 @@ export default function useToeicPage() {
   };
 
   const submitToeicTest = async (): Promise<SubmitResult | null> => {
-    console.log(12);
-    
     if (!submitToeic?.id || !toeic) return null;
-    console.log(12);
     
     try {
       let listeningCorrect = 0;
       let readingCorrect = 0;
-
-
 
       const partStats = {
         part1: { total: 0, correct: 0 },
@@ -295,7 +502,6 @@ export default function useToeicPage() {
         part7: { total: 0, correct: 0 },
       };
 
-  
       // Part 1
       if (toeic.questionsPart1?.length) {
         const [part1AnswersRes, part1QuestionsRes] = await Promise.all([
@@ -305,15 +511,15 @@ export default function useToeicPage() {
           ),
           toeicPart1Service.getByIdsAndStatus(toeic.questionsPart1, true)
         ]);
-  
+
         const part1Answers = Array.isArray(part1AnswersRes?.data) ? part1AnswersRes.data : [];
         const part1Questions = Array.isArray(part1QuestionsRes?.data) ? part1QuestionsRes.data : [];
-  
+
         const part1Map: Record<number, any> = {};
         for (const q of part1Questions) {
           part1Map[q.id] = q;
         }
-  
+
         for (const answer of part1Answers) {
           const question = part1Map[answer.toeicPart1Id];
           if (question && answer.answer === question.correctAnswer) {
@@ -321,7 +527,7 @@ export default function useToeicPage() {
           }
         }
       }
-  
+
       // Part 2
       if (toeic.questionsPart2?.length) {
         const [part2AnswersRes, part2QuestionsRes] = await Promise.all([
@@ -331,15 +537,15 @@ export default function useToeicPage() {
           ),
           toeicPart2Service.getByIdsAndStatus(toeic.questionsPart2, true)
         ]);
-  
+
         const part2Answers = Array.isArray(part2AnswersRes?.data) ? part2AnswersRes.data : [];
         const part2Questions = Array.isArray(part2QuestionsRes?.data) ? part2QuestionsRes.data : [];
-  
+
         const part2Map: Record<number, any> = {};
         for (const q of part2Questions) {
           part2Map[q.id] = q;
         }
-  
+
         for (const answer of part2Answers) {
           const question = part2Map[answer.toeicPart2Id];
           if (question && answer.answer === question.correctAnswer) {
@@ -557,7 +763,6 @@ export default function useToeicPage() {
         readingCorrect
       };
 
-   
       const partAccuracy = {
         part1Accuracy: partStats.part1.total > 0 ? (partStats.part1.correct / partStats.part1.total) * 100 : 0,
         part2Accuracy: partStats.part2.total > 0 ? (partStats.part2.correct / partStats.part2.total) * 100 : 0,
@@ -582,16 +787,14 @@ export default function useToeicPage() {
       };
 
       const commentResponse = await toeicCommentService.generateComment(commentRequestData);
-    const comment = commentResponse.data.feedback;
-    console.log(12222);
+      const comment = commentResponse.data.feedback;
     
-    await submitToeicService.patch(submitToeic.id, {
-      score: toeicScore.totalScore,
-      comment: comment,
-      status: true
-    });
+      await submitToeicService.patch(submitToeic.id, {
+        score: toeicScore.totalScore,
+        comment: comment,
+        status: true
+      });
   
- 
       setSubmitToeic({
         ...submitToeic,
         score: toeicScore.totalScore,
@@ -634,6 +837,7 @@ export default function useToeicPage() {
     error,
     totalAnswered,
     isCalculatingAnswers,
+    resumePosition, // New: return resume position
     calculateTotalAnswered,
     submitToeicTest,
     updateSubmitToeic,

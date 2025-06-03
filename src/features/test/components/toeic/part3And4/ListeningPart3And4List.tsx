@@ -9,19 +9,26 @@ interface ListeningPartProps {
   startIndex: number;
   onFinish: () => void;
   submitToeicId: number;
+  initialIndex?: number; // New prop for resume functionality
 }
 
 const ListeningPartList: React.FC<ListeningPartProps> = ({
   questions,
   startIndex,
   onFinish,
-  submitToeicId
+  submitToeicId,
+  initialIndex = 0 // Default to 0 if not provided
 }) => {
   const [questionsList, setQuestionsList] = useState<ToeicPart3_4[]>([]);
   const [questionMap, setQuestionMap] = useState<Record<number, ToeicQuestion[]>>({});
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [userAnswers, setUserAnswers] = useState<Record<string, AnswerEnum>>({});
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Update currentIndex when initialIndex changes (for resume functionality)
+  useEffect(() => {
+    setCurrentIndex(initialIndex);
+  }, [initialIndex]);
 
   useEffect(() => {
     const fetchData = async () => {

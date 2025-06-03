@@ -2,25 +2,32 @@ import React, { useEffect, useState } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { ToeicPart1, AnswerEnum } from 'interfaces/TestInterfaces';
 import ListeningPart1QuestionItem from './ListeningPart1QuestionItem';
-import { submitToeicPart1Service,toeicPart1Service } from 'services';
+import { submitToeicPart1Service, toeicPart1Service } from 'services';
 
 type Props = {
   questionsPart1: number[];
   startIndex: number;
   onFinish: () => void;
   submitToeicId: number;
+  initialIndex?: number; // New prop for resume functionality
 };
 
-const ListeningPart1List: React.FC<Props> = ({ 
-  questionsPart1, 
-  startIndex, 
+const ListeningPart1List: React.FC<Props> = ({
+  questionsPart1,
+  startIndex,
   onFinish,
-  submitToeicId 
+  submitToeicId,
+  initialIndex = 0 // Default to 0 if not provided
 }) => {
   const [questions, setQuestions] = useState<ToeicPart1[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [userAnswers, setUserAnswers] = useState<Record<number, AnswerEnum>>({});
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Update currentIndex when initialIndex changes (for resume functionality)
+  useEffect(() => {
+    setCurrentIndex(initialIndex);
+  }, [initialIndex]);
 
   useEffect(() => {
     const fetchQuestionsAndAnswers = async () => {
@@ -29,14 +36,14 @@ const ListeningPart1List: React.FC<Props> = ({
         console.log(questionsPart1);
         
         // Fetch questions
-        const questionData = await toeicPart1Service.getByIdsAndStatus(questionsPart1,true);
+        const questionData = await toeicPart1Service.getByIdsAndStatus(questionsPart1, true);
         setQuestions(questionData.data);
         console.log(questionData.data);
         
         // Fetch existing answers
         if (submitToeicId && questionsPart1.length > 0) {
           const existingAnswers = await submitToeicPart1Service.findBySubmitToeicIdAndToeicPart1Ids(
-            submitToeicId, 
+            submitToeicId,
             questionsPart1
           );
 
@@ -68,7 +75,7 @@ const ListeningPart1List: React.FC<Props> = ({
     try {
       // Check if answer already exists
       const existingAnswers = await submitToeicPart1Service.findBySubmitToeicIdAndToeicPart1Id(
-        submitToeicId, 
+        submitToeicId,
         questionId
       );
 

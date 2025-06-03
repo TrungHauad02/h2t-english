@@ -32,7 +32,7 @@ import { useNavigate } from "react-router-dom";
 
 interface CompetitionWaitingForResultsProps {
   competition: any;
-  submitCompetitionId: number;
+  submitCompetitionId?: number;
   endTime: Date;
 }
 
@@ -94,7 +94,9 @@ export default function CompetitionWaitingForResults({
   }, [competition, endTime]);
 
   const handleReviewClick = () => {
-    navigate(`/history-test/competition/${submitCompetitionId}`);
+    if (submitCompetitionId) {
+      navigate(`/history-test/competition/${submitCompetitionId}`);
+    }
   };
 
   const statisticsCards = [
@@ -269,35 +271,37 @@ export default function CompetitionWaitingForResults({
               />
             </Box>
 
-            {/* Review button */}
-            <Button
-              variant="contained"
-              size="large"
-              onClick={handleReviewClick}
-              startIcon={<FileText />}
-              sx={{
-                px: 5,
-                py: 2,
-                borderRadius: "50px",
-                fontSize: "1.1rem",
-                fontWeight: 600,
-                background: isDarkMode
-                  ? `linear-gradient(45deg, ${color.teal400}, ${color.emerald400})`
-                  : `linear-gradient(45deg, ${color.teal600}, ${color.emerald600})`,
-                boxShadow: isDarkMode
-                  ? `0 4px 20px rgba(45, 212, 191, 0.4)`
-                  : `0 4px 20px rgba(20, 184, 166, 0.3)`,
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  transform: "translateY(-2px)",
+            {/* Review button - only show if submitCompetitionId exists */}
+            {submitCompetitionId && (
+              <Button
+                variant="contained"
+                size="large"
+                onClick={handleReviewClick}
+                startIcon={<FileText />}
+                sx={{
+                  px: 5,
+                  py: 2,
+                  borderRadius: "50px",
+                  fontSize: "1.1rem",
+                  fontWeight: 600,
+                  background: isDarkMode
+                    ? `linear-gradient(45deg, ${color.teal400}, ${color.emerald400})`
+                    : `linear-gradient(45deg, ${color.teal600}, ${color.emerald600})`,
                   boxShadow: isDarkMode
-                    ? `0 6px 30px rgba(45, 212, 191, 0.6)`
-                    : `0 6px 30px rgba(20, 184, 166, 0.4)`,
-                },
-              }}
-            >
-              Review Your Test
-            </Button>
+                    ? `0 4px 20px rgba(45, 212, 191, 0.4)`
+                    : `0 4px 20px rgba(20, 184, 166, 0.3)`,
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    transform: "translateY(-2px)",
+                    boxShadow: isDarkMode
+                      ? `0 6px 30px rgba(45, 212, 191, 0.6)`
+                      : `0 6px 30px rgba(20, 184, 166, 0.4)`,
+                  },
+                }}
+              >
+                Review Your Test
+              </Button>
+            )}
           </Paper>
 
           {/* Statistics cards */}
