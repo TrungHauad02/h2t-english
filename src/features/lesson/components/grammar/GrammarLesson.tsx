@@ -14,7 +14,7 @@ export default function GrammarLesson({ lesson }: { lesson: Grammar }) {
       <CollapsibleSection text="Grammar Document">
         <Container maxWidth="lg">
           <WEDocumentViewer
-            fileUrl={"/document.docx"}
+            fileUrl={lesson.file}
             lineHeight="2"
             sx={{ my: 2 }}
           />

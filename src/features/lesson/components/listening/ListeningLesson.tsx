@@ -15,7 +15,7 @@ export default function ListeningLesson({ lesson }: { lesson: Listening }) {
         <ListenAndWriteAWordSection />
       </CollapsibleSection>
       <CollapsibleSection text="Listen And Answer Question">
-        <ListenAndAnswerQuestionSection />
+        <ListenAndAnswerQuestionSection audio={lesson.audio} />
       </CollapsibleSection>
     </Box>
   );
