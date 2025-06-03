@@ -1,9 +1,7 @@
 import React from 'react';
-import { Box, Typography, Stack, TextField } from '@mui/material';
+import { Box, Paper, Typography, Stack, TextField } from '@mui/material';
 import ArticleIcon from '@mui/icons-material/Article';
-import SubtitlesIcon from '@mui/icons-material/Subtitles';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
-import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
+import DescriptionIcon from '@mui/icons-material/Description';
 import useColor from 'theme/useColor';
 import { useDarkMode } from 'hooks/useDarkMode';
 import SectionHeader from '../common/SectionHeader';
@@ -29,167 +27,152 @@ export default function TranscriptDisplaySection({
 }: TranscriptDisplaySectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+
+  const cardBgColor = isDarkMode ? color.gray800 : color.gray50;
+  const borderColor = isDarkMode ? color.gray700 : color.gray200;
   const secondaryBgColor = isDarkMode ? color.gray900 : color.gray100;
-  const secondaryTextColor = isDarkMode ? color.gray300 : color.gray600;
+  const secondaryTextColor = isDarkMode ? color.gray400 : color.gray600;
+  const textColor = isDarkMode ? color.gray100 : color.gray900;
+
+  const handleTranscriptChangeInternal = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    handleTranscriptChange(event.target.value);
+  };
+
+  // Function to parse and format transcript lines
+  const renderFormattedTranscript = (text: string) => {
+    const lines = text.split("\n");
+
+    return lines.map((line, index) => {
+      // Check if line starts with a character name (e.g., "Emma:", "Jack:")
+      const characterMatch = line.match(/^([A-Za-z]+):\s*(.*)/);
+
+      if (characterMatch) {
+        const characterName = characterMatch[1];
+        const dialogue = characterMatch[2];
+
+        return (
+          <Typography
+            key={index}
+            variant="body1"
+            sx={{
+              color: textColor,
+              lineHeight: 1.8,
+              fontSize: "1rem",
+              mb: 1.5,
+            }}
+          >
+            <Box
+              component="span"
+              sx={{
+                fontWeight: "bold",
+                color: isDarkMode ? color.teal300 : color.teal700,
+              }}
+            >
+              {characterName}:
+            </Box>{" "}
+            {dialogue}
+          </Typography>
+        );
+      }
+
+      // Regular line without character name
+      return (
+        <Typography
+          key={index}
+          variant="body1"
+          sx={{
+            color: textColor,
+            lineHeight: 1.8,
+            fontSize: "1rem",
+            mb: 1.5,
+          }}
+        >
+          {line}
+        </Typography>
+      );
+    });
+  };
 
   return (
-    <Box>
+    <Box
+      component={Paper}
+      elevation={3}
+      sx={{
+        p: 3,
+        borderRadius: "1rem",
+        backgroundColor: cardBgColor,
+        my: 4,
+        border: `1px solid ${borderColor}`,
+      }}
+    >
       <SectionHeader
         title="Transcript Section"
         editText="Edit Transcript"
-        icon={<ArticleIcon />}
+        icon={<DescriptionIcon />}
         isEditMode={isEditingTranscript}
         handleSaveChanges={handleSaveTranscript}
         handleEditMode={handleEditTranscript}
         handleCancelEdit={handleCancelEdit}
       />
 
-      <Stack spacing={2} sx={{ mt: 2 }}>
+      <Stack spacing={2}>
         {isEditingTranscript ? (
           <TextField
-            fullWidth
             multiline
-            rows={10}
+            fullWidth
+            minRows={6}
+            maxRows={20}
             value={tempTranscript}
-            onChange={(e) => handleTranscriptChange(e.target.value)}
-            placeholder="Enter the audio transcript here..."
-            variant="outlined"
+            onChange={handleTranscriptChangeInternal}
+            placeholder="Enter the transcript for the listening audio..."
             sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: isDarkMode ? color.gray800 : color.white,
-                '& fieldset': {
+              "& .MuiOutlinedInput-root": {
+                backgroundColor: secondaryBgColor,
+                "& fieldset": {
+                  borderColor: borderColor,
+                },
+                "&:hover fieldset": {
                   borderColor: isDarkMode ? color.gray600 : color.gray300,
                 },
-                '&:hover fieldset': {
-                  borderColor: isDarkMode ? color.teal500 : color.teal400,
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: isDarkMode ? color.teal400 : color.teal500,
+                "&.Mui-focused fieldset": {
+                  borderColor: isDarkMode ? color.teal400 : color.teal600,
                 },
               },
-              '& .MuiInputBase-input': {
-                color: isDarkMode ? color.gray100 : color.gray800,
-                fontSize: '0.95rem',
-                lineHeight: 1.6
-              }
+              "& .MuiInputBase-input": {
+                color: textColor,
+                fontSize: "1rem",
+                lineHeight: 1.6,
+              },
             }}
           />
         ) : transcript ? (
           <Box
             sx={{
-              display: "flex",
-              flexDirection: "column",
-              width: "100%",
               p: 3,
               backgroundColor: secondaryBgColor,
               borderRadius: "0.75rem",
-              position: 'relative',
-              overflow: 'hidden'
+              border: `1px solid ${borderColor}`,
+              maxHeight: "600px",
+              overflowY: "auto",
+              "&::-webkit-scrollbar": {
+                width: "8px",
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: isDarkMode ? color.gray700 : color.gray200,
+                borderRadius: "4px",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: isDarkMode ? color.gray600 : color.gray400,
+                borderRadius: "4px",
+                "&:hover": {
+                  backgroundColor: isDarkMode ? color.gray500 : color.gray500,
+                },
+              },
             }}
           >
-            {/* Header with icon and title */}
-            <Box 
-              sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                width: '100%',
-                mb: 3,
-                position: 'relative'
-              }}
-            >
-              <TextFieldsIcon 
-                sx={{ 
-                  fontSize: 32, 
-                  color: isDarkMode ? color.teal400 : color.teal600,
-                  position: 'absolute',
-                  left: 0,
-                  animation: 'pulse 1.5s infinite',
-                  '@keyframes pulse': {
-                    '0%': { opacity: 0.7 },
-                    '50%': { opacity: 1 },
-                    '100%': { opacity: 0.7 }
-                  }
-                }} 
-              />
-              <Typography 
-                variant="subtitle1" 
-                fontWeight="medium"
-                sx={{ 
-                  color: isDarkMode ? color.teal300 : color.teal700,
-                }}
-              >
-                Audio Transcript
-              </Typography>
-            </Box>
-            
-            {/* Decorative line */}
-            <Box 
-              sx={{ 
-                width: '100%',
-                height: '1px',
-                background: `linear-gradient(90deg, 
-                  transparent 0%, 
-                  ${isDarkMode ? color.teal600 : color.teal400} 50%,
-                  transparent 100%)`,
-                mb: 3
-              }}
-            />
-            
-            {/* Transcript content box */}
-            <Box
-              sx={{
-                p: 3,
-                backgroundColor: isDarkMode ? color.gray800 : color.white,
-                borderRadius: "0.75rem",
-                border: `1px solid ${isDarkMode ? color.gray600 : color.gray200}`,
-                boxShadow: isDarkMode 
-                  ? '0 4px 12px rgba(0, 0, 0, 0.2)' 
-                  : '0 4px 12px rgba(0, 0, 0, 0.05)',
-                position: 'relative'
-              }}
-            >
-              {/* Quote icon */}
-              <FormatQuoteIcon
-                sx={{
-                  position: 'absolute',
-                  top: 12,
-                  left: 12,
-                  fontSize: '2rem',
-                  color: isDarkMode ? color.teal600 : color.teal400,
-                  opacity: 0.6,
-                  transform: 'rotate(180deg)'
-                }}
-              />
-              
-              {/* Transcript text */}
-              <Typography
-                variant="body1"
-                sx={{
-                  color: isDarkMode ? color.gray200 : color.gray700,
-                  lineHeight: 1.8,
-                  fontSize: '1rem',
-                  textAlign: 'justify',
-                  whiteSpace: 'pre-wrap',
-                  fontFamily: 'inherit',
-                  pl: 3
-                }}
-              >
-                {transcript}
-              </Typography>
-              
-              {/* Closing quote icon */}
-              <FormatQuoteIcon
-                sx={{
-                  position: 'absolute',
-                  bottom: 12,
-                  right: 12,
-                  fontSize: '1.5rem',
-                  color: isDarkMode ? color.teal600 : color.teal400,
-                  opacity: 0.4
-                }}
-              />
-            </Box>
+            <Box>{renderFormattedTranscript(transcript)}</Box>
           </Box>
         ) : (
           <Box
@@ -202,10 +185,11 @@ export default function TranscriptDisplaySection({
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              minHeight: "150px",
+              minHeight: "200px",
+              border: `1px dashed ${borderColor}`,
             }}
           >
-            <SubtitlesIcon
+            <ArticleIcon
               sx={{
                 fontSize: 48,
                 color: secondaryTextColor,
@@ -224,10 +208,14 @@ export default function TranscriptDisplaySection({
             </Typography>
             <Typography
               variant="body2"
-              sx={{ color: isDarkMode ? color.gray500 : color.gray500 }}
+              sx={{
+                color: isDarkMode ? color.gray500 : color.gray500,
+                maxWidth: "400px",
+              }}
             >
               Click the Edit Transcript button to add a transcript for this
-              listening lesson.
+              listening lesson. This helps learners follow along with the audio
+              content.
             </Typography>
           </Box>
         )}
