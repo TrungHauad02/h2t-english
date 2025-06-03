@@ -289,7 +289,7 @@ export default function AddNodeDialog({
               placeholder="Enter speaking topic"
             />
             <WETextField
-              label="Duration (minutes)"
+              label="Duration (seconds)"
               type="number"
               value={(newLesson as Speaking).duration}
               onChange={(e) =>
