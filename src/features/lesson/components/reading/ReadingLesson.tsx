@@ -14,7 +14,7 @@ export default function ReadingLesson({ lesson }: { lesson: Reading }) {
       <CollapsibleSection text="Reading Document">
         <Container maxWidth="lg">
           <WEDocumentViewer
-            fileUrl={"/document.docx"}
+            fileUrl={lesson.file}
             lineHeight="2"
             sx={{ my: 2 }}
           />
