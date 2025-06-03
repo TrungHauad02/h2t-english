@@ -169,7 +169,7 @@ export function ReadingSection({ partId, testItemIds }: ReadingSectionProps) {
         })
       );
       toast.success("Document updated successfully");
-      setIsEditMode(false);
+      setIsEditingDocument(false);
     } catch (error) {
       showError({
         message: "Error updating reading document",
@@ -353,7 +353,10 @@ export function ReadingSection({ partId, testItemIds }: ReadingSectionProps) {
                     file={selectedReading.file}
                     isEditingDocument={isEditingDocument}
                     tempDocument={tempDocument}
-                    handleEditDocument={() => setIsEditingDocument(true)}
+                    handleEditDocument={() => {
+                      setTempDocument("");
+                      setIsEditingDocument(true);
+                    }}
                     handleDocumentChange={(base64: string) =>
                       setTempDocument(base64)
                     }
