@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import {
   Box,
   Typography,
@@ -26,19 +26,18 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import CreateIcon from "@mui/icons-material/Create";
 import { Test, SubmitTest } from "interfaces";
+
 interface WritingTestProps {
   testWritings: number[];
-  submitTest : SubmitTest
-  test : Test,
+  submitTest: SubmitTest;
+  test: Test;
 }
 
-export default function WritingTest({ testWritings, submitTest,test }: WritingTestProps) {
+export default function WritingTest({ testWritings, submitTest, test }: WritingTestProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const color = useColor();
   const { isDarkMode } = useDarkMode();
-  
-  const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(null);
 
   const {
     currentIndex,
@@ -54,7 +53,6 @@ export default function WritingTest({ testWritings, submitTest,test }: WritingTe
     handlePrevious,
     setCurrentIndex,
     setQuestionRef,
-    questionRefs,
     handleOpenConfirmDialog,
     handleCloseConfirmDialog,
     handleSubmitTest,
@@ -63,26 +61,20 @@ export default function WritingTest({ testWritings, submitTest,test }: WritingTe
     getCurrentPrompt,
     handleEssayChange,
     getCurrentEssay,
-  } = useWritingTest(testWritings, submitTest.id,test.id);
+  } = useWritingTest(testWritings, submitTest.id, test.id);
 
   const totalQuestions = allQuestions.length;
   const answeredQuestions = allQuestions.filter(q => q.isAnswered).length;
-  
-  useEffect(() => {
-    if (selectedQuestionId && questionRefs.current[selectedQuestionId]) {
-      setTimeout(() => {
-        questionRefs.current[selectedQuestionId]?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
-      }, 100);
-      
-      const questionIndex = allQuestions.findIndex(q => q.id === selectedQuestionId);
-      if (questionIndex !== -1) {
-        setCurrentIndex(questionIndex);
-      }
+
+  // Handle question selection with immediate navigation
+  const handleQuestionSelect = useCallback((item: { questionId: number }) => {
+    const questionIndex = allQuestions.findIndex(q => q.id === item.questionId);
+    
+    if (questionIndex !== -1) {
+      // Update current index immediately
+      setCurrentIndex(questionIndex);
     }
-  }, [selectedQuestionId, questionRefs, allQuestions, setCurrentIndex]);
+  }, [allQuestions, setCurrentIndex]);
 
   const currentPrompt = getCurrentPrompt();
   const currentEssay = getCurrentEssay();
@@ -185,13 +177,14 @@ export default function WritingTest({ testWritings, submitTest,test }: WritingTe
       
       <Grid container spacing={3}>
         <Grid item xs={12}>
-        <TimeRemaining createAt={submitTest?.createdAt ? new Date(submitTest.createdAt) : new Date()} 
-        duration={test.duration}
-        onTimeUp={handleSubmitTest} />
+          <TimeRemaining 
+            createAt={submitTest?.createdAt ? new Date(submitTest.createdAt) : new Date()} 
+            duration={test.duration}
+            onTimeUp={handleSubmitTest} 
+          />
         </Grid>
         
         {/* Horizontal Layout Grid */}
-
         <Grid item xs={9}>
           <Grid container spacing={3}>
             {/* Left: Question Info */}
@@ -207,7 +200,6 @@ export default function WritingTest({ testWritings, submitTest,test }: WritingTe
                     : '0 8px 32px rgba(0,0,0,0.1)',
                 }}
               >
-                {/* Giữ nguyên nội dung phần Question Info */}
                 <Box 
                   sx={{ 
                     p: { xs: 2, sm: 3 },
@@ -246,7 +238,6 @@ export default function WritingTest({ testWritings, submitTest,test }: WritingTe
                   </Box>
                 </Box>
 
-                {/* Phần nội dung còn lại của Question Info giữ nguyên */}
                 <Box 
                   sx={{ 
                     p: { xs: 2, sm: 3 },
@@ -256,13 +247,12 @@ export default function WritingTest({ testWritings, submitTest,test }: WritingTe
                     height: 'calc(100% - 80px)',
                   }}
                 >
-                  {/* Giữ nguyên toàn bộ nội dung còn lại */}
                   <Box 
-                   ref={(el) => {
-                    if (currentPrompt?.id && el) {
-                      setQuestionRef(currentPrompt.id, el as HTMLDivElement);
-                    }
-                  }}
+                    ref={(el) => {
+                      if (currentPrompt?.id && el) {
+                        setQuestionRef(currentPrompt.id, el as HTMLDivElement);
+                      }
+                    }}
                     sx={{ 
                       p: 3, 
                       borderRadius: '1rem', 
@@ -274,7 +264,6 @@ export default function WritingTest({ testWritings, submitTest,test }: WritingTe
                       mb: 3,
                     }}
                   >
-                    {/* Toàn bộ nội dung về chủ đề và hướng dẫn giữ nguyên */}
                     <Typography 
                       variant="body1" 
                       sx={{ 
@@ -334,7 +323,6 @@ export default function WritingTest({ testWritings, submitTest,test }: WritingTe
               </Paper>
             </Grid>
             
-
             {/* Right: Response Area */}
             <Grid item xs={7}>
               <Paper
@@ -351,7 +339,6 @@ export default function WritingTest({ testWritings, submitTest,test }: WritingTe
                     : '0 8px 32px rgba(0,0,0,0.1)',
                 }}
               >
-                {/* Giữ nguyên toàn bộ nội dung phần Response Area */}
                 <Box 
                   sx={{ 
                     p: { xs: 2, sm: 3 },
@@ -361,7 +348,6 @@ export default function WritingTest({ testWritings, submitTest,test }: WritingTe
                     flexDirection: 'column',
                   }}
                 >
-    
                   <Box sx={{ 
                     display: 'flex', 
                     alignItems: 'center', 
@@ -376,8 +362,7 @@ export default function WritingTest({ testWritings, submitTest,test }: WritingTe
                       height: '32px',
                       borderRadius: '50%',
                       backgroundColor: isDarkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.1)',
-                      flexShrink
-                      : 0
+                      flexShrink: 0
                     }}>
                       <CreateIcon 
                         fontSize="small"
@@ -486,7 +471,7 @@ export default function WritingTest({ testWritings, submitTest,test }: WritingTe
                   </Box>
                 </Box>
                 
-                {/* Barre de navigation */}
+                {/* Navigation bar */}
                 <Box 
                   sx={{ 
                     display: 'flex',
@@ -552,6 +537,7 @@ export default function WritingTest({ testWritings, submitTest,test }: WritingTe
             </Grid>
           </Grid>
         </Grid>
+        
         <Grid item xs={3}>
           <TestQuestionGrid 
             key={submitTest.id}
@@ -561,9 +547,7 @@ export default function WritingTest({ testWritings, submitTest,test }: WritingTe
               partType: TestPartTypeEnum.WRITING,
               isAnswered: q.isAnswered
             }))}
-            onQuestionSelect={(item) => {
-              setSelectedQuestionId(item.questionId);
-            }}
+            onQuestionSelect={handleQuestionSelect}
             onSubmitTest={handleOpenConfirmDialog}
             isTitle={true}
           />
@@ -578,7 +562,6 @@ export default function WritingTest({ testWritings, submitTest,test }: WritingTe
         result={submissionResult}
       />
 
-      {/* Confirm Submit Dialog */}
       <ConfirmSubmitDialog
         open={isConfirmDialogOpen}
         onClose={handleCloseConfirmDialog}

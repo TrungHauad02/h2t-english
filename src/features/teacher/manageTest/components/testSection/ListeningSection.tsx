@@ -18,7 +18,8 @@ import {
   ListeningAudioSection, 
   ListeningTabsPanel, 
   SelectListeningPrompt, 
-  AddListeningDialog 
+  AddListeningDialog,
+  TranscriptDisplaySection
 } from './listeningSection/';
 
 interface ListeningSectionProps {
@@ -46,6 +47,10 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [questionsRanges, setQuestionsRanges] = useState<Record<number, string>>({});
   const [hasMadeChanges, setHasMadeChanges] = useState(false);
+
+  // Transcript editing state
+  const [isEditingTranscript, setIsEditingTranscript] = useState(false);
+  const [tempTranscript, setTempTranscript] = useState<string>("");
 
   // Delete state
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -104,6 +109,9 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
 
   const handleSelectListening = (listeningId: number) => {
     setSelectedListeningId(listeningId);
+    // Reset transcript editing state when selecting new listening
+    setIsEditingTranscript(false);
+    setTempTranscript("");
   };
 
   const handleAddListening = () => {
@@ -182,7 +190,6 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
     setListenings(updatedListenings);
     setHasMadeChanges(true);
   };
-  
 
   // Move items handlers
   const onMoveLeft = (index: number) => {
@@ -257,6 +264,47 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
       setIsDeleting(false);
       handleCloseDeleteDialog();
     }
+  };
+
+  // Transcript handlers
+  const handleEditTranscript = () => {
+    const selectedListening = listenings.find(l => l.id === selectedListeningId);
+    setTempTranscript(selectedListening?.transcript || "");
+    setIsEditingTranscript(true);
+  };
+
+  const handleTranscriptChange = (transcript: string) => {
+    setTempTranscript(transcript);
+  };
+
+  const handleSaveTranscript = async () => {
+    if (!selectedListeningId) return;
+    
+    try {
+      await testListeningService.patch(selectedListeningId, { transcript: tempTranscript });
+      
+      // Update local state
+      setListenings(prev => prev.map(listening => 
+        listening.id === selectedListeningId 
+          ? { ...listening, transcript: tempTranscript }
+          : listening
+      ));
+      
+      setIsEditingTranscript(false);
+      toast.success("Transcript saved successfully");
+    } catch (error) {
+      console.error("Error saving transcript:", error);
+      showError({
+        message: "Error saving transcript",
+        severity: "error",
+        details: extractErrorMessages(error),
+      });
+    }
+  };
+
+  const handleCancelTranscriptEdit = () => {
+    setIsEditingTranscript(false);
+    setTempTranscript("");
   };
 
   const selectedListening = listenings.find(listening => listening.id === selectedListeningId);
@@ -346,6 +394,42 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
                     />
                   </Box>
                 </Paper>
+
+                {/* Transcript Section */}
+                <Paper
+                  elevation={3}
+                  sx={{
+                    borderRadius: '1rem',
+                    overflow: 'hidden',
+                    backgroundColor: isDarkMode ? color.gray800 : color.white,
+                    border: isDarkMode ? `1px solid ${color.gray700}` : 'none',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      boxShadow: isDarkMode 
+                        ? '0 8px 24px rgba(0, 0, 0, 0.25)' 
+                        : '0 8px 24px rgba(0, 0, 0, 0.1)',
+                      transform: 'translateY(-2px)'
+                    }
+                  }}
+                >
+                  <Box
+                    sx={{
+                      height: 6,
+                      background: `linear-gradient(90deg, ${isDarkMode ? color.emerald700 : color.emerald400} 0%, ${isDarkMode ? color.teal700 : color.teal400} 100%)`
+                    }}
+                  />
+                  <Box sx={{ p: 3 }}>
+                    <TranscriptDisplaySection
+                      transcript={selectedListening.transcript}
+                      isEditingTranscript={isEditingTranscript}
+                      tempTranscript={tempTranscript}
+                      handleEditTranscript={handleEditTranscript}
+                      handleTranscriptChange={handleTranscriptChange}
+                      handleSaveTranscript={handleSaveTranscript}
+                      handleCancelEdit={handleCancelTranscriptEdit}
+                    />
+                  </Box>
+                </Paper>
                 
                 {/* Questions Section */}
                 <Box sx={{ mt: 2 }}>
@@ -380,8 +464,6 @@ export function ListeningSection({ partId, testItemIds }: ListeningSectionProps)
                     >
                       <DescriptionIcon /> Listening Questions
                     </Typography>
-                    
-                  
                   </Box>
                   
                   {selectedListeningId && (
