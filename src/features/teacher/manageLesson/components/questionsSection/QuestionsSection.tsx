@@ -41,7 +41,6 @@ export default function QuestionsSection({
     try {
       if (id) {
         const resData = await aqService.findByLessonId(parseInt(id), type);
-        console.log(resData);
         setData(resData.data);
 
         const newQuestionIds = resData.data.map(

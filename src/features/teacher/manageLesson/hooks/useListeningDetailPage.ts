@@ -102,6 +102,7 @@ export default function useListeningDetailPage() {
           audio: audio,
         });
         setData(resData.data);
+        setEditData(resData.data);
       }
     } catch (error) {
       console.error("Error updating audio listening");
@@ -123,6 +124,7 @@ export default function useListeningDetailPage() {
           transcript: transcript,
         });
         setData(resData.data);
+        setEditData(resData.data);
       }
     } catch (error) {
       console.error("Error updating transcript listening");

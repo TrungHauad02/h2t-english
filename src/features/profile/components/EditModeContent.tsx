@@ -22,6 +22,81 @@ interface EditModeContentProps {
   handleDateChange: (date: Date | null) => void;
 }
 
+const SectionCard = ({
+  title,
+  icon,
+  children,
+  gradient = false,
+  sectionBg,
+  isDarkMode,
+  color,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+  gradient?: boolean;
+  sectionBg: string;
+  isDarkMode: boolean;
+  color: any;
+}) => (
+  <Paper
+    elevation={0}
+    sx={{
+      p: 4,
+      borderRadius: "1.5rem",
+      background: gradient
+        ? `linear-gradient(135deg, ${
+            isDarkMode ? color.teal900 : color.teal50
+          } 0%, ${isDarkMode ? color.emerald900 : color.emerald50} 100%)`
+        : sectionBg,
+      border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
+      position: "relative",
+      overflow: "hidden",
+      "&::before": gradient
+        ? {
+            content: '""',
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: isDarkMode
+              ? `radial-gradient(circle at top left, ${color.teal600}10 0%, transparent 70%)`
+              : `radial-gradient(circle at top left, ${color.white}50 0%, transparent 70%)`,
+          }
+        : {},
+    }}
+  >
+    <Stack spacing={3} sx={{ position: "relative", zIndex: 1 }}>
+      <Stack direction="row" spacing={2} alignItems="center">
+        <Box
+          sx={{
+            p: 1.5,
+            borderRadius: "1rem",
+            background: `linear-gradient(135deg, ${
+              isDarkMode ? color.teal600 : color.teal500
+            } 0%, ${isDarkMode ? color.emerald600 : color.emerald500} 100%)`,
+            color: color.white,
+          }}
+        >
+          {icon}
+        </Box>
+        <Typography
+          variant="h6"
+          sx={{
+            color: isDarkMode ? color.teal300 : color.teal700,
+            fontWeight: "bold",
+            fontSize: "1.25rem",
+          }}
+        >
+          {title}
+        </Typography>
+      </Stack>
+      {children}
+    </Stack>
+  </Paper>
+);
+
 export default function EditModeContent({
   formData,
   handleChange,
@@ -34,75 +109,6 @@ export default function EditModeContent({
   const borderColor = isDarkMode ? color.gray600 : color.gray400;
   const sectionBg = isDarkMode ? color.gray800 : color.gray50;
 
-  const SectionCard = ({
-    title,
-    icon,
-    children,
-    gradient = false,
-  }: {
-    title: string;
-    icon: React.ReactNode;
-    children: React.ReactNode;
-    gradient?: boolean;
-  }) => (
-    <Paper
-      elevation={0}
-      sx={{
-        p: 4,
-        borderRadius: "1.5rem",
-        background: gradient
-          ? `linear-gradient(135deg, ${
-              isDarkMode ? color.teal900 : color.teal50
-            } 0%, ${isDarkMode ? color.emerald900 : color.emerald50} 100%)`
-          : sectionBg,
-        border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
-        position: "relative",
-        overflow: "hidden",
-        "&::before": gradient
-          ? {
-              content: '""',
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: isDarkMode
-                ? `radial-gradient(circle at top left, ${color.teal600}10 0%, transparent 70%)`
-                : `radial-gradient(circle at top left, ${color.white}50 0%, transparent 70%)`,
-            }
-          : {},
-      }}
-    >
-      <Stack spacing={3} sx={{ position: "relative", zIndex: 1 }}>
-        <Stack direction="row" spacing={2} alignItems="center">
-          <Box
-            sx={{
-              p: 1.5,
-              borderRadius: "1rem",
-              background: `linear-gradient(135deg, ${
-                isDarkMode ? color.teal600 : color.teal500
-              } 0%, ${isDarkMode ? color.emerald600 : color.emerald500} 100%)`,
-              color: color.white,
-            }}
-          >
-            {icon}
-          </Box>
-          <Typography
-            variant="h6"
-            sx={{
-              color: isDarkMode ? color.teal300 : color.teal700,
-              fontWeight: "bold",
-              fontSize: "1.25rem",
-            }}
-          >
-            {title}
-          </Typography>
-        </Stack>
-        {children}
-      </Stack>
-    </Paper>
-  );
-
   return (
     <CardContent sx={{ p: { xs: 3, md: 4 } }}>
       <Grid container spacing={4}>
@@ -112,6 +118,9 @@ export default function EditModeContent({
             title="Profile Picture"
             icon={<CameraAltIcon />}
             gradient
+            sectionBg={sectionBg}
+            isDarkMode={isDarkMode}
+            color={color}
           >
             <Stack spacing={3} alignItems="center">
               <WESelectImage
@@ -137,7 +146,13 @@ export default function EditModeContent({
         <Grid item xs={12} md={8}>
           <Stack spacing={4}>
             {/* Personal Information */}
-            <SectionCard title="Personal Information" icon={<PersonIcon />}>
+            <SectionCard
+              title="Personal Information"
+              icon={<PersonIcon />}
+              sectionBg={sectionBg}
+              isDarkMode={isDarkMode}
+              color={color}
+            >
               <Stack spacing={3}>
                 <WETextField
                   name="name"
@@ -218,6 +233,9 @@ export default function EditModeContent({
               title="Contact Information"
               icon={<ContactsIcon />}
               gradient
+              sectionBg={sectionBg}
+              isDarkMode={isDarkMode}
+              color={color}
             >
               <Stack spacing={3}>
                 <WETextField
