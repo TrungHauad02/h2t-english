@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -22,6 +22,8 @@ type Props = {
   selectedAnswer?: AnswerEnum;
   onChange?: (value: AnswerEnum) => void;
   onAudioEnded?: () => void;
+  autoPlay?: boolean; // New prop
+  volume?: number; // New prop
 };
 
 export default function ListeningPart2QuestionItem({
@@ -29,11 +31,40 @@ export default function ListeningPart2QuestionItem({
   audioSrc,
   selectedAnswer,
   onChange,
-  onAudioEnded
+  onAudioEnded,
+  autoPlay = false, // Default to false
+  volume = 0.5 // Default volume
 }: Props) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const audioRef = useRef<HTMLAudioElement>(null);
 
+  // Handle autoplay and volume
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.volume = volume;
+
+    if (autoPlay) {
+      const playAudio = async () => {
+        try {
+          await audio.play();
+        } catch (error) {
+          console.warn('Auto-play failed:', error);
+        }
+      };
+      playAudio();
+    }
+  }, [autoPlay, volume, audioSrc]);
+
+  // Update volume when it changes
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.volume = volume;
+    }
+  }, [volume]);
 
   return (
     <Box
@@ -49,8 +80,8 @@ export default function ListeningPart2QuestionItem({
       }}
     >
       <audio
+        ref={audioRef}
         src={audioSrc}
-        autoPlay
         onEnded={onAudioEnded}
         style={{ display: 'none' }}
       />
@@ -121,7 +152,6 @@ export default function ListeningPart2QuestionItem({
           >
             {questionNumber}
           </Box>
-     
         </Typography>
         
         <RadioGroup
@@ -179,7 +209,6 @@ export default function ListeningPart2QuestionItem({
                         fontSize: '1rem',
                       }}
                     >
-                
                     </Typography>
                   </Box>
                 }
