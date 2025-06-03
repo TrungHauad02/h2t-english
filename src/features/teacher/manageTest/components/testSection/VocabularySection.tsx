@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { Fade, Box, Paper } from '@mui/material';
-import { Question, QuestionSupportTestType } from 'interfaces';
-import SpellcheckIcon from '@mui/icons-material/Spellcheck';
+import React, { useEffect, useState } from "react";
+import { Fade, Box, Paper } from "@mui/material";
+import { Question, QuestionSupportTestType } from "interfaces";
+import SpellcheckIcon from "@mui/icons-material/Spellcheck";
 import QuizIcon from "@mui/icons-material/Quiz";
-import TestSectionContainer from './common/TestSectionContainer';
-import SectionHeader from './common/SectionHeader';
-import NoQuestionSection from './questionsSection/NoQuestionSection';
-import ListQuestion from './questionsSection/ListQuestion';
-import AddQuestionDialog from './questionsSection/AddQuestionDialog';
-import useColor from 'theme/useColor';
-import { useDarkMode } from 'hooks/useDarkMode';
-import { questionService, testPartQuestionServiceFactory } from 'services';
+import TestSectionContainer from "./common/TestSectionContainer";
+import SectionHeader from "./common/SectionHeader";
+import NoQuestionSection from "./questionsSection/NoQuestionSection";
+import ListQuestion from "./questionsSection/ListQuestion";
+import AddQuestionDialog from "./questionsSection/AddQuestionDialog";
+import useColor from "theme/useColor";
+import { useDarkMode } from "hooks/useDarkMode";
+import { questionService, testPartQuestionServiceFactory } from "services";
 import { toast } from "react-toastify";
 import { useErrors } from "hooks/useErrors";
 import { extractErrorMessages } from "utils/extractErrorMessages";
@@ -20,7 +20,10 @@ interface VocabularySectionProps {
   questionIds: number[];
 }
 
-export function VocabularySection({ partId, questionIds }: VocabularySectionProps) {
+export function VocabularySection({
+  partId,
+  questionIds,
+}: VocabularySectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const secondaryTextColor = isDarkMode ? color.gray300 : color.gray600;
@@ -38,14 +41,12 @@ export function VocabularySection({ partId, questionIds }: VocabularySectionProp
     try {
       if (partId) {
         const resData = await questionService.findByTestId(partId, type);
-        console.log(partId);
-        
-        console.log(resData+"tan");
+
         setData(resData.data);
-        const newQuestionIds = resData.data.map((question: Question) => question.id);
+        const newQuestionIds = resData.data.map(
+          (question: Question) => question.id
+        );
         setListQuestionId(newQuestionIds);
-        console.log(newQuestionIds+"cap");
-    
       }
     } catch (error) {
       console.error("Error fetching questions:", error);
@@ -54,7 +55,7 @@ export function VocabularySection({ partId, questionIds }: VocabularySectionProp
 
   useEffect(() => {
     fetchData();
-  }, [type,partId]);
+  }, [type, partId]);
 
   const handleAddQuestion = () => {
     setIsAddDialogOpen(true);
@@ -107,62 +108,59 @@ export function VocabularySection({ partId, questionIds }: VocabularySectionProp
   };
 
   return (
-
-<>
-    <TestSectionContainer
-      id="vocabulary-section"
-      title="Vocabulary Section"
-      icon={<SpellcheckIcon />}
-      isEmpty={data.length === 0}
-      isEditMode={isEditMode}
-      onAdd={handleAddQuestion}
-      emptyState={{
-        icon: <SpellcheckIcon />,
-        title: "No Vocabulary Content Yet",
-        description: "Vocabulary questions would appear here."
-      }}
-    >
-      <Fade in={true} timeout={500}>
-        <Box>
-          <Box
-            component={Paper}
-            elevation={3}
-            sx={{
-              p: 3,
-              borderRadius: "1rem",
-              backgroundColor: isDarkMode ? color.gray800 : color.gray50,
-            }}
-          >
-            <SectionHeader
-              title={`Questions (${data.length})`}
-              editText="Edit"
-              icon={<QuizIcon />}
-              isEditMode={isEditMode}
-              handleEditMode={handleEditMode}
-              handleCancelEdit={handleEditMode}
-              handleSaveChanges={handleSaveChanges}
-            />
-            {data.length > 0 ? (
-              <ListQuestion
-                data={data}
-                partId={partId}
+    <>
+      <TestSectionContainer
+        id="vocabulary-section"
+        title="Vocabulary Section"
+        icon={<SpellcheckIcon />}
+        isEmpty={data.length === 0}
+        isEditMode={isEditMode}
+        onAdd={handleAddQuestion}
+        emptyState={{
+          icon: <SpellcheckIcon />,
+          title: "No Vocabulary Content Yet",
+          description: "Vocabulary questions would appear here.",
+        }}
+      >
+        <Fade in={true} timeout={500}>
+          <Box>
+            <Box
+              component={Paper}
+              elevation={3}
+              sx={{
+                p: 3,
+                borderRadius: "1rem",
+                backgroundColor: isDarkMode ? color.gray800 : color.gray50,
+              }}
+            >
+              <SectionHeader
+                title={`Questions (${data.length})`}
+                editText="Edit"
+                icon={<QuizIcon />}
                 isEditMode={isEditMode}
-                fetchData={fetchData}
-                onMoveUp={onMoveUp}
-                onMoveDown={onMoveDown}
-                type={type}
-                questions={listQuestionId}
+                handleEditMode={handleEditMode}
+                handleCancelEdit={handleEditMode}
+                handleSaveChanges={handleSaveChanges}
               />
-            ) : (
-              <NoQuestionSection secondaryTextColor={secondaryTextColor} />
-            )}
+              {data.length > 0 ? (
+                <ListQuestion
+                  data={data}
+                  partId={partId}
+                  isEditMode={isEditMode}
+                  fetchData={fetchData}
+                  onMoveUp={onMoveUp}
+                  onMoveDown={onMoveDown}
+                  type={type}
+                  questions={listQuestionId}
+                />
+              ) : (
+                <NoQuestionSection secondaryTextColor={secondaryTextColor} />
+              )}
+            </Box>
           </Box>
-        </Box>
-      </Fade>
-
-     
-    </TestSectionContainer>
-     <AddQuestionDialog
+        </Fade>
+      </TestSectionContainer>
+      <AddQuestionDialog
         type={type}
         questions={listQuestionId}
         open={isAddDialogOpen}

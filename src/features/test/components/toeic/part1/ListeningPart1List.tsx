@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Box, CircularProgress } from '@mui/material';
-import { ToeicPart1, AnswerEnum } from 'interfaces/TestInterfaces';
-import ListeningPart1QuestionItem from './ListeningPart1QuestionItem';
-import { submitToeicPart1Service, toeicPart1Service } from 'services';
+import React, { useEffect, useState } from "react";
+import { Box, CircularProgress } from "@mui/material";
+import { ToeicPart1, AnswerEnum } from "interfaces/TestInterfaces";
+import ListeningPart1QuestionItem from "./ListeningPart1QuestionItem";
+import { submitToeicPart1Service, toeicPart1Service } from "services";
 
 type Props = {
   questionsPart1: number[];
@@ -17,11 +17,13 @@ const ListeningPart1List: React.FC<Props> = ({
   startIndex,
   onFinish,
   submitToeicId,
-  initialIndex = 0 // Default to 0 if not provided
+  initialIndex = 0, // Default to 0 if not provided
 }) => {
   const [questions, setQuestions] = useState<ToeicPart1[]>([]);
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
-  const [userAnswers, setUserAnswers] = useState<Record<number, AnswerEnum>>({});
+  const [userAnswers, setUserAnswers] = useState<Record<number, AnswerEnum>>(
+    {}
+  );
   const [loading, setLoading] = useState<boolean>(true);
 
   // Update currentIndex when initialIndex changes (for resume functionality)
@@ -33,19 +35,20 @@ const ListeningPart1List: React.FC<Props> = ({
     const fetchQuestionsAndAnswers = async () => {
       setLoading(true);
       try {
-        console.log(questionsPart1);
-        
         // Fetch questions
-        const questionData = await toeicPart1Service.getByIdsAndStatus(questionsPart1, true);
+        const questionData = await toeicPart1Service.getByIdsAndStatus(
+          questionsPart1,
+          true
+        );
         setQuestions(questionData.data);
-        console.log(questionData.data);
-        
+
         // Fetch existing answers
         if (submitToeicId && questionsPart1.length > 0) {
-          const existingAnswers = await submitToeicPart1Service.findBySubmitToeicIdAndToeicPart1Ids(
-            submitToeicId,
-            questionsPart1
-          );
+          const existingAnswers =
+            await submitToeicPart1Service.findBySubmitToeicIdAndToeicPart1Ids(
+              submitToeicId,
+              questionsPart1
+            );
 
           const answersMap: Record<number, AnswerEnum> = {};
           if (existingAnswers && existingAnswers.data) {
@@ -67,24 +70,29 @@ const ListeningPart1List: React.FC<Props> = ({
   }, [questionsPart1, submitToeicId]);
 
   const handleAnswerChange = async (questionId: number, answer: AnswerEnum) => {
-    setUserAnswers(prev => ({
+    setUserAnswers((prev) => ({
       ...prev,
-      [questionId]: answer
+      [questionId]: answer,
     }));
 
     try {
       // Check if answer already exists
-      const existingAnswers = await submitToeicPart1Service.findBySubmitToeicIdAndToeicPart1Id(
-        submitToeicId,
-        questionId
-      );
+      const existingAnswers =
+        await submitToeicPart1Service.findBySubmitToeicIdAndToeicPart1Id(
+          submitToeicId,
+          questionId
+        );
 
-      if (existingAnswers && existingAnswers.data && existingAnswers.data.length > 0) {
+      if (
+        existingAnswers &&
+        existingAnswers.data &&
+        existingAnswers.data.length > 0
+      ) {
         // Update existing answer
         const existingAnswer = existingAnswers.data[0];
         await submitToeicPart1Service.update(existingAnswer.id, {
           ...existingAnswer,
-          answer: answer
+          answer: answer,
         });
       } else {
         // Create new answer

@@ -211,7 +211,6 @@ export default function useSpeakingTopicSection(data: Speaking) {
       // If no specific MIME type is supported, use default
       const options = selectedMimeType ? { mimeType: selectedMimeType } : {};
       setAudioFormat(selectedMimeType || "audio/webm");
-      console.log("Recording with format:", selectedMimeType || "default");
 
       mediaRecorderRef.current = new MediaRecorder(audioStream, options);
       const mediaRecorder = mediaRecorderRef.current;
@@ -323,13 +322,6 @@ export default function useSpeakingTopicSection(data: Speaking) {
         audioBlob.type === "audio/mpeg"
       );
 
-      console.log(
-        `Original audio format: ${audioBlob.type}, needs conversion: ${needsConversion}`
-      );
-
-      // If format is not WAV or MP3, we need to create a new blob with the correct type
-      // Since we can't easily convert formats in the browser without extra libraries,
-      // we'll just change the content type to ensure the server accepts it
       const finalType =
         audioBlob.type === "audio/mpeg"
           ? "audio/mp3"
@@ -350,10 +342,6 @@ export default function useSpeakingTopicSection(data: Speaking) {
       const audioFile = new File([finalBlob], fileName, {
         type: finalType,
       });
-
-      console.log(
-        `Submitting audio file: ${fileName}, type: ${finalType}, size: ${finalBlob.size} bytes`
-      );
 
       // Call the scoring service using the File object
       const result = await scoreSpeakingService.evaluateSpeechInTopic(

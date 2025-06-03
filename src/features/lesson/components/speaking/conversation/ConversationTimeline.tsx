@@ -84,7 +84,6 @@ export default function ConversationTimeline({
       // Start recording
       mediaRecorder.start();
       setIsRecording(id);
-      console.log(`Started recording for line ${id}`);
     } catch (error) {
       console.error("Error accessing microphone:", error);
       alert(
@@ -106,7 +105,6 @@ export default function ConversationTimeline({
     ) {
       mediaRecorderRef.current.stop();
       setIsRecording(null);
-      console.log(`Stopped recording for line ${id}`);
     }
   };
 
@@ -120,7 +118,6 @@ export default function ConversationTimeline({
     const newRecordings = { ...userRecordings };
     delete newRecordings[id];
     setUserRecordings(newRecordings);
-    console.log(`Deleted recording for line ${id}`);
   };
 
   // Function to play/pause audio

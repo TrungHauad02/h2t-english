@@ -15,7 +15,6 @@ export default function ListeningTranscriptSection({
   transcript,
   handleSaveTranscript,
 }: ListeningTranscriptSectionProps) {
-  console.log(transcript);
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const [isEditMode, setIsEditMode] = useState(false);

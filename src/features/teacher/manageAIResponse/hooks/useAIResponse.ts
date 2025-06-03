@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { AIResponse, AIResponseFilter } from "interfaces";
 import { aiResponseService } from "services/features/aiResponseService";
-import useAuth from "hooks/useAuth"; 
+import useAuth from "hooks/useAuth";
 
 interface UseAIResponseResult {
   aiResponses: AIResponse[];
@@ -37,7 +37,9 @@ export default function useAIResponse(): UseAIResponseResult {
   const [itemsPerPage, setItemsPerPage] = useState<number>(8);
   const [totalPage, setTotalPage] = useState<number>(1);
   const [filter, setFilter] = useState<AIResponseFilter>({});
-  const [selectedResponse, setSelectedResponse] = useState<AIResponse | null>(null);
+  const [selectedResponse, setSelectedResponse] = useState<AIResponse | null>(
+    null
+  );
   const [evaluateDialogOpen, setEvaluateDialogOpen] = useState<boolean>(false);
   const [detailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const { userId } = useAuth();
@@ -47,33 +49,27 @@ export default function useAIResponse(): UseAIResponseResult {
       setLoading(true);
       setError(null);
 
-      // Kiểm tra userId
       if (!userId) {
         throw new Error("User ID is required");
       }
 
-      // Sử dụng endpoint teacher-view với teacherId
-      console.log("Fetching data with params:", { page, itemsPerPage, filter, teacherId: userId });
-      
       const result = await aiResponseService.getTeacherViewResponses(
         page,
         itemsPerPage,
         filter,
-        Number(userId) // Truyền userId làm teacherId
+        Number(userId)
       );
 
-      console.log("API Response:", result);
-      
       setAiResponses(result.content || []);
       setTotalPage(result.totalPages || 1);
     } catch (error: any) {
       console.error("Error fetching AI responses:", error);
       console.error("Error details:", error.response?.data);
-      
-      // Hiển thị lỗi chi tiết hơn
-      const errorMessage = error.response?.data?.message || 
-                          error.message || 
-                          "Failed to fetch AI responses. Please try again.";
+
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch AI responses. Please try again.";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -132,11 +128,13 @@ export default function useAIResponse(): UseAIResponseResult {
           });
 
           // Update the selected response immediately for UI
-          setSelectedResponse(prev => prev ? { ...prev, evaluate, status: true } : null);
-          
+          setSelectedResponse((prev) =>
+            prev ? { ...prev, evaluate, status: true } : null
+          );
+
           // Refresh data to get latest from server
           await fetchData();
-          
+
           // Close evaluate dialog and return to detail dialog
           setEvaluateDialogOpen(false);
           setDetailDialogOpen(true);

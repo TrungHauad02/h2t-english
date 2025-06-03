@@ -54,7 +54,6 @@ export default function useMatchImageWord() {
   }, [listVocab]);
 
   const onSelectWord = (word: string) => {
-    console.log(word);
     if (score) return;
     setSelectedWord(word);
   };

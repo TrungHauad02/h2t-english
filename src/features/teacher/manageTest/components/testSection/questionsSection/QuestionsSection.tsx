@@ -40,7 +40,6 @@ export default function QuestionsSection({
     try {
       if (parentId) {
         const resData = await questionService.findByTestId(parentId, type);
-        console.log(resData);
         setData(resData.data);
         const newQuestionIds = resData.data.map(
           (question: Question) => question.id

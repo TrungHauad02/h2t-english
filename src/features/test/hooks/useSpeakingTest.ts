@@ -245,7 +245,6 @@ const useSpeakingTest = (testSpeakingIds: number[], submitTestId: number,id: num
             submitTestId,
             questionId
           );
-          console.log(existingRes.data);
           if (existingRes?.data?.length > 0) {
             const existing = existingRes.data[0];
         

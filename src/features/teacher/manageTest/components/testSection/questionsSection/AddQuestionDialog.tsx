@@ -90,15 +90,13 @@ export default function AddQuestionDialog({
     // Save question
     // Validate before saving
     if (!validateQuestion(newQuestion, showError)) {
-      return; // Stop save process if validation fails
+      return;
     }
     try {
-      console.log(newQuestion);
-      
       const resData = await questionService.create(newQuestion);
 
       const newQuestions = [...questions, resData.data.id];
-      
+
       await questionServiceUpdate.updateQuestions(partId, newQuestions);
 
       //  Display success

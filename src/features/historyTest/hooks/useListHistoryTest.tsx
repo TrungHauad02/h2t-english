@@ -107,7 +107,6 @@ export default function useListHistoryTest() {
       }
 
       const statsResponse = (await testHistoryStatsService.getTestHistoryStats(userId, true)).data;
-      console.log(statsResponse);
 
       setTestStats(statsResponse);
     } catch (error) {

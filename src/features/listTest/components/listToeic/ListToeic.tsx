@@ -23,7 +23,10 @@ export default function ListToeic({ searchQuery = "" }: ListToeicProps) {
   });
   const userId = Number(useAuth().userId);
 
-  const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
+  const handleChangePage = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
     setPage(value - 1);
   };
 
@@ -54,8 +57,6 @@ export default function ListToeic({ searchQuery = "" }: ListToeicProps) {
           setToeics(response.data.content || []);
           setTotalPages(response.data.totalPages || 1);
         }
-        console.log(response.data);
-        
       } catch (error) {
         console.error("Error fetching TOEIC tests:", error);
       } finally {
@@ -78,9 +79,11 @@ export default function ListToeic({ searchQuery = "" }: ListToeicProps) {
                 <ToeicItem key={toeic.id} toeic={toeic} />
               ))}
             </Grid>
-        
+
             {toeics.length > 0 && (
-              <Box sx={{ mt: 3, mb: 2, display: "flex", justifyContent: "center" }}>
+              <Box
+                sx={{ mt: 3, mb: 2, display: "flex", justifyContent: "center" }}
+              >
                 <WEPaginationSelect
                   page={page + 1}
                   totalPage={totalPages}
