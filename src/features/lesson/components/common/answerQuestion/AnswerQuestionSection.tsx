@@ -84,16 +84,14 @@ export default function AnswerQuestion() {
       </Box>
 
       {/* Questions List */}
-      <ListComponent
-        data={hooks.listAQ}
-        renderItem={(item, index) => (
-          <WEQuestion
-            question={item}
-            isShowExplain={hooks.isShowExplain}
-            index={index ? index : 0}
-          />
-        )}
-      />
+      {hooks.listAQ.map((item, index) => (
+        <WEQuestion
+          key={index}
+          question={item}
+          isShowExplain={hooks.isShowExplain}
+          index={index}
+        />
+      ))}
 
       {/* Action Buttons */}
       <Stack
