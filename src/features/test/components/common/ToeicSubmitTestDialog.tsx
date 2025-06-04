@@ -22,7 +22,8 @@ import FlagIcon from '@mui/icons-material/Flag';
 import SchoolIcon from '@mui/icons-material/School';
 import HeadsetIcon from '@mui/icons-material/Headset';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
-import {  useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import LoadingSubmit from './dialogComponents/LoadingSubmit'; 
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -52,13 +53,13 @@ interface ToeicSubmitTestDialogProps {
   submitTestId?: number;
 }
 
-const ToeicSubmitTestDialog: React.FC<ToeicSubmitTestDialogProps> = ({ 
+export default function ToeicSubmitTestDialog({ 
   open, 
   onClose, 
   isLoading, 
   result,
   submitTestId,
-}) => {
+}: ToeicSubmitTestDialogProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
@@ -115,43 +116,7 @@ const ToeicSubmitTestDialog: React.FC<ToeicSubmitTestDialogProps> = ({
       }}
     >
       {isLoading ? (
-        <Box sx={{ 
-          p: 6, 
-          display: 'flex', 
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '400px',
-          textAlign: 'center'
-        }}>
-          <CircularProgress 
-            size={70} 
-            thickness={4}
-            sx={{ 
-              color: isDarkMode ? color.teal400 : color.teal500,
-              mb: 3
-            }} 
-          />
-          <Typography 
-            variant="h5" 
-            sx={{ 
-              mb: 2,
-              fontWeight: 600,
-              color: isDarkMode ? color.gray100 : color.gray800 
-            }}
-          >
-            Calculating Your TOEIC Score
-          </Typography>
-          <Typography 
-            variant="body1" 
-            sx={{ 
-              color: isDarkMode ? color.gray300 : color.gray600,
-              maxWidth: '400px'
-            }}
-          >
-            Please wait while we compile your test results...
-          </Typography>
-        </Box>
+        <LoadingSubmit />
       ) : result ? (
         <>
           <Box 
@@ -643,6 +608,4 @@ const ToeicSubmitTestDialog: React.FC<ToeicSubmitTestDialogProps> = ({
       )}
     </Dialog>
   );
-};
-
-export default ToeicSubmitTestDialog;
+}

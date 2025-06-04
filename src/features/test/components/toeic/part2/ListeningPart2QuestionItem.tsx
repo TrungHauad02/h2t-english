@@ -22,8 +22,9 @@ type Props = {
   selectedAnswer?: AnswerEnum;
   onChange?: (value: AnswerEnum) => void;
   onAudioEnded?: () => void;
-  autoPlay?: boolean; // New prop
-  volume?: number; // New prop
+  onAudioStarted?: () => void; // New prop
+  autoPlay?: boolean;
+  volume?: number;
 };
 
 export default function ListeningPart2QuestionItem({
@@ -32,8 +33,9 @@ export default function ListeningPart2QuestionItem({
   selectedAnswer,
   onChange,
   onAudioEnded,
-  autoPlay = false, // Default to false
-  volume = 0.5 // Default volume
+  onAudioStarted,
+  autoPlay = false,
+  volume = 0.5
 }: Props) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -66,6 +68,12 @@ export default function ListeningPart2QuestionItem({
     }
   }, [volume]);
 
+  const handleAudioPlay = () => {
+    if (onAudioStarted) {
+      onAudioStarted();
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -83,6 +91,7 @@ export default function ListeningPart2QuestionItem({
         ref={audioRef}
         src={audioSrc}
         onEnded={onAudioEnded}
+        onPlay={handleAudioPlay} // Add this line
         style={{ display: 'none' }}
       />
       

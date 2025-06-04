@@ -9,7 +9,7 @@ type Props = {
   onFinish: () => void;
   startIndex: number;
   submitToeicId: number;
-  initialIndex?: number; // New prop for resume functionality
+  initialIndex?: number;
 };
 
 const ListeningPart2List: React.FC<Props> = ({
@@ -17,20 +17,22 @@ const ListeningPart2List: React.FC<Props> = ({
   onFinish,
   startIndex,
   submitToeicId,
-  initialIndex = 0 // Default to 0 if not provided
+  initialIndex = 0,
 }) => {
   const [questions, setQuestions] = useState<ToeicPart2[]>([]);
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [userAnswers, setUserAnswers] = useState<Record<number, AnswerEnum>>({});
   const [loading, setLoading] = useState<boolean>(true);
-  const [shouldAutoPlay, setShouldAutoPlay] = useState(false);
+  const [shouldAutoPlay, setShouldAutoPlay] = useState(true);
+  const [hasStartedPlaying, setHasStartedPlaying] = useState(false);
 
   // Update currentIndex when initialIndex changes (for resume functionality)
   useEffect(() => {
     setCurrentIndex(initialIndex);
-    // Set auto play after component loads if resuming
+    // Set auto play based on initial index
     if (initialIndex > 0) {
       setShouldAutoPlay(true);
+      setHasStartedPlaying(true);
     }
   }, [initialIndex]);
 
@@ -106,8 +108,18 @@ const ListeningPart2List: React.FC<Props> = ({
   const handleAudioEnded = () => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
+      // Enable autoplay for subsequent questions after the first audio ends
+      setShouldAutoPlay(true);
     } else {
       onFinish();
+    }
+  };
+
+  const handleAudioStarted = () => {
+    if (!hasStartedPlaying) {
+      setHasStartedPlaying(true);
+      // Once any audio starts playing, enable autoplay for subsequent questions
+      setShouldAutoPlay(true);
     }
   };
 
@@ -129,7 +141,8 @@ const ListeningPart2List: React.FC<Props> = ({
         selectedAnswer={userAnswers[currentQuestion?.id]}
         onChange={(val) => handleAnswerChange(currentQuestion.id, val)}
         onAudioEnded={handleAudioEnded}
-        autoPlay={shouldAutoPlay} // Pass autoPlay prop
+        onAudioStarted={handleAudioStarted}
+        autoPlay={shouldAutoPlay}
       />
     </Box>
   );

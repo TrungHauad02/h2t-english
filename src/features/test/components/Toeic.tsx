@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Box, Typography, alpha, Fade, Button, Slider } from "@mui/material";
+import { Box, Typography, alpha, Fade, Button, Slider, CircularProgress } from "@mui/material";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import TimerIcon from "@mui/icons-material/Timer";
 import { useDarkMode } from "hooks/useDarkMode";
@@ -25,9 +25,10 @@ const ToeicTest: React.FC = () => {
     loading,
     error,
     totalAnswered,
-    resumePosition, // New: get resume position from hook
+    resumePosition,
     calculateTotalAnswered,
     submitToeicTest,
+    resetAllAnswers, // Add the reset function
   } = useToeicPage();
 
   const [volume, setVolume] = useState(50);
@@ -38,19 +39,58 @@ const ToeicTest: React.FC = () => {
   const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<any>(null);
-  const [hasResumed, setHasResumed] = useState(false); // Track if we've already resumed
+  const [hasResumed, setHasResumed] = useState(false);
+  const [showResumeDialog, setShowResumeDialog] = useState(false);
+  const [isResetting, setIsResetting] = useState(false); // Add resetting state
 
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
-  // Resume to last answered position when data is loaded
+  // Check if we should show resume dialog when data is loaded
   useEffect(() => {
     if (resumePosition && !hasResumed && toeic && submitToeic) {
-      setStep(resumePosition.step);
-      setCurrentIndex(resumePosition.currentIndex);
-      setHasResumed(true);
+      // Only show resume dialog if there's actually a valid resume position (not step 0)
+      if (resumePosition.step > 0) {
+        setShowResumeDialog(true);
+      } else {
+        // If resume position is step 0, just start normally
+        setHasResumed(true);
+      }
     }
   }, [resumePosition, hasResumed, toeic, submitToeic]);
+
+  const handleResumeChoice = async (shouldResume: boolean) => {
+    if (!shouldResume) {
+      // User chose "Start Over" - reset all answers
+      setIsResetting(true);
+      
+      try {
+        const resetSuccess = await resetAllAnswers();
+        
+        if (resetSuccess) {
+          console.log("Successfully reset all answers");
+          // Reset UI state to initial
+          setStep(0);
+          setCurrentIndex(0);
+          setCountdown(null);
+        } else {
+          console.error("Failed to reset answers");
+          // Could show error message to user here
+        }
+      } catch (error) {
+        console.error("Error during reset:", error);
+      } finally {
+        setIsResetting(false);
+      }
+    } else if (shouldResume && resumePosition) {
+      // User chose "Continue" - resume from last position
+      setStep(resumePosition.step);
+      setCurrentIndex(resumePosition.currentIndex);
+    }
+    
+    setShowResumeDialog(false);
+    setHasResumed(true);
+  };
 
   useEffect(() => {
     if (step === 7) {
@@ -282,7 +322,7 @@ const ToeicTest: React.FC = () => {
 
   const isReadingSection = [7, 8, 9].includes(step);
   const isListeningSection = [3, 4, 5, 6].includes(step);
-  const showSubmitButton = step >= 3; // Hiện nút Submit từ khi bắt đầu phần thi
+  const showSubmitButton = step >= 3;
 
   // Loading state
   if (loading) {
@@ -508,7 +548,7 @@ const ToeicTest: React.FC = () => {
               borderRadius: 1,
               minWidth: 100,
               boxShadow: 2,
-              display: isLastQuestion() ? "none" : "block", // Ẩn khi câu hỏi cuối cùng
+              display: isLastQuestion() ? "none" : "block",
               "&:hover": {
                 bgcolor: color.emerald600,
                 boxShadow: 3,
@@ -523,6 +563,92 @@ const ToeicTest: React.FC = () => {
           </Button>
         </Box>
       </Box>
+
+      {/* Resume Dialog */}
+      {showResumeDialog && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            bgcolor: alpha(color.black, 0.5),
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+          }}
+        >
+          <Box
+            sx={{
+              bgcolor: isDarkMode ? color.gray800 : color.white,
+              borderRadius: 2,
+              p: 4,
+              maxWidth: 400,
+              mx: 2,
+              textAlign: "center",
+              boxShadow: 8,
+            }}
+          >
+            <Typography variant="h6" fontWeight={600} mb={2}>
+              Continue Previous Test?
+            </Typography>
+            <Typography variant="body1" color="text.secondary" mb={3}>
+              You have an unfinished test. Would you like to continue from where you left off?
+            </Typography>
+            <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
+              <Button
+                variant="outlined"
+                onClick={() => handleResumeChoice(false)}
+                disabled={isResetting}
+                sx={{
+                  px: 3,
+                  py: 1,
+                  borderColor: isDarkMode ? color.gray600 : color.gray300,
+                  color: isDarkMode ? color.gray300 : color.gray700,
+                  "&:hover": {
+                    borderColor: isDarkMode ? color.gray500 : color.gray400,
+                    bgcolor: isDarkMode ? color.gray700 : color.gray50,
+                  },
+                  "&:disabled": {
+                    opacity: 0.6,
+                  },
+                }}
+              >
+                {isResetting ? "Resetting..." : "Start Over"}
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => handleResumeChoice(true)}
+                disabled={isResetting}
+                sx={{
+                  px: 3,
+                  py: 1,
+                  bgcolor: color.teal500,
+                  "&:hover": {
+                    bgcolor: color.teal600,
+                  },
+                  "&:disabled": {
+                    opacity: 0.6,
+                  },
+                }}
+              >
+                Continue
+              </Button>
+            </Box>
+            
+            {isResetting && (
+              <Box sx={{ mt: 2, display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
+                <CircularProgress size={16} />
+                <Typography variant="body2" color="text.secondary">
+                  Clearing previous answers...
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        </Box>
+      )}
 
       {/* Dialogs */}
       <ConfirmSubmitDialog

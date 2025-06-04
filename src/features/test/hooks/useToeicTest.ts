@@ -54,6 +54,127 @@ export default function useToeicPage() {
 
   const hasCreatedSubmitToeicRef = useRef(false);
 
+  // Function to check if there are any answers saved
+  const hasAnyAnswers = async (submitToeicId: number, toeicData: Toeic): Promise<boolean> => {
+    try {
+      // Check Part 1
+      if (toeicData.questionsPart1?.length) {
+        const part1Answers = await submitToeicPart1Service.findBySubmitToeicIdAndToeicPart1Ids(
+          submitToeicId,
+          toeicData.questionsPart1
+        );
+        if (part1Answers?.data?.length > 0) return true;
+      }
+
+      // Check Part 2
+      if (toeicData.questionsPart2?.length) {
+        const part2Answers = await submitToeicPart2Service.findBySubmitToeicIdAndToeicPart2Ids(
+          submitToeicId,
+          toeicData.questionsPart2
+        );
+        if (part2Answers?.data?.length > 0) return true;
+      }
+
+      // Check Part 3
+      if (toeicData.questionsPart3?.length) {
+        const toeicPart3Res = await toeicPart3_4Service.getByIdsAndStatus(toeicData.questionsPart3, true);
+        const toeicPart3Data = Array.isArray(toeicPart3Res?.data) ? toeicPart3Res.data : [];
+        
+        const part3QuestionIds: number[] = [];
+        for (const part3 of toeicPart3Data) {
+          if (part3.questions?.length) {
+            part3QuestionIds.push(...part3.questions);
+          }
+        }
+        
+        if (part3QuestionIds.length) {
+          const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+            submitToeicId,
+            part3QuestionIds
+          );
+          if (answers?.data?.length > 0) return true;
+        }
+      }
+
+      // Check Part 4
+      if (toeicData.questionsPart4?.length) {
+        const toeicPart4Res = await toeicPart3_4Service.getByIdsAndStatus(toeicData.questionsPart4, true);
+        const toeicPart4Data = Array.isArray(toeicPart4Res?.data) ? toeicPart4Res.data : [];
+        
+        const part4QuestionIds: number[] = [];
+        for (const part4 of toeicPart4Data) {
+          if (part4.questions?.length) {
+            part4QuestionIds.push(...part4.questions);
+          }
+        }
+        
+        if (part4QuestionIds.length) {
+          const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+            submitToeicId,
+            part4QuestionIds
+          );
+          if (answers?.data?.length > 0) return true;
+        }
+      }
+
+      // Check Part 5
+      if (toeicData.questionsPart5?.length) {
+        const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+          submitToeicId,
+          toeicData.questionsPart5
+        );
+        if (answers?.data?.length > 0) return true;
+      }
+
+      // Check Part 6
+      if (toeicData.questionsPart6?.length) {
+        const toeicPart6Res = await toeicPart6Service.getByIdsAndStatus(toeicData.questionsPart6, true);
+        const toeicPart6Data = Array.isArray(toeicPart6Res?.data) ? toeicPart6Res.data : [];
+        
+        const part6QuestionIds: number[] = [];
+        for (const part6 of toeicPart6Data) {
+          if (part6.questions?.length) {
+            part6QuestionIds.push(...part6.questions);
+          }
+        }
+        
+        if (part6QuestionIds.length) {
+          const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+            submitToeicId,
+            part6QuestionIds
+          );
+          if (answers?.data?.length > 0) return true;
+        }
+      }
+
+      // Check Part 7
+      if (toeicData.questionsPart7?.length) {
+        const toeicPart7Res = await toeicPart7Service.getByIdsAndStatus(toeicData.questionsPart7, true);
+        const toeicPart7Data = Array.isArray(toeicPart7Res?.data) ? toeicPart7Res.data : [];
+        
+        const part7QuestionIds: number[] = [];
+        for (const part7 of toeicPart7Data) {
+          if (part7.questions?.length) {
+            part7QuestionIds.push(...part7.questions);
+          }
+        }
+        
+        if (part7QuestionIds.length) {
+          const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+            submitToeicId,
+            part7QuestionIds
+          );
+          if (answers?.data?.length > 0) return true;
+        }
+      }
+
+      return false;
+    } catch (error) {
+      console.error("Error checking for existing answers:", error);
+      return false;
+    }
+  };
+
   // Function to find the last answered question position
   const findLastAnsweredPosition = async (toeicData: Toeic, submitToeicId: number): Promise<ResumePosition> => {
     try {
@@ -277,9 +398,17 @@ export default function useToeicPage() {
           const existingSubmitToeic = await submitToeicService.findByToeicIdAndUserIdAndStatusFalse(toeicId, userId);
           setSubmitToeic(existingSubmitToeic.data);
           
-          // Find resume position for existing submission
-          const position = await findLastAnsweredPosition(toeicResponse.data, existingSubmitToeic.data.id);
-          setResumePosition(position);
+          // Check if there are any answers saved
+          const hasAnswers = await hasAnyAnswers(existingSubmitToeic.data.id, toeicResponse.data);
+          
+          if (hasAnswers) {
+            // Only find resume position if there are answers
+            const position = await findLastAnsweredPosition(toeicResponse.data, existingSubmitToeic.data.id);
+            setResumePosition(position);
+          } else {
+            // No answers saved, start from beginning without showing resume dialog
+            setResumePosition(null);
+          }
         } catch {
           // If no existing submit Toeic, create a new one
           if (!hasCreatedSubmitToeicRef.current) {
@@ -298,7 +427,7 @@ export default function useToeicPage() {
               const created = await submitToeicService.create(newSubmitToeic);
               setSubmitToeic(created.data);
               // For new submission, start from the beginning
-              setResumePosition({ step: 0, currentIndex: 0 });
+              setResumePosition(null);
             } catch (createErr) {
               console.error("Lỗi khi tạo submit toeic:", createErr);
               setError('Failed to create Toeic submission');
@@ -828,7 +957,187 @@ export default function useToeicPage() {
       setSubmitToeic(updated.data);
       return updated;
     }
+    
   };
+  const resetAllAnswers = async (): Promise<boolean> => {
+  if (!submitToeic?.id || !toeic) return false;
+
+  try {
+    // Reset Part 1 answers
+    if (toeic.questionsPart1?.length) {
+      const part1Answers = await submitToeicPart1Service.findBySubmitToeicIdAndToeicPart1Ids(
+        submitToeic.id,
+        toeic.questionsPart1
+      );
+      
+      if (part1Answers?.data?.length) {
+        await Promise.all(
+          part1Answers.data.map((answer: any) =>
+            submitToeicPart1Service.remove(answer.id)
+          )
+        );
+      }
+    }
+
+    // Reset Part 2 answers
+    if (toeic.questionsPart2?.length) {
+      const part2Answers = await submitToeicPart2Service.findBySubmitToeicIdAndToeicPart2Ids(
+        submitToeic.id,
+        toeic.questionsPart2
+      );
+      
+      if (part2Answers?.data?.length) {
+        await Promise.all(
+          part2Answers.data.map((answer: any) =>
+            submitToeicPart2Service.remove(answer.id)
+          )
+        );
+      }
+    }
+
+    // Reset Part 3 answers
+    if (toeic.questionsPart3?.length) {
+      const toeicPart3Res = await toeicPart3_4Service.getByIdsAndStatus(toeic.questionsPart3, true);
+      const toeicPart3Data = Array.isArray(toeicPart3Res?.data) ? toeicPart3Res.data : [];
+      
+      const part3QuestionIds: number[] = [];
+      for (const part3 of toeicPart3Data) {
+        if (part3.questions?.length) {
+          part3QuestionIds.push(...part3.questions);
+        }
+      }
+      
+      if (part3QuestionIds.length) {
+        const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+          submitToeic.id,
+          part3QuestionIds
+        );
+        
+        if (answers?.data?.length) {
+          await Promise.all(
+            answers.data.map((answer: any) =>
+              submitToeicAnswerService.remove(answer.id)
+            )
+          );
+        }
+      }
+    }
+
+    // Reset Part 4 answers
+    if (toeic.questionsPart4?.length) {
+      const toeicPart4Res = await toeicPart3_4Service.getByIdsAndStatus(toeic.questionsPart4, true);
+      const toeicPart4Data = Array.isArray(toeicPart4Res?.data) ? toeicPart4Res.data : [];
+      
+      const part4QuestionIds: number[] = [];
+      for (const part4 of toeicPart4Data) {
+        if (part4.questions?.length) {
+          part4QuestionIds.push(...part4.questions);
+        }
+      }
+      
+      if (part4QuestionIds.length) {
+        const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+          submitToeic.id,
+          part4QuestionIds
+        );
+        
+        if (answers?.data?.length) {
+          await Promise.all(
+            answers.data.map((answer: any) =>
+              submitToeicAnswerService.remove(answer.id)
+            )
+          );
+        }
+      }
+    }
+
+    // Reset Part 5 answers
+    if (toeic.questionsPart5?.length) {
+      const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+        submitToeic.id,
+        toeic.questionsPart5
+      );
+      
+      if (answers?.data?.length) {
+        await Promise.all(
+          answers.data.map((answer: any) =>
+            submitToeicAnswerService.remove(answer.id)
+          )
+        );
+      }
+    }
+
+    // Reset Part 6 answers
+    if (toeic.questionsPart6?.length) {
+      const toeicPart6Res = await toeicPart6Service.getByIdsAndStatus(toeic.questionsPart6, true);
+      const toeicPart6Data = Array.isArray(toeicPart6Res?.data) ? toeicPart6Res.data : [];
+      
+      const part6QuestionIds: number[] = [];
+      for (const part6 of toeicPart6Data) {
+        if (part6.questions?.length) {
+          part6QuestionIds.push(...part6.questions);
+        }
+      }
+      
+      if (part6QuestionIds.length) {
+        const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+          submitToeic.id,
+          part6QuestionIds
+        );
+        
+        if (answers?.data?.length) {
+          await Promise.all(
+            answers.data.map((answer: any) =>
+              submitToeicAnswerService.remove(answer.id)
+            )
+          );
+        }
+      }
+    }
+
+    // Reset Part 7 answers
+    if (toeic.questionsPart7?.length) {
+      const toeicPart7Res = await toeicPart7Service.getByIdsAndStatus(toeic.questionsPart7, true);
+      const toeicPart7Data = Array.isArray(toeicPart7Res?.data) ? toeicPart7Res.data : [];
+      
+      const part7QuestionIds: number[] = [];
+      for (const part7 of toeicPart7Data) {
+        if (part7.questions?.length) {
+          part7QuestionIds.push(...part7.questions);
+        }
+      }
+      
+      if (part7QuestionIds.length) {
+        const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+          submitToeic.id,
+          part7QuestionIds
+        );
+        
+        if (answers?.data?.length) {
+          await Promise.all(
+            answers.data.map((answer: any) =>
+              submitToeicAnswerService.remove(answer.id)
+            )
+          );
+        }
+      }
+    }
+
+    // Reset total answered count
+    setTotalAnswered(0);
+    
+    // Clear resume position
+    setResumePosition(null);
+
+    console.log("All answers have been reset successfully");
+    return true;
+
+  } catch (error) {
+    console.error("Error resetting answers:", error);
+    return false;
+  }
+};
+  
 
   return {
     toeic,
@@ -841,6 +1150,7 @@ export default function useToeicPage() {
     calculateTotalAnswered,
     submitToeicTest,
     updateSubmitToeic,
-    finalizeToeic
+    finalizeToeic,
+    resetAllAnswers
   };
 }

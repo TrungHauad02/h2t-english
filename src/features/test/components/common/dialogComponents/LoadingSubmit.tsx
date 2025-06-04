@@ -30,7 +30,7 @@ const slideIn = keyframes`
   to { transform: translateX(0); opacity: 1; }
 `;
 
-export default function LoadingSubmit() {
+export default function LoadingSubmit({ title = "Calculating Results" }: { title?: string }) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const [currentIcon, setCurrentIcon] = useState(0);
@@ -101,9 +101,7 @@ export default function LoadingSubmit() {
               background: `linear-gradient(135deg, ${color.teal400} 0%, ${color.emerald500} 100%)`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              animation: `${pulse} ${
-                4 + Math.random() * 2
-              }s infinite ease-in-out`,
+              animation: `${pulse} ${4 + Math.random() * 2}s infinite ease-in-out`,
               animationDelay: `${Math.random() * 2}s`,
             }}
           />
@@ -134,9 +132,7 @@ export default function LoadingSubmit() {
             left: "-20px",
             width: "160px",
             height: "160px",
-            border: `2px dotted ${
-              isDarkMode ? color.emerald400 : color.emerald500
-            }`,
+            border: `2px dotted ${isDarkMode ? color.emerald400 : color.emerald500}`,
             borderRadius: "50%",
             animation: `${rotate} 15s linear infinite reverse`,
           }}
@@ -160,7 +156,6 @@ export default function LoadingSubmit() {
             overflow: "hidden",
           }}
         >
-          {/* Animated icon */}
           <Box
             sx={{
               color: color.white,
@@ -173,7 +168,6 @@ export default function LoadingSubmit() {
             {icons[currentIcon]}
           </Box>
 
-          {/* Sparkle effects */}
           <AutoAwesomeIcon
             sx={{
               position: "absolute",
@@ -198,7 +192,7 @@ export default function LoadingSubmit() {
             animation: `${slideIn} 0.5s ease-out`,
           }}
         >
-          Calculating Competition Results
+          {title}
         </Typography>
 
         <Box sx={{ width: "400px", maxWidth: "90%" }}>
@@ -213,7 +207,6 @@ export default function LoadingSubmit() {
             {loadingMessages[loadingText]}
           </Typography>
 
-          {/* Progress indicators */}
           <Stack spacing={1}>
             {[...Array(5)].map((_, i) => (
               <Paper
@@ -228,15 +221,13 @@ export default function LoadingSubmit() {
                   opacity: i === currentIcon ? 1 : 0.3,
                   transition: "all 0.3s ease",
                   mx: "auto",
-                  animation:
-                    i === currentIcon ? `${pulse} 1s infinite` : "none",
+                  animation: i === currentIcon ? `${pulse} 1s infinite` : "none",
                 }}
               />
             ))}
           </Stack>
         </Box>
 
-        {/* Fun fact or tip */}
         <Box
           sx={{
             mt: 4,
