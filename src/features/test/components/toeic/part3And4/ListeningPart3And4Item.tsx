@@ -21,8 +21,9 @@ type Props = {
   selectedAnswers: Record<string, AnswerEnum>;
   onChange: (questionKey: string, value: AnswerEnum) => void;
   onAudioEnded: () => void;
-  autoPlay?: boolean; // New prop
-  volume?: number; // New prop
+  onAudioStarted?: () => void; // New prop
+  autoPlay?: boolean;
+  volume?: number;
 };
 
 export default function ListeningPart3And4Item({
@@ -32,8 +33,9 @@ export default function ListeningPart3And4Item({
   selectedAnswers,
   onChange,
   onAudioEnded,
-  autoPlay = false, // Default to false
-  volume = 0.5 // Default volume
+  onAudioStarted,
+  autoPlay = false,
+  volume = 0.5
 }: Props) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -43,15 +45,15 @@ export default function ListeningPart3And4Item({
 
   // Handle autoplay and volume
   useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
+    const audioElement = audioRef.current;
+    if (!audioElement) return;
 
-    audio.volume = volume;
+    audioElement.volume = volume;
 
     if (autoPlay) {
       const playAudio = async () => {
         try {
-          await audio.play();
+          await audioElement.play();
         } catch (error) {
           console.warn('Auto-play failed:', error);
         }
@@ -62,11 +64,17 @@ export default function ListeningPart3And4Item({
 
   // Update volume when it changes
   useEffect(() => {
-    const audio = audioRef.current;
-    if (audio) {
-      audio.volume = volume;
+    const audioElement = audioRef.current;
+    if (audioElement) {
+      audioElement.volume = volume;
     }
   }, [volume]);
+
+  const handleAudioPlay = () => {
+    if (onAudioStarted) {
+      onAudioStarted();
+    }
+  };
 
   return (
     <Box
@@ -85,7 +93,8 @@ export default function ListeningPart3And4Item({
       <audio 
         ref={audioRef}
         src={audio} 
-        onEnded={onAudioEnded} 
+        onEnded={onAudioEnded}
+        onPlay={handleAudioPlay} // Add this line
         style={{ display: 'none' }} 
       />
       

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,6 @@ import {
   Paper,
   Chip,
   Grid,
-  Divider,
   Collapse
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
@@ -24,6 +23,7 @@ import EqualizerIcon from '@mui/icons-material/Equalizer';
 import FlagIcon from '@mui/icons-material/Flag';
 import CommentIcon from '@mui/icons-material/Comment';
 import { useLocation, useNavigate } from 'react-router-dom';
+import LoadingSubmit from './dialogComponents/LoadingSubmit'; // Import component LoadingSubmit
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -62,29 +62,27 @@ interface SubmitTestDialogProps {
   testType?: string; 
 }
 
-const SubmitTestDialog: React.FC<SubmitTestDialogProps> = ({ 
+export default function SubmitTestDialog({ 
   open, 
   onClose, 
   isLoading, 
   result,
   submitTestId,
   testType = "mixing" 
-}) => {
+}: SubmitTestDialogProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
   const location = useLocation();
-  const [showComment, setShowComment] = React.useState(false);
+  const [showComment, setShowComment] = useState(false);
 
   const handleReviewClick = () => {
     if (submitTestId) {
-   
       const pathParts = location.pathname.split('/');
       let type = testType;
   
       if (pathParts.length >= 3) {
         const rawType = pathParts[2]; 
-     
         if (rawType.endsWith('s')) {
           type = rawType.slice(0, -1);
         } else {
@@ -133,7 +131,6 @@ const SubmitTestDialog: React.FC<SubmitTestDialogProps> = ({
     return "More practice needed. Review the material and try again.";
   };
 
-  // If there are low performing parts that need improvement
   const hasLowPerformingParts = () => {
     if (!result?.parts) return false;
     return result.parts.some(part => part.score < 70);
@@ -156,44 +153,7 @@ const SubmitTestDialog: React.FC<SubmitTestDialogProps> = ({
       }}
     >
       {isLoading ? (
-        <Box sx={{ 
-          p: 6, 
-          display: 'flex', 
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '350px',
-          minWidth: { xs: '300px', sm: '500px' },
-          textAlign: 'center'
-        }}>
-          <CircularProgress 
-            size={70} 
-            thickness={4}
-            sx={{ 
-              color: isDarkMode ? color.teal400 : color.teal500,
-              mb: 3
-            }} 
-          />
-          <Typography 
-            variant="h5" 
-            sx={{ 
-              mb: 2,
-              fontWeight: 600,
-              color: isDarkMode ? color.gray100 : color.gray800 
-            }}
-          >
-            Calculating Test Results
-          </Typography>
-          <Typography 
-            variant="body1" 
-            sx={{ 
-              color: isDarkMode ? color.gray300 : color.gray600,
-              maxWidth: '400px'
-            }}
-          >
-            Please wait while we compile your test results...
-          </Typography>
-        </Box>
+        <LoadingSubmit />
       ) : result ? (
         <>
           <Box 
@@ -311,7 +271,6 @@ const SubmitTestDialog: React.FC<SubmitTestDialogProps> = ({
                         </Typography>
                       </Box>
                     </Box>
-                    
                     
                     {result.answeredQuestions !== undefined && result.answeredQuestions !== result.totalQuestions && (
                       <Typography
@@ -435,7 +394,6 @@ const SubmitTestDialog: React.FC<SubmitTestDialogProps> = ({
                       </Stack>
                     </Box>
                   ) : (
-                    // If no parts, display general test info
                     <Box 
                       sx={{ 
                         p: 3,
@@ -527,7 +485,7 @@ const SubmitTestDialog: React.FC<SubmitTestDialogProps> = ({
                 </Grid>
               </Grid>
 
-              {/* Improvement Suggestions - only for mixing tests with parts */}
+              {/* Improvement Suggestions */}
               {result.parts && hasLowPerformingParts() && (
                 <Box
                   sx={{
@@ -598,7 +556,7 @@ const SubmitTestDialog: React.FC<SubmitTestDialogProps> = ({
                 </Box>
               )}
               
-              {/* Teacher Comment Section - Only show if there's a comment */}
+              {/* Teacher Comment Section */}
               {result.comment && (
                 <Box sx={{ mt: 3 }}>
                   <Button 
@@ -714,6 +672,4 @@ const SubmitTestDialog: React.FC<SubmitTestDialogProps> = ({
       )}
     </Dialog>
   );
-};
-
-export default SubmitTestDialog;
+}

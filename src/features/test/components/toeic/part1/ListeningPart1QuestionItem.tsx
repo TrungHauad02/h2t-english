@@ -20,9 +20,10 @@ type ListeningPart1QuestionItemProps = {
   selectedAnswer?: AnswerEnum;
   onChange?: (value: AnswerEnum) => void;
   onAudioEnded?: () => void;
+  onAudioStarted?: () => void; // New prop
   isConversation?: boolean;
-  autoPlay?: boolean; // New prop
-  volume?: number; // New prop
+  autoPlay?: boolean;
+  volume?: number;
 };
 
 export default function ListeningPart1QuestionItem({
@@ -32,9 +33,10 @@ export default function ListeningPart1QuestionItem({
   selectedAnswer,
   onChange,
   onAudioEnded,
+  onAudioStarted,
   isConversation = false,
-  autoPlay = false, // Default to false
-  volume = 0.5 // Default volume
+  autoPlay = false,
+  volume = 0.5
 }: ListeningPart1QuestionItemProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -67,6 +69,12 @@ export default function ListeningPart1QuestionItem({
     }
   }, [volume]);
 
+  const handleAudioPlay = () => {
+    if (onAudioStarted) {
+      onAudioStarted();
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -85,7 +93,8 @@ export default function ListeningPart1QuestionItem({
       <audio 
         ref={audioRef}
         src={audioSrc} 
-        onEnded={onAudioEnded} 
+        onEnded={onAudioEnded}
+        onPlay={handleAudioPlay} // Add this line
         style={{ display: 'none' }} 
       />
       
