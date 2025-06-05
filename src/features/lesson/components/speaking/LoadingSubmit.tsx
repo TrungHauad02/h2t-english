@@ -1,0 +1,509 @@
+import { Box, Typography, LinearProgress, Fade, Paper } from "@mui/material";
+import { useDarkMode } from "hooks/useDarkMode";
+import useColor from "theme/useColor";
+import { useEffect, useState, useRef } from "react";
+import MicIcon from "@mui/icons-material/Mic";
+import AnalyticsIcon from "@mui/icons-material/Analytics";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import AutoGraphIcon from "@mui/icons-material/AutoGraph";
+import TranscribeIcon from "@mui/icons-material/Transcribe";
+import GradingIcon from "@mui/icons-material/Grading";
+
+interface LoadingStep {
+  id: number;
+  label: string;
+  icon: React.ReactElement;
+  duration: number;
+}
+
+interface LoadingSubmitProps {
+  onComplete: () => void;
+  isLoading: boolean;
+}
+
+export default function LoadingSubmit({
+  onComplete,
+  isLoading,
+}: LoadingSubmitProps) {
+  const color = useColor();
+  const { isDarkMode } = useDarkMode();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const animationRef = useRef<number | null>(null);
+  const startTimeRef = useRef<number>(0);
+  const totalDurationRef = useRef<number>(0);
+  const [isFinishing, setIsFinishing] = useState(false);
+
+  const steps: LoadingStep[] = [
+    {
+      id: 0,
+      label: "Uploading your recording",
+      icon: <MicIcon sx={{ fontSize: 28 }} />,
+      duration: 1800,
+    },
+    {
+      id: 1,
+      label: "Transcribing speech",
+      icon: <TranscribeIcon sx={{ fontSize: 28 }} />,
+      duration: 2000,
+    },
+    {
+      id: 2,
+      label: "Analyzing pronunciation",
+      icon: <AnalyticsIcon sx={{ fontSize: 28 }} />,
+      duration: 3000,
+    },
+    {
+      id: 3,
+      label: "Evaluating fluency",
+      icon: <AutoGraphIcon sx={{ fontSize: 28 }} />,
+      duration: 2500,
+    },
+    {
+      id: 4,
+      label: "Generating feedback",
+      icon: <GradingIcon sx={{ fontSize: 28 }} />,
+      duration: 3000,
+    },
+    {
+      id: 5,
+      label: "Finalizing results",
+      icon: <CheckCircleIcon sx={{ fontSize: 28 }} />,
+      duration: 1500,
+    },
+  ];
+
+  const fastComplete = () => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+
+    setIsFinishing(true);
+    const startProgress = progress;
+    const startTime = performance.now();
+    const duration = 1000;
+
+    const animateFast = (timestamp: number) => {
+      const elapsed = timestamp - startTime;
+      const progressPercent = Math.min(
+        startProgress + (100 - startProgress) * (elapsed / duration),
+        100
+      );
+      setProgress(progressPercent);
+
+      const stepProgress = (progressPercent / 100) * steps.length;
+      const currentStepIndex = Math.floor(stepProgress);
+      setCurrentStep(Math.min(currentStepIndex, steps.length - 1));
+
+      if (progressPercent < 100) {
+        animationRef.current = requestAnimationFrame(animateFast);
+      } else {
+        setTimeout(() => onComplete(), 300);
+      }
+    };
+
+    animationRef.current = requestAnimationFrame(animateFast);
+  };
+
+  useEffect(() => {
+    if (!isLoading && progress < 100) {
+      fastComplete();
+      return;
+    }
+
+    if (isLoading) {
+      totalDurationRef.current = steps.reduce(
+        (acc, step) => acc + step.duration,
+        0
+      );
+      startTimeRef.current = performance.now();
+
+      const animateProgress = (timestamp: number) => {
+        if (!startTimeRef.current) startTimeRef.current = timestamp;
+
+        const elapsed = timestamp - startTimeRef.current;
+        const newProgress = Math.min(
+          (elapsed / totalDurationRef.current) * 100,
+          100
+        );
+        setProgress(newProgress);
+
+        let accumulated = 0;
+        for (let i = 0; i < steps.length; i++) {
+          accumulated += steps[i].duration;
+          if (elapsed <= accumulated) {
+            if (i !== currentStep) setCurrentStep(i);
+            break;
+          }
+        }
+
+        if (elapsed < totalDurationRef.current) {
+          animationRef.current = requestAnimationFrame(animateProgress);
+        } else {
+          setTimeout(() => onComplete(), 300);
+        }
+      };
+
+      animationRef.current = requestAnimationFrame(animateProgress);
+    }
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isLoading]);
+
+  // Dynamic gradient background based on progress
+  const getGradientBackground = () => {
+    const gradientColors = isDarkMode
+      ? [
+          `${color.teal800}20`,
+          `${color.emerald800}20`,
+          `${color.teal700}20`,
+          `${color.emerald700}20`,
+        ]
+      : [
+          `${color.teal100}40`,
+          `${color.emerald100}40`,
+          `${color.teal200}40`,
+          `${color.emerald200}40`,
+        ];
+
+    const angle = 135 + progress * 2;
+    return `linear-gradient(${angle}deg, ${gradientColors.join(", ")})`;
+  };
+
+  const getEstimatedTime = () => {
+    if (isFinishing) return "Finishing up...";
+
+    const elapsed = Math.max(0, (totalDurationRef.current * progress) / 100000);
+    return `${Math.floor(elapsed)} seconds`;
+  };
+
+  return (
+    <Box
+      sx={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: isDarkMode
+          ? "rgba(17, 24, 39, 0.98)"
+          : "rgba(255, 255, 255, 0.98)",
+        backdropFilter: "blur(12px)",
+        zIndex: 9999,
+        overflow: "hidden",
+        transition: "background-color 0.5s ease",
+      }}
+    >
+      {/* Animated background */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: getGradientBackground(),
+          opacity: 0.3,
+          transition: "all 1.5s ease",
+        }}
+      />
+
+      {/* Main content */}
+      <Paper
+        elevation={12}
+        sx={{
+          position: "relative",
+          p: { xs: 3, md: 4 },
+          maxWidth: 500,
+          width: "90%",
+          bgcolor: isDarkMode ? color.gray800 : color.white,
+          borderRadius: 3,
+          boxShadow: isDarkMode
+            ? `0 25px 70px ${color.black}60`
+            : `0 25px 70px ${color.gray500}30`,
+          overflow: "hidden",
+          transform: "scale(1)",
+          transition: "transform 0.3s ease, box-shadow 0.3s ease",
+        }}
+      >
+        {/* Icon container with animation */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            mb: 4,
+            position: "relative",
+          }}
+        >
+          {/* Ripple effect using CSS animation */}
+          <Box
+            sx={{
+              position: "absolute",
+              width: 180,
+              height: 180,
+              borderRadius: "50%",
+              border: `2px solid ${isDarkMode ? color.teal600 : color.teal400}`,
+              opacity: 0,
+              animation: "ripple 3s infinite",
+              "@keyframes ripple": {
+                "0%": {
+                  transform: "scale(0.8)",
+                  opacity: 0.4,
+                },
+                "70%": {
+                  opacity: 0.1,
+                },
+                "100%": {
+                  transform: "scale(1.6)",
+                  opacity: 0,
+                },
+              },
+            }}
+          />
+          <Box
+            sx={{
+              position: "absolute",
+              width: 180,
+              height: 180,
+              borderRadius: "50%",
+              border: `2px solid ${isDarkMode ? color.teal600 : color.teal400}`,
+              opacity: 0,
+              animation: "ripple 3s infinite 1s",
+            }}
+          />
+
+          {/* Main icon */}
+          <Box
+            sx={{
+              width: 80,
+              height: 80,
+              borderRadius: "50%",
+              bgcolor: isDarkMode ? color.teal700 : color.teal500,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: color.white,
+              boxShadow: `0 8px 32px ${
+                isDarkMode ? color.teal800 : color.teal600
+              }70`,
+              position: "relative",
+              zIndex: 1,
+              animation: "pulse 2s infinite",
+              "@keyframes pulse": {
+                "0%": {
+                  transform: "scale(1)",
+                  boxShadow: `0 8px 32px ${
+                    isDarkMode ? color.teal800 : color.teal600
+                  }70`,
+                },
+                "50%": {
+                  transform: "scale(1.05)",
+                  boxShadow: `0 12px 40px ${
+                    isDarkMode ? color.teal700 : color.teal500
+                  }90`,
+                },
+                "100%": {
+                  transform: "scale(1)",
+                  boxShadow: `0 8px 32px ${
+                    isDarkMode ? color.teal800 : color.teal600
+                  }70`,
+                },
+              },
+            }}
+          >
+            <Fade in={true} timeout={500}>
+              {steps[currentStep].icon}
+            </Fade>
+          </Box>
+        </Box>
+
+        {/* Step label */}
+        <Typography
+          variant="h6"
+          align="center"
+          sx={{
+            color: isDarkMode ? color.white : color.gray900,
+            mb: 1,
+            fontWeight: 600,
+            minHeight: 32,
+            transition: "all 0.3s ease",
+          }}
+        >
+          <Fade in={true} key={currentStep} timeout={500}>
+            <span>{steps[currentStep].label}</span>
+          </Fade>
+        </Typography>
+
+        {/* Progress info */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: isDarkMode ? color.gray400 : color.gray600,
+            }}
+          >
+            {Math.round(progress)}% complete
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              color: isDarkMode ? color.gray400 : color.gray600,
+            }}
+          >
+            {getEstimatedTime()}
+          </Typography>
+        </Box>
+
+        {/* Progress bar */}
+        <Box sx={{ mb: 4 }}>
+          <LinearProgress
+            variant="determinate"
+            value={progress}
+            sx={{
+              height: 10,
+              borderRadius: 5,
+              bgcolor: isDarkMode ? color.gray700 : color.gray200,
+              transition: "all 0.5s ease",
+              "& .MuiLinearProgress-bar": {
+                borderRadius: 5,
+                background: isDarkMode
+                  ? `linear-gradient(90deg, ${color.teal600}, ${color.emerald600})`
+                  : `linear-gradient(90deg, ${color.teal500}, ${color.emerald500})`,
+                transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+              },
+            }}
+          />
+        </Box>
+
+        {/* Steps indicator */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 1,
+            position: "relative",
+            mb: 3,
+          }}
+        >
+          {steps.map((step, index) => (
+            <Box
+              key={step.id}
+              sx={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                zIndex: 1,
+              }}
+            >
+              <Box
+                sx={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: "50%",
+                  bgcolor:
+                    index <= currentStep
+                      ? isDarkMode
+                        ? color.teal400
+                        : color.teal600
+                      : isDarkMode
+                      ? color.gray600
+                      : color.gray300,
+                  transition: "all 0.5s ease",
+                  mb: 1,
+                  boxShadow:
+                    index === currentStep
+                      ? `0 0 0 4px ${
+                          isDarkMode ? color.teal700 : color.teal200
+                        }`
+                      : "none",
+                }}
+              />
+              {index < steps.length - 1 && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    width: `calc(100% / ${steps.length} - 20px)`,
+                    height: 3,
+                    bgcolor:
+                      index < currentStep
+                        ? isDarkMode
+                          ? color.teal600
+                          : color.teal400
+                        : isDarkMode
+                        ? color.gray700
+                        : color.gray300,
+                    top: 6,
+                    left: `calc(${
+                      (index + 0.5) * (100 / steps.length)
+                    }% + 5px)`,
+                    transition: "all 0.5s ease",
+                  }}
+                />
+              )}
+            </Box>
+          ))}
+        </Box>
+
+        {/* Motivational text */}
+        <Typography
+          variant="caption"
+          align="center"
+          sx={{
+            display: "block",
+            mt: 2,
+            color: isDarkMode ? color.gray500 : color.gray500,
+            fontStyle: "italic",
+            transition: "all 0.3s ease",
+          }}
+        >
+          {isFinishing
+            ? "Finalizing your results..."
+            : progress < 20
+            ? "Starting analysis..."
+            : progress < 50
+            ? "Processing your recording..."
+            : progress < 80
+            ? "Analyzing speech patterns..."
+            : "Preparing your feedback..."}
+        </Typography>
+      </Paper>
+
+      {/* Decorative elements */}
+      {[...Array(4)].map((_, i) => (
+        <Box
+          key={i}
+          sx={{
+            position: "absolute",
+            width: 40 + i * 30,
+            height: 40 + i * 30,
+            borderRadius: "50%",
+            bgcolor: isDarkMode ? color.teal800 : color.teal200,
+            opacity: 0.05 + i * 0.03,
+            animation: `float ${8 + i * 2}s ease-in-out infinite`,
+            top: `${10 + i * 15}%`,
+            left: `${5 + i * 10}%`,
+            "@keyframes float": {
+              "0%, 100%": { transform: `translateY(0px) rotate(${i * 45}deg)` },
+              "50%": {
+                transform: `translateY(${-15 - i * 5}px) rotate(${
+                  i * 45 + 180
+                }deg)`,
+              },
+            },
+            animationDelay: `${i * 0.5}s`,
+          }}
+        />
+      ))}
+    </Box>
+  );
+}

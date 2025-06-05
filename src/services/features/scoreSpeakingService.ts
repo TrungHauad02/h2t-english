@@ -45,18 +45,35 @@ const evaluateSpeaking = async (
 
 /**
  * Service for evaluating speech in a given topic (without exact text comparison)
+ * Optimized for large audio files with compression support
  */
 const evaluateSpeechInTopic = async (
   audioFile: File,
   topic: string
 ): Promise<ServiceResponse<SpeakingScoreDTO>> => {
   try {
+    const maxSizeInBytes = 50 * 1024 * 1024; // 50MB
+    if (audioFile.size > maxSizeInBytes) {
+      return {
+        status: "FAIL",
+        message: `File size exceeds maximum allowed size of 50MB. Current size: ${(
+          audioFile.size /
+          (1024 * 1024)
+        ).toFixed(2)}MB`,
+      } as ServiceResponse<SpeakingScoreDTO>;
+    }
+
     // Create FormData object to send multipart/form-data
     const formData = new FormData();
     formData.append("audio", audioFile);
     formData.append("topic", topic);
 
-    // Make the API request
+    // Add metadata about compression if filename indicates compression
+    if (audioFile.name.includes("compressed")) {
+      formData.append("isCompressed", "true");
+    }
+
+    const startTime = Date.now();
     const response = await apiClient.post(
       "/score-speaking/speech-in-topic",
       formData,
@@ -64,10 +81,31 @@ const evaluateSpeechInTopic = async (
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        timeout: 300000,
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            const elapsedTime = (Date.now() - startTime) / 1000;
+            const uploadSpeed =
+              progressEvent.loaded / 1024 / 1024 / elapsedTime; // MB/s
+
+            console.log(
+              `Upload progress: ${percentCompleted}% (${uploadSpeed.toFixed(
+                2
+              )} MB/s)`
+            );
+          }
+        },
       }
     );
+
+    const totalTime = (Date.now() - startTime) / 1000;
+    console.log(`Upload completed in ${totalTime.toFixed(2)} seconds`);
+
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in evaluateSpeechInTopic:", error);
     throw error;
   }
