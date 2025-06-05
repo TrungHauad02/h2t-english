@@ -1,13 +1,21 @@
 import { useState, useEffect, useRef } from "react";
 import { Speaking } from "interfaces";
 import { scoreSpeakingService } from "services";
+import { compressAudioBlob, getFileSizeInMB } from "./audioCompressionUtil";
 
 interface AssessmentResult {
-  score: string; // Updated from number to string to match DTO
+  score: string;
   feedback: string;
   transcript: string;
   strengths?: string[];
   areas_to_improve?: string[];
+}
+
+interface CompressionState {
+  isCompressing: boolean;
+  compressionProgress: number;
+  originalSize: number;
+  compressedSize: number;
 }
 
 export default function useSpeakingTopicSection(data: Speaking) {
@@ -27,6 +35,12 @@ export default function useSpeakingTopicSection(data: Speaking) {
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [audioLevel, setAudioLevel] = useState<number>(0);
   const [audioFormat, setAudioFormat] = useState<string>("audio/wav");
+  const [compressionState, setCompressionState] = useState<CompressionState>({
+    isCompressing: false,
+    compressionProgress: 0,
+    originalSize: 0,
+    compressedSize: 0,
+  });
 
   // Refs
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -36,6 +50,7 @@ export default function useSpeakingTopicSection(data: Speaking) {
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const originalAudioBlobRef = useRef<Blob | null>(null);
 
   // Timer effect
   useEffect(() => {
@@ -165,6 +180,7 @@ export default function useSpeakingTopicSection(data: Speaking) {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
+          sampleRate: 44100, // High quality recording
         },
       });
 
@@ -190,14 +206,8 @@ export default function useSpeakingTopicSection(data: Speaking) {
     audioChunksRef.current = [];
 
     try {
-      // Try to use wav or mp3 format directly for compatibility with backend
-      // Order by preference - wav first, then mp3, then fallback formats
-      const mimeOptions = [
-        "audio/wav",
-        "audio/mp3",
-        "audio/webm;codecs=pcm",
-        "audio/webm",
-      ];
+      // Try to use wav format for best quality
+      const mimeOptions = ["audio/wav", "audio/webm;codecs=pcm", "audio/webm"];
       let selectedMimeType = "";
 
       // Find a supported MIME type
@@ -221,11 +231,70 @@ export default function useSpeakingTopicSection(data: Speaking) {
         }
       };
 
-      mediaRecorder.onstop = () => {
+      mediaRecorder.onstop = async () => {
         const mimeType = mediaRecorder.mimeType || audioFormat;
         const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
-        const url = URL.createObjectURL(audioBlob);
-        setAudioUrl(url);
+
+        // Store original blob
+        originalAudioBlobRef.current = audioBlob;
+
+        // Check file size
+        const fileSizeInMB = getFileSizeInMB(audioBlob);
+
+        if (fileSizeInMB >= 15) {
+          // Compress audio if file is too large
+          setCompressionState({
+            isCompressing: true,
+            compressionProgress: 0,
+            originalSize: fileSizeInMB,
+            compressedSize: 0,
+          });
+
+          try {
+            const compressedBlob = await compressAudioBlob(audioBlob, {
+              targetSampleRate: 16000,
+              targetBitDepth: 16,
+              quality: 0.8,
+            });
+
+            const compressedSizeInMB = getFileSizeInMB(compressedBlob);
+
+            setCompressionState({
+              isCompressing: false,
+              compressionProgress: 100,
+              originalSize: fileSizeInMB,
+              compressedSize: compressedSizeInMB,
+            });
+
+            const url = URL.createObjectURL(compressedBlob);
+            setAudioUrl(url);
+          } catch (error) {
+            console.error("Error compressing audio:", error);
+            setErrorMessage("Failed to compress audio. Using original file.");
+
+            // Fall back to original if compression fails
+            const url = URL.createObjectURL(audioBlob);
+            setAudioUrl(url);
+
+            setCompressionState({
+              isCompressing: false,
+              compressionProgress: 0,
+              originalSize: fileSizeInMB,
+              compressedSize: fileSizeInMB,
+            });
+          }
+        } else {
+          // Use original if file is small enough
+          const url = URL.createObjectURL(audioBlob);
+          setAudioUrl(url);
+
+          setCompressionState({
+            isCompressing: false,
+            compressionProgress: 0,
+            originalSize: fileSizeInMB,
+            compressedSize: fileSizeInMB,
+          });
+        }
       };
 
       // Request data every 1 second for smoother experience
@@ -290,6 +359,13 @@ export default function useSpeakingTopicSection(data: Speaking) {
 
     setAssessmentResult(null);
     audioChunksRef.current = [];
+    originalAudioBlobRef.current = null;
+    setCompressionState({
+      isCompressing: false,
+      compressionProgress: 0,
+      originalSize: 0,
+      compressedSize: 0,
+    });
   };
 
   const toggleMute = (): void => {
@@ -315,32 +391,17 @@ export default function useSpeakingTopicSection(data: Speaking) {
       const response = await fetch(audioUrl);
       const audioBlob = await response.blob();
 
-      // Determine if we need to convert the format
-      const needsConversion = !(
-        audioBlob.type === "audio/wav" ||
-        audioBlob.type === "audio/mp3" ||
-        audioBlob.type === "audio/mpeg"
-      );
-
-      const finalType =
-        audioBlob.type === "audio/mpeg"
-          ? "audio/mp3"
-          : audioBlob.type === "audio/wav"
-          ? "audio/wav"
-          : "audio/mp3";
-
-      // Create a new blob with the correct type if needed
-      const finalBlob = needsConversion
-        ? new Blob([await audioBlob.arrayBuffer()], { type: "audio/mp3" })
-        : audioBlob;
-
-      // Create a File object with .wav or .mp3 extension
-      const extension = finalType.includes("mp3") ? "mp3" : "wav";
-      const fileName = `recording_${new Date().getTime()}.${extension}`;
+      // Create a File object with appropriate extension
+      const isCompressed =
+        compressionState.compressedSize > 0 &&
+        compressionState.compressedSize < compressionState.originalSize;
+      const fileName = `recording_${new Date().getTime()}${
+        isCompressed ? "_compressed" : ""
+      }.wav`;
 
       // Create a File object with explicit MIME type
-      const audioFile = new File([finalBlob], fileName, {
-        type: finalType,
+      const audioFile = new File([audioBlob], fileName, {
+        type: "audio/wav",
       });
 
       // Call the scoring service using the File object
@@ -383,6 +444,7 @@ export default function useSpeakingTopicSection(data: Speaking) {
     isMuted,
     audioLevel,
     audioRef,
+    compressionState,
     setErrorMessage,
     requestMicrophoneAccess,
     startRecording,

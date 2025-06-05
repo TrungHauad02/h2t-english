@@ -13,6 +13,7 @@ import { scoreSpeakingService, conversationService } from "services";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { SpeakingConversation } from "interfaces";
+import LoadingSubmit from "./LoadingSubmit";
 
 interface UserRecordings {
   [key: number]: string;
@@ -56,6 +57,8 @@ export default function ConversationSection() {
     SpeakingConversation[]
   >([]);
   const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
+  const [isShowingLoadingSubmit, setIsShowingLoadingSubmit] =
+    useState<boolean>(false);
 
   // Refs
   const audioRefs = useRef<AudioRefs>({});
@@ -219,6 +222,7 @@ export default function ConversationSection() {
     setIsLoading(true);
     setError(null);
     setSubmitted(true);
+    setIsShowingLoadingSubmit(true);
 
     try {
       const { audioFiles, expectedTexts } = getAudioFilesAndTexts();
@@ -266,7 +270,6 @@ export default function ConversationSection() {
       setError(
         err instanceof Error ? err.message : "An unknown error occurred"
       );
-      // Keep showing the evaluation interface on error
       setSubmitted(false);
     } finally {
       setIsLoading(false);
@@ -288,6 +291,12 @@ export default function ConversationSection() {
     setSubmitted(false);
     setIsRecording(null);
     setError(null);
+  };
+
+  const onComplete = () => {
+    setIsShowingLoadingSubmit(false);
+    setSubmitted(true);
+    setIsLoading(false);
   };
 
   const mainBgColor = isDarkMode ? color.gray800 : color.gray200;
@@ -469,34 +478,9 @@ export default function ConversationSection() {
       )}
 
       {/* Loading state when evaluating */}
-      {isLoading && (
-        <Box
-          sx={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            zIndex: 9999,
-          }}
-        >
-          <CircularProgress size={60} sx={{ color: color.white }} />
-          <Typography
-            variant="h6"
-            sx={{
-              color: color.white,
-              mt: 2,
-              fontWeight: 500,
-            }}
-          >
-            Evaluating your recordings...
-          </Typography>
-        </Box>
+
+      {isShowingLoadingSubmit && (
+        <LoadingSubmit isLoading={isLoading} onComplete={onComplete} />
       )}
     </Box>
   );

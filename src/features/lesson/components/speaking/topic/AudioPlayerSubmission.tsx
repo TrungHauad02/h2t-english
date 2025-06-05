@@ -1,8 +1,10 @@
-import { Box, Typography, Button, CircularProgress } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SendIcon from "@mui/icons-material/Send";
+import LoadingSubmit from "../LoadingSubmit";
+import { useState } from "react";
 
 interface AudioPlayerSubmissionProps {
   audioUrl: string;
@@ -21,6 +23,12 @@ export default function AudioPlayerSubmission({
 }: AudioPlayerSubmissionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+  const [isShowingLoadingSubmit, setIsShowingLoadingSubmit] =
+    useState<boolean>(false);
+
+  const onComplete = () => {
+    setIsShowingLoadingSubmit(false);
+  };
 
   return (
     <Box
@@ -98,16 +106,13 @@ export default function AudioPlayerSubmission({
             transition: "all 0.2s ease",
           }}
         >
-          {isSubmitting ? (
-            <>
-              <CircularProgress size={20} sx={{ mr: 1, color: "white" }} />
-              Submitting...
-            </>
-          ) : (
-            "Submit"
-          )}
+          Submit
         </Button>
       </Box>
+
+      {isShowingLoadingSubmit && (
+        <LoadingSubmit isLoading={isSubmitting} onComplete={onComplete} />
+      )}
     </Box>
   );
 }
