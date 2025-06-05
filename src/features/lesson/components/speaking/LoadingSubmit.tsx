@@ -33,6 +33,7 @@ export default function LoadingSubmit({
   const startTimeRef = useRef<number>(0);
   const totalDurationRef = useRef<number>(0);
   const [isFinishing, setIsFinishing] = useState(false);
+  const [isSlowingDown, setIsSlowingDown] = useState(false);
 
   const steps: LoadingStep[] = [
     {
@@ -122,25 +123,48 @@ export default function LoadingSubmit({
         if (!startTimeRef.current) startTimeRef.current = timestamp;
 
         const elapsed = timestamp - startTimeRef.current;
-        const newProgress = Math.min(
+        let newProgress = Math.min(
           (elapsed / totalDurationRef.current) * 100,
           100
         );
+
+        // Slow down at 85% progress when isLoading is still true
+        if (newProgress >= 85 && isLoading) {
+          if (!isSlowingDown) {
+            setIsSlowingDown(true);
+          }
+
+          // Apply exponential slowdown - much slower progression after 85%
+          const remainingProgress = newProgress - 85;
+          const slowdownFactor = 0.2; // Very slow progression
+          const adjustedProgress = 85 + remainingProgress * slowdownFactor;
+          newProgress = Math.min(adjustedProgress, 95); // Cap at 95% while still loading
+        }
+
         setProgress(newProgress);
 
         let accumulated = 0;
         for (let i = 0; i < steps.length; i++) {
           accumulated += steps[i].duration;
-          if (elapsed <= accumulated) {
+
+          // Adjust accumulated time for slowdown
+          let adjustedAccumulated = accumulated;
+          if (newProgress >= 85 && isLoading) {
+            const baseTime = totalDurationRef.current * 0.85;
+            if (accumulated > baseTime) {
+              adjustedAccumulated = baseTime + (accumulated - baseTime) * 5; // Stretch the time
+            }
+          }
+
+          if (elapsed <= adjustedAccumulated) {
             if (i !== currentStep) setCurrentStep(i);
             break;
           }
         }
 
-        if (elapsed < totalDurationRef.current) {
+        // Continue animation if still loading or not at slowdown threshold
+        if (isLoading || newProgress < 85) {
           animationRef.current = requestAnimationFrame(animateProgress);
-        } else {
-          setTimeout(() => onComplete(), 300);
         }
       };
 
@@ -152,6 +176,13 @@ export default function LoadingSubmit({
         cancelAnimationFrame(animationRef.current);
       }
     };
+  }, [isLoading, isSlowingDown]);
+
+  // Reset slowdown state when isLoading changes
+  useEffect(() => {
+    if (!isLoading) {
+      setIsSlowingDown(false);
+    }
   }, [isLoading]);
 
   // Dynamic gradient background based on progress
@@ -177,8 +208,25 @@ export default function LoadingSubmit({
   const getEstimatedTime = () => {
     if (isFinishing) return "Finishing up...";
 
+    if (isSlowingDown && isLoading) {
+      return "Almost done...";
+    }
+
     const elapsed = Math.max(0, (totalDurationRef.current * progress) / 100000);
     return `${Math.floor(elapsed)} seconds`;
+  };
+
+  const getMotivationalText = () => {
+    if (isFinishing) return "Finalizing your results...";
+
+    if (isSlowingDown && isLoading) {
+      return "Processing final details...";
+    }
+
+    if (progress < 20) return "Starting analysis...";
+    if (progress < 50) return "Processing your recording...";
+    if (progress < 80) return "Analyzing speech patterns...";
+    return "Preparing your feedback...";
   };
 
   return (
@@ -194,9 +242,9 @@ export default function LoadingSubmit({
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: isDarkMode
-          ? "rgba(17, 24, 39, 0.98)"
-          : "rgba(255, 255, 255, 0.98)",
-        backdropFilter: "blur(12px)",
+          ? "rgba(17, 24, 39, 0.05)"
+          : "rgba(255, 255, 255, 0.05)",
+        backdropFilter: "blur(2px)",
         zIndex: 9999,
         overflow: "hidden",
         transition: "background-color 0.5s ease",
@@ -252,7 +300,9 @@ export default function LoadingSubmit({
               borderRadius: "50%",
               border: `2px solid ${isDarkMode ? color.teal600 : color.teal400}`,
               opacity: 0,
-              animation: "ripple 3s infinite",
+              animation: isSlowingDown
+                ? "ripple-slow 4s infinite"
+                : "ripple 3s infinite",
               "@keyframes ripple": {
                 "0%": {
                   transform: "scale(0.8)",
@@ -266,6 +316,19 @@ export default function LoadingSubmit({
                   opacity: 0,
                 },
               },
+              "@keyframes ripple-slow": {
+                "0%": {
+                  transform: "scale(0.8)",
+                  opacity: 0.3,
+                },
+                "70%": {
+                  opacity: 0.08,
+                },
+                "100%": {
+                  transform: "scale(1.4)",
+                  opacity: 0,
+                },
+              },
             }}
           />
           <Box
@@ -276,7 +339,9 @@ export default function LoadingSubmit({
               borderRadius: "50%",
               border: `2px solid ${isDarkMode ? color.teal600 : color.teal400}`,
               opacity: 0,
-              animation: "ripple 3s infinite 1s",
+              animation: isSlowingDown
+                ? "ripple-slow 4s infinite 1.5s"
+                : "ripple 3s infinite 1s",
             }}
           />
 
@@ -296,7 +361,9 @@ export default function LoadingSubmit({
               }70`,
               position: "relative",
               zIndex: 1,
-              animation: "pulse 2s infinite",
+              animation: isSlowingDown
+                ? "pulse-slow 3s infinite"
+                : "pulse 2s infinite",
               "@keyframes pulse": {
                 "0%": {
                   transform: "scale(1)",
@@ -309,6 +376,26 @@ export default function LoadingSubmit({
                   boxShadow: `0 12px 40px ${
                     isDarkMode ? color.teal700 : color.teal500
                   }90`,
+                },
+                "100%": {
+                  transform: "scale(1)",
+                  boxShadow: `0 8px 32px ${
+                    isDarkMode ? color.teal800 : color.teal600
+                  }70`,
+                },
+              },
+              "@keyframes pulse-slow": {
+                "0%": {
+                  transform: "scale(1)",
+                  boxShadow: `0 8px 32px ${
+                    isDarkMode ? color.teal800 : color.teal600
+                  }70`,
+                },
+                "50%": {
+                  transform: "scale(1.02)",
+                  boxShadow: `0 10px 36px ${
+                    isDarkMode ? color.teal700 : color.teal500
+                  }80`,
                 },
                 "100%": {
                   transform: "scale(1)",
@@ -377,7 +464,9 @@ export default function LoadingSubmit({
                 background: isDarkMode
                   ? `linear-gradient(90deg, ${color.teal600}, ${color.emerald600})`
                   : `linear-gradient(90deg, ${color.teal500}, ${color.emerald500})`,
-                transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+                transition: isSlowingDown
+                  ? "transform 2s cubic-bezier(0.25, 0.46, 0.45, 0.94)"
+                  : "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
               },
             }}
           />
@@ -466,15 +555,7 @@ export default function LoadingSubmit({
             transition: "all 0.3s ease",
           }}
         >
-          {isFinishing
-            ? "Finalizing your results..."
-            : progress < 20
-            ? "Starting analysis..."
-            : progress < 50
-            ? "Processing your recording..."
-            : progress < 80
-            ? "Analyzing speech patterns..."
-            : "Preparing your feedback..."}
+          {getMotivationalText()}
         </Typography>
       </Paper>
 
@@ -489,7 +570,9 @@ export default function LoadingSubmit({
             borderRadius: "50%",
             bgcolor: isDarkMode ? color.teal800 : color.teal200,
             opacity: 0.05 + i * 0.03,
-            animation: `float ${8 + i * 2}s ease-in-out infinite`,
+            animation: isSlowingDown
+              ? `float-slow ${12 + i * 3}s ease-in-out infinite`
+              : `float ${8 + i * 2}s ease-in-out infinite`,
             top: `${10 + i * 15}%`,
             left: `${5 + i * 10}%`,
             "@keyframes float": {
@@ -497,6 +580,14 @@ export default function LoadingSubmit({
               "50%": {
                 transform: `translateY(${-15 - i * 5}px) rotate(${
                   i * 45 + 180
+                }deg)`,
+              },
+            },
+            "@keyframes float-slow": {
+              "0%, 100%": { transform: `translateY(0px) rotate(${i * 45}deg)` },
+              "50%": {
+                transform: `translateY(${-10 - i * 3}px) rotate(${
+                  i * 45 + 90
                 }deg)`,
               },
             },
