@@ -12,6 +12,11 @@ import { useDarkMode } from "hooks/useDarkMode";
 import SendIcon from "@mui/icons-material/Send";
 import { scoreWritingService } from "services";
 import { AssessmentResultsCard } from "../speaking/topic";
+import LoadingWritingSubmit from "./LoadingWritingSubmit";
+import { useParams } from "react-router-dom";
+import useAuth from "hooks/useAuth";
+import { completeRouteNode } from "utils/updateProcess";
+import { RouteNodeEnum } from "interfaces";
 
 interface WritingTopicSectionProps {
   topic: string;
@@ -24,14 +29,19 @@ interface AssessmentResult {
   feedback: string;
 }
 
+const PASSING_SCORE = 50;
+
 export default function WritingTopicSection({
   topic,
 }: WritingTopicSectionProps) {
+  const color = useColor();
+  const { isDarkMode } = useDarkMode();
   const [essay, setEssay] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [result, setResult] = useState<AssessmentResult | null>(null);
-  const color = useColor();
-  const { isDarkMode } = useDarkMode();
+  const [showLoading, setShowLoading] = useState(false);
+  const { id } = useParams();
+  const { userId } = useAuth();
 
   const wordCount = essay
     .trim()
@@ -45,11 +55,15 @@ export default function WritingTopicSection({
   const handleSubmit = async () => {
     if (!essay.trim()) return;
 
+    setShowLoading(true);
     setIsSubmitting(true);
     try {
       const response = await scoreWritingService.scoreWriting(essay, topic);
       if (response.status === "SUCCESS") {
         setResult(response.data);
+        if (Number(response.data.score) >= PASSING_SCORE) {
+          onCompleteRouteNode();
+        }
       }
     } catch (error) {
       console.error("Error submitting essay:", error);
@@ -63,7 +77,16 @@ export default function WritingTopicSection({
     setResult(null);
   };
 
-  // Màu sắc dựa trên chế độ darkMode
+  const onCompleteRouteNode = async () => {
+    if (!id || !userId) return;
+
+    try {
+      completeRouteNode(Number(id), Number(userId), RouteNodeEnum.WRITING);
+    } catch (error) {
+      console.error("Error completing route node:", error);
+    }
+  };
+
   const backgroundColor = isDarkMode ? color.gray800 : color.gray50;
   const textColor = isDarkMode ? color.gray100 : color.gray900;
   const borderColor = isDarkMode ? color.gray700 : color.gray300;
@@ -233,7 +256,7 @@ export default function WritingTopicSection({
                 boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
               }}
             >
-              {isSubmitting ? "Submitting..." : "Submit"}
+              Submit
             </Button>
           </Box>
         </>
@@ -245,6 +268,12 @@ export default function WritingTopicSection({
           areas_to_improve={result.areas_to_improve}
           transcript={essay}
           resetRecording={resetEssay}
+        />
+      )}
+      {showLoading && (
+        <LoadingWritingSubmit
+          isLoading={isSubmitting}
+          onComplete={() => setShowLoading(false)}
         />
       )}
     </Box>

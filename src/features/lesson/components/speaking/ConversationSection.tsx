@@ -12,8 +12,10 @@ import {
 import { scoreSpeakingService, conversationService } from "services";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { SpeakingConversation } from "interfaces";
+import { RouteNodeEnum, SpeakingConversation } from "interfaces";
 import LoadingSubmit from "./LoadingSubmit";
+import useAuth from "hooks/useAuth";
+import { completeRouteNode } from "utils/updateProcess";
 
 interface UserRecordings {
   [key: number]: string;
@@ -39,10 +41,13 @@ interface EvaluationResult {
   areas_to_improve: string[];
 }
 
+const PASSING_SCORE = 50;
+
 export default function ConversationSection() {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
   const { id } = useParams();
+  const { userId } = useAuth();
   const [selectedCharacter, setSelectedCharacter] = useState<string | null>(
     null
   );
@@ -108,25 +113,16 @@ export default function ConversationSection() {
     }
   }, [selectedCharacter]);
 
-  // Custom media recorder setup that overrides the one in ConversationTimeline
   useEffect(() => {
-    // This effect will run after ConversationTimeline created a recording
-    // and saves it in userRecordings
-
-    // We create a reference to current user recordings to avoid stale closures
     const currentRecordings = Object.keys(userRecordings).map((id) =>
       parseInt(id)
     );
 
-    // For each recording, we'll convert and store the blob with improved MIME handling
     currentRecordings.forEach((lineId) => {
-      // Only process if we have a URL but no blob stored yet
       if (userRecordings[lineId] && !recordingBlobsRef.current[lineId]) {
-        // Fetch the blob from URL
         fetch(userRecordings[lineId])
           .then((response) => response.blob())
           .then((blob) => {
-            // Store with better mimetype for submission
             const mimeType =
               blob.type === "audio/webm" ? "audio/mp3" : blob.type;
             const betterBlob = new Blob([blob], { type: mimeType });
@@ -151,7 +147,6 @@ export default function ConversationSection() {
     selectedCharacter !== null &&
     characterLines.every((line) => userRecordings[line.id]);
 
-  // Function to convert audio recordings to files with proper MIME types
   const getAudioFilesAndTexts = (): {
     audioFiles: File[];
     expectedTexts: string[];
@@ -161,11 +156,9 @@ export default function ConversationSection() {
 
     characterLines.forEach((line) => {
       expectedTexts.push(line.content);
-      // First check if we have a processed blob
       if (recordingBlobsRef.current[line.id]) {
         const blob = recordingBlobsRef.current[line.id];
 
-        // Determine the correct file extension and MIME type
         const mimeType = blob.type;
         const extension = mimeType.includes("mp3")
           ? "mp3"
@@ -173,7 +166,6 @@ export default function ConversationSection() {
           ? "wav"
           : "webm";
 
-        // Ensure we're using a valid MIME type for the server
         const finalMimeType =
           mimeType === "audio/mpeg" ? "audio/mp3" : mimeType;
 
@@ -182,10 +174,7 @@ export default function ConversationSection() {
         });
 
         audioFiles.push(file);
-      }
-      // If we don't have a processed blob but have a URL, fetch and process it
-      else if (userRecordings[line.id]) {
-        // This is a fallback for any recordings that weren't processed in the useEffect
+      } else if (userRecordings[line.id]) {
         fetch(userRecordings[line.id])
           .then((response) => response.blob())
           .then((blob) => {
@@ -236,15 +225,12 @@ export default function ConversationSection() {
       );
 
       if (response.status === "SUCCESS" && response.data) {
-        // Initialize a transcripts map
         const transcriptsMap: TranscriptsMap = {};
 
-        // Handle transcripts array from API response
         if (
           response.data.transcripts &&
           Array.isArray(response.data.transcripts)
         ) {
-          // Map each transcript from the array to the corresponding character line ID
           characterLines.forEach((line, index) => {
             if (index < response.data.transcripts.length) {
               transcriptsMap[line.id] = response.data.transcripts[index];
@@ -254,7 +240,6 @@ export default function ConversationSection() {
           });
         }
 
-        // Ensure all properties are present even if the API doesn't return them
         setResult({
           score: response.data.score || "0",
           transcripts: transcriptsMap,
@@ -262,6 +247,10 @@ export default function ConversationSection() {
           strengths: response.data.strengths || [],
           areas_to_improve: response.data.areas_to_improve || [],
         });
+
+        if (Number(response.data.score) >= PASSING_SCORE) {
+          completeRouteNode(Number(id), Number(userId), RouteNodeEnum.SPEAKING);
+        }
       } else {
         throw new Error(response.message || "Failed to evaluate recordings");
       }
@@ -277,14 +266,12 @@ export default function ConversationSection() {
   };
 
   const resetRecordings = (): void => {
-    // Revoke all object URLs
     Object.values(userRecordings).forEach((url) => {
       if (url) {
         URL.revokeObjectURL(url);
       }
     });
 
-    // Reset states
     setUserRecordings({});
     recordingBlobsRef.current = {};
     setResult(null);

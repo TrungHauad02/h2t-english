@@ -1,5 +1,5 @@
 import { Route } from "interfaces";
-import { Card, CardContent, Button, Divider } from "@mui/material";
+import { Card, CardContent, Button, Divider, Box, Stack } from "@mui/material";
 import useColor from "theme/useColor";
 import { useDarkMode } from "hooks/useDarkMode";
 import { useNavigate } from "react-router-dom";
@@ -49,42 +49,52 @@ export default function RouteItem({ route }: { route: Route }) {
           flexDirection: "column",
         }}
       >
-        <RouteTitleSection route={route} />
-        <Divider
-          sx={{
-            my: 2,
-            borderColor: isDarkMode ? color.gray700 : color.gray200,
-          }}
-        />
-        {/* Footer with teacher info */}
-        <TeacherInfo teacherId={route.ownerId} />
-        {/* Explore button */}
-        <Button
-          fullWidth
-          variant="contained"
-          endIcon={<ArrowForwardIcon />}
-          sx={{
-            bgcolor: isDarkMode ? color.teal600 : color.teal500,
-            color: color.white,
-            fontWeight: 600,
-            py: 1.2,
-            borderRadius: 2,
-            boxShadow: `0 4px 12px ${
-              isDarkMode ? color.teal900 + "50" : color.teal500 + "40"
-            }`,
-            "&:hover": {
-              bgcolor: isDarkMode ? color.teal500 : color.teal600,
-              transform: "translateY(-2px)",
-              boxShadow: `0 6px 16px ${
-                isDarkMode ? color.teal900 + "60" : color.teal500 + "50"
-              }`,
-            },
-            transition: "all 0.3s ease",
-          }}
-          onClick={() => handleViewDetail(route.id)}
+        <Stack
+          direction={"column"}
+          justifyContent={"space-between"}
+          sx={{ flexGrow: 1 }}
         >
-          Explore Route
-        </Button>
+          <Box>
+            <RouteTitleSection route={route} />
+            <Divider
+              sx={{
+                my: 2,
+                borderColor: isDarkMode ? color.gray700 : color.gray200,
+              }}
+            />
+            {/* Footer with teacher info */}
+            <TeacherInfo teacherId={route.ownerId} />
+          </Box>
+          <Box>
+            {/* Explore button */}
+            <Button
+              fullWidth
+              variant="contained"
+              endIcon={<ArrowForwardIcon />}
+              sx={{
+                bgcolor: isDarkMode ? color.teal600 : color.teal500,
+                color: color.white,
+                fontWeight: 600,
+                py: 1.2,
+                borderRadius: 2,
+                boxShadow: `0 4px 12px ${
+                  isDarkMode ? color.teal900 + "50" : color.teal500 + "40"
+                }`,
+                "&:hover": {
+                  bgcolor: isDarkMode ? color.teal500 : color.teal600,
+                  transform: "translateY(-2px)",
+                  boxShadow: `0 6px 16px ${
+                    isDarkMode ? color.teal900 + "60" : color.teal500 + "50"
+                  }`,
+                },
+                transition: "all 0.3s ease",
+              }}
+              onClick={() => handleViewDetail(route.id)}
+            >
+              Explore Route
+            </Button>
+          </Box>
+        </Stack>
       </CardContent>
     </Card>
   );
