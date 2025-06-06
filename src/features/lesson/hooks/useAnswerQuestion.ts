@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAnswers } from "../../../redux/slices/aqSlice";
-import { LessonQuestion, QuestionSupportType } from "interfaces";
+import { LessonQuestion, QuestionSupportType, RouteNodeEnum } from "interfaces";
 import { RootState } from "../../../redux/type";
 import { aqService } from "services";
+import { completeRouteNode } from "utils/updateProcess";
+import useAuth from "hooks/useAuth";
 
 const VALID_TYPES: QuestionSupportType[] = [
   "topics",
@@ -24,6 +26,7 @@ export default function useAnswerQuestion() {
   const [isShowExplain, setIsShowExplain] = useState(false);
   const [isShowConfirm, setIsShowConfirm] = useState(false);
   const [isShowScoreDialog, setIsShowScoreDialog] = useState(false);
+  const { userId } = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,8 +68,35 @@ export default function useAnswerQuestion() {
     return score;
   };
 
+  const onCompleteRouteNode = async () => {
+    if (userId && id && type) {
+      let routeNodeType: RouteNodeEnum | null;
+      switch (type) {
+        case "topics":
+          routeNodeType = RouteNodeEnum.VOCABULARY;
+          break;
+        case "grammars":
+          routeNodeType = RouteNodeEnum.GRAMMAR;
+          break;
+        case "listenings":
+          routeNodeType = RouteNodeEnum.LISTENING;
+          break;
+        case "readings":
+          routeNodeType = RouteNodeEnum.READING;
+          break;
+        default:
+          routeNodeType = null;
+      }
+
+      if (routeNodeType)
+        completeRouteNode(Number(id), Number(userId), routeNodeType);
+    }
+  };
+
   const onSubmit = () => {
-    const finalScore = calculateScore() + "/" + listAQ.length;
+    const calculatedScore = calculateScore();
+    if (calculatedScore === listAQ.length) onCompleteRouteNode();
+    const finalScore = calculatedScore + "/" + listAQ.length;
     setScore(finalScore);
     setIsShowConfirm(false);
     setIsShowScoreDialog(true);

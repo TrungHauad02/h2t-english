@@ -1,6 +1,6 @@
 <div align="center">
   
-# 🌟 H2T English 🌟
+# 🌟 H2T English Learning Platform 🌟
 
 <p align="center">
   <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-19.0.0-61DAFB?style=for-the-badge&logo=react&logoColor=white" alt="React"></a>
@@ -9,12 +9,12 @@
 </p>
 
 <p align="center">
-  <em>A modern, interactive platform for learning English through structured routes, engaging lessons, and comprehensive assessments</em>
+  <em>A comprehensive English learning platform with structured learning routes, interactive lessons, AI-powered feedback, and comprehensive assessments</em>
 </p>
 
 </div>
 
-H2T English is a comprehensive English learning platform designed to help students master all aspects of the English language through structured routes, interactive lessons, and diverse assessment tools.
+H2T English is an advanced English learning platform that provides structured learning paths through customizable routes, interactive lessons covering all language skills, AI-powered writing feedback, and comprehensive testing systems including TOEIC preparation.
 
 <div align="center">
   <img src="public/image.jpg" alt="H2T English Banner" height="400px" width="50%" style="border-radius: 10px; margin: 20px 0; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); object-fit: cover;">
@@ -22,67 +22,88 @@ H2T English is a comprehensive English learning platform designed to help studen
 
 ## 📖 Table of Contents
 
-- [🌟 H2T English 🌟](#-h2t-english-)
+- [🌟 H2T English Learning Platform 🌟](#-h2t-english-learning-platform-)
   - [📖 Table of Contents](#-table-of-contents)
-  - [🚀 Features](#-features)
-    - [🗺️ Interactive Learning Routes](#️-interactive-learning-routes)
+  - [🚀 Key Features](#-key-features)
+    - [🗺️ Learning Routes System](#️-learning-routes-system)
     - [📚 Comprehensive Lesson Types](#-comprehensive-lesson-types)
-    - [📊 Testing and Assessment](#-testing-and-assessment)
-    - [⚙️ Powerful Tools](#️-powerful-tools)
+    - [🤖 AI-Powered Features](#-ai-powered-features)
+    - [📊 Assessment \& Testing](#-assessment--testing)
+    - [👥 Multi-Role System](#-multi-role-system)
+    - [🎨 User Experience](#-user-experience)
   - [💻 Technology Stack](#-technology-stack)
     - [Core Technologies](#core-technologies)
-    - [Additional Libraries](#additional-libraries)
-  - [📂 Project Structure](#-project-structure)
+    - [UI \& Styling](#ui--styling)
+    - [State Management \& Data](#state-management--data)
+    - [Development \& Build Tools](#development--build-tools)
+    - [Additional Features](#additional-features)
+  - [📂 Project Architecture](#-project-architecture)
   - [🏁 Getting Started](#-getting-started)
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
-  - [🏛️ Architecture](#️-architecture)
-    - [🧩 Component Organization](#-component-organization)
+    - [Available Scripts](#available-scripts)
+  - [🏛️ Application Architecture](#️-application-architecture)
+    - [🧩 Feature-Based Organization](#-feature-based-organization)
     - [📊 State Management](#-state-management)
-    - [🛣️ Routing](#️-routing)
-      - [👨‍🎓 Student/Public Routes](#-studentpublic-routes)
-      - [👩‍🏫 Teacher Routes](#-teacher-routes)
-      - [👨‍💼 Admin Routes](#-admin-routes)
-  - [👥 User Roles](#-user-roles)
-  - [🧪 Testing](#-testing)
+    - [🛣️ Routing System](#️-routing-system)
+      - [Public/Student Routes](#publicstudent-routes)
+      - [Teacher Routes](#teacher-routes)
+      - [Teacher Advance Routes](#teacher-advance-routes)
+      - [Admin Routes](#admin-routes)
+  - [👥 User Roles \& Permissions](#-user-roles--permissions)
+  - [🔧 Development](#-development)
   - [🚢 Deployment](#-deployment)
   - [🤝 Contributing](#-contributing)
   - [📄 License](#-license)
-  - [🙏 Acknowledgments](#-acknowledgments)
-  - [👨‍🎓 Team and Requirements](#-team-and-requirements)
+  - [👨‍💼 Development Team](#-development-team)
 
-## 🚀 Features
+## 🚀 Key Features
 
-### 🗺️ Interactive Learning Routes
+### 🗺️ Learning Routes System
 
-- **Structured Pathways**: Carefully designed learning sequences that build skills progressively
-- **Topic-Based Organization**: Content organized by themes and difficulty levels
-- **Adaptive Learning**: Personalized recommendations based on performance
-- **Progress Tracking**: Visual indicators of completion and achievement
-- **Skill Integration**: Routes that combine multiple language skills for holistic learning
+- **Structured Learning Paths**: Teacher-created routes with sequential lessons and assessments
+- **Progress Tracking**: Visual timeline showing completion status and learning progress
+- **Adaptive Pathways**: Different route types for various skill levels and objectives
+- **Achievement System**: Badges and achievements for route completion milestones
+- **Route Analytics**: Detailed progress analytics with performance insights
 
 ### 📚 Comprehensive Lesson Types
 
-- 📝 **Vocabulary**: Interactive word-building exercises with contextual learning
-- 🔤 **Grammar**: Clear explanations with practice activities at various levels
-- 📖 **Reading**: Diverse texts with comprehension activities and discussion prompts
-- 🎧 **Listening**: Audio content with exercises to develop auditory comprehension
-- 🗣️ **Speaking**: Pronunciation guides and conversational practice opportunities
-- ✍️ **Writing**: Guided composition tasks with feedback mechanisms
+- 📝 **Vocabulary Lessons**: Interactive word learning with contextual examples
+- 🔤 **Grammar Lessons**: Comprehensive grammar rules with practice exercises
+- 📖 **Reading Comprehension**: Diverse texts with comprehension questions
+- 🎧 **Listening Practice**: Audio-based exercises for auditory skill development
+- 🗣️ **Speaking Practice**: Pronunciation and conversation exercises
+- ✍️ **Writing Practice**: Guided writing tasks with AI-powered feedback
 
-### 📊 Testing and Assessment
+### 🤖 AI-Powered Features
+
+- **AI Response Feedback**: Advanced writing analysis with detailed feedback
+- **Writing Assessment**: Automated essay scoring with improvement suggestions
+- **Grammar Checking**: Real-time grammar and vocabulary analysis
+- **Personalized Recommendations**: AI-driven learning path suggestions
+
+### 📊 Assessment & Testing
 
 - 🔄 **Mixed Format Tests**: Comprehensive evaluations combining multiple question types
-- 🎯 **Skill-Specific Assessments**: Focused evaluations for individual language skills
-- 🏆 **Competition Tests**: Timed challenges with leaderboards for motivation
-- 📝 **TOEIC Practice Exams**: Standardized test preparation with detailed feedback
+- 🎯 **Skill-Specific Tests**: Focused assessments for individual language skills (Reading, Listening, Writing, Speaking)
+- 🏆 **Competition Tests**: Timed challenges with leaderboards and rankings
+- 📝 **TOEIC Practice**: Standardized test preparation with detailed score analysis
+- 📈 **Test History**: Comprehensive tracking of all test attempts and scores
 
-### ⚙️ Powerful Tools
+### 👥 Multi-Role System
 
-- 📊 **User Dashboard**: Intuitive interface for tracking progress and performance
-- 👩‍🏫 **Teacher Tools**: Comprehensive content creation and management system
-- 👨‍💼 **Admin Management**: Robust user administration capabilities
-- 🌓 **Dark Mode Support**: Eye-friendly interface option for comfortable learning
+- **Students**: Access lessons, take tests, track progress, join competitions
+- **Teachers**: Create and manage lessons, design tests, monitor student progress
+- **Teacher Advance**: Create learning routes, advanced content management
+- **Admins**: System administration, user management, platform oversight
+
+### 🎨 User Experience
+
+- 🌓 **Dark/Light Mode**: Customizable theme preferences
+- 📱 **Responsive Design**: Optimized for desktop, tablet, and mobile devices
+- 🎯 **Intuitive Navigation**: Clean, user-friendly interface design
+- ⚡ **Performance Optimized**: Fast loading with efficient state management
 
 ## 💻 Technology Stack
 
@@ -91,71 +112,91 @@ H2T English is a comprehensive English learning platform designed to help studen
 <div align="center">
   <img src="https://img.shields.io/badge/React-19.0.0-61DAFB?style=flat-square&logo=react&logoColor=white" alt="React">
   <img src="https://img.shields.io/badge/TypeScript-5.1.0-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
-  <img src="https://img.shields.io/badge/Material_UI-6.4.7-007FFF?style=flat-square&logo=mui&logoColor=white" alt="Material UI">
-  <img src="https://img.shields.io/badge/Redux_Toolkit-Latest-764ABC?style=flat-square&logo=redux&logoColor=white" alt="Redux Toolkit">
   <img src="https://img.shields.io/badge/React_Router-7.0.2-CA4245?style=flat-square&logo=react-router&logoColor=white" alt="React Router">
 </div>
 
-### Additional Libraries
-
-| 🔌 Data & API                                                                                                                        | 🎨 UI & Styling                                                                                                                   | 🔧 Development                                                                                                                       |
-| ------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| <ul><li>📡 **Axios**: HTTP client</li><li>📄 **Mammoth.js**: Document handling</li><li>🔐 **OAuth Google**: Authentication</li></ul> | <ul><li>💄 **Emotion**: CSS-in-JS</li><li>🔣 **Material Icons**: Icon library</li><li>🖌️ **Lucide React**: Modern icons</li></ul> | <ul><li>📅 **date-fns**: Date utilities</li><li>🧪 **React Scripts**: Testing</li><li>📦 **Create React App**: Build tools</li></ul> |
-
-## 📂 Project Structure
+### UI & Styling
 
 <div align="center">
-  <img src="https://cdn-icons-png.flaticon.com/512/6295/6295417.png" width="100" alt="Project Structure">
+  <img src="https://img.shields.io/badge/Material_UI-6.4.7-007FFF?style=flat-square&logo=mui&logoColor=white" alt="Material UI">
+  <img src="https://img.shields.io/badge/Emotion-11.14.0-DB7093?style=flat-square&logo=emotion&logoColor=white" alt="Emotion">
+  <img src="https://img.shields.io/badge/Lucide_React-0.468.0-FF6B6B?style=flat-square&logo=lucide&logoColor=white" alt="Lucide Icons">
 </div>
 
-The project follows a feature-based organization:
+### State Management & Data
+
+<div align="center">
+  <img src="https://img.shields.io/badge/Redux_Toolkit-2.5.0-764ABC?style=flat-square&logo=redux&logoColor=white" alt="Redux Toolkit">
+  <img src="https://img.shields.io/badge/React_Redux-9.2.0-764ABC?style=flat-square&logo=redux&logoColor=white" alt="React Redux">
+  <img src="https://img.shields.io/badge/Axios-1.8.1-5A29E4?style=flat-square&logo=axios&logoColor=white" alt="Axios">
+</div>
+
+### Development & Build Tools
+
+<div align="center">
+  <img src="https://img.shields.io/badge/Create_React_App-5.0.1-09D3AC?style=flat-square&logo=create-react-app&logoColor=white" alt="Create React App">
+  <img src="https://img.shields.io/badge/date--fns-2.29.3-FF6B6B?style=flat-square" alt="date-fns">
+  <img src="https://img.shields.io/badge/Recharts-2.15.2-8884D8?style=flat-square" alt="Recharts">
+</div>
+
+### Additional Features
+
+| 📊 Charts & Visualization | 🎤 Media & Documents | 🔐 Authentication   | 🎮 Interactive Features |
+| ------------------------- | -------------------- | ------------------- | ----------------------- |
+| Recharts 2.15.2           | React Mic 12.4.6     | Google OAuth 0.12.1 | React Card Flip 1.2.3   |
+| MUI X Data Grid 7.23.6    | Mammoth.js 1.9.0     | JS Cookie 3.0.5     | React CountUp 6.5.3     |
+| MUI X Date Pickers 7.27.3 |                      |                     | React Toastify 11.0.2   |
+
+## 📂 Project Architecture
+
+The project follows a **feature-based architecture** for better organization and scalability:
 
 ```
 src/
-├── components/         # Reusable UI components
-├── features/           # Feature modules (auth, lesson, test, etc.)
-│   ├── auth/           # Authentication features
-│   ├── home/           # Homepage components
-│   ├── lesson/         # Lesson features
-│   ├── listLesson/     # Lesson listing functionality
-│   ├── listTest/       # Test listing functionality
-│   ├── test/           # Test features
-│   ├── route/          # Learning routes
-│   ├── profile/        # User profile
-│   ├── historyTest/    # Test history
-│   ├── teacher/        # Teacher administration tools
-│   └── admin/          # Admin management tools
-├── hooks/              # Custom React hooks
-├── interfaces/         # TypeScript interfaces
-├── layouts/            # Page layouts
-├── redux/              # Redux store setup and slices
-├── routes/             # Application routes
-├── services/           # API services
-├── theme/              # Theme configuration
-└── utils/              # Utility functions
+├── components/             # Reusable UI components
+│   ├── display/           # Display components (dialogs, cards, etc.)
+│   ├── input/             # Input components (forms, buttons, etc.)
+│   └── pagination/        # Pagination components
+├── features/              # Feature modules
+│   ├── admin/             # Admin dashboard and management
+│   ├── auth/              # Authentication (login, register)
+│   ├── home/              # Homepage and landing components
+│   ├── lesson/            # Lesson content and interactions
+│   ├── listLesson/        # Lesson browsing and filtering
+│   ├── listTest/          # Test browsing and management
+│   ├── test/              # Test taking and evaluation
+│   ├── route/             # Learning routes and progress
+│   ├── profile/           # User profile management
+│   ├── historyTest/       # Test history and analytics
+│   └── teacher/           # Teacher tools and content management
+├── hooks/                 # Custom React hooks
+├── interfaces/            # TypeScript type definitions
+├── layouts/               # Page layout components
+├── redux/                 # Redux store and state management
+├── routes/                # Application routing configuration
+├── services/              # API services and data fetching
+├── theme/                 # Theme configuration and custom colors
+└── utils/                 # Utility functions and helpers
 ```
 
 ## 🏁 Getting Started
 
-<div align="center">
-  <img src="https://cdn-icons-png.flaticon.com/512/1535/1535032.png" width="80" alt="Getting Started">
-</div>
-
 ### Prerequisites
 
-- 📦 **Node.js** (version 16 or higher)
-- 📦 **npm** or **yarn** package manager
+- **Node.js** (version 16 or higher)
+- **npm** or **yarn** package manager
+- Modern web browser with ES6 support
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone the repository:**
 
 ```bash
 git clone https://github.com/your-username/h2t-english.git
 cd h2t-english
 ```
 
-2. Install dependencies:
+2. **Install dependencies:**
 
 ```bash
 # Using npm
@@ -165,7 +206,7 @@ npm install
 yarn install
 ```
 
-3. Running the App:
+3. **Start the development server:**
 
 ```bash
 # Using npm
@@ -175,155 +216,180 @@ npm start
 yarn start
 ```
 
-The application will be available at http://localhost:3000
+The application will be available at `http://localhost:3000`
 
-| 🔍 Development Mode                                | 🔧 Build Mode                                         |
-| -------------------------------------------------- | ----------------------------------------------------- |
-| Features hot-reloading and detailed error messages | Run `npm run build` for production-ready optimization |
+### Available Scripts
 
-## 🏛️ Architecture
+| Command         | Description                                 |
+| --------------- | ------------------------------------------- |
+| `npm start`     | Runs the app in development mode            |
+| `npm test`      | Launches the test runner                    |
+| `npm run build` | Builds the app for production               |
+| `npm run eject` | Ejects from Create React App (irreversible) |
 
-<div align="center">
-  <img src="https://cdn-icons-png.flaticon.com/512/1089/1089923.png" width="80" alt="Architecture">
-</div>
+## 🏛️ Application Architecture
 
-### 🧩 Component Organization
+### 🧩 Feature-Based Organization
 
-| 🔄 Shared Components                            | 🧪 Feature Components                             | 📐 Layout Components                       |
-| ----------------------------------------------- | ------------------------------------------------- | ------------------------------------------ |
-| Reusable UI elements in `/components` directory | Specialized components within feature directories | Page structure and organization components |
+Each feature module contains:
+
+- **Components**: Feature-specific UI components
+- **Hooks**: Custom hooks for feature logic
+- **Pages**: Main page components
+- **Services**: API calls and data management
+- **Types**: TypeScript interfaces for the feature
 
 ### 📊 State Management
 
-| 🌎 Global State                                                                              | 🏠 Local State                                                                     | 🎨 Theme State                                                                                         |
-| -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| Redux Toolkit for application-wide state management                                          | React's useState/useReducer for component-specific state                           | Custom theme hooks for light/dark mode preferences                                                     |
-| <ul><li>User authentication</li><li>Learning progress</li><li>Application settings</li></ul> | <ul><li>Form inputs</li><li>UI interactions</li><li>Component visibility</li></ul> | <ul><li>Color scheme preferences</li><li>Accessibility settings</li><li>Visual customization</li></ul> |
+- **Redux Toolkit**: Global application state
+- **React Context**: Theme and user preferences
+- **Local State**: Component-specific state with hooks
+- **Session Storage**: Authentication tokens and user sessions
 
-### 🛣️ Routing
+### 🛣️ Routing System
 
-<div align="center">
-  <img src="https://cdn-icons-png.flaticon.com/512/5741/5741333.png" width="80" alt="Routing">
-  <h3>Application Routing Structure</h3>
-</div>
+Protected routes with role-based access control implemented in `src/routes/ProtectRoute.tsx`:
 
-All application routes are centralized in `src/routes/AppRoutes.tsx`, which provides:
+#### Public/Student Routes
 
-- Centralized route configuration
-- Protected route guards based on authentication status and user roles
-- Nested route support with layout components
-- Lazy loading for improved performance
+| Route               | Component           | Description                         |
+| ------------------- | ------------------- | ----------------------------------- |
+| `/`                 | HomePage            | Landing page with featured content  |
+| `/login`            | LoginPage           | User authentication                 |
+| `/register`         | RegisterPage        | User registration                   |
+| `/forgot-password`  | ResetPasswordPage   | Password recovery                   |
+| `/profile`          | StudentProfilePage  | User profile management             |
+| `/lesson/:type/:id` | LessonPage          | Individual lesson content           |
+| `/routes`           | ListRoutePage       | Browse learning routes              |
+| `/routes/:id`       | RoutePage           | Specific route details and progress |
+| `/test/:type/:id`   | TestPage            | Take tests and assessments          |
+| `/toeic/:id`        | ToeicPage           | TOEIC practice tests                |
+| `/history-test`     | ListHistoryTestPage | Test history overview               |
+| `/competition-test` | CompetitionTestPage | Competitive assessments             |
 
-#### 👨‍🎓 Student/Public Routes
+#### Teacher Routes
 
-| Route                   | Path     | Description                                                 |
-| ----------------------- | -------- | ----------------------------------------------------------- |
-| **Home**                | /        | Landing page with featured content and learning suggestions |
-| **Learning Content**    | /lessons | Browse and access all available lesson materials            |
-| **Tests & Assessments** | /tests   | Access various test types and assessment tools              |
-| **Learning Routes**     | /routes  | View and select structured learning pathways                |
-| **User Profile**        | /profile | Personal information and learning statistics                |
-| **Test History**        | /history | Record of completed tests with performance metrics          |
+| Route               | Component           | Description                     |
+| ------------------- | ------------------- | ------------------------------- |
+| `/teacher`          | TeacherDashboard    | Teacher overview and statistics |
+| `/teacher/lessons`  | ManageLessonsPage   | Create and manage lessons       |
+| `/teacher/tests`    | ManageTestsPage     | Create and manage tests         |
+| `/teacher/students` | StudentProgressPage | Monitor student progress        |
 
-#### 👩‍🏫 Teacher Routes
+#### Teacher Advance Routes
 
-| Route                    | Path               | Description                                |
-| ------------------------ | ------------------ | ------------------------------------------ |
-| **Content Management**   | /teacher/content   | Create and manage lesson materials         |
-| **Route Administration** | /teacher/routes    | Design and configure learning pathways     |
-| **Test Creation**        | /teacher/tests     | Develop various assessment types           |
-| **Student Progress**     | /teacher/students  | Monitor student performance and activities |
-| **Analytics Dashboard**  | /teacher/analytics | View statistics and learning patterns      |
+| Route                         | Component       | Description                       |
+| ----------------------------- | --------------- | --------------------------------- |
+| `/teacher-advance/routes`     | ManageRoutePage | Create and manage learning routes |
+| `/teacher-advance/routes/:id` | DetailRoutePage | Detailed route management         |
 
-#### 👨‍💼 Admin Routes
+#### Admin Routes
 
-| Route                    | Path           | Description                              |
-| ------------------------ | -------------- | ---------------------------------------- |
-| **User Management**      | /admin/users   | Create, edit, and manage user accounts   |
-| **System Configuration** | /admin/config  | Platform settings and customization      |
-| **Content Oversight**    | /admin/content | Review and approve educational content   |
-| **Administrative Tools** | /admin/tools   | Special functions for system maintenance |
-| **Role Management**      | /admin/roles   | Define and assign user permission levels |
+| Route                   | Component            | Description                   |
+| ----------------------- | -------------------- | ----------------------------- |
+| `/admin`                | AdminDashboard       | System overview and analytics |
+| `/admin/manage-student` | ManageStudentPage    | Student account management    |
+| `/admin/manage-teacher` | ManageTeacherPage    | Teacher account management    |
+| `/admin/system`         | SystemManagementPage | Platform configuration        |
 
-- **Authentication Guards**: Prevent access to protected routes for unauthenticated users
-- **Role-Based Authorization**: Restrict access based on user role (student, teacher, admin)
-- **Intelligent Redirection**: Redirect to appropriate login or access denied pages
-- **Persistent Sessions**: Maintain user sessions with secure token storage
+## 👥 User Roles & Permissions
 
-## 👥 User Roles
+| Role                   | Permissions                                                                                                        | Key Features                                                                                        |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| **👨‍🎓 Student**         | • Access lessons and routes<br>• Take tests and assessments<br>• Track personal progress<br>• Join competitions    | • Personal dashboard<br>• Progress analytics<br>• Achievement system<br>• Test history              |
+| **👩‍🏫 Teacher**         | • Create and manage lessons<br>• Design tests and assessments<br>• Monitor student progress<br>• Grade assignments | • Content creation tools<br>• Student analytics<br>• Performance reports<br>• Assessment management |
+| **👨‍🏫 Teacher Advance** | • All Teacher permissions<br>• Create learning routes<br>• Advanced content management<br>• Route analytics        | • Route builder<br>• Advanced analytics<br>• Content organization<br>• Learning path design         |
+| **👨‍💼 Admin**           | • System administration<br>• User management<br>• Platform oversight<br>• Content moderation                       | • User account management<br>• System configuration<br>• Platform analytics<br>• Content approval   |
 
-<div align="center">
-  <img src="https://cdn-icons-png.flaticon.com/512/3126/3126589.png" width="80" alt="User Roles">
-</div>
+## 🔧 Development
 
-| 👨‍🎓 Student                                                                                                                 | 👩‍🏫 Teacher                                                                                                     | 👨‍🏫 Teacher Advance                                                                                                                      | 👨‍💼 Admin                                                                                                                 |
-| -------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| <ul><li>Access to lessons</li><li>Take tests</li><li>Track personal progress</li><li>Participate in competitions</li></ul> | <ul><li>Create content</li><li>Manage lessons</li><li>Review student work</li><li>Create assessments</li></ul> | <ul><li>All Teacher permissions</li><li>Create learning routes</li><li>Advanced content editing</li><li>Special test creation</li></ul> | <ul><li>User management</li><li>System administration</li><li>Content oversight</li><li>Access to all features</li></ul> |
+**Code Organization:**
 
-## 🧪 Testing
+- Components are organized by feature for better maintainability
+- Custom hooks encapsulate complex logic and state management
+- TypeScript interfaces ensure type safety across the application
+- Material-UI components provide consistent design language
 
-```bash
-npm test
-# or
-yarn test
-```
+**Key Development Features:**
+
+- Hot reloading for rapid development
+- TypeScript for enhanced developer experience
+- ESLint configuration for code quality
+- Responsive design principles
+- Accessibility considerations
 
 ## 🚢 Deployment
 
+**Production Build:**
+
 ```bash
 npm run build
-# or
-yarn build
 ```
+
+This creates an optimized production build in the `build/` folder, ready for deployment to any static hosting service.
+
+**Deployment Considerations:**
+
+- Environment variables for API endpoints
+- Build optimization for performance
+- Static asset optimization
+- Browser compatibility testing
 
 ## 🤝 Contributing
 
-Contributions make the open source community an amazing place to learn, inspire, and create. Any contributions to this project are **greatly appreciated**.
+We welcome contributions to improve H2T English! Please follow these steps:
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. **Fork the Project**
+2. **Create your Feature Branch** (`git checkout -b feature/AmazingFeature`)
+3. **Commit your Changes** (`git commit -m 'Add some AmazingFeature'`)
+4. **Push to the Branch** (`git push origin feature/AmazingFeature`)
+5. **Open a Pull Request**
+
+**Development Guidelines:**
+
+- Follow TypeScript best practices
+- Maintain consistent code formatting
+- Write meaningful commit messages
+- Test new features thoroughly
+- Update documentation as needed
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See `LICENSE` file for more information.
 
-## 🙏 Acknowledgments
-
-- [React](https://reactjs.org/)
-- [Material UI](https://mui.com/)
-- [Redux Toolkit](https://redux-toolkit.js.org/)
-- All other libraries used in this project
-
-## 👨‍🎓 Team
+## 👨‍💼 Development Team
 
 <div align="center">
   <img src="https://cdn-icons-png.flaticon.com/512/3898/3898082.png" width="100" alt="Team">
   
-  <h3>Developed by three students from K21 cohort at Ho Chi Minh City University of Technology and Education (HCMUTE)</h3>
+  <h3>Developed by K21 Students at Ho Chi Minh City University of Technology and Education (HCMUTE)</h3>
 
   <table>
     <tr>
       <td align="center">
-        <img src="https://avatars.githubusercontent.com/u/97101001?s=400&u=c2e995d2acff0cb120417bf042d6c1205bd4bbb4&v=4" width="100" alt="Developer Avatar">
+        <img src="https://avatars.githubusercontent.com/u/97101001?s=400&u=c2e995d2acff0cb120417bf042d6c1205bd4bbb4&v=4" width="100" alt="Nguyễn Trung Hậu">
         <br>
         <b>Nguyễn Trung Hậu</b>
+        <br>
+        <i>Full-Stack Developer</i>
         <br>
         <a href="https://github.com/TrungHauad02">GitHub</a>
       </td>
       <td align="center">
-        <img src="https://avatars.githubusercontent.com/u/123963752?s=400&u=c2e995d2acff0cb120417bf042d6c1205bd4bbb4&v=4" width="100" alt="Developer Avatar">
+        <img src="https://avatars.githubusercontent.com/u/123963752?s=400&u=c2e995d2acff0cb120417bf042d6c1205bd4bbb4&v=4" width="100" alt="Thái Thanh Hưng">
         <br>
         <b>Thái Thanh Hưng</b>
+        <br>
+        <i>Frontend Developer</i>
         <br>
         <a href="https://github.com/ThanhHung0203">GitHub</a>
       </td>
       <td align="center">
-        <img src="https://avatars.githubusercontent.com/u/96189553" width="100" alt="Developer Avatar">
+        <img src="https://avatars.githubusercontent.com/u/96189553" width="100" alt="Cáp Lê Hữu Tân">
         <br>
         <b>Cáp Lê Hữu Tân</b>
+        <br>
+        <i>Backend Developer</i>
         <br>
         <a href="https://github.com/username3">GitHub</a>
       </td>
@@ -331,18 +397,22 @@ Distributed under the MIT License. See `LICENSE` for more information.
   </table>
 </div>
 
+**Project Context:**
+
+- **Course**: Software Engineering Capstone Project (KLTN)
+- **Academic Year**: 2024-2025
+- **Institution**: Ho Chi Minh City University of Technology and Education
+- **Duration**: 6 months development cycle
+
 <div align="center">
   <hr>
   
   <p>
-    <a href="#"><img src="https://img.shields.io/badge/H2T_English-Website-teal?style=for-the-badge" alt="Website"></a>
-    <a href="mailto:contact@h2tenglish.com"><img src="https://img.shields.io/badge/Email-Contact-red?style=for-the-badge&logo=gmail" alt="Contact"></a>
-    <a href="#"><img src="https://img.shields.io/badge/Report-Issues-yellow?style=for-the-badge&logo=github" alt="Issues"></a>
+    <img src="https://img.shields.io/badge/Made_with_❤️_in-Vietnam-red?style=flat-square&flag=vn" alt="Made in Vietnam">
+    <img src="https://img.shields.io/badge/Academic_Project-HCMUTE-blue?style=flat-square" alt="HCMUTE">
+    <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT License">
   </p>
   
-  <p>© 2025 H2T English. All Rights Reserved.</p>
-  
-  <p>
-    <img src="https://img.shields.io/badge/Made_with_❤️_in-Vietnam-red?style=flat-square&logo=vietnam" alt="Made in Vietnam">
-  </p>
+  <p>© 2025 H2T English Learning Platform. All Rights Reserved.</p>
+  <p><em>Empowering English learners with AI-driven personalized education</em></p>
 </div>

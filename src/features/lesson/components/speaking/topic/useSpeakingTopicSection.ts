@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { Speaking } from "interfaces";
+import { RouteNodeEnum, Speaking } from "interfaces";
 import { scoreSpeakingService } from "services";
 import { compressAudioBlob, getFileSizeInMB } from "./audioCompressionUtil";
+import useAuth from "hooks/useAuth";
+import { completeRouteNode } from "utils/updateProcess";
 
 interface AssessmentResult {
   score: string;
@@ -18,7 +20,10 @@ interface CompressionState {
   compressedSize: number;
 }
 
+const PASSING_SCORE = 50;
+
 export default function useSpeakingTopicSection(data: Speaking) {
+  const { userId } = useAuth();
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [timeLeft, setTimeLeft] = useState<number>(data.duration);
@@ -418,6 +423,9 @@ export default function useSpeakingTopicSection(data: Speaking) {
           strengths: result.data.strengths,
           areas_to_improve: result.data.areas_to_improve,
         });
+        if (Number(result.data.score) >= PASSING_SCORE) {
+          completeRouteNode(data.id, Number(userId), RouteNodeEnum.SPEAKING);
+        }
       } else {
         setErrorMessage(result.message || "Failed to evaluate your speaking");
       }
