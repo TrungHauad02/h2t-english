@@ -5,7 +5,7 @@ import { competitionTestService } from "services";
 import { WEPaginationSelect } from "components/pagination";
 import LoadingSkeleton from "../common/LoadingSkeleton";
 import CompetitionTestItem from "./CompetitionTestItem";
-
+import useAuth from "hooks/useAuth";
 interface ListCompetitionTestProps {
   searchQuery?: string;
 }
@@ -22,11 +22,12 @@ export default function ListCompetitionTest({ searchQuery = "" }: ListCompetitio
     status: true,
   });
 
-  const userId = 1;
+  const userId = Number(useAuth().userId);
 
   const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
-    setPage(value - 1);
-  };
+  setPage(value); 
+};
+
 
   const handleItemsPerPageChange = (itemsPerPage: number) => {
     setTestsPerPage(itemsPerPage);
@@ -81,7 +82,7 @@ export default function ListCompetitionTest({ searchQuery = "" }: ListCompetitio
                 </Grid>
                 <Box sx={{ mt: 3, mb: 2, display: "flex", justifyContent: "center" }}>
                   <WEPaginationSelect
-                    page={page + 1}
+                    page={page}
                     totalPage={totalPages}
                     itemsPerPage={testsPerPage}
                     onPageChange={handleChangePage}
