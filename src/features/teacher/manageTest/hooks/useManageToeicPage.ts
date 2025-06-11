@@ -7,7 +7,7 @@ export default function useManageToeicPage() {
   const [filter, setFilter] = useState<ToeicFilter>({
     title: "",
     sortBy: "-createdAt",
-    status: true,
+    status: null,
   });
   const userId = Number(useAuth().userId);
   const [toeicTests, setToeicTests] = useState<Toeic[]>([]);
