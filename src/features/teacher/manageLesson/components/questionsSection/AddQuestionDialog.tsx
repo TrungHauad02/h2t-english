@@ -39,7 +39,7 @@ export default function AddQuestionDialog({
     content: "",
     explanation: "",
     lessonId: lessonId,
-    status: false,
+    status: true,
     answers: [
       {
         id: Date.now(),
