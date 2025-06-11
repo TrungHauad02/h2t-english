@@ -6,12 +6,13 @@ import { WEPaginationSelect } from "components/pagination";
 import LoadingSkeleton from "../common/LoadingSkeleton";
 import ToeicItem from "./ToeicItem";
 import useAuth from "hooks/useAuth";
+
 interface ListToeicProps {
   searchQuery?: string;
 }
 
 export default function ListToeic({ searchQuery = "" }: ListToeicProps) {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(1); // Keep 1-based like useManageToeicPage
   const [toeicsPerPage, setToeicsPerPage] = useState(8);
   const [toeics, setToeics] = useState<Toeic[]>([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -27,7 +28,7 @@ export default function ListToeic({ searchQuery = "" }: ListToeicProps) {
     event: React.ChangeEvent<unknown>,
     value: number
   ) => {
-    setPage(value - 1);
+    setPage(value); // Use value directly (1-based) like useManageToeicPage
   };
 
   const handleItemsPerPageChange = (itemsPerPage: number) => {
@@ -47,7 +48,7 @@ export default function ListToeic({ searchQuery = "" }: ListToeicProps) {
       setLoading(true);
       try {
         const response = await toeicService.getToeicsForStudent(
-          page,
+          page, // Use page directly since we're consistent with useManageToeicPage
           toeicsPerPage,
           userId,
           filter
@@ -59,6 +60,8 @@ export default function ListToeic({ searchQuery = "" }: ListToeicProps) {
         }
       } catch (error) {
         console.error("Error fetching TOEIC tests:", error);
+        setToeics([]); // Reset on error
+        setTotalPages(0);
       } finally {
         setLoading(false);
       }
@@ -85,7 +88,7 @@ export default function ListToeic({ searchQuery = "" }: ListToeicProps) {
                 sx={{ mt: 3, mb: 2, display: "flex", justifyContent: "center" }}
               >
                 <WEPaginationSelect
-                  page={page + 1}
+                  page={page} // Use page directly since we're keeping 1-based
                   totalPage={totalPages}
                   itemsPerPage={toeicsPerPage}
                   onPageChange={handleChangePage}
