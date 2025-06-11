@@ -28,7 +28,6 @@ export default function ListToeicPage() {
     <Box
       sx={{
         minHeight: "100vh",
-        width: "100%",
         bgcolor: backgroundColor,
         backgroundImage: isDarkMode
           ? `radial-gradient(${color.emerald900} 1px, transparent 1px)`
@@ -70,16 +69,12 @@ export default function ListToeicPage() {
           zIndex: 0,
         }}
       />
-
-      <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1 }}>
-        <Fade in timeout={1000}>
+     <Fade in timeout={1000}>
           <Box>
             <MainPictureSection siteInfo={siteInfo} />
           </Box>
         </Fade>
-
-      
-
+      <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1 }}>
         <Fade in timeout={1400}>
           <Box sx={{ mb: 4 }}>
             <SearchTests onSearch={handleSearch} />
