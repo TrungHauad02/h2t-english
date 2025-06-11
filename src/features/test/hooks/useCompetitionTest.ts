@@ -158,108 +158,139 @@ export default function useCompetitionTest() {
   const hasCompletedTest = useCallback(() => {
     return submitCompetition?.status === true;
   }, [submitCompetition]);
+useEffect(() => {
+  const initializeCompetition = async () => {
+    if (!competitionId || isNaN(competitionId)) {
+      setError("Invalid competition ID");
+      setLoading(false);
+      return;
+    }
 
-  useEffect(() => {
-    const initializeCompetition = async () => {
-      if (competitionId && !isNaN(competitionId)) {
-        setLoading(true);
+    setLoading(true);
 
-        try {
-          const competitionResponse = await competitionTestService.findById(
-            competitionId
-          );
-          const competitionData = competitionResponse.data;
+    try {
+      // Load competition data
+      const competitionResponse = await competitionTestService.findById(competitionId);
+      const competitionData = competitionResponse.data;
 
-          if (!competitionData) {
-            setError("Competition not found.");
-            setLoading(false);
-            return;
-          }
-
-          setCompetition(competitionData);
-
-          if (competitionData.parts?.length > 0) {
-            const partsResponse = await testPartService.getByIds(
-              competitionData.parts
-            );
-            const parts: TestPart[] = partsResponse.data;
-            setCompetitionParts(parts);
-          }
-
-          // Check if competition has ended - if so, don't search for submissions or create new ones
-          const now = new Date();
-          const endTime = new Date(competitionData.endTime);
-          if (now > endTime) {
-            setLoading(false);
-            return;
-          }
-
-          // Check for existing submissions only if competition is still active
-          try {
-            const submitCompetitionTrue =
-              await submitCompetitionService.findByIdAndUserIdAndStatus(
-                competitionId,
-                userId,
-                true
-              );
-            setSubmitCompetition(submitCompetitionTrue.data);
-            setLoading(false);
-            return;
-          } catch (errorTrue) {}
-
-          try {
-            const submitCompetitionFalse =
-              await submitCompetitionService.findByIdAndUserIdAndStatus(
-                competitionId,
-                userId,
-                false
-              );
-            setSubmitCompetition(submitCompetitionFalse.data);
-            setLoading(false);
-            return;
-          } catch (errorFalse) {
-            console.error(
-              "Failed to find existing submit competition:",
-              errorFalse
-            );
-          }
-
-          // Only create new submission if competition is still active and user hasn't submitted
-          if (!hasCreatedSubmitCompetitionRef.current) {
-            hasCreatedSubmitCompetitionRef.current = true;
-
-            const newSubmitCompetition: SubmitCompetition = {
-              id: 0,
-              user_id: userId,
-              competition_id: competitionId,
-              score: 0,
-              status: false,
-            };
-
-            try {
-              const created = await submitCompetitionService.create(
-                newSubmitCompetition
-              );
-              setSubmitCompetition(created.data);
-            } catch (createErr) {
-              console.error("Failed to create submit competition:", createErr);
-            }
-          }
-
-          setLoading(false);
-        } catch (error) {
-          console.error("Error in initializeCompetition:", error);
-          setError("Failed to load competition data.");
-          setLoading(false);
-        }
-      } else {
-        setError("Invalid competition ID");
-        setLoading(false);
+      if (!competitionData) {
+        setError("Competition not found.");
+        return;
       }
-    };
 
-    initializeCompetition();
-  }, [competitionId, userId]);
+      setCompetition(competitionData);
+
+      // Load competition parts
+      if (competitionData.parts?.length > 0) {
+        const partsResponse = await testPartService.getByIds(competitionData.parts);
+        const parts: TestPart[] = partsResponse.data;
+        setCompetitionParts(parts);
+      }
+
+      // Check if competition has ended
+      const now = new Date();
+      const endTime = new Date(competitionData.endTime);
+      const isCompetitionEnded = now > endTime;
+
+      if (isCompetitionEnded) {
+        // For ended competitions, only try to find existing submissions to show results
+        try {
+          // Try to find completed submission first
+          const completedSubmission = await submitCompetitionService.findByIdAndUserIdAndStatus(
+            competitionId,
+            userId,
+            true
+          );
+          if (completedSubmission.data) {
+            setSubmitCompetition(completedSubmission.data);
+            return;
+          }
+        } catch (error) {
+          // If no completed submission found, try to find incomplete one
+          try {
+            const incompleteSubmission = await submitCompetitionService.findByIdAndUserIdAndStatus(
+              competitionId,
+              userId,
+              false
+            );
+            if (incompleteSubmission.data) {
+              setSubmitCompetition(incompleteSubmission.data);
+              return;
+            }
+          } catch (error) {
+            // No submission found for ended competition
+            console.log("No submission found for ended competition");
+          }
+        }
+        return;
+      }
+
+      // For active competitions, handle submissions
+      await handleActiveCompetitionSubmission(competitionId, userId);
+
+    } catch (error) {
+      console.error("Error in initializeCompetition:", error);
+      setError("Failed to load competition data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleActiveCompetitionSubmission = async (competitionId: number, userId: number) => {
+    try {
+      // First, try to find completed submission
+      const completedSubmission = await submitCompetitionService.findByIdAndUserIdAndStatus(
+        competitionId,
+        userId,
+        true
+      );
+      if (completedSubmission.data) {
+        setSubmitCompetition(completedSubmission.data);
+        return;
+      }
+    } catch (error) {
+      // No completed submission found, continue to check incomplete
+    }
+
+    try {
+      // Then, try to find incomplete submission
+      const incompleteSubmission = await submitCompetitionService.findByIdAndUserIdAndStatus(
+        competitionId,
+        userId,
+        false
+      );
+      if (incompleteSubmission.data) {
+        setSubmitCompetition(incompleteSubmission.data);
+        return;
+      }
+    } catch (error) {
+      // No incomplete submission found, need to create new one
+    }
+
+    // Create new submission if none exists and user hasn't created one yet
+    if (!hasCreatedSubmitCompetitionRef.current) {
+      hasCreatedSubmitCompetitionRef.current = true;
+
+      const newSubmitCompetition: SubmitCompetition = {
+        id: 0,
+        user_id: userId,
+        competition_id: competitionId,
+        score: 0,
+        status: false,
+      };
+
+      try {
+        const created = await submitCompetitionService.create(newSubmitCompetition);
+        setSubmitCompetition(created.data);
+      } catch (createErr) {
+        console.error("Failed to create submit competition:", createErr);
+        setError("Failed to create submission.");
+      }
+    }
+  };
+
+  initializeCompetition();
+}, [competitionId, userId]);
 
   const loadInitialAnsweredQuestions = useCallback(async () => {
     if (!submitCompetition?.id) return;

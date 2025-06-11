@@ -59,43 +59,53 @@ export default function useStudentTest() {
           }
 
           try {
-            const submitTestData = await submitTestService.findByIdAndUserIdAndStatusFalse(testId, userId);
-            setSubmitTest(submitTestData.data);
-          } catch {
-            if (!hasCreatedSubmitTestRef.current) {
-              hasCreatedSubmitTestRef.current = true;
-         
-
-              const newSubmitTest: SubmitTest = {
-                id: 0,
-                user_id: userId,
-                test_id: testId,
-                score: 0,
-                comment: '',
-                status: false,
-              };
-
-              try {
-                const created = await submitTestService.create(newSubmitTest);
-                setSubmitTest(created.data);
-              } catch (createErr) {
-                console.error("Lỗi khi tạo submit test:", createErr);
-              }
-            }
+          const submitTestResponse = await submitTestService.findByIdAndUserIdAndStatusFalse(testId, userId);
+          const existingSubmitTest = submitTestResponse.data;
+          
+    
+          if (existingSubmitTest && (existingSubmitTest.status === false || existingSubmitTest.status === null)) {
+            setSubmitTest(existingSubmitTest);
+          } else {
+      
+            throw new Error("No valid submit test found");
           }
         } catch {
-          setError("Failed to load test data.");
-        } finally {
-          setLoading(false);
+     
+          if (!hasCreatedSubmitTestRef.current) {
+            hasCreatedSubmitTestRef.current = true;
+            
+            const newSubmitTest: SubmitTest = {
+              id: 0,
+              user_id: userId,
+              test_id: testId,
+              score: 0,
+              comment: '',
+              status: false,
+            };
+            
+            try {
+              const created = await submitTestService.create(newSubmitTest);
+              setSubmitTest(created.data);
+            } catch (createErr) {
+              console.error("Lỗi khi tạo submit test:", createErr);
+              setError("Failed to create submit test.");
+            }
+          }
         }
-      } else {
-        setError("Invalid test ID");
+      } catch (err) {
+        console.error("Error loading test data:", err);
+        setError("Failed to load test data.");
+      } finally {
         setLoading(false);
       }
-    };
-
-    initializeTest();
-  }, [testId, testType, userId]);
+    } else {
+      setError("Invalid test ID");
+      setLoading(false);
+    }
+  };
+  
+  initializeTest();
+}, [testId, testType, userId]);
 
   const updateSubmitTest = async (data: Partial<SubmitTest>) => {
     if (submitTest && submitTest.id) {
