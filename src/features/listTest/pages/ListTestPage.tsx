@@ -31,7 +31,6 @@ export default function ListTestPage() {
     <Box
       sx={{
         minHeight: "100vh",
-        width: "100%",
         bgcolor: backgroundColor,
         backgroundImage: isDarkMode
           ? `radial-gradient(${color.emerald900} 1px, transparent 1px)`
@@ -75,16 +74,12 @@ export default function ListTestPage() {
           zIndex: 0,
         }}
       />
-
-      <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1 }}>
- 
-        <Fade in timeout={1000}>
+       <Fade in timeout={1000}>
           <Box>
             <MainPictureSection siteInfo={listTestPage.getSiteInfo(type)} />
           </Box>
         </Fade>
-        
-
+      <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1 }}>
         <Fade in timeout={1400}>
           <Box sx={{ mb: 4, mt: 4 }}>
             <SearchTests onSearch={handleSearch} />

@@ -36,7 +36,6 @@ export default function CompetitionTestPage() {
     return (
       <Box
         sx={{
-          width: "100%",
           minHeight: "100vh",
           pt: 8,
           pb: 6,

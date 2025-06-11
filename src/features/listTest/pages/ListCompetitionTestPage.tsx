@@ -26,7 +26,6 @@ export default function ListTestPage() {
     <Box
       sx={{
         minHeight: "100vh",
-        width: "100%",
         bgcolor: backgroundColor,
         backgroundImage: isDarkMode
           ? `radial-gradient(${color.emerald900} 1px, transparent 1px)`

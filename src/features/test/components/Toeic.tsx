@@ -32,7 +32,7 @@ const ToeicTest: React.FC = () => {
   } = useToeicPage();
 
   const [volume, setVolume] = useState(50);
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
@@ -321,7 +321,7 @@ const ToeicTest: React.FC = () => {
   };
 
   const isReadingSection = [7, 8, 9].includes(step);
-  const isListeningSection = [3, 4, 5, 6].includes(step);
+  const isListeningSection = [0,1,2,3, 4, 5, 6].includes(step);
   const showSubmitButton = step >= 3;
 
   // Loading state
