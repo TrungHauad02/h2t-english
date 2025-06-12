@@ -79,7 +79,10 @@ export default function useReadingDetailPage() {
   const handleSaveChanges = async () => {
     try {
       if (editData) {
-        const resData = await readingService.patch(editData.id, editData);
+        const resData = await readingService.patch(editData.id, {
+          ...editData,
+          questions: undefined,
+        });
         setData(resData.data);
       }
     } catch (error) {
