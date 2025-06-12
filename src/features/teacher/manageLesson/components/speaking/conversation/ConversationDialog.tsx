@@ -2,7 +2,7 @@ import { Grid, Button, CircularProgress } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { SpeakingConversation, Voice } from "interfaces";
 import { WEDialog } from "components/display";
 import { AudioPreviewPlayer, ConversationForm, VoiceSelector } from "./dialog";
@@ -39,72 +39,128 @@ export default function ConversationDialog({
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [audioError, setAudioError] = useState<boolean>(false);
   const [isAudioLoading, setIsAudioLoading] = useState<boolean>(false);
+  const [audioProgress, setAudioProgress] = useState<number>(0);
+
+  // Cleanup function
+  const cleanupAudio = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.removeEventListener("timeupdate", handleTimeUpdate);
+      audioRef.current.removeEventListener("ended", handleAudioEnded);
+      audioRef.current.removeEventListener("error", handleAudioError);
+      audioRef.current.removeEventListener(
+        "canplaythrough",
+        handleCanPlayThrough
+      );
+      audioRef.current.removeEventListener("loadstart", handleLoadStart);
+      audioRef.current = null;
+    }
+    setIsPlaying(false);
+    setAudioError(false);
+    setIsAudioLoading(false);
+    setAudioProgress(0);
+  }, []);
+
+  // Event handlers
+  const handleTimeUpdate = useCallback(() => {
+    if (audioRef.current) {
+      const progress =
+        (audioRef.current.currentTime / audioRef.current.duration) * 100;
+      setAudioProgress(isNaN(progress) ? 0 : progress);
+    }
+  }, []);
+
+  const handleAudioEnded = useCallback(() => {
+    setIsPlaying(false);
+    setAudioProgress(0);
+  }, []);
+
+  const handleAudioError = useCallback((e: Event) => {
+    console.error("Audio error:", e);
+    setAudioError(true);
+    setIsPlaying(false);
+    setIsAudioLoading(false);
+  }, []);
+
+  const handleCanPlayThrough = useCallback(() => {
+    setIsAudioLoading(false);
+    setAudioError(false);
+  }, []);
+
+  const handleLoadStart = useCallback(() => {
+    setIsAudioLoading(true);
+  }, []);
+
+  // Reset audio when audioUrl changes
+  useEffect(() => {
+    cleanupAudio();
+  }, [editData.audioUrl, cleanupAudio]);
 
   // Reset audio state when dialog closes
   useEffect(() => {
-    if (!open && audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      setIsPlaying(false);
+    if (!open) {
+      cleanupAudio();
     }
-  }, [open]);
+  }, [open, cleanupAudio]);
 
-  // Clean up audio URL when component unmounts
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (audioRef.current && audioRef.current.src) {
-        URL.revokeObjectURL(audioRef.current.src);
-      }
+      cleanupAudio();
     };
-  }, []);
+  }, [cleanupAudio]);
 
   // Handle audio playback
-  const handlePlayAudio = () => {
-    if (!editData.audioUrl) return;
+  const handlePlayAudio = useCallback(async () => {
+    if (!editData.audioUrl) {
+      console.error("No audio URL provided");
+      return;
+    }
 
+    // If currently playing, pause it
     if (isPlaying && audioRef.current) {
       audioRef.current.pause();
-      audioRef.current.currentTime = 0;
       setIsPlaying(false);
       return;
     }
 
     try {
-      setIsAudioLoading(true);
+      // Clean up any existing audio
+      cleanupAudio();
 
-      if (!audioRef.current) {
-        const audio = new Audio(editData.audioUrl);
+      // Create new audio element
+      const audio = new Audio();
 
-        audio.onerror = () => {
-          console.error("Error playing audio");
-          setAudioError(true);
-          setIsPlaying(false);
-          setIsAudioLoading(false);
-        };
+      // Set up event listeners before setting src
+      audio.addEventListener("loadstart", handleLoadStart);
+      audio.addEventListener("canplaythrough", handleCanPlayThrough);
+      audio.addEventListener("timeupdate", handleTimeUpdate);
+      audio.addEventListener("ended", handleAudioEnded);
+      audio.addEventListener("error", handleAudioError);
 
-        audio.onended = () => {
-          setIsPlaying(false);
-          setIsAudioLoading(false);
-        };
+      // Set crossOrigin if needed (for CORS)
+      audio.crossOrigin = "anonymous";
 
-        audio.oncanplaythrough = () => {
-          setAudioError(false);
-          setIsAudioLoading(false);
-        };
+      // Set the source
+      audio.src = editData.audioUrl;
 
-        audioRef.current = audio;
-      }
+      // Store reference
+      audioRef.current = audio;
 
-      const playPromise = audioRef.current.play();
+      // Load the audio
+      audio.load();
+
+      // Try to play
+      const playPromise = audio.play();
 
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
             setIsPlaying(true);
-            setIsAudioLoading(false);
+            setAudioError(false);
           })
           .catch((error) => {
-            console.error("Could not play audio:", error);
+            console.error("Play promise rejected:", error);
             setAudioError(true);
             setIsAudioLoading(false);
           });
@@ -114,14 +170,23 @@ export default function ConversationDialog({
       setAudioError(true);
       setIsAudioLoading(false);
     }
-  };
+  }, [
+    editData.audioUrl,
+    isPlaying,
+    cleanupAudio,
+    handleTimeUpdate,
+    handleAudioEnded,
+    handleAudioError,
+    handleCanPlayThrough,
+    handleLoadStart,
+  ]);
 
   return (
     <WEDialog
       open={open}
       onCancel={onClose}
       onOk={onSave}
-      disableButtons={editData.audioUrl ? false : true}
+      disableButtons={!editData.audioUrl}
       title={editData.id ? "Edit Conversation" : "Add New Conversation"}
       sx={{
         width: { xs: "95%", sm: "80%", md: "70%" },
@@ -149,10 +214,10 @@ export default function ConversationDialog({
           <Grid item xs={12}>
             <AudioPreviewPlayer
               isPlaying={isPlaying}
-              setIsPlaying={setIsPlaying}
               audioError={audioError}
               isAudioLoading={isAudioLoading}
               handlePlayAudio={handlePlayAudio}
+              audioProgress={audioProgress}
             />
           </Grid>
         )}

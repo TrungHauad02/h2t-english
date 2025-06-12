@@ -76,7 +76,10 @@ export default function useGrammarDetailPage() {
   const handleSaveChanges = async () => {
     try {
       if (editData) {
-        const resData = await grammarService.patch(editData.id, editData);
+        const resData = await grammarService.patch(editData.id, {
+          ...editData,
+          questions: undefined,
+        });
         setData(resData.data);
       }
     } catch (error) {
