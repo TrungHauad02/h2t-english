@@ -16,7 +16,7 @@ export default function TestTypeDistribution({ data }: { data: TestData }) {
   const testTypeItems: ChartItem[] = [
     {
       id: "mixingTest",
-      name: "Mixing Test",
+      name: "Mixings",
       value: data.totalMixingTests ?? 0,
       fill: color.teal600,
       icon: "🔄",
@@ -24,7 +24,7 @@ export default function TestTypeDistribution({ data }: { data: TestData }) {
     },
     {
       id: "writingTest",
-      name: "Writing Test",
+      name: "Writings",
       value: data.totalWritingTests ?? 0,
       fill: color.emerald600,
       icon: "✍️",
@@ -32,7 +32,7 @@ export default function TestTypeDistribution({ data }: { data: TestData }) {
     },
     {
       id: "readingTest",
-      name: "Reading Test",
+      name: "Readings",
       value: data.totalReadingTests ?? 0,
       fill: color.green600,
       icon: "📖",
@@ -40,7 +40,7 @@ export default function TestTypeDistribution({ data }: { data: TestData }) {
     },
     {
       id: "speakingTest",
-      name: "Speaking Test",
+      name: "Speakings",
       value: data.totalSpeakingTests ?? 0,
       fill: color.teal700,
       icon: "🎤",
@@ -48,7 +48,7 @@ export default function TestTypeDistribution({ data }: { data: TestData }) {
     },
     {
       id: "listeningTest",
-      name: "Listening Test",
+      name: "Listenings",
       value: data.totalListeningTests ?? 0,
       fill: color.emerald700,
       icon: "🎧",
