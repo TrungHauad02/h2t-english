@@ -41,7 +41,8 @@ export default function AnswerItem({
         display: "flex",
         alignItems: "flex-start",
         gap: 2,
-        p: 2,
+        px: 2,
+        py: 0.5,
         borderRadius: 2,
         bgcolor: isDarkMode ? color.gray600 : color.gray100,
       }}
@@ -52,7 +53,11 @@ export default function AnswerItem({
           label={`Answer ${index + 1}`}
           value={answer.content}
           onChange={(e) => handleAnswerChange(index, "content", e.target.value)}
-          sx={{ mb: 1, "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+          sx={{
+            mb: 0.5,
+            fontSize: "0.5rem",
+            "& .MuiOutlinedInput-root": { borderRadius: 2 },
+          }}
         />
 
         <Stack direction="row" justifyContent="space-between">

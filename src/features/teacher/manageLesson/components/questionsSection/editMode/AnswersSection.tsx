@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import { LessonQuestion, LessonAnswer } from "interfaces";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import useColor from "theme/useColor";
@@ -53,14 +53,22 @@ export default function AnswersSection({
 
       <Stack spacing={2}>
         {editData?.answers.map((answer, index) => (
-          <AnswerItem
-            key={answer.id}
-            answer={answer}
-            index={index}
-            handleAnswerChange={handleAnswerChange}
-            handleRemoveAnswer={handleRemoveAnswer}
-            accentColor={accentColor}
-          />
+          <Stack direction={"column"}>
+            <AnswerItem
+              key={answer.id}
+              answer={answer}
+              index={index}
+              handleAnswerChange={handleAnswerChange}
+              handleRemoveAnswer={handleRemoveAnswer}
+              accentColor={accentColor}
+            />
+            <Divider
+              sx={{
+                borderColor: isDarkMode ? color.gray500 : color.gray300,
+                my: 1,
+              }}
+            />
+          </Stack>
         ))}
       </Stack>
     </StyledCard>
