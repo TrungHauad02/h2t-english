@@ -5,11 +5,7 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  Paper,
-  Chip,
   alpha,
-  useMediaQuery,
-  useTheme
 } from '@mui/material';
 import HearingIcon from '@mui/icons-material/Hearing';
 import { useDarkMode } from 'hooks/useDarkMode';

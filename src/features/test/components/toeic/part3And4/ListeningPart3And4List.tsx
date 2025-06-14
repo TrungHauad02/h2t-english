@@ -10,6 +10,7 @@ interface ListeningPartProps {
   onFinish: () => void;
   submitToeicId: number;
   initialIndex?: number;
+  volume?: number;
 }
 
 const ListeningPartList: React.FC<ListeningPartProps> = ({
@@ -18,6 +19,7 @@ const ListeningPartList: React.FC<ListeningPartProps> = ({
   onFinish,
   submitToeicId,
   initialIndex = 0,
+  volume = 0.5,
 }) => {
   const [questionsList, setQuestionsList] = useState<ToeicPart3_4[]>([]);
   const [questionMap, setQuestionMap] = useState<Record<number, ToeicQuestion[]>>({});
@@ -27,10 +29,8 @@ const ListeningPartList: React.FC<ListeningPartProps> = ({
   const [shouldAutoPlay, setShouldAutoPlay] = useState(true);
   const [hasStartedPlaying, setHasStartedPlaying] = useState(false);
 
-  // Update currentIndex when initialIndex changes (for resume functionality)
   useEffect(() => {
     setCurrentIndex(initialIndex);
-    // Set auto play based on initial index
     if (initialIndex > 0) {
       setShouldAutoPlay(true);
       setHasStartedPlaying(true);
@@ -116,21 +116,18 @@ const ListeningPartList: React.FC<ListeningPartProps> = ({
       
       if (!selectedAnswer) return;
 
-      // Check if answer already exists
       const existingAnswers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionId(
         submitToeicId,
         questionId
       );
 
       if (existingAnswers && existingAnswers.data && existingAnswers.data.length > 0) {
-        // Update existing answer
         const existingAnswer = existingAnswers.data[0];
         await submitToeicAnswerService.update(existingAnswer.id, {
           ...existingAnswer,
           toeicAnswerId: selectedAnswer.id
         });
       } else {
-        // Create new answer
         await submitToeicAnswerService.create({
           id: Date.now(),
           submitToeicId: submitToeicId,
@@ -147,7 +144,6 @@ const ListeningPartList: React.FC<ListeningPartProps> = ({
   const handleAudioEnded = () => {
     if (currentIndex < questionsList.length - 1) {
       setCurrentIndex((prev) => prev + 1);
-      // Enable autoplay for subsequent questions after the first audio ends
       setShouldAutoPlay(true);
     } else {
       onFinish();
@@ -157,7 +153,6 @@ const ListeningPartList: React.FC<ListeningPartProps> = ({
   const handleAudioStarted = () => {
     if (!hasStartedPlaying) {
       setHasStartedPlaying(true);
-      // Once any audio starts playing, enable autoplay for subsequent questions
       setShouldAutoPlay(true);
     }
   };
@@ -184,6 +179,7 @@ const ListeningPartList: React.FC<ListeningPartProps> = ({
         onAudioEnded={handleAudioEnded}
         onAudioStarted={handleAudioStarted}
         autoPlay={shouldAutoPlay}
+        volume={volume}
       />
     </Box>
   );

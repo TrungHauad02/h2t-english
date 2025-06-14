@@ -10,6 +10,7 @@ type Props = {
   startIndex: number;
   submitToeicId: number;
   initialIndex?: number;
+  volume?: number;
 };
 
 const ListeningPart2List: React.FC<Props> = ({
@@ -18,6 +19,7 @@ const ListeningPart2List: React.FC<Props> = ({
   startIndex,
   submitToeicId,
   initialIndex = 0,
+  volume = 0.5,
 }) => {
   const [questions, setQuestions] = useState<ToeicPart2[]>([]);
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -26,10 +28,8 @@ const ListeningPart2List: React.FC<Props> = ({
   const [shouldAutoPlay, setShouldAutoPlay] = useState(true);
   const [hasStartedPlaying, setHasStartedPlaying] = useState(false);
 
-  // Update currentIndex when initialIndex changes (for resume functionality)
   useEffect(() => {
     setCurrentIndex(initialIndex);
-    // Set auto play based on initial index
     if (initialIndex > 0) {
       setShouldAutoPlay(true);
       setHasStartedPlaying(true);
@@ -40,11 +40,9 @@ const ListeningPart2List: React.FC<Props> = ({
     const fetchQuestionsAndAnswers = async () => {
       setLoading(true);
       try {
-        // Fetch questions
         const data = await toeicPart2Service.getByIdsAndStatus(questionsPart2, true);
         setQuestions(data.data);
 
-        // Fetch existing answers
         if (submitToeicId && questionsPart2.length > 0) {
           const existingAnswers = await submitToeicPart2Service.findBySubmitToeicIdAndToeicPart2Ids(
             submitToeicId,
@@ -77,21 +75,18 @@ const ListeningPart2List: React.FC<Props> = ({
     }));
 
     try {
-      // Check if answer already exists
       const existingAnswers = await submitToeicPart2Service.findBySubmitToeicIdAndToeicPart2Id(
         submitToeicId,
         questionId
       );
 
       if (existingAnswers && existingAnswers.data && existingAnswers.data.length > 0) {
-        // Update existing answer
         const existingAnswer = existingAnswers.data[0];
         await submitToeicPart2Service.update(existingAnswer.id, {
           ...existingAnswer,
           answer: answer
         });
       } else {
-        // Create new answer
         await submitToeicPart2Service.create({
           id: Date.now(),
           submitToeicId: submitToeicId,
@@ -108,7 +103,6 @@ const ListeningPart2List: React.FC<Props> = ({
   const handleAudioEnded = () => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
-      // Enable autoplay for subsequent questions after the first audio ends
       setShouldAutoPlay(true);
     } else {
       onFinish();
@@ -118,7 +112,6 @@ const ListeningPart2List: React.FC<Props> = ({
   const handleAudioStarted = () => {
     if (!hasStartedPlaying) {
       setHasStartedPlaying(true);
-      // Once any audio starts playing, enable autoplay for subsequent questions
       setShouldAutoPlay(true);
     }
   };
@@ -143,6 +136,7 @@ const ListeningPart2List: React.FC<Props> = ({
         onAudioEnded={handleAudioEnded}
         onAudioStarted={handleAudioStarted}
         autoPlay={shouldAutoPlay}
+        volume={volume}
       />
     </Box>
   );
