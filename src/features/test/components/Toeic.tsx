@@ -28,7 +28,7 @@ const ToeicTest: React.FC = () => {
     resumePosition,
     calculateTotalAnswered,
     submitToeicTest,
-    resetAllAnswers, // Add the reset function
+    resetAllAnswers,
   } = useToeicPage();
 
   const [volume, setVolume] = useState(50);
@@ -41,19 +41,16 @@ const ToeicTest: React.FC = () => {
   const [submissionResult, setSubmissionResult] = useState<any>(null);
   const [hasResumed, setHasResumed] = useState(false);
   const [showResumeDialog, setShowResumeDialog] = useState(false);
-  const [isResetting, setIsResetting] = useState(false); // Add resetting state
+  const [isResetting, setIsResetting] = useState(false);
 
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
-  // Check if we should show resume dialog when data is loaded
   useEffect(() => {
     if (resumePosition && !hasResumed && toeic && submitToeic) {
-      // Only show resume dialog if there's actually a valid resume position (not step 0)
       if (resumePosition.step > 0) {
         setShowResumeDialog(true);
       } else {
-        // If resume position is step 0, just start normally
         setHasResumed(true);
       }
     }
@@ -61,7 +58,6 @@ const ToeicTest: React.FC = () => {
 
   const handleResumeChoice = async (shouldResume: boolean) => {
     if (!shouldResume) {
-      // User chose "Start Over" - reset all answers
       setIsResetting(true);
       
       try {
@@ -69,13 +65,11 @@ const ToeicTest: React.FC = () => {
         
         if (resetSuccess) {
           console.log("Successfully reset all answers");
-          // Reset UI state to initial
           setStep(0);
           setCurrentIndex(0);
           setCountdown(null);
         } else {
           console.error("Failed to reset answers");
-          // Could show error message to user here
         }
       } catch (error) {
         console.error("Error during reset:", error);
@@ -83,7 +77,6 @@ const ToeicTest: React.FC = () => {
         setIsResetting(false);
       }
     } else if (shouldResume && resumePosition) {
-      // User chose "Continue" - resume from last position
       setStep(resumePosition.step);
       setCurrentIndex(resumePosition.currentIndex);
     }
@@ -244,6 +237,7 @@ const ToeicTest: React.FC = () => {
             initialIndex={
               resumePosition?.step === 3 ? resumePosition.currentIndex : 0
             }
+            volume={volume / 100}
           />
         );
       case 4:
@@ -256,6 +250,7 @@ const ToeicTest: React.FC = () => {
             initialIndex={
               resumePosition?.step === 4 ? resumePosition.currentIndex : 0
             }
+            volume={volume / 100}
           />
         );
       case 5:
@@ -268,6 +263,7 @@ const ToeicTest: React.FC = () => {
             initialIndex={
               resumePosition?.step === 5 ? resumePosition.currentIndex : 0
             }
+            volume={volume / 100}
           />
         );
       case 6:
@@ -280,6 +276,7 @@ const ToeicTest: React.FC = () => {
             initialIndex={
               resumePosition?.step === 6 ? resumePosition.currentIndex : 0
             }
+            volume={volume / 100}
           />
         );
       case 7:
@@ -324,7 +321,6 @@ const ToeicTest: React.FC = () => {
   const isListeningSection = [0,1,2,3, 4, 5, 6].includes(step);
   const showSubmitButton = step >= 3;
 
-  // Loading state
   if (loading) {
     return (
       <Box
@@ -341,7 +337,6 @@ const ToeicTest: React.FC = () => {
     );
   }
 
-  // Error state
   if (error || !toeic || !submitToeic) {
     return (
       <Box
@@ -374,7 +369,6 @@ const ToeicTest: React.FC = () => {
         bgcolor: isDarkMode ? color.gray900 : color.white,
       }}
     >
-      {/* Top Bar */}
       <Box
         sx={{
           bgcolor: color.teal500,
@@ -436,7 +430,6 @@ const ToeicTest: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Main Content Area */}
       <Box
         sx={{
           flex: 1,
@@ -461,7 +454,6 @@ const ToeicTest: React.FC = () => {
         </Fade>
       </Box>
 
-      {/* Bottom Navigation */}
       <Box
         sx={{
           bgcolor: isDarkMode ? color.gray800 : color.white,
@@ -475,7 +467,6 @@ const ToeicTest: React.FC = () => {
           flexShrink: 0,
         }}
       >
-        {/* Back Button */}
         <Button
           variant="contained"
           onClick={prevReading}
@@ -502,7 +493,6 @@ const ToeicTest: React.FC = () => {
           Back
         </Button>
 
-        {/* Button Container - Right Side */}
         <Box sx={{ display: "flex", gap: 2 }}>
           {showSubmitButton && (
             <Button
@@ -564,7 +554,6 @@ const ToeicTest: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Resume Dialog */}
       {showResumeDialog && (
         <Box
           sx={{
@@ -650,7 +639,6 @@ const ToeicTest: React.FC = () => {
         </Box>
       )}
 
-      {/* Dialogs */}
       <ConfirmSubmitDialog
         open={isConfirmDialogOpen}
         onClose={() => setIsConfirmDialogOpen(false)}

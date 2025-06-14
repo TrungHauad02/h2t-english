@@ -96,20 +96,6 @@ export default function OverallScore({
           </Typography>
         </Box>
       </Box>
-
-      <Typography
-        variant="body1"
-        sx={{
-          mt: 2,
-          color: isDarkMode ? color.gray300 : color.gray700,
-          textAlign: "center",
-        }}
-      >
-        <Box component="span" sx={{ fontWeight: 600 }}>
-          {Math.round(correctAnswers)}
-        </Box>{" "}
-        / {totalQuestions} correct answers
-      </Typography>
     </Box>
   );
 }
