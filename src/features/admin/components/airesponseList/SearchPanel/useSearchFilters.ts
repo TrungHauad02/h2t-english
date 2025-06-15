@@ -47,9 +47,9 @@ export function useSearchFilters({
 
   // Reset all filters to empty/null values explicitly
   const handleResetFilters = useCallback(() => {
-    // Tạo một đối tượng filter mới với tất cả các giá trị là null/undefined
+    // Tạo một đối tượng filter mới với tất cả các giá trị là undefined (consistent)
     const emptyFilter: AIResponseFilter = {
-      status: null,
+      status: undefined, // Changed from null to undefined for consistency
       userId: undefined,
       sortBy: undefined,
       startCreatedAt: undefined,
