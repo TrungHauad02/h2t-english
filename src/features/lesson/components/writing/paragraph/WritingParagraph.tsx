@@ -8,6 +8,7 @@ import {
   ParagraphHeader,
   ParagraphContent,
   ParagraphFooter,
+  WordBankSection,
 } from "./paragraphComponents";
 
 interface WritingParagraphProps {
@@ -26,10 +27,7 @@ export default function WritingParagraph({
   const paragraphPreview = hooks.renderParagraphWithBlanks();
 
   const borderColor = isDarkMode ? color.gray700 : color.gray200;
-  const backgroundPrimary = isDarkMode ? color.gray800 : color.gray50;
-  const cardShadow = isDarkMode
-    ? "0 8px 24px rgba(0,0,0,0.4)"
-    : "0 8px 24px rgba(15,118,110,0.15)";
+  const backgroundPrimary = isDarkMode ? color.gray900 : color.gray50;
 
   if (!paragraphPreview) return null;
 
@@ -39,33 +37,47 @@ export default function WritingParagraph({
 
   return (
     <Fade in timeout={800}>
-      <Box sx={{ px: { xs: 2, md: 4 } }}>
+      <Box
+        sx={{
+          px: { xs: 1, md: 2 },
+          py: { xs: 2, md: 3 },
+        }}
+      >
         <Card
-          elevation={4}
+          elevation={1}
           sx={{
-            borderRadius: "1.5rem",
+            borderRadius: "16px",
             overflow: "visible",
             backgroundColor: backgroundPrimary,
             border: `1px solid ${borderColor}`,
-            boxShadow: cardShadow,
-            transition: "all 0.3s ease",
+            transition: "all 0.2s ease",
             "&:hover": {
               boxShadow: isDarkMode
-                ? "0 12px 28px rgba(0,0,0,0.5)"
-                : "0 12px 28px rgba(15,118,110,0.2)",
+                ? "0 8px 24px rgba(0,0,0,0.3)"
+                : "0 8px 24px rgba(15,118,110,0.08)",
             },
           }}
         >
-          <Box sx={{ p: { xs: 2, md: 4 } }}>
+          <Box sx={{ p: { xs: 3, md: 4 } }}>
             <ParagraphHeader completionPercentage={completionPercentage} />
 
             <Divider
               sx={{
                 mb: 3,
                 borderColor: isDarkMode ? color.gray600 : color.gray300,
-                opacity: 0.6,
               }}
             />
+
+            {hooks.sortedAnswers.length > 0 && (
+              <Slide direction="up" in timeout={500}>
+                <Box>
+                  <WordBankSection
+                    writingAnswers={writingAnswers}
+                    userAnswers={hooks.userAnswers}
+                  />
+                </Box>
+              </Slide>
+            )}
 
             <ParagraphContent
               displayWords={paragraphPreview.displayWords}
@@ -73,7 +85,7 @@ export default function WritingParagraph({
             />
 
             {hooks.sortedAnswers.length > 0 && (
-              <Slide direction="up" in timeout={500}>
+              <Slide direction="up" in timeout={600}>
                 <Box>
                   <ParagraphFooter
                     writingAnswers={writingAnswers}
