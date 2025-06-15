@@ -12,9 +12,14 @@ const getAIResponses = async (
     let url = `/ai-response?page=${page - 1}&size=${itemsPerPage}`;
 
     if (filter) {
-      // Status
+      console.log("🔍 Filter object:", filter);
+      
+      // Status - Chỉ thêm khi không undefined
       if (filter.status !== undefined && filter.status !== null) {
         url += `&status=${filter.status}`;
+        console.log("✅ Added status to URL:", filter.status);
+      } else {
+        console.log("❌ Status is undefined/null, not adding to URL");
       }
 
       // User_id
@@ -62,16 +67,18 @@ const getAIResponses = async (
       }
     }
 
+    console.log("🌐 Final API URL:", url);
     const response = await apiClient.get(url);
+    console.log("📊 Response data length:", response.data.data?.content?.length || 0);
 
     return response.data.data;
   } catch (error) {
-    console.error("Error fetching AIResponse:", error);
+    console.error("❌ Error fetching AIResponse:", error);
     throw error;
   }
 };
 
-// Sửa lại method để khớp với BE
+// Teacher view method - đã sửa để khớp với BE endpoint
 const getTeacherViewResponses = async (
   page: number,
   itemsPerPage: number,
@@ -90,6 +97,16 @@ const getTeacherViewResponses = async (
     }
 
     if (filter) {
+      console.log("🎓 Teacher view filter:", filter);
+      
+      // THÊM STATUS FILTER CHO TEACHER VIEW
+      if (filter.status !== undefined && filter.status !== null) {
+        url += `&status=${filter.status}`;
+        console.log("✅ Teacher view - Added status to URL:", filter.status);
+      } else {
+        console.log("❌ Teacher view - Status is undefined/null, not adding to URL");
+      }
+
       // SortFields thay vì sortBy
       if (filter.sortBy) {
         url += `&sortFields=${encodeURIComponent(filter.sortBy)}`;
@@ -129,12 +146,15 @@ const getTeacherViewResponses = async (
         url += `&endUpdatedAt=${formattedEndUpdateDate}`;
       }
     }
+
+    console.log("🎓 Teacher view - Final API URL:", url);
     const response = await apiClient.get(url);
+    console.log("🎓 Teacher view - Response data length:", response.data.data?.content?.length || 0);
 
     return response.data.data;
   } catch (error: any) {
-    console.error("Error fetching teacher view AIResponse:", error);
-    console.error("Error response:", error.response);
+    console.error("❌ Error fetching teacher view AIResponse:", error);
+    console.error("❌ Error response:", error.response);
     throw error;
   }
 };

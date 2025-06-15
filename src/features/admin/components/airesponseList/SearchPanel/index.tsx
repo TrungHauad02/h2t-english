@@ -83,7 +83,7 @@ export default function SearchPanel({
       
       // Reset tất cả các trường trong state
       setLocalFilters({
-        status: null,
+        status: undefined, // Changed from null to undefined
         userId: undefined,
         sortBy: undefined,
         startCreatedAt: undefined,
@@ -108,6 +108,23 @@ export default function SearchPanel({
     
     // Gọi hàm reset trong hook
     handleResetFilters();
+  };
+
+  // Helper function to get status display value
+  const getStatusDisplayValue = () => {
+    if (localFilters.status === undefined || localFilters.status === null) {
+      return "";
+    }
+    return localFilters.status === true ? "true" : "false";
+  };
+
+  // Helper function to handle status change
+  const handleStatusChange = (value: string) => {
+    if (value === "") {
+      handleFilterChange("status", undefined); // Send undefined for "All"
+    } else {
+      handleFilterChange("status", value === "true"); // Convert string to boolean
+    }
   };
 
   // Common styles for input fields
@@ -220,23 +237,13 @@ export default function SearchPanel({
               />
             </FilterField>
 
-            {/* Status */}
+            {/* Status - FIXED VERSION */}
             <FilterField>
               <FormControl fullWidth sx={inputStyles}>
                 <InputLabel>Status</InputLabel>
                 <Select
-                  value={
-                    localFilters.status === null || localFilters.status === undefined
-                      ? ""
-                      : localFilters.status ? "true" : "false"
-                  }
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    handleFilterChange(
-                      "status",
-                      value === "" ? null : value === "true"
-                    );
-                  }}
+                  value={getStatusDisplayValue()}
+                  onChange={(e) => handleStatusChange(e.target.value as string)}
                   label="Status"
                   sx={{
                     color: isDarkMode ? color.gray200 : color.gray800,
