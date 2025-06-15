@@ -1,11 +1,22 @@
-import { Box, Paper, Fade } from "@mui/material";
+import {
+  Box,
+  Typography,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Button,
+  Paper,
+  TextField,
+} from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
+import EditIcon from "@mui/icons-material/Edit";
+import { FiberManualRecord as BulletIcon } from "@mui/icons-material";
 import { Grammar } from "interfaces";
 import { useState } from "react";
 import SectionHeader from "../common/SectionHeader";
-import { TipsDisplayMode, TipsEditMode } from "./tips";
 
 interface GrammarTipsSectionProps {
   editData: Grammar | null;
@@ -21,16 +32,11 @@ export default function GrammarTipsSection({
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
-  const [isEditMode, setIsEditMode] = useState<boolean>(false);
-  const [hoveredTipIndex, setHoveredTipIndex] = useState<number | null>(null);
-
-  // Theming
   const accentColor = isDarkMode ? color.teal300 : color.teal600;
-  const paperBg = isDarkMode ? color.gray800 : color.gray50;
   const textColor = isDarkMode ? color.gray100 : color.gray900;
-  const cardBg = isDarkMode ? color.gray700 : color.white;
-  const chipBg = isDarkMode ? color.teal700 : color.teal100;
-  const chipColor = isDarkMode ? color.teal50 : color.teal800;
+  const borderColor = isDarkMode ? color.gray700 : color.gray200;
+
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
 
   const handleAddTip = () => {
     const newTips = editData?.tips ? [...editData.tips, ""] : [""];
@@ -54,47 +60,138 @@ export default function GrammarTipsSection({
   };
 
   return (
-    <Fade in={true} timeout={500}>
-      <Box
-        component={Paper}
-        elevation={3}
+    <Box
+      component={Paper}
+      elevation={3}
+      sx={{
+        p: 3,
+        borderRadius: "1rem",
+        backgroundColor: isDarkMode ? color.gray800 : color.gray50,
+        my: 4,
+        border: `1px solid ${borderColor}`,
+      }}
+    >
+      <SectionHeader
+        title="Grammar Tips"
+        editText="Edit Tips"
+        icon={<LightbulbIcon />}
+        isEditMode={isEditMode}
+        handleSaveChanges={handleSave}
+        handleEditMode={() => setIsEditMode(true)}
+        handleCancelEdit={() => setIsEditMode(false)}
+      />
+
+      <List
         sx={{
-          p: { xs: 2, md: 3 },
-          borderRadius: "1.5rem",
-          backgroundColor: paperBg,
-          mb: 4,
+          px: 0,
+          py: 0,
+          "& .MuiListItem-root:not(:last-child)": {
+            borderBottom: `1px solid ${
+              isDarkMode ? color.gray600 : color.gray200
+            }`,
+          },
         }}
       >
-        <SectionHeader
-          title="Grammar Tips"
-          editText="Edit Tips"
-          icon={<LightbulbIcon sx={{ color: accentColor }} />}
-          isEditMode={isEditMode}
-          handleSaveChanges={handleSave}
-          handleEditMode={() => setIsEditMode(true)}
-          handleCancelEdit={() => setIsEditMode(false)}
-        />
-
         {isEditMode ? (
-          <TipsEditMode
-            editData={editData}
-            handleTipChange={handleTipChange}
-            handleRemoveTip={handleRemoveTip}
-            handleAddTip={handleAddTip}
-            accentColor={accentColor}
-            cardBg={cardBg}
-          />
+          <Box>
+            {/* Render each tip as a separate TextField */}
+            {editData?.tips.map((tip, index) => (
+              <Box key={index} sx={{ mb: 2 }}>
+                <TextField
+                  label={`Tip ${index + 1}`}
+                  variant="outlined"
+                  fullWidth
+                  sx={{
+                    mb: 1,
+                    bgcolor: isDarkMode ? color.gray700 : color.white,
+                  }}
+                  value={tip}
+                  onChange={(e) => handleTipChange(index, e.target.value)}
+                />
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => handleRemoveTip(index)}
+                  sx={{
+                    display: "block",
+                    mt: 1,
+                    borderColor: isDarkMode ? color.red400 : color.red600,
+                    color: isDarkMode ? color.red400 : color.red600,
+                    "&:hover": {
+                      borderColor: isDarkMode ? color.red500 : color.red700,
+                      bgcolor: "rgba(220, 38, 38, 0.04)",
+                    },
+                  }}
+                >
+                  Remove
+                </Button>
+              </Box>
+            ))}
+            {/* Add a new Tip button */}
+            <Button
+              variant="outlined"
+              startIcon={<EditIcon />}
+              onClick={handleAddTip}
+              sx={{
+                mt: 2,
+                borderColor: accentColor,
+                color: accentColor,
+                "&:hover": {
+                  borderColor: accentColor,
+                  bgcolor: "rgba(0, 150, 136, 0.1)",
+                },
+              }}
+            >
+              Add New Tip
+            </Button>
+          </Box>
         ) : (
-          <TipsDisplayMode
-            editData={editData}
-            textColor={textColor}
-            chipBg={chipBg}
-            chipColor={chipColor}
-            hoveredTipIndex={hoveredTipIndex}
-            setHoveredTipIndex={setHoveredTipIndex}
-          />
+          editData &&
+          editData.tips.map((tip, index) => (
+            <ListItem
+              key={index}
+              sx={{
+                px: 2.5,
+                py: 1.75,
+                alignItems: "flex-start",
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: "32px !important",
+                  color: accentColor,
+                  alignSelf: "flex-start",
+                  mt: "8px",
+                }}
+              >
+                <BulletIcon
+                  sx={{
+                    fontSize: "10px",
+                    filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.1))",
+                  }}
+                />
+              </ListItemIcon>
+              <ListItemText
+                primary={
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      color: textColor,
+                      fontSize: "1.02rem",
+                      lineHeight: "1.6",
+                      fontWeight: 400,
+                      letterSpacing: "0.02em",
+                    }}
+                  >
+                    {tip}
+                  </Typography>
+                }
+                sx={{ my: 0 }}
+              />
+            </ListItem>
+          ))
         )}
-      </Box>
-    </Fade>
+      </List>
+    </Box>
   );
 }

@@ -1,10 +1,10 @@
-import { Box, TextField, Chip, Zoom } from "@mui/material";
+import { Box, TextField, Chip } from "@mui/material";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 
 interface ParagraphContentProps {
   displayWords: string[];
-  hooks: any; // Using any here as the hooks object has complex structure
+  hooks: any;
 }
 
 export default function ParagraphContent({
@@ -16,30 +16,19 @@ export default function ParagraphContent({
 
   const textColor = isDarkMode ? color.gray100 : color.gray900;
   const accentColor = isDarkMode ? color.teal300 : color.teal600;
-  const backgroundSecondary = isDarkMode ? color.gray700 : color.gray100;
+  const backgroundSecondary = isDarkMode ? color.gray800 : color.white;
 
   return (
     <Box
       sx={{
-        p: { xs: 2, md: 3 },
-        borderRadius: "1rem",
+        p: { xs: 2.5, md: 3 },
+        borderRadius: "12px",
         bgcolor: backgroundSecondary,
-        boxShadow: "inset 0 2px 10px rgba(0,0,0,0.08)",
+        border: `1px solid ${isDarkMode ? color.gray700 : color.gray200}`,
         wordBreak: "break-word",
         whiteSpace: "normal",
-        lineHeight: 2.2,
-        fontSize: { xs: "0.95rem", md: "1rem" },
-        position: "relative",
-        overflow: "hidden",
-        "&::before": {
-          content: '""',
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "5px",
-          background: `linear-gradient(90deg, ${color.teal400}, ${color.emerald500})`,
-        },
+        lineHeight: { xs: 1.8, md: 2 },
+        fontSize: { xs: "1rem", md: "1.1rem" },
       }}
     >
       {displayWords.map((word, index) => {
@@ -57,13 +46,8 @@ export default function ParagraphContent({
 
           const showFeedback = hooks.isShowExplain && hooks.score !== null;
           const feedbackColor = isCorrect ? color.success : color.error;
-          const feedbackBgColor = isCorrect
-            ? isDarkMode
-              ? color.green900
-              : color.green100
-            : isDarkMode
-            ? color.red900
-            : color.red100;
+
+          const hasValue = hooks.userAnswers[missingIndex]?.trim();
 
           return (
             <Box
@@ -75,7 +59,6 @@ export default function ParagraphContent({
                 mx: 0.5,
                 mb: 1,
                 verticalAlign: "middle",
-                position: "relative",
               }}
             >
               <TextField
@@ -85,59 +68,58 @@ export default function ParagraphContent({
                 }
                 variant="outlined"
                 size="small"
-                placeholder="answer"
+                placeholder="___"
                 disabled={!!hooks.score}
                 sx={{
-                  width: { xs: "100px", sm: "130px" },
+                  width: { xs: "100px", sm: "120px", md: "140px" },
                   "& .MuiOutlinedInput-root": {
-                    borderRadius: "0.7rem",
-                    bgcolor: isDarkMode ? color.gray800 : color.white,
-                    borderColor: showFeedback ? feedbackColor : accentColor,
-                    transition: "all 0.3s ease",
-                    boxShadow: showFeedback
-                      ? `0 0 0 1px ${feedbackColor}, 0 2px 8px ${feedbackBgColor}`
-                      : "0 2px 6px rgba(0,0,0,0.1)",
+                    borderRadius: "8px",
+                    bgcolor: isDarkMode ? color.gray700 : color.white,
+                    transition: "all 0.2s ease",
                     "& fieldset": {
-                      borderColor: showFeedback ? feedbackColor : accentColor,
-                      borderWidth: showFeedback ? "2px" : "1px",
-                    },
-                    "&:hover fieldset": {
                       borderColor: showFeedback
                         ? feedbackColor
+                        : hasValue
+                        ? accentColor
                         : isDarkMode
-                        ? color.teal400
-                        : color.teal500,
+                        ? color.gray600
+                        : color.gray300,
+                      borderWidth: showFeedback || hasValue ? "2px" : "1px",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: showFeedback ? feedbackColor : accentColor,
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: showFeedback ? feedbackColor : accentColor,
                     },
                   },
                   "& .MuiInputBase-input": {
                     textAlign: "center",
                     fontWeight: 500,
+                    fontSize: "0.9rem",
+                    "&::placeholder": {
+                      color: isDarkMode ? color.gray500 : color.gray400,
+                      opacity: 0.8,
+                    },
                   },
                 }}
               />
               {showFeedback && (
-                <Zoom in timeout={500}>
-                  <Chip
-                    label={answer.correctAnswer}
-                    size="small"
-                    sx={{
-                      mt: 0.8,
-                      ml: "auto",
-                      mr: "auto",
-                      fontSize: "0.75rem",
-                      fontWeight: 600,
-                      backgroundColor: isDarkMode
-                        ? color.emerald800
-                        : color.emerald300,
-                      color: isDarkMode ? color.white : color.emerald900,
-                      border: `1px solid ${
-                        isDarkMode ? color.emerald700 : color.emerald400
-                      }`,
-                      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                      px: 0.5,
-                    }}
-                  />
-                </Zoom>
+                <Chip
+                  label={answer.correctAnswer}
+                  size="small"
+                  sx={{
+                    mt: 0.5,
+                    ml: "auto",
+                    mr: "auto",
+                    fontSize: "0.75rem",
+                    fontWeight: 600,
+                    backgroundColor: isDarkMode
+                      ? color.emerald800
+                      : color.emerald200,
+                    color: isDarkMode ? color.emerald200 : color.emerald800,
+                  }}
+                />
               )}
             </Box>
           );
@@ -150,6 +132,7 @@ export default function ParagraphContent({
             sx={{
               color: textColor,
               mr: 0.5,
+              fontWeight: 400,
             }}
           >
             {word}
