@@ -51,7 +51,7 @@ export default function usePreparationSection(
       tip: defaults.tip,
       questions: [],
       type: PreparationType.MATCH_WORD_WITH_SENTENCES,
-      status: false,
+      status: true,
     };
     setData(initialData);
     setEditData({ ...initialData });
