@@ -11,15 +11,19 @@ interface ListeningPartProps {
   submitToeicId: number;
   initialIndex?: number;
   volume?: number;
+  manualControl?: boolean;
+  onIndexChange?: (index: number) => void;
 }
 
-const ListeningPartList: React.FC<ListeningPartProps> = ({
+const ListeningPart3And4List: React.FC<ListeningPartProps> = ({
   questions,
   startIndex,
   onFinish,
   submitToeicId,
   initialIndex = 0,
   volume = 0.5,
+  manualControl = false,
+  onIndexChange,
 }) => {
   const [questionsList, setQuestionsList] = useState<ToeicPart3_4[]>([]);
   const [questionMap, setQuestionMap] = useState<Record<number, ToeicQuestion[]>>({});
@@ -35,7 +39,7 @@ const ListeningPartList: React.FC<ListeningPartProps> = ({
       setShouldAutoPlay(true);
       setHasStartedPlaying(true);
     }
-  }, [initialIndex]);
+  }, [initialIndex, manualControl]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -142,6 +146,7 @@ const ListeningPartList: React.FC<ListeningPartProps> = ({
   };
 
   const handleAudioEnded = () => {
+    // Always auto-advance to next question when audio ends, regardless of manual control
     if (currentIndex < questionsList.length - 1) {
       setCurrentIndex((prev) => prev + 1);
       setShouldAutoPlay(true);
@@ -156,6 +161,13 @@ const ListeningPartList: React.FC<ListeningPartProps> = ({
       setShouldAutoPlay(true);
     }
   };
+
+  // Update parent component when index changes
+  useEffect(() => {
+    if (onIndexChange) {
+      onIndexChange(currentIndex);
+    }
+  }, [currentIndex, onIndexChange]);
 
   const currentPart = questionsList[currentIndex];
   const currentQuestions = currentPart?.id ? questionMap[currentPart.id] ?? [] : [];
@@ -185,4 +197,4 @@ const ListeningPartList: React.FC<ListeningPartProps> = ({
   );
 };
 
-export default ListeningPartList;
+export default ListeningPart3And4List;

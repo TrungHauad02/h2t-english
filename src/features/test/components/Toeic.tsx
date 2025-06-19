@@ -5,6 +5,14 @@ import TimerIcon from "@mui/icons-material/Timer";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import useToeicPage from "../hooks/useToeicTest";
+import { 
+  submitToeicPart1Service, 
+  submitToeicPart2Service, 
+  submitToeicAnswerService,
+  toeicPart3_4Service,
+  toeicPart6Service,
+  toeicPart7Service
+} from "services";
 
 import VolumeTestStep from "./toeic/introduce/VolumeTestStep";
 import DirectionsStep from "./toeic/introduce/DirectionsStep";
@@ -17,6 +25,8 @@ import Part6List from "./toeic/part6/Part6List";
 import Part7List from "./toeic/part7/Part7List";
 import ConfirmSubmitDialog from "./common/ConfirmSubmitDialog";
 import ToeicSubmitTestDialog from "./common/ToeicSubmitTestDialog";
+import QuestionNavigator from "./toeic/QuestionNavigator";
+import { ToeicPart6 } from "interfaces";
 
 const ToeicTest: React.FC = () => {
   const {
@@ -42,9 +52,200 @@ const ToeicTest: React.FC = () => {
   const [hasResumed, setHasResumed] = useState(false);
   const [showResumeDialog, setShowResumeDialog] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set());
 
   const color = useColor();
   const { isDarkMode } = useDarkMode();
+
+  // Update answered questions khi có thay đổi
+  useEffect(() => {
+    const updateAnsweredQuestions = async () => {
+      if (submitToeic?.id && toeic) {
+        try {
+          const answeredList = await getAnsweredQuestionNumbersFromToeic();
+          setAnsweredQuestions(new Set(answeredList));
+        } catch (error) {
+          console.error("Error fetching answered questions:", error);
+        }
+      }
+    };
+
+    updateAnsweredQuestions();
+  }, [totalAnswered, submitToeic?.id, toeic]); // Listen to totalAnswered changes from useToeicPage
+
+  // Sử dụng lại logic từ useToeicTest để tính answered questions
+  const getAnsweredQuestionNumbersFromToeic = async (): Promise<number[]> => {
+    if (!submitToeic?.id || !toeic) return [];
+    
+    try {
+      const answeredList: number[] = [];
+
+      // Part 1
+      if (toeic.questionsPart1?.length) {
+        const part1Answers = await submitToeicPart1Service.findBySubmitToeicIdAndToeicPart1Ids(
+          submitToeic.id,
+          toeic.questionsPart1
+        );
+        if (part1Answers?.data?.length) {
+          part1Answers.data.forEach((answer: any) => {
+            const questionIndex = toeic.questionsPart1!.indexOf(answer.toeicPart1Id);
+            if (questionIndex !== -1) {
+              answeredList.push(1 + questionIndex);
+            }
+          });
+        }
+      }
+
+      // Part 2
+      if (toeic.questionsPart2?.length) {
+        const part2Answers = await submitToeicPart2Service.findBySubmitToeicIdAndToeicPart2Ids(
+          submitToeic.id,
+          toeic.questionsPart2
+        );
+        if (part2Answers?.data?.length) {
+          part2Answers.data.forEach((answer: any) => {
+            const questionIndex = toeic.questionsPart2!.indexOf(answer.toeicPart2Id);
+            if (questionIndex !== -1) {
+              answeredList.push(7 + questionIndex);
+            }
+          });
+        }
+      }
+
+      // Part 3
+      if (toeic.questionsPart3?.length) {
+        const toeicPart3Res = await toeicPart3_4Service.getByIdsAndStatus(toeic.questionsPart3, true);
+        const toeicPart3Data = Array.isArray(toeicPart3Res?.data) ? toeicPart3Res.data : [];
+        
+        const part3QuestionIds: number[] = [];
+        for (const part3 of toeicPart3Data) {
+          if (part3.questions?.length) {
+            part3QuestionIds.push(...part3.questions);
+          }
+        }
+        
+        if (part3QuestionIds.length) {
+          const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+            submitToeic.id,
+            part3QuestionIds
+          );
+          if (answers?.data?.length) {
+            answers.data.forEach((answer: any) => {
+              const questionIndex = part3QuestionIds.indexOf(answer.toeicQuestionId);
+              if (questionIndex !== -1) {
+                answeredList.push(32 + questionIndex);
+              }
+            });
+          }
+        }
+      }
+
+      // Part 4
+      if (toeic.questionsPart4?.length) {
+        const toeicPart4Res = await toeicPart3_4Service.getByIdsAndStatus(toeic.questionsPart4, true);
+        const toeicPart4Data = Array.isArray(toeicPart4Res?.data) ? toeicPart4Res.data : [];
+        
+        const part4QuestionIds: number[] = [];
+        for (const part4 of toeicPart4Data) {
+          if (part4.questions?.length) {
+            part4QuestionIds.push(...part4.questions);
+          }
+        }
+        
+        if (part4QuestionIds.length) {
+          const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+            submitToeic.id,
+            part4QuestionIds
+          );
+          if (answers?.data?.length) {
+            answers.data.forEach((answer: any) => {
+              const questionIndex = part4QuestionIds.indexOf(answer.toeicQuestionId);
+              if (questionIndex !== -1) {
+                answeredList.push(71 + questionIndex);
+              }
+            });
+          }
+        }
+      }
+
+      // Part 5
+      if (toeic.questionsPart5?.length) {
+        const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+          submitToeic.id,
+          toeic.questionsPart5
+        );
+        if (answers?.data?.length) {
+          answers.data.forEach((answer: any) => {
+            const questionIndex = toeic.questionsPart5!.indexOf(answer.toeicQuestionId);
+            if (questionIndex !== -1) {
+              answeredList.push(101 + questionIndex);
+            }
+          });
+        }
+      }
+
+      // Part 6
+      if (toeic.questionsPart6?.length) {
+        const toeicPart6Res = await toeicPart6Service.getByIdsAndStatus(toeic.questionsPart6, true);
+        const toeicPart6Data = Array.isArray(toeicPart6Res?.data) ? toeicPart6Res.data : [];
+        
+        const part6QuestionIds: number[] = [];
+        for (const part6 of toeicPart6Data) {
+          if (part6.questions?.length) {
+            part6QuestionIds.push(...part6.questions);
+          }
+        }
+        
+        if (part6QuestionIds.length) {
+          const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+            submitToeic.id,
+            part6QuestionIds
+          );
+          if (answers?.data?.length) {
+            answers.data.forEach((answer: any) => {
+              const questionIndex = part6QuestionIds.indexOf(answer.toeicQuestionId);
+              if (questionIndex !== -1) {
+                answeredList.push(131 + questionIndex);
+              }
+            });
+          }
+        }
+      }
+
+      // Part 7
+      if (toeic.questionsPart7?.length) {
+        const toeicPart7Res = await toeicPart7Service.getByIdsAndStatus(toeic.questionsPart7, true);
+        const toeicPart7Data = Array.isArray(toeicPart7Res?.data) ? toeicPart7Res.data : [];
+        
+        const part7QuestionIds: number[] = [];
+        for (const part7 of toeicPart7Data) {
+          if (part7.questions?.length) {
+            part7QuestionIds.push(...part7.questions);
+          }
+        }
+        
+        if (part7QuestionIds.length) {
+          const answers = await submitToeicAnswerService.findBySubmitToeicIdAndQuestionIds(
+            submitToeic.id,
+            part7QuestionIds
+          );
+          if (answers?.data?.length) {
+            answers.data.forEach((answer: any) => {
+              const questionIndex = part7QuestionIds.indexOf(answer.toeicQuestionId);
+              if (questionIndex !== -1) {
+                answeredList.push(147 + questionIndex);
+              }
+            });
+          }
+        }
+      }
+
+      return [...new Set(answeredList)]; // Remove duplicates
+    } catch (error) {
+      console.error("Error fetching answered questions:", error);
+      return [];
+    }
+  };
 
   useEffect(() => {
     if (resumePosition && !hasResumed && toeic && submitToeic) {
@@ -167,6 +368,14 @@ const ToeicTest: React.FC = () => {
   const getTotalCurrentPartItems = () => {
     if (!toeic) return 0;
     switch (step) {
+      case 3:
+        return toeic.questionsPart1?.length ?? 0;
+      case 4:
+        return toeic.questionsPart2?.length ?? 0;
+      case 5:
+        return toeic.questionsPart3?.length ?? 0;
+      case 6:
+        return toeic.questionsPart4?.length ?? 0;
       case 7:
         return toeic.questionsPart5?.length ?? 0;
       case 8:
@@ -184,10 +393,15 @@ const ToeicTest: React.FC = () => {
   };
 
   const canGoPrevious = () => {
+    // For listening parts (3-6), allow going back within the part
+    if (step >= 3 && step <= 6) {
+      return currentIndex > 0 || step > 3;
+    }
+    // For reading parts (7-9), allow going back within the part or to previous parts
     return step > 7 || (step === 7 && currentIndex > 0);
   };
 
-  const nextReading = () => {
+  const nextQuestion = () => {
     const total = getTotalCurrentPartItems();
 
     if (currentIndex < total - 1) {
@@ -198,17 +412,134 @@ const ToeicTest: React.FC = () => {
     }
   };
 
-  const prevReading = () => {
+  const prevQuestion = () => {
     if (currentIndex > 0) {
       setCurrentIndex((prev) => prev - 1);
-    } else if (step > 7) {
+    } else if (step > 3) {
       setStep((prev) => prev - 1);
-      const previousPartTotal =
-        step === 8
-          ? toeic?.questionsPart5?.length ?? 0
-          : toeic?.questionsPart6?.length ?? 0;
+      // Get the length of the previous part
+      let previousPartTotal = 0;
+      switch (step - 1) {
+        case 3:
+          previousPartTotal = toeic?.questionsPart1?.length ?? 0;
+          break;
+        case 4:
+          previousPartTotal = toeic?.questionsPart2?.length ?? 0;
+          break;
+        case 5:
+          previousPartTotal = toeic?.questionsPart3?.length ?? 0;
+          break;
+        case 6:
+          previousPartTotal = toeic?.questionsPart4?.length ?? 0;
+          break;
+        case 7:
+          previousPartTotal = toeic?.questionsPart5?.length ?? 0;
+          break;
+        case 8:
+          previousPartTotal = toeic?.questionsPart6?.length ?? 0;
+          break;
+        default:
+          previousPartTotal = 0;
+      }
       setCurrentIndex(previousPartTotal - 1);
     }
+  };
+
+  // Navigate to specific question number
+  const handleNavigateToQuestion = async (questionNumber: number) => {
+    let targetStep = 3;
+    let targetIndex = 0;
+
+    if (questionNumber >= 1 && questionNumber <= 6) {
+      // Part 1
+      targetStep = 3;
+      targetIndex = questionNumber - 1;
+    } else if (questionNumber >= 7 && questionNumber <= 31) {
+      // Part 2
+      targetStep = 4;
+      targetIndex = questionNumber - 7;
+    } else if (questionNumber >= 32 && questionNumber <= 70) {
+      // Part 3
+      targetStep = 5;
+      targetIndex = Math.floor((questionNumber - 32) / 3);
+    } else if (questionNumber >= 71 && questionNumber <= 100) {
+      // Part 4
+      targetStep = 6;
+      targetIndex = Math.floor((questionNumber - 71) / 3);
+    } else if (questionNumber >= 101 && questionNumber <= 130) {
+      // Part 5
+      targetStep = 7;
+      targetIndex = questionNumber - 101;
+    } else if (questionNumber >= 131 && questionNumber <= 146) {
+      // Part 6 - calculate based on actual passage structure
+      targetStep = 8;
+      try {
+        if (toeic?.questionsPart6?.length) {
+          const toeicPart6Res = await toeicPart6Service.getByIdsAndStatus(toeic.questionsPart6, true);
+          const toeicPart6Data = Array.isArray(toeicPart6Res?.data) ? toeicPart6Res.data : [];
+          
+          const part6QuestionIds: number[] = [];
+          toeicPart6Data.forEach((part6 : ToeicPart6) => {
+            if (part6.questions?.length) {
+              part6QuestionIds.push(...part6.questions);
+            }
+          });
+          
+          const questionOffset = questionNumber - 131;
+          let currentQuestionCount = 0;
+          
+          for (let i = 0; i < toeicPart6Data.length; i++) {
+            const groupQuestions = toeicPart6Data[i].questions?.length || 0;
+            if (questionOffset < currentQuestionCount + groupQuestions) {
+              targetIndex = i;
+              break;
+            }
+            currentQuestionCount += groupQuestions;
+          }
+        } else {
+          targetIndex = Math.floor((questionNumber - 131) / 4); // Fallback approximation
+        }
+      } catch (error) {
+        console.error("Error calculating Part 6 navigation:", error);
+        targetIndex = Math.floor((questionNumber - 131) / 4);
+      }
+    } else if (questionNumber >= 147 && questionNumber <= 200) {
+      // Part 7 - calculate based on actual passage structure
+      targetStep = 9;
+      try {
+        if (toeic?.questionsPart7?.length) {
+          const toeicPart7Res = await toeicPart7Service.getByIdsAndStatus(toeic.questionsPart7, true);
+          const toeicPart7Data = Array.isArray(toeicPart7Res?.data) ? toeicPart7Res.data : [];
+          
+          const part7QuestionIds: number[] = [];
+          toeicPart7Data.forEach((part7 : ToeicPart6) => {
+            if (part7.questions?.length) {
+              part7QuestionIds.push(...part7.questions);
+            }
+          });
+          
+          const questionOffset = questionNumber - 147;
+          let currentQuestionCount = 0;
+          
+          for (let i = 0; i < toeicPart7Data.length; i++) {
+            const groupQuestions = toeicPart7Data[i].questions?.length || 0;
+            if (questionOffset < currentQuestionCount + groupQuestions) {
+              targetIndex = i;
+              break;
+            }
+            currentQuestionCount += groupQuestions;
+          }
+        } else {
+          targetIndex = Math.floor((questionNumber - 147) / 5); // Fallback approximation
+        }
+      } catch (error) {
+        console.error("Error calculating Part 7 navigation:", error);
+        targetIndex = Math.floor((questionNumber - 147) / 5);
+      }
+    }
+
+    setStep(targetStep);
+    setCurrentIndex(targetIndex);
   };
 
   const isLastQuestion = () => {
@@ -234,10 +565,10 @@ const ToeicTest: React.FC = () => {
             startIndex={1}
             onFinish={() => setStep(4)}
             submitToeicId={submitToeic.id}
-            initialIndex={
-              resumePosition?.step === 3 ? resumePosition.currentIndex : 0
-            }
+            initialIndex={currentIndex}
             volume={volume / 100}
+            manualControl={true}
+            onIndexChange={setCurrentIndex}
           />
         );
       case 4:
@@ -247,10 +578,10 @@ const ToeicTest: React.FC = () => {
             startIndex={7}
             onFinish={() => setStep(5)}
             submitToeicId={submitToeic.id}
-            initialIndex={
-              resumePosition?.step === 4 ? resumePosition.currentIndex : 0
-            }
+            initialIndex={currentIndex}
             volume={volume / 100}
+            manualControl={true}
+            onIndexChange={setCurrentIndex}
           />
         );
       case 5:
@@ -260,10 +591,10 @@ const ToeicTest: React.FC = () => {
             startIndex={32}
             onFinish={() => setStep(6)}
             submitToeicId={submitToeic.id}
-            initialIndex={
-              resumePosition?.step === 5 ? resumePosition.currentIndex : 0
-            }
+            initialIndex={currentIndex}
             volume={volume / 100}
+            manualControl={true}
+            onIndexChange={setCurrentIndex}
           />
         );
       case 6:
@@ -273,10 +604,10 @@ const ToeicTest: React.FC = () => {
             startIndex={71}
             onFinish={() => setStep(7)}
             submitToeicId={submitToeic.id}
-            initialIndex={
-              resumePosition?.step === 6 ? resumePosition.currentIndex : 0
-            }
+            initialIndex={currentIndex}
             volume={volume / 100}
+            manualControl={true}
+            onIndexChange={setCurrentIndex}
           />
         );
       case 7:
@@ -320,6 +651,7 @@ const ToeicTest: React.FC = () => {
   const isReadingSection = [7, 8, 9].includes(step);
   const isListeningSection = [0,1,2,3, 4, 5, 6].includes(step);
   const showSubmitButton = step >= 3;
+  const showNavigationButtons = step >= 3; // Show navigation for all test parts
 
   if (loading) {
     return (
@@ -427,6 +759,14 @@ const ToeicTest: React.FC = () => {
               />
             </Box>
           )}
+        {step >= 3 && (
+        <QuestionNavigator
+          currentStep={step}
+          currentIndex={currentIndex}
+          answeredQuestions={answeredQuestions}
+          onNavigateToQuestion={handleNavigateToQuestion}
+        />
+      )}
         </Box>
       </Box>
 
@@ -469,7 +809,7 @@ const ToeicTest: React.FC = () => {
       >
         <Button
           variant="contained"
-          onClick={prevReading}
+          onClick={prevQuestion}
           disabled={!canGoPrevious()}
           sx={{
             px: 3,
@@ -480,7 +820,7 @@ const ToeicTest: React.FC = () => {
             textTransform: "uppercase",
             borderRadius: 1,
             minWidth: 100,
-            visibility: isReadingSection ? "visible" : "hidden",
+            visibility: showNavigationButtons ? "visible" : "hidden",
             "&:hover": {
               bgcolor: color.gray700,
             },
@@ -521,8 +861,8 @@ const ToeicTest: React.FC = () => {
           <Button
             variant="contained"
             onClick={() => {
-              if (isReadingSection) {
-                nextReading();
+              if (showNavigationButtons) {
+                nextQuestion();
               } else {
                 setStep((prev) => prev + 1);
               }
@@ -553,6 +893,9 @@ const ToeicTest: React.FC = () => {
           </Button>
         </Box>
       </Box>
+
+      
+
 
       {showResumeDialog && (
         <Box

@@ -17,7 +17,7 @@ export default function LoginPage() {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const imgLogin =
-    "http://138.2.91.94:9000/h2t-english/static%2FLoginBG-removebg-preview.png";
+    "http://129.150.60.39:9000/h2t-english/static%2FLoginBG-removebg-preview.png";
   const wavyBgPattern = isDarkMode ? "/wavy-bg-dark.svg" : "/wavy-bg-light.svg";
 
   return (

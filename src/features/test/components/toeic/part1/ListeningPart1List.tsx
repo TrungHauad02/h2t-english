@@ -11,6 +11,8 @@ type Props = {
   submitToeicId: number;
   initialIndex?: number;
   volume?: number;
+  manualControl?: boolean;
+  onIndexChange?: (index: number) => void;
 };
 
 const ListeningPart1List: React.FC<Props> = ({
@@ -20,6 +22,8 @@ const ListeningPart1List: React.FC<Props> = ({
   submitToeicId,
   initialIndex = 0,
   volume = 0.5,
+  manualControl = false,
+  onIndexChange,
 }) => {
   const [questions, setQuestions] = useState<ToeicPart1[]>([]);
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -34,7 +38,7 @@ const ListeningPart1List: React.FC<Props> = ({
       setShouldAutoPlay(true);
       setHasStartedPlaying(true);
     }
-  }, [initialIndex]);
+  }, [initialIndex, manualControl]);
 
   useEffect(() => {
     const fetchQuestionsAndAnswers = async () => {
@@ -110,6 +114,7 @@ const ListeningPart1List: React.FC<Props> = ({
   };
 
   const handleAudioEnded = () => {
+    // Always auto-advance to next question when audio ends, regardless of manual control
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
       setShouldAutoPlay(true);
@@ -124,6 +129,13 @@ const ListeningPart1List: React.FC<Props> = ({
       setShouldAutoPlay(true);
     }
   };
+
+  // Update parent component when index changes
+  useEffect(() => {
+    if (onIndexChange) {
+      onIndexChange(currentIndex);
+    }
+  }, [currentIndex, onIndexChange]);
 
   if (loading || questions.length === 0) {
     return (

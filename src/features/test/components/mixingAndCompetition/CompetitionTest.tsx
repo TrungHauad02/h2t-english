@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Grid, useMediaQuery, useTheme, Box } from "@mui/material";
+import { Grid, useMediaQuery, useTheme, Box,Button } from "@mui/material";
 import TestTabs from "./TestTabs";
 import { TestPartTypeEnum } from "interfaces";
 import {
@@ -197,35 +197,73 @@ export default function CompetitionTest() {
             {renderSection()}
           </Box>
 
-          {isSmallScreen && (
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 3, mb: 2 }}>
-              <Box sx={{ width: { xs: "80%", sm: "50%" } }}>
-                <TestQuestionGrid
-                  questionItems={allQuestions}
-                  onQuestionSelect={handleQuestionSelect}
-                  onSubmitTest={handleOpenConfirmDialog}
-                />
-              </Box>
-            </Box>
-          )}
-        </Grid>
+        {isSmallScreen && (
+  <Box sx={{ mt: 4, textAlign: "center" }}>
+    <Button
+      variant="contained"
+      onClick={handleOpenConfirmDialog}
+      sx={{
+        py: 1.5,
+        px: 4,
+        borderRadius: "8px",
+        backgroundColor: isDarkMode ? color.teal700 : color.teal500,
+        color: "white",
+        fontWeight: "bold",
+        textTransform: "none",
+        fontSize: "1rem",
+        boxShadow: isDarkMode
+          ? "0 4px 12px rgba(20, 184, 166, 0.2)"
+          : "0 4px 12px rgba(20, 184, 166, 0.15)",
+        "&:hover": {
+          backgroundColor: isDarkMode ? color.teal600 : color.teal600,
+          boxShadow: isDarkMode
+            ? "0 6px 16px rgba(20, 184, 166, 0.3)"
+            : "0 6px 16px rgba(20, 184, 166, 0.2)",
+        },
+        "&:active": {
+          backgroundColor: isDarkMode ? color.teal800 : color.teal700,
+        },
+        transition: "all 0.2s ease",
+      }}
+    >
+      Submit Test
+    </Button>
 
-        {!isSmallScreen && (
-          <Grid item md={3} lg={4}>
-        <TimeRemaining
-        createAt={submitCompetition?.createdAt ? new Date(submitCompetition.createdAt) : new Date()}
-         endTime={endTime} onTimeout={handleSubmitTest}  duration={competition?.duration || 0}
-        />
-            <Box sx={{ mt: 3 }}>
-              <TestQuestionGrid
-                key={submitCompetition.id}
-                questionItems={allQuestions}
-                onQuestionSelect={handleQuestionSelect}
-                onSubmitTest={handleOpenConfirmDialog}
-              />
-            </Box>
-          </Grid>
-        )}
+  </Box>
+)}
+
+        </Grid>
+{!isSmallScreen && (
+  <Grid
+    item
+    md={3}
+    lg={4}
+    sx={{
+      display: { xs: "none", md: "block" },
+      position: "sticky",
+      top: 16,
+      height: "fit-content",
+      alignSelf: "flex-start",
+    }}
+  >
+    <TimeRemaining
+      createAt={submitCompetition?.createdAt ? new Date(submitCompetition.createdAt) : new Date()}
+      endTime={endTime}
+      duration={competition?.duration || 0}
+      onTimeout={handleSubmitTest}
+    />
+    <Box sx={{ mt: 3 }}>
+      <TestQuestionGrid
+        key={submitCompetition.id}
+        questionItems={allQuestions}
+        onQuestionSelect={handleQuestionSelect}
+        onSubmitTest={handleOpenConfirmDialog}
+      />
+    </Box>
+  </Grid>
+)}
+
+          
       </Grid>
 
 
