@@ -4,7 +4,7 @@ import axios, {
   AxiosResponse,
 } from "axios";
 
-const BASE_URL = "http://localhost:8080/api";
+const BASE_URL = "http://3.0.16.203:8080/api";
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
