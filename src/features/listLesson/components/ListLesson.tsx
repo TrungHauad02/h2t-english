@@ -45,7 +45,7 @@ export default function ListLesson({ type }: ListLessonProps) {
   };
 
   return (
-    <Box sx={{ mx: 4, marginTop: 3 }}>
+    <Box sx={{ mx: 6, px: 6, marginTop: 3 }}>
       <Grid container spacing={3}>
         {listLesson.map((lesson) => (
           <LessonItem lesson={lesson} key={lesson.id} />
