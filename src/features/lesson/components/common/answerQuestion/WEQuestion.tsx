@@ -4,6 +4,8 @@ import { WERadioGroup } from "components/input";
 import { useDarkMode } from "hooks/useDarkMode";
 import { LessonQuestion } from "interfaces";
 import useColor from "theme/useColor";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 interface WEQuestionProps {
   question: LessonQuestion;
@@ -23,6 +25,9 @@ export default function WEQuestion({
     value: item.id,
     label: item.content,
   }));
+
+  // Find correct answer
+  const correctAnswer = question.answers.find(answer => answer.correct);
 
   return (
     <Paper
@@ -88,10 +93,15 @@ export default function WEQuestion({
 
       {/* Question content */}
       <Box sx={{ p: 3 }}>
-        <WERadioGroup name={question.id} options={options} />
+        <WERadioGroup 
+          name={question.id} 
+          options={options} 
+          isShowExplain={isShowExplain}
+          correctAnswerId={correctAnswer?.id}
+        />
 
         {isShowExplain && (
-          <Box sx={{ mt: 2 }}>
+          <Box sx={{ mt: 3 }}>
             <WEExplain text={question.explanation} />
           </Box>
         )}
