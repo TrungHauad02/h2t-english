@@ -46,7 +46,9 @@ export default function TranscriptDisplaySection({
 
     return lines.map((line, index) => {
       // Check if line starts with a character name (e.g., "Emma:", "Jack:")
-      const characterMatch = line.match(/^([A-Za-z]+):\s*(.*)/);
+      const characterMatch = line.match(
+        /^((?:Mr\.|Mrs\.|Ms\.|Dr\.|Prof\.|Miss\s+)?[A-Za-z]+(?:\s+[A-Za-z]+)*):\s*(.*)/
+      );
 
       if (characterMatch) {
         const characterName = characterMatch[1];
