@@ -269,293 +269,122 @@ export default function CompetitionResults({
         </Typography>
       </Box>
 
-      {/* Top 3 Winners */}
-      {results.length > 0 && (
-        <Grid container spacing={4} sx={{ mb: 6 }}>
-          {/* First Place */}
-          <Grid item xs={12} md={4} sx={{ order: { xs: 1, md: 2 } }}>
-            <Card
-              sx={{
-                borderRadius: '24px',
-                background: getGradientByRank(1),
-                boxShadow: '0 16px 48px rgba(0,0,0,0.2)',
-                position: 'relative',
-                overflow: 'visible',
-                transform: { xs: 'none', md: 'scale(1.1)' },
-                zIndex: 10,
-              }}
-            >
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: -30,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  width: 80,
-                  height: 80,
-                  borderRadius: '50%',
-                  bgcolor: color.white,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
-                }}
-              >
-                {getIconByRank(1)}
-              </Box>
-              <CardContent sx={{ p: 4, pt: 8 }}>
-                <Box sx={{ textAlign: 'center' }}>
-                  <Avatar
-                    sx={{
-                      width: 100,
-                      height: 100,
-                      mx: 'auto',
-                      mb: 3,
-                      bgcolor: color.white,
-                      color: color.gray800,
-                      fontSize: '2.5rem',
-                      fontWeight: 700,
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
-                    }}
-                  >
-                    {results[0]?.user?.name?.[0] || '?'}
-                  </Avatar>
-                  <Typography 
-                    variant="h5" 
-                    sx={{ 
-                      fontWeight: 700,
-                      color: color.white,
-                      mb: 1
-                    }}
-                  >
-                    {results[0]?.user?.name || 'Unknown User'}
-                  </Typography>
-                  <Chip
-                    label={`${Math.round(results[0]?.score || 0)} points`}
-                    sx={{
-                      fontWeight: 700,
-                      fontSize: '1.1rem',
-                      py: 0.5,
-                      px: 2,
-                      mb: 3,
-                      bgcolor: 'rgba(255,255,255,0.9)',
-                      color: color.gray800,
-                    }}
-                  />
-                  {currentUserId === results[0]?.user_id && (
-                    <Button
-                      variant="contained"
-                      startIcon={<RemoveRedEyeIcon />}
-                      fullWidth
-                      onClick={() => navigate(`/history-test/competition/${results[0].id}`)}
-                      sx={{
-                        bgcolor: color.white,
-                        color: color.gray800,
-                        fontWeight: 600,
-                        py: 1.5,
-                        borderRadius: '12px',
-                        '&:hover': {
-                          bgcolor: color.gray100,
-                        },
-                      }}
-                    >
-                      View My Test
-                    </Button>
-                  )}
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
+      {results.length === 0 && (
+  <Typography variant="h6" textAlign="center" sx={{ mb: 4, mt: 6, color: color.gray500 }}>
+    Chưa có ai tham gia cuộc thi này.
+  </Typography>
+)}
 
-          {/* Second Place */}
-          <Grid item xs={12} md={4} sx={{ order: { xs: 2, md: 1 } }}>
-            <Card
-              sx={{
-                borderRadius: '24px',
-                background: getGradientByRank(2),
-                boxShadow: '0 12px 36px rgba(0,0,0,0.15)',
-                position: 'relative',
-                overflow: 'visible',
-                mt: { xs: 0, md: 6 },
-              }}
-            >
-              <Box
+{results.length > 0 && (
+  <Grid
+    container
+    spacing={4}
+    sx={{ mb: 6, justifyContent: results.length === 1 ? 'center' : 'flex-start' }}
+  >
+    {results.slice(0, 3).map((result, index) => (
+      <Grid
+        key={result.id}
+        item
+        xs={12}
+        md={results.length === 1 ? 6 : results.length === 2 ? 6 : 4}
+        sx={{
+          order: results.length === 3
+            ? index === 0
+              ? { xs: 1, md: 2 }
+              : index === 1
+              ? { xs: 2, md: 1 }
+              : 3
+            : index + 1,
+        }}
+      >
+        <Card
+          sx={{
+            borderRadius: '24px',
+            background: getGradientByRank(index + 1),
+            boxShadow: '0 12px 36px rgba(0,0,0,0.15)',
+            position: 'relative',
+            overflow: 'visible',
+            mt: { xs: 0, md: index === 0 && results.length === 3 ? 0 : 6 },
+          }}
+        >
+          <Box
+            sx={{
+              position: 'absolute',
+              top: -25,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 70,
+              height: 70,
+              borderRadius: '50%',
+              bgcolor: color.white,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
+            }}
+          >
+            {getIconByRank(index + 1)}
+          </Box>
+          <CardContent sx={{ p: 4, pt: 7 }}>
+            <Box sx={{ textAlign: 'center' }}>
+              <Avatar
                 sx={{
-                  position: 'absolute',
-                  top: -25,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  width: 70,
-                  height: 70,
-                  borderRadius: '50%',
+                  width: 90,
+                  height: 90,
+                  mx: 'auto',
+                  mb: 2,
                   bgcolor: color.white,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
+                  color: color.gray800,
+                  fontSize: '2.2rem',
+                  fontWeight: 700,
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                 }}
               >
-                {getIconByRank(2)}
-              </Box>
-              <CardContent sx={{ p: 4, pt: 7 }}>
-                <Box sx={{ textAlign: 'center' }}>
-                  <Avatar
-                    sx={{
-                      width: 90,
-                      height: 90,
-                      mx: 'auto',
-                      mb: 2,
-                      bgcolor: color.white,
-                      color: color.gray800,
-                      fontSize: '2.2rem',
-                      fontWeight: 700,
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    }}
-                  >
-                    {results[1]?.user?.name?.[0] || '?'}
-                  </Avatar>
-                  <Typography 
-                    variant="h6" 
-                    sx={{ 
-                      fontWeight: 700,
-                      color: color.white,
-                      mb: 1
-                    }}
-                  >
-                    {results[1]?.user?.name || 'Unknown User'}
-                  </Typography>
-                  <Chip
-                    label={`${Math.round(results[1]?.score || 0)} points`}
-                    sx={{
-                      fontWeight: 600,
-                      fontSize: '1rem',
-                      py: 0.3,
-                      px: 1.5,
-                      mb: 2.5,
-                      bgcolor: 'rgba(255,255,255,0.9)',
-                      color: color.gray800,
-                    }}
-                  />
-                  {currentUserId === results[1]?.user_id && (
-                    <Button
-                      variant="contained"
-                      startIcon={<RemoveRedEyeIcon />}
-                      fullWidth
-                      onClick={() => navigate(`/history-test/competition/${results[1].id}`)}
-                      sx={{
-                        bgcolor: color.white,
-                        color: color.gray800,
-                        fontWeight: 600,
-                        py: 1.2,
-                        borderRadius: '10px',
-                        '&:hover': {
-                          bgcolor: color.gray100,
-                        },
-                      }}
-                    >
-                      View My Test
-                    </Button>
-                  )}
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
+                {result.user?.name?.[0] || '?'}
+              </Avatar>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: color.white, mb: 1 }}>
+                {result.user?.name || 'Unknown User'}
+              </Typography>
+              <Chip
+                label={`${Math.round(result.score || 0)} points`}
+                sx={{
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                  py: 0.3,
+                  px: 1.5,
+                  mb: 2.5,
+                  bgcolor: 'rgba(255,255,255,0.9)',
+                  color: color.gray800,
+                }}
+              />
+              {currentUserId === result.user_id && (
+                <Button
+                  variant="contained"
+                  startIcon={<RemoveRedEyeIcon />}
+                  fullWidth
+                  onClick={() => navigate(`/history-test/competition/${result.id}`)}
+                  sx={{
+                    bgcolor: color.white,
+                    color: color.gray800,
+                    fontWeight: 600,
+                    py: 1.2,
+                    borderRadius: '10px',
+                    '&:hover': {
+                      bgcolor: color.gray100,
+                    },
+                  }}
+                >
+                  View My Test
+                </Button>
+              )}
+            </Box>
+          </CardContent>
+        </Card>
+      </Grid>
+    ))}
+  </Grid>
+)}
 
-          {/* Third Place */}
-          <Grid item xs={12} md={4} sx={{ order: 3 }}>
-            <Card
-              sx={{
-                borderRadius: '24px',
-                background: getGradientByRank(3),
-                boxShadow: '0 12px 36px rgba(0,0,0,0.15)',
-                position: 'relative',
-                overflow: 'visible',
-                mt: { xs: 0, md: 6 },
-              }}
-            >
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: -25,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  width: 70,
-                  height: 70,
-                  borderRadius: '50%',
-                  bgcolor: color.white,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
-                }}
-              >
-                {getIconByRank(3)}
-              </Box>
-              <CardContent sx={{ p: 4, pt: 7 }}>
-                <Box sx={{ textAlign: 'center' }}>
-                  <Avatar
-                    sx={{
-                      width: 90,
-                      height: 90,
-                      mx: 'auto',
-                      mb: 2,
-                      bgcolor: color.white,
-                      color: color.gray800,
-                      fontSize: '2.2rem',
-                      fontWeight: 700,
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    }}
-                  >
-                    {results[2]?.user?.name?.[0] || '?'}
-                  </Avatar>
-                  <Typography 
-                    variant="h6" 
-                    sx={{ 
-                      fontWeight: 700,
-                      color: color.white,
-                      mb: 1
-                    }}
-                  >
-                    {results[2]?.user?.name || 'Unknown User'}
-                  </Typography>
-                  <Chip
-                    label={`${Math.round(results[2]?.score || 0)} points`}
-                    sx={{
-                      fontWeight: 600,
-                      fontSize: '1rem',
-                      py: 0.3,
-                      px: 1.5,
-                      mb: 2.5,
-                      bgcolor: 'rgba(255,255,255,0.9)',
-                      color: color.gray800,
-                    }}
-                  />
-                  {currentUserId === results[2]?.user_id && (
-                    <Button
-                      variant="contained"
-                      startIcon={<RemoveRedEyeIcon />}
-                      fullWidth
-                      onClick={() => navigate(`/history-test/competition/${results[2].id}`)}
-                      sx={{
-                        bgcolor: color.white,
-                        color: color.gray800,
-                        fontWeight: 600,
-                        py: 1.2,
-                        borderRadius: '10px',
-                        '&:hover': {
-                          bgcolor: color.gray100,
-                        },
-                      }}
-                    >
-                      View My Test
-                    </Button>
-                  )}
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      )}
 
 
         <Box sx={{ mb: 6 }}>

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Grid, useMediaQuery, useTheme, Box } from "@mui/material";
+import { Grid, useMediaQuery, useTheme, Box,Button} from "@mui/material";
 import TestTabs from "./TestTabs";
 import { TestPart, TestPartTypeEnum } from "interfaces";
 import {
@@ -209,24 +209,72 @@ const MixingTest: React.FC<MixingTestProps> = ({ mixingTestParts, submitTest,tes
             {renderSection()}
           </Box>
 
-          
+             {isSmallScreen && (
+  <Box sx={{ mt: 4, textAlign: "center" }}>
+    <Button
+      variant="contained"
+      onClick={handleOpenConfirmDialog}
+      sx={{
+        py: 1.5,
+        px: 4,
+        borderRadius: "8px",
+        backgroundColor: isDarkMode ? color.teal700 : color.teal500,
+        color: "white",
+        fontWeight: "bold",
+        textTransform: "none",
+        fontSize: "1rem",
+        boxShadow: isDarkMode
+          ? "0 4px 12px rgba(20, 184, 166, 0.2)"
+          : "0 4px 12px rgba(20, 184, 166, 0.15)",
+        "&:hover": {
+          backgroundColor: isDarkMode ? color.teal600 : color.teal600,
+          boxShadow: isDarkMode
+            ? "0 6px 16px rgba(20, 184, 166, 0.3)"
+            : "0 6px 16px rgba(20, 184, 166, 0.2)",
+        },
+        "&:active": {
+          backgroundColor: isDarkMode ? color.teal800 : color.teal700,
+        },
+        transition: "all 0.2s ease",
+      }}
+    >
+      Submit Test
+    </Button>
+
+  </Box>
+)}
         </Grid>
         
-        {!isSmallScreen && (
-          <Grid item md={3} lg={4}>
-               <TimeRemaining createAt={submitTest?.createdAt ? new Date(submitTest.createdAt) : new Date()}
-        duration={test.duration}
-        onTimeUp={handleSubmitTest} />
-            <Box sx={{ mt: 3 }}>
-              <TestQuestionGrid 
-                  key={submitTest.id}
-                questionItems={allQuestions}
-                onQuestionSelect={handleQuestionSelect}
-                onSubmitTest={handleOpenConfirmDialog}
-              />
-            </Box>
-          </Grid>
-        )}
+       {!isSmallScreen && (
+  <Grid
+    item
+    md={3}
+    lg={4}
+    sx={{
+      display: { xs: "none", md: "block" },
+      position: "sticky",
+      top: 16,
+      height: "fit-content",
+      alignSelf: "flex-start",
+    }}
+  >
+    <TimeRemaining
+      createAt={submitTest?.createdAt ? new Date(submitTest.createdAt) : new Date()}
+      duration={test.duration}
+      onTimeUp={handleSubmitTest}
+    />
+    <Box sx={{ mt: 3 }}>
+      <TestQuestionGrid
+        key={submitTest.id}
+        questionItems={allQuestions}
+        onQuestionSelect={handleQuestionSelect}
+        onSubmitTest={handleOpenConfirmDialog}
+      />
+    </Box>
+  </Grid>
+)}
+
+       
       </Grid>
 
       {/* Submit Test Dialog */}
