@@ -52,7 +52,10 @@ export default function useConversationSection() {
       try {
         const response = await conversationService.findBySpeakingId(speakingId);
         if (response.status === "SUCCESS") {
-          setConversations(response.data);
+          const sortedConversations = (response.data as SpeakingConversation[]).sort(
+            (a: SpeakingConversation, b: SpeakingConversation) => a.serial - b.serial
+          );
+          setConversations(sortedConversations);
         } else {
           showError({
             message: "Failed to fetch conversations",
