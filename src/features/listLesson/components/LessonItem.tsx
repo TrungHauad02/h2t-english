@@ -34,7 +34,8 @@ export default function LessonItem({ lesson }: LessonItemProps) {
     <Grid item xs={12} sm={6} md={4} lg={3}>
       <Card
         sx={{
-          height: "100%",
+          width: "95%",
+          height: "95%",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
@@ -54,11 +55,19 @@ export default function LessonItem({ lesson }: LessonItemProps) {
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        <CardActionArea onClick={() => navigate(`${lesson.id}`)}>
+        <CardActionArea 
+          onClick={() => navigate(`${lesson.id}`)}
+          sx={{ 
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "stretch"
+          }}
+        >
           <Box sx={{ position: "relative", overflow: "hidden" }}>
             <CardMedia
               component="img"
-              height="180"
+              height="280"
               image={lesson.image}
               alt={lesson.title}
               sx={{
@@ -116,85 +125,94 @@ export default function LessonItem({ lesson }: LessonItemProps) {
               flexGrow: 1,
               p: 3,
               backgroundColor: isDarkMode ? color.gray800 : color.white,
+              display: "flex",
+              flexDirection: "column",
+              height: "70%",
             }}
           >
-            <Typography
-              variant="h6"
-              component="h2"
-              gutterBottom
-              sx={{
-                fontWeight: 700,
-                color: isDarkMode
-                  ? hovered
-                    ? color.teal300
-                    : color.teal400
-                  : hovered
-                  ? color.teal700
-                  : color.teal600,
-                transition: "color 0.3s ease-in-out",
-                mb: 1.5,
-                lineHeight: 1.3,
-              }}
-            >
-              {lesson.title}
-            </Typography>
-
-            <Typography
-              variant="body2"
-              sx={{
-                color: isDarkMode ? color.gray300 : color.gray700,
-                mb: 2,
-                lineHeight: 1.6,
-                display: "-webkit-box",
-                overflow: "hidden",
-                WebkitBoxOrient: "vertical",
-                WebkitLineClamp: 3,
-              }}
-            >
-              {lesson.description}
-            </Typography>
-
-            <Divider
-              sx={{
-                my: 2,
-                borderColor: isDarkMode ? color.gray700 : color.gray200,
-              }}
-            />
-
-            <Stack
-              direction="row"
-              alignItems="center"
-              spacing={1}
-              sx={{ mt: 2 }}
-            >
-              <Avatar
+            {/* Content section - takes available space */}
+            <Box sx={{ flexGrow: 1 }}>
+              <Typography
+                variant="h6"
+                component="h2"
+                gutterBottom
                 sx={{
-                  width: 32,
-                  height: 32,
-                  backgroundColor: isDarkMode ? color.teal800 : color.teal100,
-                  color: isDarkMode ? color.teal200 : color.teal700,
+                  fontWeight: 700,
+                  color: isDarkMode
+                    ? hovered
+                      ? color.teal300
+                      : color.teal400
+                    : hovered
+                    ? color.teal700
+                    : color.teal600,
+                  transition: "color 0.3s ease-in-out",
+                  mb: 1,
+                  lineHeight: 1.3,
                 }}
               >
-                {lesson.title.charAt(0).toUpperCase()}
-              </Avatar>
+                {lesson.title}
+              </Typography>
 
-              <Box sx={{ flexGrow: 1 }}>
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  spacing={0.5}
+              <Typography
+                variant="body2"
+                sx={{
+                  color: isDarkMode ? color.gray300 : color.gray700,
+                  mb: 2,
+                  lineHeight: 1.6,
+                  display: "-webkit-box",
+                  overflow: "hidden",
+                  WebkitBoxOrient: "vertical",
+                  WebkitLineClamp: 3,
+                }}
+              >
+                {lesson.description}
+              </Typography>
+            </Box>
+
+            {/* Bottom section - always at the bottom */}
+            <Box>
+              <Divider
+                sx={{
+                  my: 2,
+                  borderColor: isDarkMode ? color.gray700 : color.gray200,
+                }}
+              />
+
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={1}
+                sx={{ mt: 2 }}
+              >
+                <Avatar
                   sx={{
-                    color: isDarkMode ? color.gray400 : color.gray600,
-                    fontSize: "0.75rem",
+                    width: 32,
+                    height: 32,
+                    backgroundColor: isDarkMode ? color.teal800 : color.teal100,
+                    color: isDarkMode ? color.teal200 : color.teal700,
                   }}
                 >
-                  <AccessTimeIcon fontSize="inherit" />
-                  <Typography variant="caption">
-                    Updated {formatDate(lesson.updatedAt)}
-                  </Typography>
-                </Stack>
-              </Box>
-            </Stack>
+                  {lesson.title.charAt(0).toUpperCase()}
+                </Avatar>
+
+                <Box sx={{ flexGrow: 1 }}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    spacing={0.5}
+                    sx={{
+                      color: isDarkMode ? color.gray400 : color.gray600,
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    <AccessTimeIcon fontSize="inherit" />
+                    <Typography variant="caption">
+                      Updated {formatDate(lesson.updatedAt)}
+                    </Typography>
+                  </Stack>
+                </Box>
+              </Stack>
+            </Box>
           </CardContent>
         </CardActionArea>
       </Card>
