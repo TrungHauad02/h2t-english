@@ -270,7 +270,17 @@ export default function ListeningPart1QuestionItem({
                     />
                   }
                   label={
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box
+  sx={{
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1,
+    width: 'fit-content',         // 👈 chỉ chiếm vừa nội dung
+    maxWidth: '100%',
+    flexShrink: 0                 // 👈 không bị kéo dài nếu FormControlLabel rộng
+  }}
+>
+
                       <Box
                         sx={{
                           width: 26,

@@ -13,13 +13,9 @@ import {
   Badge,
 } from '@mui/material';
 import AppsIcon from '@mui/icons-material/Apps';
-
 import {
-  GridViewRounded as GridIcon,
   Close as CloseIcon,
   CheckCircle as CheckIcon,
-  RadioButtonUnchecked as UnCheckedIcon,
-  Schedule as SkipIcon,
   PlayArrow as CurrentIcon,
 } from '@mui/icons-material';
 import { useDarkMode } from "hooks/useDarkMode";
@@ -45,24 +41,20 @@ export default function QuestionNavigator({
   // Calculate current question number based on step and index
   const getCurrentQuestionNumber = () => {
     switch (currentStep) {
-      case 3: // Part 1: Questions 1-6
+      case 2: // Part 1: Questions 1-6
         return 1 + currentIndex;
-      case 4: // Part 2: Questions 7-31
+      case 3: // Part 2: Questions 7-31
         return 7 + currentIndex;
-      case 5: // Part 3: Questions 32-70 (each group has 3 questions)
+      case 4: // Part 3: Questions 32-70 (each group has 3 questions)
         return 32 + currentIndex * 3;
-      case 6: // Part 4: Questions 71-100 (each group has 3 questions)
+      case 5: // Part 4: Questions 71-100 (each group has 3 questions)
         return 71 + currentIndex * 3;
-      case 7: // Part 5: Questions 101-130
+      case 6: // Part 5: Questions 101-130
         return 101 + currentIndex;
-      case 8: // Part 6: Questions 131-146 (calculate based on actual passage structure)
-        // This is an approximation - the exact calculation would require fetching passage data
-        // For now, we'll estimate based on average questions per passage
-        return 131 + currentIndex * 4; // Assuming ~4 questions per passage
-      case 9: // Part 7: Questions 147-200 (calculate based on actual passage structure)
-        // This is an approximation - the exact calculation would require fetching passage data
-        // For now, we'll estimate based on average questions per passage
-        return 147 + currentIndex * 4; // Assuming ~4 questions per passage
+      case 7: // Part 6: Questions 131-146
+        return 131 + currentIndex * 4;
+      case 8: // Part 7: Questions 147-200
+        return 147 + currentIndex * 4;
       default:
         return 1;
     }
@@ -79,9 +71,8 @@ export default function QuestionNavigator({
         subtitle: "Photographs", 
         start: 1, 
         end: 6, 
-        step: 3,
+        step: 2,
         color: color.emerald500,
-        lightColor: color.emerald100,
       },
       { 
         part: 2, 
@@ -89,9 +80,8 @@ export default function QuestionNavigator({
         subtitle: "Question-Response", 
         start: 7, 
         end: 31, 
-        step: 4,
+        step: 3,
         color: color.teal500,
-        lightColor: color.teal100,
       },
       { 
         part: 3, 
@@ -99,9 +89,8 @@ export default function QuestionNavigator({
         subtitle: "Conversations", 
         start: 32, 
         end: 70, 
-        step: 5,
+        step: 4,
         color: color.green500,
-        lightColor: color.green100,
       },
       { 
         part: 4, 
@@ -109,9 +98,8 @@ export default function QuestionNavigator({
         subtitle: "Short Talks", 
         start: 71, 
         end: 100, 
-        step: 6,
+        step: 5,
         color: color.emerald600,
-        lightColor: color.emerald200,
       },
       { 
         part: 5, 
@@ -119,9 +107,8 @@ export default function QuestionNavigator({
         subtitle: "Incomplete Sentences", 
         start: 101, 
         end: 130, 
-        step: 7,
+        step: 6,
         color: color.teal600,
-        lightColor: color.teal200,
       },
       { 
         part: 6, 
@@ -129,9 +116,8 @@ export default function QuestionNavigator({
         subtitle: "Text Completion", 
         start: 131, 
         end: 146, 
-        step: 8,
+        step: 7,
         color: color.green600,
-        lightColor: color.green200,
       },
       { 
         part: 7, 
@@ -139,9 +125,8 @@ export default function QuestionNavigator({
         subtitle: "Reading Comprehension", 
         start: 147, 
         end: 200, 
-        step: 9,
+        step: 8,
         color: color.emerald700,
-        lightColor: color.emerald300,
       },
     ];
   };
@@ -265,13 +250,26 @@ export default function QuestionNavigator({
                 const questionStyle = getQuestionColor(status);
                 
                 return (
-                  <Grid item xs={2} sm={1.5} md={1.2} key={questionNumber}>
+                  <Grid 
+                    item 
+                    xs={3} 
+                    sm={2.4} 
+                    md={2} 
+                    lg={1.5} 
+                    xl={1.2} 
+                    key={questionNumber}
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center'
+                    }}
+                  >
                     <Button
                       variant="outlined"
                       size="small"
                       onClick={() => handleQuestionClick(questionNumber)}
                       sx={{
                         minWidth: '36px',
+                        width: '36px',
                         height: '36px',
                         p: 0,
                         fontSize: '0.75rem',
@@ -321,43 +319,31 @@ export default function QuestionNavigator({
 
   return (
     <>
- 
- <Box
-  sx={{
-    top: 16, // Chuyển từ bottom → top
-    right: 24,
-    zIndex: 1500, // cao hơn các nút khác
-  }}
->{!isOpen && (
-
-    <IconButton
-      onClick={() => setIsOpen(true)}
-      sx={{
-        bgcolor: `linear-gradient(135deg, ${color.teal500}, ${color.emerald500})`,
-        color: color.white,
-        width: 64,
-        height: 64,
-        borderRadius: '12px',
-        boxShadow: `0 6px 16px ${alpha(color.teal500, 0.35)}`,
-        border: `2px solid ${color.white}`,
-        '&:hover': {
-          background: `linear-gradient(135deg, ${color.teal600}, ${color.emerald600})`,
-          transform: 'scale(1.05)',
-          boxShadow: `0 10px 24px ${alpha(color.teal500, 0.45)}`,
-        },
-        '&:active': {
-          transform: 'scale(0.98)',
-        },
-        transition: 'all 0.3s ease',
-      }}
-    >
-      <AppsIcon sx={{ fontSize: 28 }} />
-    </IconButton>
-
-
-)}
-
-      </Box>
+      {/* Floating Navigator Button - Fixed position không ảnh hưởng layout */}
+      <IconButton
+        onClick={() => setIsOpen(true)}
+        sx={{
+          width: 48,
+          height: 48,
+          borderRadius: '12px',
+          bgcolor: alpha(color.white, 0.9),
+          color: color.teal500,
+          boxShadow: `0 4px 12px ${alpha(color.teal500, 0.25)}`,
+          border: `2px solid ${color.teal500}`,
+          '&:hover': {
+            bgcolor: color.teal500,
+            color: color.white,
+            transform: 'scale(1.05)',
+            boxShadow: `0 6px 16px ${alpha(color.teal500, 0.35)}`,
+          },
+          '&:active': {
+            transform: 'scale(0.98)',
+          },
+          transition: 'all 0.3s ease',
+        }}
+      >
+        <AppsIcon sx={{ fontSize: 24 }} />
+      </IconButton>
 
       {/* Enhanced Navigation Drawer */}
       <Drawer
@@ -366,15 +352,41 @@ export default function QuestionNavigator({
         onClose={() => setIsOpen(false)}
         PaperProps={{
           sx: {
-            width: { xs: '100%', sm: 450, md: 550 },
+            width: { xs: '100vw', sm: 450, md: 550 },
+            height: 'calc(100vh - 80px)', // Trừ đi height của header (khoảng 80px)
+            top: '80px', // Bắt đầu từ dưới header
             bgcolor: isDarkMode ? color.gray900 : color.gray50,
-            borderRadius: { sm: '24px 0 0 24px' },
+            borderRadius: { sm: '16px 0 0 0' }, // Bo góc trên bên trái
             border: 'none',
             boxShadow: `0 24px 60px ${alpha(color.black, 0.15)}`,
+            zIndex: 1200, // Thấp hơn header
           },
         }}
+        // Thêm props để không ảnh hưởng giao diện bên ngoài  
+        ModalProps={{
+          keepMounted: false,
+          disablePortal: false,
+          style: { zIndex: 1200 }, // Đảm bảo không che header
+        }}
+        SlideProps={{
+          direction: "left"
+        }}
+        // Thêm backdrop với zIndex thấp hơn và position
+        BackdropProps={{
+          sx: {
+            zIndex: 1199,
+            backgroundColor: alpha(color.black, 0.5),
+            top: '80px', // Backdrop cũng bắt đầu từ dưới header
+            height: 'calc(100vh - 80px)',
+          }
+        }}
       >
-        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ 
+          height: 'calc(100vh - 80px)', // Match với drawer height
+          display: 'flex', 
+          flexDirection: 'column', 
+          overflow: 'hidden' 
+        }}>
           {/* Enhanced Header */}
           <Box
             sx={{
@@ -383,6 +395,7 @@ export default function QuestionNavigator({
               p: 3,
               position: 'relative',
               overflow: 'hidden',
+              flexShrink: 0,
             }}
           >
             <Box
@@ -452,7 +465,7 @@ export default function QuestionNavigator({
           </Box>
 
           {/* Enhanced Legend */}
-          <Box sx={{ p: 3, pb: 2 }}>
+          <Box sx={{ p: 3, pb: 2, flexShrink: 0 }}>
             <Typography 
               variant="subtitle1" 
               sx={{ 
@@ -504,11 +517,30 @@ export default function QuestionNavigator({
           <Divider sx={{ mx: 3 }} />
 
           {/* Enhanced Question Grid */}
-          <Box sx={{ flex: 1, overflowY: 'auto', p: 3, pt: 2 }}>
+          <Box sx={{ 
+            flex: 1, 
+            overflowY: 'auto', 
+            p: 3, 
+            pt: 2,
+            '&::-webkit-scrollbar': {
+              width: 8,
+            },
+            '&::-webkit-scrollbar-track': {
+              bgcolor: isDarkMode ? color.gray800 : color.gray200,
+              borderRadius: 4,
+            },
+            '&::-webkit-scrollbar-thumb': {
+              bgcolor: isDarkMode ? color.gray600 : color.gray400,
+              borderRadius: 4,
+              '&:hover': {
+                bgcolor: isDarkMode ? color.gray500 : color.gray500,
+              },
+            },
+          }}>
             {renderQuestionGrid()}
           </Box>
         </Box>
       </Drawer>
     </>
   );
-} 
+}

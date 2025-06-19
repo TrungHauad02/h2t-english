@@ -147,15 +147,15 @@ export default function ToeicHistoryPage() {
           filter: "blur(40px)",
           zIndex: 0,
         }}
-      />
-
-      {/* Nội dung chính */}
-      <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1 }}>
-        <Fade in timeout={1000}>
+      />  <Fade in timeout={1000}>
           <Box>
             <MainPictureSection siteInfo={siteInfo} />
           </Box>
         </Fade>
+
+      {/* Nội dung chính */}
+      <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1 }}>
+      
 
         <Box sx={{ mt: 6 }}>
           <ToeicHistory toeic={toeic} submitToeic={submitToeic} />

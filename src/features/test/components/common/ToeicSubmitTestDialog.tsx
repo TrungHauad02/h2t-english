@@ -69,15 +69,40 @@ export default function ToeicSubmitTestDialog({
       navigate(`/history-test/toeic/${submitTestId}`);
     }
   };
-
-  const getScoreLevel = (score: number) => {
-    if (score >= 905) return { level: "C1", description: "Proficient User", color: color.green600 };
-    if (score >= 785) return { level: "B2", description: "Independent User", color: color.emerald600 };
-    if (score >= 550) return { level: "B1", description: "Independent User", color: color.teal600 };
-    if (score >= 225) return { level: "A2", description: "Basic User", color: color.teal700 };
-    if (score >= 120) return { level: "A1", description: "Basic User", color: color.gray600 };
-    return { level: "Below A1", description: "Beginner", color: color.red600 };
+ const getScoreLevel = (score: number) => {
+    if (score >= 905) return {
+      level: "Excellent",
+      description: "You demonstrate a strong command of English suitable for academic or professional environments.",
+      color: color.emerald600,
+    };
+    if (score >= 785) return {
+      level: "Very Good", 
+      description: "You can communicate effectively in most workplace and everyday situations.",
+      color: color.green600,
+    };
+    if (score >= 550) return {
+      level: "Good",
+      description: "You understand familiar topics but may need to improve vocabulary and accuracy.",
+      color: color.teal600,
+    };
+    if (score >= 225) return {
+      level: "Needs Improvement",
+      description: "Focus on improving grammar, vocabulary, and listening skills to communicate more clearly.",
+      color: color.warning,
+    };
+    if (score >= 120) return {
+      level: "Beginner",
+      description: "You are starting to learn English. Focus on building basic vocabulary and sentence patterns.",
+      color: color.gray600,
+    };
+    return {
+      level: "Foundational",
+      description: "Consider starting with the fundamentals of English to build a strong learning base.",
+      color: color.red600,
+    };
   };
+
+
 
   const getScoreColor = (score: number) => {
     if (score >= 900) return isDarkMode ? color.green500 : color.green600;
@@ -238,35 +263,35 @@ export default function ToeicSubmitTestDialog({
                     {(() => {
                       const level = getScoreLevel(result.score);
                       return (
-                        <Box sx={{ textAlign: 'center' }}>
-                          <Chip
-                            icon={<SchoolIcon />}
-                            label={level.level}
-                            sx={{
-                              fontWeight: 600,
-                              fontSize: '1rem',
-                              py: 2.5,
-                              px: 1,
-                              bgcolor: (() => {
-                                return isDarkMode 
-                                  ? `${level.color}33` 
-                                  : `${level.color}22`;
-                              })(),
-                              color: level.color,
-                              borderRadius: '8px',
-                              mb: 1
-                            }}
-                          />
-                          <Typography
-                            variant="body2"
-                            sx={{ 
-                              color: isDarkMode ? color.gray400 : color.gray600,
-                              fontWeight: 500
-                            }}
-                          >
-                            {level.description}
-                          </Typography>
-                        </Box>
+                        <Box>
+                    <Chip
+                      icon={<SchoolIcon />}
+                      label={level.level}
+                      sx={{
+                        fontWeight: 600,
+                        fontSize: '1rem',
+                        py: 2.5,
+                        px: 1,
+                        bgcolor: (() => {
+                          return isDarkMode
+                            ? `${level.color}33`
+                            : `${level.color}22`;
+                        })(),
+                        color: level.color,
+                        borderRadius: '8px',
+                        mb: 1
+                      }}
+                    />
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: isDarkMode ? color.gray400 : color.gray600,
+                        fontWeight: 500
+                      }}
+                    >
+                      {level.description}
+                    </Typography>
+                  </Box>
                       );
                     })()}
                   </Box>
