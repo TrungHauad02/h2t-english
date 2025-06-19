@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Box, Typography, alpha, Fade, Button, Slider, CircularProgress } from "@mui/material";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
-import TimerIcon from "@mui/icons-material/Timer";
 import { useDarkMode } from "hooks/useDarkMode";
 import useColor from "theme/useColor";
 import useToeicPage from "../hooks/useToeicTest";
@@ -16,7 +15,6 @@ import {
 
 import VolumeTestStep from "./toeic/introduce/VolumeTestStep";
 import DirectionsStep from "./toeic/introduce/DirectionsStep";
-import ListeningPart1Step from "./toeic/part1/ListeningPart1Step";
 import ListeningPart1List from "./toeic/part1/ListeningPart1List";
 import ListeningPart2List from "./toeic/part2/ListeningPart2List";
 import ListeningPart3And4List from "./toeic/part3And4/ListeningPart3And4List";
@@ -26,6 +24,7 @@ import Part7List from "./toeic/part7/Part7List";
 import ConfirmSubmitDialog from "./common/ConfirmSubmitDialog";
 import ToeicSubmitTestDialog from "./common/ToeicSubmitTestDialog";
 import QuestionNavigator from "./toeic/QuestionNavigator";
+import SimpleTimeRemaining from "./toeic/SimpleTimeRemaining";
 import { ToeicPart6 } from "interfaces";
 
 const ToeicTest: React.FC = () => {
@@ -43,7 +42,6 @@ const ToeicTest: React.FC = () => {
 
   const [volume, setVolume] = useState(50);
   const [step, setStep] = useState(1);
-  const [countdown, setCountdown] = useState<number | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
@@ -57,7 +55,7 @@ const ToeicTest: React.FC = () => {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
 
-  // Update answered questions khi có thay đổi
+  // Update answered questions khi có thay đổi - Tần suất cập nhật cao hơn
   useEffect(() => {
     const updateAnsweredQuestions = async () => {
       if (submitToeic?.id && toeic) {
@@ -71,7 +69,12 @@ const ToeicTest: React.FC = () => {
     };
 
     updateAnsweredQuestions();
-  }, [totalAnswered, submitToeic?.id, toeic]); // Listen to totalAnswered changes from useToeicPage
+    
+    // Cập nhật mỗi 2 giây để realtime hơn
+    const interval = setInterval(updateAnsweredQuestions, 2000);
+    
+    return () => clearInterval(interval);
+  }, [totalAnswered, submitToeic?.id, toeic, step, currentIndex]); // Thêm step và currentIndex để cập nhật khi navigate
 
   // Sử dụng lại logic từ useToeicTest để tính answered questions
   const getAnsweredQuestionNumbersFromToeic = async (): Promise<number[]> => {
@@ -240,7 +243,7 @@ const ToeicTest: React.FC = () => {
         }
       }
 
-      return [...new Set(answeredList)]; // Remove duplicates
+      return [...new Set(answeredList)];
     } catch (error) {
       console.error("Error fetching answered questions:", error);
       return [];
@@ -249,7 +252,7 @@ const ToeicTest: React.FC = () => {
 
   useEffect(() => {
     if (resumePosition && !hasResumed && toeic && submitToeic) {
-      if (resumePosition.step > 0) {
+      if (resumePosition.step > 1) { // Chỉ show dialog nếu đã bắt đầu test (step > 1)
         setShowResumeDialog(true);
       } else {
         setHasResumed(true);
@@ -268,7 +271,6 @@ const ToeicTest: React.FC = () => {
           console.log("Successfully reset all answers");
           setStep(0);
           setCurrentIndex(0);
-          setCountdown(null);
         } else {
           console.error("Failed to reset answers");
         }
@@ -285,22 +287,6 @@ const ToeicTest: React.FC = () => {
     setShowResumeDialog(false);
     setHasResumed(true);
   };
-
-  useEffect(() => {
-    if (step === 7) {
-      setCountdown(75 * 60);
-    }
-  }, [step]);
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (countdown && countdown > 0) {
-      timer = setInterval(() => {
-        setCountdown((prev) => (prev ? prev - 1 : null));
-      }, 1000);
-    }
-    return () => clearInterval(timer);
-  }, [countdown]);
 
   const handleSubmitTest = useCallback(async () => {
     if (!submitToeic?.id) return;
@@ -329,36 +315,25 @@ const ToeicTest: React.FC = () => {
     setIsSubmitDialogOpen(false);
   }, []);
 
-  const formatTime = (seconds: number) => {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
-
-    if (h > 0) {
-      return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-    }
-    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-  };
-
   const handleVolumeChange = (_: Event, newValue: number | number[]) => {
     setVolume(newValue as number);
   };
 
   const getSectionTitle = () => {
     switch (step) {
-      case 3:
+      case 2:
         return "LISTENING PART 1";
-      case 4:
+      case 3:
         return "LISTENING PART 2";
-      case 5:
+      case 4:
         return "LISTENING PART 3";
-      case 6:
+      case 5:
         return "LISTENING PART 4";
-      case 7:
+      case 6:
         return "READING PART 5";
-      case 8:
+      case 7:
         return "READING PART 6";
-      case 9:
+      case 8:
         return "READING PART 7";
       default:
         return "";
@@ -368,19 +343,19 @@ const ToeicTest: React.FC = () => {
   const getTotalCurrentPartItems = () => {
     if (!toeic) return 0;
     switch (step) {
-      case 3:
+      case 2:
         return toeic.questionsPart1?.length ?? 0;
-      case 4:
+      case 3:
         return toeic.questionsPart2?.length ?? 0;
-      case 5:
+      case 4:
         return toeic.questionsPart3?.length ?? 0;
-      case 6:
+      case 5:
         return toeic.questionsPart4?.length ?? 0;
-      case 7:
+      case 6:
         return toeic.questionsPart5?.length ?? 0;
-      case 8:
+      case 7:
         return toeic.questionsPart6?.length ?? 0;
-      case 9:
+      case 8:
         return toeic.questionsPart7?.length ?? 0;
       default:
         return 0;
@@ -389,16 +364,16 @@ const ToeicTest: React.FC = () => {
 
   const canGoNext = () => {
     const total = getTotalCurrentPartItems();
-    return step < 9 || currentIndex < total - 1;
+    return step < 8 || currentIndex < total - 1;
   };
 
   const canGoPrevious = () => {
-    // For listening parts (3-6), allow going back within the part
-    if (step >= 3 && step <= 6) {
-      return currentIndex > 0 || step > 3;
+    // For listening parts (2-5), allow going back within the part
+    if (step >= 2 && step <= 5) {
+      return currentIndex > 0 || step > 2;
     }
-    // For reading parts (7-9), allow going back within the part or to previous parts
-    return step > 7 || (step === 7 && currentIndex > 0);
+    // For reading parts (6-8), allow going back within the part or to previous parts
+    return step > 6 || (step === 6 && currentIndex > 0);
   };
 
   const nextQuestion = () => {
@@ -406,7 +381,7 @@ const ToeicTest: React.FC = () => {
 
     if (currentIndex < total - 1) {
       setCurrentIndex((prev) => prev + 1);
-    } else if (step < 9) {
+    } else if (step < 8) {
       setStep((prev) => prev + 1);
       setCurrentIndex(0);
     }
@@ -415,27 +390,27 @@ const ToeicTest: React.FC = () => {
   const prevQuestion = () => {
     if (currentIndex > 0) {
       setCurrentIndex((prev) => prev - 1);
-    } else if (step > 3) {
+    } else if (step > 2) {
       setStep((prev) => prev - 1);
       // Get the length of the previous part
       let previousPartTotal = 0;
       switch (step - 1) {
-        case 3:
+        case 2:
           previousPartTotal = toeic?.questionsPart1?.length ?? 0;
           break;
-        case 4:
+        case 3:
           previousPartTotal = toeic?.questionsPart2?.length ?? 0;
           break;
-        case 5:
+        case 4:
           previousPartTotal = toeic?.questionsPart3?.length ?? 0;
           break;
-        case 6:
+        case 5:
           previousPartTotal = toeic?.questionsPart4?.length ?? 0;
           break;
-        case 7:
+        case 6:
           previousPartTotal = toeic?.questionsPart5?.length ?? 0;
           break;
-        case 8:
+        case 7:
           previousPartTotal = toeic?.questionsPart6?.length ?? 0;
           break;
         default:
@@ -447,32 +422,32 @@ const ToeicTest: React.FC = () => {
 
   // Navigate to specific question number
   const handleNavigateToQuestion = async (questionNumber: number) => {
-    let targetStep = 3;
+    let targetStep = 2;
     let targetIndex = 0;
 
     if (questionNumber >= 1 && questionNumber <= 6) {
       // Part 1
-      targetStep = 3;
+      targetStep = 2;
       targetIndex = questionNumber - 1;
     } else if (questionNumber >= 7 && questionNumber <= 31) {
       // Part 2
-      targetStep = 4;
+      targetStep = 3;
       targetIndex = questionNumber - 7;
     } else if (questionNumber >= 32 && questionNumber <= 70) {
       // Part 3
-      targetStep = 5;
+      targetStep = 4;
       targetIndex = Math.floor((questionNumber - 32) / 3);
     } else if (questionNumber >= 71 && questionNumber <= 100) {
       // Part 4
-      targetStep = 6;
+      targetStep = 5;
       targetIndex = Math.floor((questionNumber - 71) / 3);
     } else if (questionNumber >= 101 && questionNumber <= 130) {
       // Part 5
-      targetStep = 7;
+      targetStep = 6;
       targetIndex = questionNumber - 101;
     } else if (questionNumber >= 131 && questionNumber <= 146) {
       // Part 6 - calculate based on actual passage structure
-      targetStep = 8;
+      targetStep = 7;
       try {
         if (toeic?.questionsPart6?.length) {
           const toeicPart6Res = await toeicPart6Service.getByIdsAndStatus(toeic.questionsPart6, true);
@@ -505,7 +480,7 @@ const ToeicTest: React.FC = () => {
       }
     } else if (questionNumber >= 147 && questionNumber <= 200) {
       // Part 7 - calculate based on actual passage structure
-      targetStep = 9;
+      targetStep = 8;
       try {
         if (toeic?.questionsPart7?.length) {
           const toeicPart7Res = await toeicPart7Service.getByIdsAndStatus(toeic.questionsPart7, true);
@@ -543,7 +518,7 @@ const ToeicTest: React.FC = () => {
   };
 
   const isLastQuestion = () => {
-    return step === 9 && currentIndex === getTotalCurrentPartItems() - 1;
+    return step === 8 && currentIndex === getTotalCurrentPartItems() - 1;
   };
 
   const renderStep = () => {
@@ -556,102 +531,118 @@ const ToeicTest: React.FC = () => {
         return <VolumeTestStep />;
       case 1:
         return <DirectionsStep />;
-      case 2:
-        return <ListeningPart1Step />;
-      case 3:
-        return (
-          <ListeningPart1List
-            questionsPart1={toeic.questionsPart1 ?? []}
-            startIndex={1}
-            onFinish={() => setStep(4)}
-            submitToeicId={submitToeic.id}
-            initialIndex={currentIndex}
-            volume={volume / 100}
-            manualControl={true}
-            onIndexChange={setCurrentIndex}
-          />
-        );
-      case 4:
-        return (
-          <ListeningPart2List
-            questionsPart2={toeic.questionsPart2 ?? []}
-            startIndex={7}
-            onFinish={() => setStep(5)}
-            submitToeicId={submitToeic.id}
-            initialIndex={currentIndex}
-            volume={volume / 100}
-            manualControl={true}
-            onIndexChange={setCurrentIndex}
-          />
-        );
-      case 5:
-        return (
-          <ListeningPart3And4List
-            questions={toeic.questionsPart3 ?? []}
-            startIndex={32}
-            onFinish={() => setStep(6)}
-            submitToeicId={submitToeic.id}
-            initialIndex={currentIndex}
-            volume={volume / 100}
-            manualControl={true}
-            onIndexChange={setCurrentIndex}
-          />
-        );
-      case 6:
-        return (
-          <ListeningPart3And4List
-            questions={toeic.questionsPart4 ?? []}
-            startIndex={71}
-            onFinish={() => setStep(7)}
-            submitToeicId={submitToeic.id}
-            initialIndex={currentIndex}
-            volume={volume / 100}
-            manualControl={true}
-            onIndexChange={setCurrentIndex}
-          />
-        );
-      case 7:
-        return (
-          <Part5List
-            questionsPart5={toeic.questionsPart5 ?? []}
-            startIndex={101}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            onFinish={() => setStep(8)}
-            submitToeicId={submitToeic.id}
-          />
-        );
-      case 8:
-        return (
-          <Part6List
-            questionsPart6={toeic.questionsPart6 ?? []}
-            startIndex={131}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            onFinish={() => setStep(9)}
-            submitToeicId={submitToeic.id}
-          />
-        );
-      case 9:
-        return (
-          <Part7List
-            questionsPart7={toeic.questionsPart7 ?? []}
-            startIndex={147}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            onFinish={() => {}}
-            submitToeicId={submitToeic.id}
-          />
-        );
+    case 2:
+  return (
+    <ListeningPart1List
+      questionsPart1={toeic.questionsPart1 ?? []}
+      startIndex={1}
+      onFinish={() => {
+        setCurrentIndex(0); 
+        setStep(3);        
+      }}
+      submitToeicId={submitToeic.id}
+      initialIndex={currentIndex}
+      volume={volume / 100}
+      manualControl={true}
+      onIndexChange={setCurrentIndex}
+    />
+  );
+     case 3:
+  return (
+    <ListeningPart2List
+      questionsPart2={toeic.questionsPart2 ?? []}
+      startIndex={7}
+      onFinish={() => {
+        setCurrentIndex(0);
+        setStep(4);
+      }}
+      submitToeicId={submitToeic.id}
+      initialIndex={currentIndex}
+      volume={volume / 100}
+      manualControl={true}
+      onIndexChange={setCurrentIndex}
+    />
+  );
+case 4:
+  return (
+    <ListeningPart3And4List
+      questions={toeic.questionsPart3 ?? []}
+      startIndex={32}
+      onFinish={() => {
+        setCurrentIndex(0);
+        setStep(5);
+      }}
+      submitToeicId={submitToeic.id}
+      initialIndex={currentIndex}
+      volume={volume / 100}
+      manualControl={true}
+      onIndexChange={setCurrentIndex}
+    />
+  );
+case 5:
+  return (
+    <ListeningPart3And4List
+      questions={toeic.questionsPart4 ?? []}
+      startIndex={71}
+      onFinish={() => {
+        setCurrentIndex(0);
+        setStep(6);
+      }}
+      submitToeicId={submitToeic.id}
+      initialIndex={currentIndex}
+      volume={volume / 100}
+      manualControl={true}
+      onIndexChange={setCurrentIndex}
+    />
+  );
+case 6:
+  return (
+    <Part5List
+      questionsPart5={toeic.questionsPart5 ?? []}
+      startIndex={101}
+      currentIndex={currentIndex}
+      setCurrentIndex={setCurrentIndex}
+      onFinish={() => {
+        setCurrentIndex(0);
+        setStep(7);
+      }}
+      submitToeicId={submitToeic.id}
+    />
+  );
+case 7:
+  return (
+    <Part6List
+      questionsPart6={toeic.questionsPart6 ?? []}
+      startIndex={131}
+      currentIndex={currentIndex}
+      setCurrentIndex={setCurrentIndex}
+      onFinish={() => {
+        setCurrentIndex(0);
+        setStep(8);
+      }}
+      submitToeicId={submitToeic.id}
+    />
+  );
+case 8:
+  return (
+    <Part7List
+      questionsPart7={toeic.questionsPart7 ?? []}
+      startIndex={147}
+      currentIndex={currentIndex}
+      setCurrentIndex={setCurrentIndex}
+      onFinish={() => {}}
+      submitToeicId={submitToeic.id}
+    />
+  );
       default:
         return <Typography>Coming soon...</Typography>;
     }
   };
 
-  const isReadingSection = [7, 8, 9].includes(step);
-  const isListeningSection = [0,1,2,3, 4, 5, 6].includes(step);
-  const showSubmitButton = step >= 3;
-  const showNavigationButtons = step >= 3; // Show navigation for all test parts
+  const isReadingSection = [6, 7, 8].includes(step);
+  const isListeningSection = [0, 1, 2, 3, 4, 5].includes(step);
+  const showSubmitButton = step >= 2;
+  const showNavigationButtons = step >= 2; // Show navigation for all test parts
 
   if (loading) {
     return (
@@ -726,13 +717,13 @@ const ToeicTest: React.FC = () => {
         )}
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          {isReadingSection && countdown !== null && (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <TimerIcon />
-              <Typography fontWeight={600} fontSize="1rem">
-                {formatTime(countdown)}
-              </Typography>
-            </Box>
+          {/* Add SimpleTimeRemaining in the header for all test sections */}
+          {submitToeic?.createdAt && step >= 2 && toeic?.duration && (
+            <SimpleTimeRemaining
+              createAt={new Date(submitToeic.createdAt)}
+              duration={toeic.duration}
+              onTimeUp={handleSubmitTest}
+            />
           )}
 
           {isListeningSection && (
@@ -759,17 +750,19 @@ const ToeicTest: React.FC = () => {
               />
             </Box>
           )}
-        {step >= 3 && (
-        <QuestionNavigator
-          currentStep={step}
-          currentIndex={currentIndex}
-          answeredQuestions={answeredQuestions}
-          onNavigateToQuestion={handleNavigateToQuestion}
-        />
-      )}
+
+          {step >= 2 && (
+            <QuestionNavigator
+              currentStep={step}
+              currentIndex={currentIndex}
+              answeredQuestions={answeredQuestions}
+              onNavigateToQuestion={handleNavigateToQuestion}
+            />
+          )}
         </Box>
       </Box>
 
+      {/* Main content area - simplified without ToeicTimeDisplay sidebar */}
       <Box
         sx={{
           flex: 1,
@@ -894,9 +887,6 @@ const ToeicTest: React.FC = () => {
         </Box>
       </Box>
 
-      
-
-
       {showResumeDialog && (
         <Box
           sx={{
@@ -924,10 +914,10 @@ const ToeicTest: React.FC = () => {
             }}
           >
             <Typography variant="h6" fontWeight={600} mb={2}>
-              Continue Previous Test?
+              Resume Previous Test?
             </Typography>
             <Typography variant="body1" color="text.secondary" mb={3}>
-              You have an unfinished test. Would you like to continue from where you left off?
+              You have an unfinished test. Would you like to continue from where you left off, or start over?
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
               <Button

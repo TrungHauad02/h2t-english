@@ -351,22 +351,36 @@ useEffect(() => {
       }
 
       if (speakingPart?.questions?.length) {
-        const speakingAnswersRes =
-          await submitCompetitionSpeakingService.findBySubmitCompetitionIdAndQuestionIds(
-            submitCompetition.id,
-            speakingPart.questions
-          );
+  const speakingRes = await testSpeakingService.getByIdsAndStatus(
+    speakingPart.questions,
+    true
+  );
+  const speakingItems = speakingRes.data || [];
 
-        if (speakingAnswersRes?.data) {
-          const tempAnswered = { ...answeredQuestionsRef.current };
-          speakingAnswersRes.data.forEach((answer: any) => {
-            tempAnswered[answer.question_id] = true;
-          });
+  // Lấy tất cả question_id từ testSpeaking
+  const allSpeakingQuestionIds: number[] = [];
+  for (const item of speakingItems) {
+    if (Array.isArray(item.questions)) {
+      allSpeakingQuestionIds.push(...item.questions);
+    }
+  }
 
-          setAnsweredQuestions(tempAnswered);
-          answeredQuestionsRef.current = tempAnswered;
-        }
-      }
+  // Truy vấn các câu trả lời thực tế bằng question_id
+  const speakingAnswersRes = await submitCompetitionSpeakingService.findBySubmitCompetitionIdAndQuestionIds(
+    submitCompetition.id,
+    allSpeakingQuestionIds
+  );
+
+  if (speakingAnswersRes?.data) {
+    const tempAnswered = { ...answeredQuestionsRef.current };
+    speakingAnswersRes.data.forEach((answer: any) => {
+      tempAnswered[answer.question_id] = true;
+    });
+
+    setAnsweredQuestions(tempAnswered);
+    answeredQuestionsRef.current = tempAnswered;
+  }
+}
 
       if (writingPart?.questions?.length) {
         const writingAnswersRes =
@@ -374,12 +388,13 @@ useEffect(() => {
             submitCompetition.id,
             writingPart.questions
           );
-
+     
+        
         if (writingAnswersRes?.data) {
           const tempAnswered = { ...answeredQuestionsRef.current };
           writingAnswersRes.data.forEach((answer: any) => {
             if (answer.content && answer.content.trim() !== "") {
-              tempAnswered[answer.CompetitionWriting_id] = true;
+              tempAnswered[answer.competitionWriting_id] = true;
             }
           });
 

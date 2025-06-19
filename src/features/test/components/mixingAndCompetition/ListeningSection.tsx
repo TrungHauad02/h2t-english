@@ -23,7 +23,7 @@ export default function ListeningSection({
   selectedQuestionId,
   startSerial,
   setAnsweredQuestions,
-  isCompetitionTest= false,
+  isCompetitionTest = false,
 }: ListeningSectionProps) {
   const color = useColor();
   const { isDarkMode } = useDarkMode();
@@ -37,7 +37,7 @@ export default function ListeningSection({
       try {
         setLoading(true);
     
-        const listeningItemsResponse = await testListeningService.getByIdsAndStatus(testItemIds,true);
+        const listeningItemsResponse = await testListeningService.getByIdsAndStatus(testItemIds, true);
         const items = listeningItemsResponse.data || [];
         
         let currentSerial = startSerial;
@@ -46,21 +46,33 @@ export default function ListeningSection({
         const listeningItemsWithQuestions = await Promise.all(
           items.map(async (item: TestListening) => {
             if (item.questions && item.questions.length > 0) {
-              const questionsResponse = await questionService.getByIdsAndStatus(item.questions,true);
+              const questionsResponse = await questionService.getByIdsAndStatus(item.questions, true);
+              const questions = questionsResponse.data || [];
               
-              // Store current serial number for this item
               const itemStartSerial = currentSerial;
+              const itemEndSerial = currentSerial + questions.length - 1;
               
-              // Update current serial for next item
-              currentSerial += item.questions.length;
+              // Add serial number to each question
+              const questionsWithSerial = questions.map((question: any, qIndex: number) => ({
+                ...question,
+                serialNumber: currentSerial + qIndex
+              }));
+              
+              currentSerial += questions.length;
               
               return {
                 ...item,
-                questions: questionsResponse.data || [],
-                startSerial: itemStartSerial
+                questions: questionsWithSerial,
+                startSerial: itemStartSerial,
+                endSerial: itemEndSerial
               };
             }
-            return item;
+            return {
+              ...item,
+              questions: [],
+              startSerial: currentSerial,
+              endSerial: currentSerial
+            };
           })
         );
         
@@ -103,7 +115,7 @@ export default function ListeningSection({
   return (
     <Box>
       {listeningItems.map((listeningItem, index) => {
-        const { audio, questions, startSerial: itemStartSerial } = listeningItem;
+        const { audio, questions, startSerial: itemStartSerial, endSerial: itemEndSerial } = listeningItem;
         
         return (
           <Paper 
@@ -146,8 +158,6 @@ export default function ListeningSection({
                   <source src={audio} type="audio/mpeg" />
                   Your browser does not support the audio element.
                 </audio>
-                
-    
               </Box>
             </Stack>
 
@@ -160,7 +170,7 @@ export default function ListeningSection({
                   color: isDarkMode ? color.gray100 : color.gray900
                 }}
               >
-                Questions {itemStartSerial} - {itemStartSerial + questions.length - 1}
+                Questions {itemStartSerial}{questions.length > 1 ? ` - ${itemEndSerial}` : ''}
               </Typography>
               
               <AnswerQuestionSection 

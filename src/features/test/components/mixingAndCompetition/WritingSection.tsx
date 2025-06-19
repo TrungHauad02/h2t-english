@@ -52,13 +52,14 @@ export default function WritingSection({
   const [loading, setLoading] = useState<boolean>(true);
   const [saving, setSaving] = useState<boolean>(false);
   const [essayIds, setEssayIds] = useState<Record<number, number>>({});
+  const [saveTimer, setSaveTimer] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const loadInitialData = async () => {
       try {
         setLoading(true);
 
-        const response = await testWritingService.getByIdsAndStatus(testItemIds,true);
+        const response = await testWritingService.getByIdsAndStatus(testItemIds, true);
         const items: TestWriting[] = response.data || [];
         const withSerial = items.map((item, index) => ({ ...item, serial: startSerial + index }));
         setWritingPrompts(withSerial);
@@ -113,13 +114,38 @@ export default function WritingSection({
       
       setSaving(true);
       try {
-        if (isCompetitionTest) {
-          if (essayIds[index]) {
-            await submitCompetitionWritingService.patch(essayIds[index], {
+        // Kiểm tra xem đã có essay chưa bằng cách query database
+        const existingEssays = isCompetitionTest
+          ? await submitCompetitionWritingService.findBySubmitCompetitionIdAndTestWritingIds(submitTestId, [writingId])
+          : await submitTestWritingService.findBySubmitTestIdAndTestWritingIds(submitTestId, [writingId]);
+        
+        const existingEssay = existingEssays.data?.[0];
+        
+        if (existingEssay) {
+          // Update existing essay
+          if (isCompetitionTest) {
+            await submitCompetitionWritingService.patch(existingEssay.id, {
               content: content
             });
           } else {
-            const newEssay = await submitCompetitionWritingService.create({
+            await submitTestWritingService.patch(existingEssay.id, {
+              content: content
+            });
+          }
+          
+          // Cập nhật state nếu chưa có
+          if (!essayIds[index]) {
+            setEssayIds(prev => ({
+              ...prev,
+              [index]: existingEssay.id
+            }));
+          }
+        } else {
+          // Create new essay - chỉ khi thực sự chưa có
+          let newEssay;
+          
+          if (isCompetitionTest) {
+            newEssay = await submitCompetitionWritingService.create({
               id: Date.now(),
               submitCompetition_id: submitTestId,
               competitionWriting_id: writingId,
@@ -127,19 +153,8 @@ export default function WritingSection({
               score: 0,
               status: true
             });
-            
-            setEssayIds(prev => ({
-              ...prev,
-              [index]: newEssay.id
-            }));
-          }
-        } else {
-          if (essayIds[index]) {
-            await submitTestWritingService.patch(essayIds[index], {
-              content: content
-            });
           } else {
-            const newEssay = await submitTestWritingService.create({
+            newEssay = await submitTestWritingService.create({
               id: Date.now(),
               submitTest_id: submitTestId,
               testWriting_id: writingId,
@@ -148,14 +163,15 @@ export default function WritingSection({
               score: 0,
               status: true
             });
-            
-            setEssayIds(prev => ({
-              ...prev,
-              [index]: newEssay.id
-            }));
           }
+          
+          setEssayIds(prev => ({
+            ...prev,
+            [index]: newEssay.id
+          }));
         }
         
+        // Update answered status
         if (content && content.trim() !== '') {
           setAnsweredQuestions(writingId, true);
         } else {
@@ -167,7 +183,7 @@ export default function WritingSection({
         setSaving(false);
       }
     },
-    [writingPrompts, essayIds, submitTestId, setAnsweredQuestions, isCompetitionTest]
+    [writingPrompts, submitTestId, setAnsweredQuestions, isCompetitionTest]
   );
 
   const handleEssayChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -177,8 +193,27 @@ export default function WritingSection({
       [currentIndex]: newContent
     });
     
-    debouncedSaveEssay(currentIndex, newContent);
+    // Clear existing timer
+    if (saveTimer) {
+      clearTimeout(saveTimer);
+    }
+    
+    // Set new timer with 1 second delay to prevent too many API calls
+    const timer = setTimeout(() => {
+      debouncedSaveEssay(currentIndex, newContent);
+    }, 1000);
+    
+    setSaveTimer(timer);
   };
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimer) {
+        clearTimeout(saveTimer);
+      }
+    };
+  }, [saveTimer]);
 
   const handleNext = () => {
     if (currentIndex < writingPrompts.length - 1) {

@@ -46,17 +46,32 @@ export default function ReadingSection({
           items.map(async (item: TestReading) => {
             if (item.questions && item.questions.length > 0) {
               const questionsResponse = await questionService.getByIdsAndStatus(item.questions, true);
+              const questions = questionsResponse.data || [];
               
               const itemStartSerial = currentSerial;
-              currentSerial += item.questions.length;
+              const itemEndSerial = currentSerial + questions.length - 1;
+              
+              // Add serial number to each question
+              const questionsWithSerial = questions.map((question: any, qIndex: number) => ({
+                ...question,
+                serialNumber: currentSerial + qIndex
+              }));
+              
+              currentSerial += questions.length;
               
               return {
                 ...item,
-                questions: questionsResponse.data || [],
-                startSerial: itemStartSerial
+                questions: questionsWithSerial,
+                startSerial: itemStartSerial,
+                endSerial: itemEndSerial
               };
             }
-            return item;
+            return {
+              ...item,
+              questions: [],
+              startSerial: currentSerial,
+              endSerial: currentSerial
+            };
           })
         );
         
@@ -97,7 +112,7 @@ export default function ReadingSection({
   return (
     <Box sx={{ pb: 4 }}>
       {readingItems.map((readingItem, index) => {
-        const { file, questions, startSerial: itemStartSerial } = readingItem;
+        const { file, questions, startSerial: itemStartSerial, endSerial: itemEndSerial } = readingItem;
         
         return (
           <Paper 
@@ -140,7 +155,7 @@ export default function ReadingSection({
                     opacity: 0.95,
                   }}
                 >
-                  Questions {itemStartSerial} - {itemStartSerial + questions.length - 1}
+                  Questions {itemStartSerial}{questions.length > 1 ? ` - ${itemEndSerial}` : ''}
                 </Typography>
               </Stack>
             </Box>
