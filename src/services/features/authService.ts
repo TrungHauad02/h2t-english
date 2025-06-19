@@ -23,18 +23,6 @@ const login = async (email: string, password: string) => {
   }
 };
 
-const loginWithGoogle = async (token: string) => {
-  try {
-    const response = await authClient.post("/auth/login-with-google", {
-      idToken: token,
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error logging in with Google:", error);
-    throw error;
-  }
-};
-
 const logout = async (refreshToken: string) => {
   try {
     const response = await apiClient.post("/auth/logout", { refreshToken });
@@ -60,6 +48,5 @@ const refreshToken = async (refreshToken: string) => {
 export const authService = {
   login,
   logout,
-  loginWithGoogle,
   refreshToken,
 };
