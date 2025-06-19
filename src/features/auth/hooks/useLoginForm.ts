@@ -48,37 +48,6 @@ export const useLoginForm = () => {
     }
   };
 
-  const handleGoogleLogin = async (token: string) => {
-    try {
-      setIsLoading(true);
-
-      const response = await authService.loginWithGoogle(token);
-      const authData = response.data;
-
-      if (!authData.authenticated) {
-        toast.error("Google authentication failed");
-        return;
-      }
-
-      const storage = rememberMe ? localStorage : sessionStorage;
-      storage.setItem("accessToken", authData.accessToken);
-      storage.setItem("refreshToken", authData.refreshToken);
-      storage.setItem("userId", authData.userId.toString());
-      storage.setItem("role", authData.role);
-
-      toast.success("Login with Google successful!");
-
-      redirectBasedOnRole(authData.role);
-    } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message ||
-        "Login with Google failed. Please try again.";
-      toast.error(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const redirectBasedOnRole = (role: RolesEnum) => {
     switch (role) {
       case RolesEnum.ADMIN:
@@ -147,7 +116,6 @@ export const useLoginForm = () => {
     rememberMe,
     setRememberMe,
     handleLogin,
-    handleGoogleLogin,
     handleLogout,
   };
 };
