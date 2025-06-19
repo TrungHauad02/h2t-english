@@ -220,7 +220,7 @@ export default function ListeningPart2QuestionItem({
                 sx={{
                   mb: 2,
                   ml: 0,
-                  px: 2,
+                  px: 0,
                   py: 1.5,
                   borderRadius: 2.5,
                   width: '100%',

@@ -315,7 +315,7 @@ export default function ListeningPart1QuestionItem({
                   sx={{
                     mb: 1.5,
                     ml: 0,
-                    px: 1.5,
+                    px: 0,
                     py: 1,
                     borderRadius: 2,
                     width: '100%',
